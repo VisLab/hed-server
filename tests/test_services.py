@@ -22,7 +22,7 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.services import get_input_from_request
         with self.app.test:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/bids_events.json')
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(json_path, 'rb') as fp:
                 json_string = fp.read().decode('ascii')
             json_data = {base_constants.JSON_STRING: json_string, base_constants.CHECK_FOR_WARNINGS: 'on',

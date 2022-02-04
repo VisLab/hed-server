@@ -20,7 +20,7 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.sidecar import get_input_from_form
         with self.app.test:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/bids_events.json')
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(json_path, 'rb') as fp:
                 environ = create_environ(data={base_constants.JSON_FILE: fp, base_constants.SCHEMA_VERSION: '8.0.0',
                                          base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})

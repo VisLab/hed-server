@@ -24,8 +24,8 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.events import get_input_from_events_form
         with self.app.test:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/bids_events.json')
-            events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/bids_events.tsv')
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
             with open(json_path, 'rb') as fp:
                 with open(events_path, 'rb') as fpe:
                     environ = create_environ(data={base_constants.JSON_FILE: fp, base_constants.SCHEMA_VERSION: '8.0.0',

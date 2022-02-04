@@ -153,7 +153,7 @@ def services_list():
          A formatted string listing available services.
      """
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    the_path = os.path.join(dir_path, './static/resources/services.json')
+    the_path = os.path.join(dir_path, 'static/resources/services.json')
     with open(the_path) as f:
         service_info = json.load(f)
     services = service_info['services']
