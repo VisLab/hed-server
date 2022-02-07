@@ -7,24 +7,31 @@
 ROOT_DIR=${PWD}
 IMAGE_NAME="hedtools:latest"
 CONTAINER_NAME="hedtools"
-GIT_REPO_URL="https://github.com/hed-standard/hed-python"
-GIT_DIR="${PWD}/hed-python"
+GIT_REPO_URL="https://github.com/hed-standard/hed-web"
+GIT_TOOLS_REPO_URL="https://github.com/hed-standard/hed-python"
+GIT_DIR="${PWD}/hed-web"
 GIT_REPO_BRANCH="master"
+GIT_TOOLS_REPO_BRANCH="master"
 HOST_PORT=33000
 CONTAINER_PORT=80
 
-DEPLOY_DIR="hed-python/webtools/deploy_hed"
+DEPLOY_DIR="deploy_hed"
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
 BASE_CONFIG_FILE="${ROOT_DIR}/base_config.py"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 WSGI_FILE="${DEPLOY_DIR}/web.wsgi"
-WEB_CODE_DIR="hed-python/webtools/hedweb"
-VALIDATOR_CODE_DIR="hed-python/hedtools/hed"
+WEB_CODE_DIR="hed-python/hedweb"
+VALIDATOR_CODE_DIR="hed-python/hed"
 
 ##### Functions
 
 clone_github_repo(){
 echo "Cloning repo ${GIT_REPO_URL} using ${GIT_REPO_BRANCH} branch"
+git clone $GIT_REPO_URL -b $GIT_REPO_BRANCH
+}
+
+clone_github_tools_repo(){
+echo "Cloning repo ${GIT_TOOLS_REPO_URL} using ${GIT_TOOLS_REPO_BRANCH} branch"
 git clone $GIT_REPO_URL -b $GIT_REPO_BRANCH
 }
 
@@ -109,6 +116,7 @@ else
 echo Branch specified... Using "$1" branch
 GIT_REPO_BRANCH="$1"
 fi
+clone_github_repo || error_exit "Cannot clone repo ${GIT_REPO_URL} branch ${GIT_REPO_BRANCH}"
 clone_github_repo || error_exit "Cannot clone repo ${GIT_REPO_URL} branch ${GIT_REPO_BRANCH}"
 create_web_directory
 switch_to_web_directory
