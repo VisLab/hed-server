@@ -49,7 +49,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme_options = {
-    'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
+    'analytics_id': 'UA-XXXXXXX-1',  # Provided by Google in your dashboard
     'analytics_anonymize_ip': False,
     'logo_only': False,
     'display_version': True,
