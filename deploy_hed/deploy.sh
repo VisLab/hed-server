@@ -4,35 +4,30 @@
 
 ##### Constants
 
-ROOT_DIR=${PWD}
+DEPLOY_DIR=${PWD}
 IMAGE_NAME="hedtools:latest"
 CONTAINER_NAME="hedtools"
-GIT_REPO_URL="https://github.com/hed-standard/hed-web"
+GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
 GIT_TOOLS_REPO_URL="https://github.com/hed-standard/hed-python"
-GIT_DIR="${PWD}/hed-web"
-GIT_REPO_BRANCH="master"
+GIT_WEB_REPO_BRANCH="master"
 GIT_TOOLS_REPO_BRANCH="master"
 HOST_PORT=33000
 CONTAINER_PORT=80
 
-DEPLOY_DIR="deploy_hed"
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
-BASE_CONFIG_FILE="${ROOT_DIR}/base_config.py"
+BASE_CONFIG_FILE="${DEPLOY_DIR}/base_config.py"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 WSGI_FILE="${DEPLOY_DIR}/web.wsgi"
-WEB_CODE_DIR="hed-python/hedweb"
-VALIDATOR_CODE_DIR="hed-python/hed"
+WEB_CODE_DIR="${DEPLOY_DIR}/hed-web/hedweb"
+VALIDATOR_CODE_DIR="${DEPLOY_DIR}/hed-python/hed"
 
 ##### Functions
 
-clone_github_repo(){
-echo "Cloning repo ${GIT_REPO_URL} using ${GIT_REPO_BRANCH} branch"
-git clone $GIT_REPO_URL -b $GIT_REPO_BRANCH
-}
-
-clone_github_tools_repo(){
+clone_github_repos(){
 echo "Cloning repo ${GIT_TOOLS_REPO_URL} using ${GIT_TOOLS_REPO_BRANCH} branch"
-git clone $GIT_REPO_URL -b $GIT_REPO_BRANCH
+git clone $GIT_TOOLS_REPO_URL -b $GIT_TOOLS_REPO_BRANCH
+echo "Cloning repo ${GIT_WEB_REPO_URL} using ${GIT_WEB_REPO_BRANCH} branch"
+git clone $GIT_WEB_REPO_URL -b $GIT_WEB_REPO_BRANCH
 }
 
 create_web_directory()
@@ -43,7 +38,7 @@ mkdir "${CODE_DEPLOY_DIR}"
 echo "Copy ${BASE_CONFIG_FILE} to ${CONFIG_FILE}"
 cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}"
 echo "Copy ${WSGI_FILE} to ${CODE_DEPLOY_DIR}"
-cp "${WSGI_FILE}" "${CODE_DEPLOY_DIR}"
+cp "${WSGI_FILE}" "${CODE_DEPLOY_DIR}/."
 echo "Copy ${WEB_CODE_DIR} directory to ${CODE_DEPLOY_DIR}"
 cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}"
 echo "Copy ${VALIDATOR_CODE_DIR} directory to ${CODE_DEPLOY_DIR}"
@@ -93,8 +88,8 @@ echo "The relevant deployment information is:"
 echo "Root directory: ${ROOT_DIR}"
 echo "Docker image name: ${IMAGE_NAME}"
 echo "Docker container name: ${CONTAINER_NAME}"
-echo "Git repo: ${GIT_REPO_URL}"
-echo "Local repository: ${GIT_DIR}"
+echo "Git tools repo: ${GIT_TOOLS_REPO_URL}"
+echo "Git web repo: ${GIT_WEB_REPO_URL}"
 echo "Host port: ${HOST_PORT}"
 echo "Container port: ${CONTAINER_PORT}"
 echo "Local deployment directory: ${DEPLOY_DIR}"
@@ -116,8 +111,7 @@ else
 echo Branch specified... Using "$1" branch
 GIT_REPO_BRANCH="$1"
 fi
-clone_github_repo || error_exit "Cannot clone repo ${GIT_REPO_URL} branch ${GIT_REPO_BRANCH}"
-clone_github_repo || error_exit "Cannot clone repo ${GIT_REPO_URL} branch ${GIT_REPO_BRANCH}"
+clone_github_repos || error_exit "Cannot clone repo ${GIT_TOOLS_REPO_URL} or ${GIT_WEB_REPO_URL}"
 create_web_directory
 switch_to_web_directory
 build_new_container
