@@ -1,5 +1,5 @@
 FROM python:3.8-slim-buster
-COPY ./requirements.txt /root/
+COPY requirements.txt /root/
 WORKDIR /root
 RUN apt-get update && apt-get install -y gcc \
 musl-dev \
@@ -16,8 +16,8 @@ mkdir -p /var/log/hedtools && \
 chown -R www-data:www-data /var/log/hedtools && \
 mkdir -p /var/cache/schema_cache && \
 chown -R www-data:www-data /var/cache/schema_cache
-COPY ./httpd.conf /etc/apache2/apache2.conf
+COPY httpd.conf /etc/apache2/apache2.conf
 COPY ./hedtools /var/www/hedtools/
-COPY ./hedtools/hedweb /var/www/hedtools/hed/hedweb/
+COPY ./hedtools/hedweb /var/www/hedtools/hedweb/
 ENTRYPOINT /usr/sbin/apache2 -D FOREGROUND -f /etc/apache2/apache2.conf
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig

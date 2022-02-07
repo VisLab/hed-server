@@ -16,7 +16,7 @@ class Test(TestWebBase):
         from hedweb.constants import base_constants
         from hedweb.schema import get_input_from_form
         with self.app.test:
-            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/HED8.0.0.xml')
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
             with open(schema_path, 'rb') as fp:
                 environ = create_environ(data={base_constants.SCHEMA_FILE: fp,
                                                base_constants.SCHEMA_UPLOAD_OPTIONS: base_constants.SCHEMA_FILE_OPTION,

@@ -15,7 +15,7 @@ class TestWebBase(unittest.TestCase):
         cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/upload')
         app = AppFactory.create_app('config.TestConfig')
         with app.app_context():
-            from hed import schema as hedschema
+            import hed.schema as hedschema
             hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
             if cls.cache_schemas:
                 hedschema.cache_all_hed_xml_versions()

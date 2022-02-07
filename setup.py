@@ -1,6 +1,6 @@
 import setuptools
 
-with open("../hedweb/README.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -11,7 +11,7 @@ setuptools.setup(
     description="Web interface for HED tools.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/hed-standard/hed-python/hedweb/",
+    url="https://github.com/hed-standard/hed-web/",
     packages=setuptools.find_namespace_packages(include=["hed.*"]),
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -19,8 +19,8 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.spreadsheet import get_input_from_form
         with self.app.test:
-            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/ExcelOneSheet.xlsx')
-            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), './data/HED8.0.0.xml')
+            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
             with open(spreadsheet_path, 'rb') as fp:
                 with open(schema_path, 'rb') as sp:
                     environ = create_environ(data={base_constants.SPREADSHEET_FILE: fp,
