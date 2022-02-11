@@ -6,6 +6,28 @@ function clearColumnInfoFlashMessages() {
 }
 
 /**
+ * Hides  columns section in the form.
+ * @param {string} displayType - One of show_columns, show_indices, or show_events
+ */
+function hideColumnInfo(displayType="show_columns") {
+    let display_tag = "#" + displayType;
+    if ($(display_tag).length) {
+        $(display_tag).hide()
+    }
+}
+
+/**
+ * Clears tag column text boxes.
+ * @param {string} displayType - One of show_columns, show_indices, or show_events
+ */
+function removeColumnInfo(displayType="show_columns") {
+    let table_tag = "#" + displayType + "_table";
+    if ($(table_tag).length) {
+        $(table_tag).children().remove();
+    }
+}
+
+/**
  * Gets information a file with columns. This information the names of the columns in the specified
  * sheet_name and indices that contain HED tags.
  * @param {File} columnsFile - File object with columns.
@@ -40,7 +62,7 @@ function setColumnsInfo(columnsFile, flashMessageLocation, worksheetName=undefin
             if (info['message']) {
                 flashMessageOnScreen(info['message'], 'error', flashMessageLocation);
             } else {
-                showColumnInfo(info['column_list'], hasColumnNames, displayType);
+                showColumnInfo(info['column_list'], info['column_list'], hasColumnNames, displayType);
                 worksheet_names = info['worksheet_names'];
             }
         },
@@ -49,45 +71,6 @@ function setColumnsInfo(columnsFile, flashMessageLocation, worksheetName=undefin
         }
     });
     return worksheet_names;
-}
-
-/**
- * Hides  columns section in the form.
- * @param {string} displayType - One of show_columns, show_indices, or show_events
- */
-function hideColumnInfo(displayType="show_columns") {
-    let display_tag = "#" + displayType;
-    if ($(display_tag).length) {
-        $(display_tag).hide()
-    }
-}
-
-
-/**
- * Clears tag column text boxes.
- * @param {string} displayType - One of show_columns, show_indices, or show_events
- */
-function removeColumnInfo(displayType="show_columns") {
-    let table_tag = "#" + displayType + "_table";
-    if ($(table_tag).length) {
-        $(table_tag).children().remove();
-    }
-}
-
-/**
- * Sets the components related to the spreadsheet columns when they are not empty.
- * @param {Array} columnList - An array containing the spreadsheet column names.
- * @param {boolean} hasColumnNames - boolean indicating whether array has column names.
- * @param {string} displayType - string indicating type of display.
- */
-function showColumnInfo(columnList, hasColumnNames= true, displayType="show_columns") {
-    if (hasColumnNames && displayType === "show_columns") {
-        showColumns(columnList);
-    } else if (displayType === "show_indices") {
-        showIndices(columnList, hasColumnNames);
-    } else if (hasColumnNames && displayType === "show_events") {
-        showEvents(columnList);
-    }
 }
 
 /**
@@ -104,6 +87,56 @@ function showColumns(columnList) {
     let columnTable = $('#show_columns_table');
     columnTable.empty();
     columnTable.append(columnNamesRow);
+}
+
+
+/**
+ * Sets the components related to the spreadsheet columns when they are not empty.
+ * @param {Array} columnList - An array containing the spreadsheet column names.
+ * @param {Array} countList - An array containing number of unique values in each column.
+ * @param {boolean} hasColumnNames - boolean indicating whether array has column names.
+ * @param {string} displayType - string indicating type of display.
+ */
+function showColumnInfo(columnList, countList, hasColumnNames= true, displayType="show_columns") {
+    if (hasColumnNames && displayType === "show_columns") {
+        showColumns(columnList);
+    } else if (displayType === "show_indices") {
+        showIndices(columnList, hasColumnNames);
+    } else if (hasColumnNames && displayType === "show_events") {
+        showEvents(columnList, countList);
+    }
+}
+
+/**
+ * Displays a vertical list of column names with counts and checkboxes for creating sidecar templates.
+ * @param {Array} columnList - An array containing the spreadsheet column names.
+ * @param {Array} countList - An array containing the number of unique values in each column.
+ * @param {boolean} hasColumnNames - A boolean indicating whether the first row represents column names
+ */
+function showEvents(columnList, countList, hasColumnNames=true) {
+    $('#show_events').show();
+    let columnEventsTable = $('#show_events_table');
+    let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th><th>Categorical?</th></tr>'
+    columnEventsTable.empty();
+    let i = 1;
+    for(const key of columnList) {
+        let column = "column_" + i;
+        let columnName = key;
+        if (!hasColumnNames) {
+            columnName = column;
+        }
+        let useName = column + "_use";
+        let categoryName = column + "_category";
+        let columnField = column + "_name"
+        let row = '<tr><td><input type="checkbox" name="' + useName + '" id="' + useName + '"></td>' +
+            '<td>' + columnName  + ' (' + countList[i-1] + ')</td>' +
+            '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
+                '<input type="text" hidden id="' + columnField + '" name="' + columnField +
+                '" value="' + columnName + '"</td></tr>';
+        contents = contents + row;
+        i = i + 1;
+    }
+    columnEventsTable.append(contents + '</table>')
 }
 
 /**
@@ -133,35 +166,4 @@ function showIndices(columnList, hasColumnNames= true) {
     let columnTable = $('#show_indices_table');
     columnTable.empty();
     columnTable.append(contents)
-}
-
-/**
- * Sets the components related to the spreadsheet columns when they are not empty.
- * @param {Array} columnList - An array containing the spreadsheet column names.
- * @param {boolean} hasColumnNames - A boolean indicating whether the first row represents column names
- */
-function showEvents(columnList, hasColumnNames=true) {
-    $('#show_events').show();
-    let columnEventsTable = $('#show_events_table');
-    let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th><th>Categorical?</th></tr>'
-    columnEventsTable.empty();
-    let i = 1;
-    for(const key of columnList) {
-        let column = "column_" + i;
-        let columnName = key;
-        if (!hasColumnNames) {
-            columnName = column;
-        }
-        let useName = column + "_use";
-        let categoryName = column + "_category";
-        let columnField = column + "_name"
-        let row = '<tr><td><input type="checkbox" name="' + useName + '" id="' + useName + '"></td>' +
-            '<td>' + columnName  + '</td>' +
-            '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
-                '<input type="text" hidden id="' + columnField + '" name="' + columnField +
-                '" value="' + columnName + '"</td></tr>';
-        contents = contents + row;
-        i = i + 1;
-    }
-    columnEventsTable.append(contents + '</table>')
 }
