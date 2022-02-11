@@ -1,5 +1,6 @@
 CHECK_FOR_WARNINGS = 'check_for_warnings'
 
+COLUMN_COUNTS = 'column_counts'
 COLUMN_DICTIONARY = 'column_dictionary'
 COLUMN_INDICES = 'column_indices'
 COLUMN_LIST = 'column_list'

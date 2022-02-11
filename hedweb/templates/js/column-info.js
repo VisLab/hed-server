@@ -62,7 +62,7 @@ function setColumnsInfo(columnsFile, flashMessageLocation, worksheetName=undefin
             if (info['message']) {
                 flashMessageOnScreen(info['message'], 'error', flashMessageLocation);
             } else {
-                showColumnInfo(info['column_list'], info['column_list'], hasColumnNames, displayType);
+                showColumnInfo(info['column_list'], info['column_counts'], hasColumnNames, displayType);
                 worksheet_names = info['worksheet_names'];
             }
         },
@@ -93,27 +93,27 @@ function showColumns(columnList) {
 /**
  * Sets the components related to the spreadsheet columns when they are not empty.
  * @param {Array} columnList - An array containing the spreadsheet column names.
- * @param {Array} countList - An array containing number of unique values in each column.
+ * @param {Object} columnCounts - A dictionary containing the unique values in each column.
  * @param {boolean} hasColumnNames - boolean indicating whether array has column names.
  * @param {string} displayType - string indicating type of display.
  */
-function showColumnInfo(columnList, countList, hasColumnNames= true, displayType="show_columns") {
+function showColumnInfo(columnList, countCounts, hasColumnNames= true, displayType="show_columns") {
     if (hasColumnNames && displayType === "show_columns") {
         showColumns(columnList);
     } else if (displayType === "show_indices") {
         showIndices(columnList, hasColumnNames);
     } else if (hasColumnNames && displayType === "show_events") {
-        showEvents(columnList, countList);
+        showEvents(columnList, countCounts);
     }
 }
 
 /**
  * Displays a vertical list of column names with counts and checkboxes for creating sidecar templates.
  * @param {Array} columnList - An array containing the spreadsheet column names.
- * @param {Array} countList - An array containing the number of unique values in each column.
+ * @param {Object} columnCounts - A dictionary of the count of unique values in each column.
  * @param {boolean} hasColumnNames - A boolean indicating whether the first row represents column names
  */
-function showEvents(columnList, countList, hasColumnNames=true) {
+function showEvents(columnList, countCounts, hasColumnNames=true) {
     $('#show_events').show();
     let columnEventsTable = $('#show_events_table');
     let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th><th>Categorical?</th></tr>'
@@ -129,7 +129,7 @@ function showEvents(columnList, countList, hasColumnNames=true) {
         let categoryName = column + "_category";
         let columnField = column + "_name"
         let row = '<tr><td><input type="checkbox" name="' + useName + '" id="' + useName + '"></td>' +
-            '<td>' + columnName  + ' (' + countList[i-1] + ')</td>' +
+            '<td>' + columnName  + ' (' + countCounts[columnName] + ')</td>' +
             '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
                 '<input type="text" hidden id="' + columnField + '" name="' + columnField +
                 '" value="' + columnName + '"</td></tr>';
