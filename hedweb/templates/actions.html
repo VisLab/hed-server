@@ -1,13 +1,13 @@
 {% macro create_actions(title,assemble=False,convert=False,extract=False,flatten=False,
-remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
+merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
     <h3> {{ title }} </h3>
     <div class="form-group" id="process_actions">
         {% if assemble %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option" checked
                        id="assemble" value="assemble"
-                       aria-label="Select this button to assemble" aria-checked="true">
-                <label class="secondary-label">Assemble</label>
+                       aria-label="Assemble the HED annotations for an events file." aria-checked="true">
+                <label class="secondary-label">Assemble annotations</label>
             </div>
         {% endif %}
 
@@ -15,16 +15,16 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option" checked
                        id="convert" value="convert"
-                       aria-label="Select this button to convert" aria-checked="true">
-                <label class="secondary-label">Convert</label>
+                       aria-label="Convert a schema to a different format." aria-checked="true">
+                <label class="secondary-label">Convert schema</label>
             </div>
         {% endif %}
 
         {% if extract %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option" id="extract" value="extract"
-                       aria-label="Select this button to extract sidecar from event">
-                <label class="secondary-label">Extract sidecar</label>
+                       aria-label="Extract a template sidecar from an events file.">
+                <label class="secondary-label">Extract sidecar template</label>
             </div>
         {% endif %}
 
@@ -32,8 +32,8 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
                        id="flatten" value="flatten"
-                       aria-label="Select this button to convert to flat form">
-                <label class="secondary-label">Flatten</label>
+                       aria-label="Extract the HED portion of a sidecar as a spreadsheet.">
+                <label class="secondary-label">Extract HED to spreadsheet</label>
             </div>
         {% endif %}
 
@@ -41,8 +41,17 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
                        id="unflatten" value="unflatten"
-                       aria-label="Select this button to convert from flat form">
+                       aria-label="Convert a HED spreadsheet to a dictionary.">
                 <label class="secondary-label">Unflatten</label>
+            </div>
+        {% endif %}
+
+        {% if merge %}
+            <div class="form-group">
+                <input class="radio-btn" type="radio" name="command_option"
+                       id="merge" value="merge"
+                       aria-label="Merge a HED dictionary into a BIDS JSON sidecar.">
+                <label class="secondary-label">Merge HED dictionary</label>
             </div>
         {% endif %}
 
@@ -50,8 +59,8 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
                        id="remap" value="remap"
-                       aria-label="Select this button to remap event file columns ">
-                <label class="secondary-label">Remap</label>
+                       aria-label="Remap event file columns.">
+                <label class="secondary-label">Remap columns</label>
             </div>
         {% endif %}
 
@@ -59,7 +68,7 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
                        id="to_long" value="to_long"
-                       aria-label="Select this button to convert to long form">
+                       aria-label="Convert to long form.">
                 <label class="secondary-label">Convert to long</label>
             </div>
         {% endif %}
@@ -68,7 +77,7 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
                        id="to_short" value="to_short"
-                       aria-label="Select this button to convert to short form">
+                       aria-label="Convert to short form.">
                 <label class="secondary-label">Convert to short</label>
             </div>
         {% endif %}
@@ -77,7 +86,7 @@ remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option" checked
                        id="validate" value="validate"
-                       aria-label="Select this button to validate" aria-checked="true">
+                       aria-label="Validate the indicated file." aria-checked="true">
                 <label class="secondary-label">Validate</label>
             </div>
         {% endif %}
