@@ -1,7 +1,10 @@
-Welcome to HED examples repository!
-=============================================
+HED (Hierarchical Event Descriptors) Web Tools
+==============================================
 
-A PDF version of this document can be found `here <https://hed-examples.readthedocs.io/_/downloads/en/latest/pdf/>`_
+.. sidebar:: **Downloads**
+
+   `HED Web <https://hed-web.readthedocs.io/_/downloads/en/latest/pdf/>`_
+
 
 .. toctree::
    :maxdepth: 5
@@ -11,7 +14,7 @@ A PDF version of this document can be found `here <https://hed-examples.readthed
 
 .. toctree::
    :maxdepth: 5
-   :caption: Case study/Tutorials:
+   :caption: Deployment
 
     01_Overview.md
 
