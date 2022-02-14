@@ -8,7 +8,7 @@ from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models import Sidecar
-from hed.tools import SidecarMap
+from hed.tools import hed_to_df
 from hed.util import generate_filename
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
@@ -70,29 +70,25 @@ def process(arguments):
         results = sidecar_validate(hed_schema, json_sidecar, check_for_warnings=check_for_warnings)
     elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
         results = sidecar_convert(hed_schema, json_sidecar, command=command, expand_defs=expand_defs)
+    elif command == base_constants.COMMAND_FLATTEN:
+        results = sidecar_flatten(json_sidecar)
     else:
         raise HedFileError('UnknownProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
 
 
 def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_SHORT, expand_defs=False):
-    """Converts a sidecar from long to short or short to long
+    """ Convert a sidecar from long to short form or short to long form.
 
-    Parameters
-    ----------
-    hed_schema:HedSchema
-        HedSchema object to be used
-    json_sidecar: Sidecar
-        Previously created Sidecar
-    command: str
-        Name of the command to execute (default to short if unrecognized)
-    expand_defs: bool
-        Indicates whether to expand definitions when converting
+    Args:
+        hed_schema (HedSchema):  HedSchema object used in the conversion.
+        json_sidecar (Sidecar):  Sidecar object to be converted in place.
+        command (str):           Either 'to short' or 'to long' indicating type of conversion.
+        expand_defs (bool):      If True, expand definitions when converting, otherwise do no expansion.
 
-    Returns
-    -------
-    dict
-        A downloadable dictionary file or a file containing warnings
+    Returns:
+        dict:  A downloadable response dictionary
+
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
@@ -128,26 +124,23 @@ def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_
 
 
 def sidecar_flatten(json_sidecar):
-    """Converts a sidecar from long to short unless unless the command is not COMMAND_TO_LONG then converts to short
+    """ Create a four-column spreadsheet with the HED portion of the JSON sidecar.
 
-    Parameters
-    ----------
-    json_sidecar: Sidecar
-        Previously created Sidecar
+    Args:
+        json_sidecar (Sidecar): The Sidecar from which to extract the HED spreadsheet
 
-    Returns
-    -------
-    dict
+    Returns:
+        dict
         A downloadable dictionary file or a file containing warnings
+
     """
 
     json_string = json_sidecar.get_as_json_string()
     sidecar = json.loads(json_string)
-    sr = SidecarMap()
-    df = sr.flatten(sidecar)
+    df = hed_to_df(sidecar)
     data = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = json_sidecar.name
-    file_name = generate_filename(display_name, name_suffix='flattened', extension='.tsv')
+    file_name = generate_filename(display_name, name_suffix='_flattened', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_FLATTEN, 'data': data, 'output_display_name': file_name,
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully flattened'}
 
