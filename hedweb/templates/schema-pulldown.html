@@ -1,4 +1,5 @@
 {% macro create_schema_pulldown(title) %}
+    <div id="schema_pulldown_section">
         <h3>{{ title }}</h3>
         <div class="form-group">
             <label class="secondary-label" for="schema_version">HED schema version:</label>
@@ -14,4 +15,5 @@
             </label>
             <p class="flash" id="schema_select_flash"></p>
         </div>
+    </div>
 {% endmacro %}

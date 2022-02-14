@@ -10,14 +10,14 @@
     <form id="sidecar_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('1) Pick an action:',to_long=True,to_short=True,validate=True) }}
-        {{ create_options('2) Check applicable options (if any):',check_for_warnings=True,expand_defs=True) }}
+        {{ create_actions('Pick an action:',to_long=True,to_short=True,flatten=True,validate=True) }}
+        {{ create_options('Check applicable options (if any):',check_for_warnings=True,expand_defs=True) }}
 
 
-        {{ create_json_input('3) Upload BIDS-style JSON sidecar:') }}
-        {{ create_schema_pulldown('4) Choose a HED schema version:') }}
+        {{ create_json_input('Upload BIDS-style JSON sidecar:') }}
+        {{ create_schema_pulldown('Choose a HED schema version:') }}
 
-        <h3>5) Process:</h3>
+        <h3>Process:</h3>
         <div class="form-group">
             <button id="sidecar_submit" type="button">Process</button>
             <p class="flash" id="sidecar_submit_flash"></p>

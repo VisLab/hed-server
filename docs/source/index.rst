@@ -10,13 +10,13 @@ HED (Hierarchical Event Descriptors) Web Tools
    :maxdepth: 5
    :caption: Contents:
 
-   01_Overview.md
+   Overview.md
 
 .. toctree::
    :maxdepth: 5
    :caption: Deployment
 
-    01_Overview.md
+   Overview.md
 
 
 .. toctree::
@@ -24,5 +24,3 @@ HED (Hierarchical Event Descriptors) Web Tools
    :caption: Resources:
 
    Documentation.md
-   Tools.md
-

@@ -25,6 +25,7 @@ $('#sidecar_submit').on('click', function () {
  */
 function clearForm() {
     $('#sidecar_form')[0].reset();
+    $("#validate").prop('checked', true);
     setOptions();
     clearFlashMessages()
     clearJsonFileLabel();
@@ -57,12 +58,27 @@ function setOptions() {
     if ($("#validate").is(":checked")) {
         hideOption("expand_defs");
         showOption("check_for_warnings");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#options_section").show();
     } else if ($("#to_long").is(":checked")) {
         hideOption("check_for_warnings");
         showOption("expand_defs");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#options_section").show();
     } else if ($("#to_short").is(":checked")) {
         hideOption("check_for_warnings");
         showOption("expand_defs");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#options_section").show();
+    } else if ($("#flatten").is(":checked")) {
+        hideOption("check_for_warnings");
+        hideOption("expand_defs");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").hide();
+        $("#options_section").hide();
     }
 }
 
