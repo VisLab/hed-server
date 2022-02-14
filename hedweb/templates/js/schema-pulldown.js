@@ -1,5 +1,3 @@
-const XML_FILE_EXTENSIONS = ['xml'];
-const OTHER_VERSION_OPTION = 'Other';
 
 /**
  * Event handler function when the HED version drop-down menu changes. If Other is selected the file browser

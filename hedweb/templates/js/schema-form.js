@@ -1,6 +1,3 @@
-const SCHEMA_XML_EXTENSION = 'xml';
-const SCHEMA_MEDIAWIKI_EXTENSION = 'mediawiki';
-const DEFAULT_XML_URL = "https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.0.xml";
 
 $(function () {
     prepareForm();
