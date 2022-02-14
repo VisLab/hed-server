@@ -27,6 +27,7 @@ $('#string_submit').on('click', function () {
 function clearForm() {
     $('#string_form')[0].reset();
     clearFormFlashMessages();
+    $("#validate").prop('checked', true);
     setOptions();
     hideOtherSchemaVersionFileUpload()
 }

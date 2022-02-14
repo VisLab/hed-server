@@ -56,6 +56,7 @@ $('#schema_url_option').on('change',function () {
  */
 function clearForm() {
     $('#schema_form')[0].reset();
+    $("#validate").prop('checked', true);
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
     setOptions();
@@ -137,8 +138,10 @@ function prepareForm() {
 function setOptions() {
     if ($("#validate").is(":checked")) {
         showOption("check_for_warnings");
+        $("#options_section").show();
     } else {
         hideOption("check_for_warnings");
+        $("#options_section").hide();
     }
 }
 

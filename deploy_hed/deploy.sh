@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# deploy.sh - A script used to build and deploy a docker container for the HEDTools online validator
+# deploy.sh - A script used to _build and deploy a docker container for the HEDTools online validator
 
 ##### Constants
 

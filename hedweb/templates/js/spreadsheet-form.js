@@ -79,6 +79,7 @@ function clearForm() {
     $('#spreadsheet_display_name').text('');
     $('#worksheet_name').empty();
     $('#worksheet_select').hide();
+    $("#validate").prop('checked', true);
     setOptions();
     hideColumnInfo("show_indices");
     hideOtherSchemaVersionFileUpload()

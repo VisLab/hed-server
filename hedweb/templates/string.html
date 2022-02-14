@@ -9,24 +9,24 @@
     <form id="string_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('1) Pick an action:',to_long=True,to_short=True,validate=True) }}
-        {{ create_options('2) Check applicable options (if any):',check_for_warnings=True,expand_defs=True) }}
+        {{ create_actions('Pick an action:',to_long=True,to_short=True,validate=True) }}
+        {{ create_options('Select options:',check_for_warnings=True,expand_defs=True) }}
 
-     <h3>3) Enter a HED string: </h3>
+     <h3>Enter a HED string: </h3>
         <div class="form-group">
             <textarea rows="5" cols="60" wrap="soft" maxlength="25000"
                       name="string_input" id="string_input"></textarea>
             <p class="flash" id="string_flash"></p>
         </div>
 
-        {{ create_schema_pulldown('4) Choose a HED schema version:') }}
+        {{ create_schema_pulldown('Choose a HED schema:') }}
 
-        <h3>5) Process:</h3>
+        <h3>Process:</h3>
         <div class="form-group">
             <button id="string_submit" type="button">Process</button>
         </div>
 
-        <h3>6) View results:</h3>
+        <h3>View results:</h3>
         <div class="form-group">
             <textarea rows="5" cols="60" wrap="soft" maxlength="25000"
                           name="string_result" id="string_result"></textarea>

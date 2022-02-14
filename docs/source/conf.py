@@ -43,8 +43,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
-    "sphinx.ext.extlinks",
-    "numpydoc"
+    "sphinx.ext.extlinks"
 ]
 myst_heading_anchors = 2
 myst_enable_extensions = ["deflist"]
