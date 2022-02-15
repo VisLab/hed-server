@@ -42,7 +42,8 @@ def get_input_from_form(request):
         f = request.files[base_constants.JSON_FILE]
         fb = io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))
         arguments[base_constants.JSON_SIDECAR] = Sidecar(file=fb, name=secure_filename(f.filename))
-    if base_constants.SPREADSHEET_FILE in request.files:
+    if base_constants.SPREADSHEET_FILE in request.files and \
+        request.files[base_constants.SPREADSHEET_FILE].filename:
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
         file_ext = get_file_extension(filename)
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
@@ -182,7 +183,7 @@ def sidecar_merge(json_sidecar, spreadsheet):
     sidecar_dict = json.loads(json_string)
     merge_hed_dict(sidecar_dict, hed_dict)
     display_name = json_sidecar.name
-    data = json.dumps(sidecar_dict)
+    data = json.dumps(sidecar_dict,indent=4)
     file_name = generate_filename(display_name, name_suffix='_flattened_merged', extension='.json')
     return {base_constants.COMMAND: base_constants.COMMAND_FLATTEN, 'data': data, 'output_display_name': file_name,
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully merged'}
