@@ -3,6 +3,7 @@
 {% from "column-info.html" import create_column_info %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
+{% from "spreadsheet-input.html" import create_spreadsheet_input %}
 
 {% block content %}
     <h2>Process a spreadsheet with HED tags</h2>
@@ -14,29 +15,8 @@
         {{ create_actions('Pick an action:',to_long=True,to_short=True,validate=True) }}
         {{ create_options('Select options:',check_for_warnings=True,expand_defs=True) }}
 
-        <h3>Upload a spreadsheet (tab-separated or Excel):</h3>
-        <div class="form-group">
-            <label class="secondary-label" for="spreadsheet_file">Spreadsheet file:</label>
-            <label class="btn-group file-browse-group">
-                <button>Browse ...</button>
-                <label for="spreadsheet_file" id="spreadsheet_display_name"></label>
-                <input type="file" name="spreadsheet_file" id="spreadsheet_file"/>
-            </label>
+        {{create_spreadsheet_input('Upload a spreadsheet (tab-separated or Excel):',has_column_names_option=True) }}
 
-            <div class="form-group" name="worksheet_select" id="worksheet_select">
-                <label class="secondary-label" for="worksheet_name">Worksheet name:</label>
-                <select name="worksheet_name" id="worksheet_name"></select>
-            </div>
-            <div class="form-group">
-                <div class="checkbox-group">
-                    <div class="inline-field">
-                        <input type="checkbox" name="has_column_names" id="has_column_names" checked>
-                        <label for="has_column_names">Has column names</label>
-                    </div>
-                </div>
-                <p class="flash" id="spreadsheet_flash"></p>
-            </div>
-        </div>
         {{ create_column_info('show_indices') }}
 
         {{ create_schema_pulldown('Choose a HED schema:') }}
@@ -48,10 +28,12 @@
         </div>
     </form>
     <script type="module">
+        {%  include 'js/constants.js' %}
         {%  include 'js/column-info.js' %}
         {%  include 'js/options.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/schema-pulldown.js' %}
+        {%  include 'js/spreadsheet-input.js' %}
         {%  include 'js/spreadsheet-form.js' %}
     </script>
 

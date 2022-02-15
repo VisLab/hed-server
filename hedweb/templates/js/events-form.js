@@ -1,4 +1,4 @@
-const TEXT_FILE_EXTENSIONS = ['tsv', 'txt'];
+
 
 $(function () {
     prepareForm();

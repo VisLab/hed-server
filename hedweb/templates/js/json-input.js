@@ -1,4 +1,4 @@
-const JSON_FILE_EXTENSIONS = ['json'];
+
 
 /**
  * Sidecar event handler function. Checks if the file uploaded has a valid sidecar extension.
