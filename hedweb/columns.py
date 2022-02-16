@@ -5,6 +5,7 @@ import os
 
 from pandas import DataFrame, read_csv
 from hed.errors import HedFileError
+from hed.tools import ColumnSummary
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_file, form_has_option
 
@@ -61,7 +62,11 @@ def create_columns_info(columns_file, has_column_names: True, sheet_name: None):
         raise HedFileError('BadFileExtension',
                            f'File {filename} extension does not correspond to an Excel or tsv file', '')
     col_list = list(dataframe.columns)
+    col_dict = ColumnSummary()
+    col_dict.update(dataframe)
+    col_counts = col_dict.get_number_unique_values()
     columns_info = {base_constants.COLUMNS_FILE: filename, base_constants.COLUMN_LIST: col_list,
+                    base_constants.COLUMN_COUNTS: col_counts,
                     base_constants.WORKSHEET_SELECTED: sheet_name, base_constants.WORKSHEET_NAMES: sheet_names}
     return columns_info
 

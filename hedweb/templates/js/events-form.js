@@ -1,4 +1,4 @@
-const TEXT_FILE_EXTENSIONS = ['tsv', 'txt'];
+
 
 $(function () {
     prepareForm();
@@ -42,6 +42,7 @@ $('#events_submit').on('click', function () {
 function clearForm() {
     $('#events_form')[0].reset();
     $('#events_display_name').text('');
+    $("#validate").prop('checked', true);
     setOptions();
     clearFlashMessages();
     hideColumnInfo("show_columns");
@@ -95,12 +96,21 @@ function setOptions() {
     if ($("#validate").is(":checked")) {
         hideOption("expand_defs");
         showOption("check_for_warnings");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#options_section").show();
     } else if ($("#assemble").is(":checked")) {
         hideOption("check_for_warnings");
         showOption("expand_defs");
+        $("#json_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#options_section").show();
     } else if ($("#extract").is(":checked")) {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
+        $("#json_input_section").hide();
+        $("#schema_pulldown_section").hide();
+        $("#options_section").hide();
     }
 }
 

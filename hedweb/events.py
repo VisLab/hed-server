@@ -10,8 +10,7 @@ from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections
 from hed.util import generate_filename
-from hed.tools import get_columns_info
-from hed.tools import SidecarMap
+from hed.tools import get_columns_info, generate_sidecar_entry
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
@@ -138,20 +137,27 @@ def extract(events, columns_selected):
     """
 
     columns_info = get_columns_info(events.dataframe)
-    sr = SidecarMap()
-    hed_dict, issues = sr.get_sidecar_dict(columns_info, columns_selected)
+    hed_dict = {}
+    for column_name, column_type in columns_selected.items():
+        if column_name not in columns_info:
+            continue
+        if column_type:
+            column_values = list(columns_info[column_name].keys())
+        else:
+            column_values = None
+        hed_dict[column_name] = generate_sidecar_entry(column_name, column_values=column_values)
     display_name = events.name
-    if issues:
-        issue_str = get_printable_issue_string(issues, f"{display_name} HED validation errors")
-        file_name = generate_filename(display_name, name_suffix='_errors', extension='.txt')
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                'data': issue_str, "output_display_name": file_name, "msg_category": "warning",
-                'msg': f"Events file {display_name} had extraction errors"}
-    else:
-        file_name = generate_filename(display_name, name_suffix='_extracted', extension='.json')
-        return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT, 'data': json.dumps(hed_dict, indent=4),
-                'output_display_name': file_name, 'msg_category': 'success',
-                'msg': 'Events extraction to JSON complete'}
+    # if issues:
+    #     issue_str = get_printable_issue_string(issues, f"{display_name} HED validation errors")
+    #     file_name = generate_filename(display_name, name_suffix='_errors', extension='.txt')
+    #     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+    #             'data': issue_str, "output_display_name": file_name, "msg_category": "warning",
+    #             'msg': f"Events file {display_name} had extraction errors"}
+    # else:
+    file_name = generate_filename(display_name, name_suffix='_extracted', extension='.json')
+    return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT, 'data': json.dumps(hed_dict, indent=4),
+            'output_display_name': file_name, 'msg_category': 'success',
+            'msg': 'Events extraction to JSON complete'}
 
 
 def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
