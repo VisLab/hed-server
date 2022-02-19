@@ -1,10 +1,13 @@
-HED (Hierarchical Event Descriptors) Web Tools
+Hierarchical Event Descriptor (HED) Web Tools
 ==============================================
 
 .. sidebar:: **Downloads**
 
-   `HED Web <https://hed-web.readthedocs.io/_/downloads/en/latest/pdf/>`_
+   * `PDF docs <https://hed-web.readthedocs.io/_/downloads/en/latest/pdf/>`_
 
+   * `Source code <https://github.com/hed-standard/hed-web/>`_
+
+Note:  this is a work in progress. More information is coming.
 
 .. toctree::
    :maxdepth: 5
