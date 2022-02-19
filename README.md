@@ -10,7 +10,8 @@ git clone https://github.com/hed-standard/hed-python
 
 ### Running locally
 The application can be run locally on an internal test web server by calling 
-the `runserver` application directly. To do this you will have to do the following:
+the `runserver` application directly.
+To do this you will have to do the following:
 
 1. Set up a `config.py` in the same directory as `config_template.py`. 
    1.  Copy `config_template.py` to `config.py`
@@ -53,9 +54,13 @@ The description of how to set this up is described elsewhere.
 
 The instructions assume that you are in your home directory on the Linux server.
 The deployment will use your home directory as a temporary staging area.
+The instructions assume that you have DOCKER installed.
 
-1.  Upload the `deploy_hed` directory to your home directory.
-2.  Change to the `deploy_hed` directory:
+1. Make a deployment directory, say `deploy_hed`.
+2. Download the
+[hed-web deployment script](https://raw.githubusercontent.com/hed-standard/hed-web/master/deploy_hed/deploy.sh)
+to your `deploy_hed` directory.
+3. Change to the `deploy_hed` directory and execute of `deploy.sh` script:
 
 ```  
    cd ~/deploy_hed
@@ -65,3 +70,6 @@ The deployment will use your home directory as a temporary staging area.
 ```  
    sudo bash deploy.sh
 ```
+
+The `deploy.sh` script will download the latest versions of the `hed-python`
+and the `hed-web` repositories and deploy.
