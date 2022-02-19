@@ -9,6 +9,8 @@ IMAGE_NAME="hedtools:latest"
 CONTAINER_NAME="hedtools"
 GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
 GIT_TOOLS_REPO_URL="https://github.com/hed-standard/hed-python"
+GIT_HED_PYTHON_DIR="${DEPLOY_DIR}/hed-python"
+GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 GIT_WEB_REPO_BRANCH="master"
 GIT_TOOLS_REPO_BRANCH="master"
 HOST_PORT=33000
@@ -24,9 +26,10 @@ VALIDATOR_CODE_DIR="${DEPLOY_DIR}/hed-python/hed"
 ##### Functions
 
 clone_github_repos(){
-echo "Cloning repo ${GIT_TOOLS_REPO_URL} using ${GIT_TOOLS_REPO_BRANCH} branch"
+cd ${DEPLOY_DIR}
+echo "Cloning repo ${GIT_TOOLS_REPO_URL} in ${DEPLOY_DIR} using ${GIT_TOOLS_REPO_BRANCH} branch"
 git clone $GIT_TOOLS_REPO_URL -b $GIT_TOOLS_REPO_BRANCH
-echo "Cloning repo ${GIT_WEB_REPO_URL} using ${GIT_WEB_REPO_BRANCH} branch"
+echo "Cloning repo ${GIT_WEB_REPO_URL}  in ${DEPLOY_DIR} using ${GIT_WEB_REPO_BRANCH} branch"
 git clone $GIT_WEB_REPO_URL -b $GIT_WEB_REPO_BRANCH
 }
 
@@ -71,8 +74,13 @@ docker run --restart=always --name $CONTAINER_NAME -d -p 127.0.0.1:$HOST_PORT:$C
 
 cleanup_directory()
 {
-echo "Cleaning up directory ${GIT_DIR} ..."
-rm -rf "${GIT_DIR}"
+echo "Cleaning up directory ${GIT_HED_PYTHON_DIR} ..."
+rm -rf "${GIT_HED_PYTHON_DIR}"
+echo "Cleaning up directory ${GIT_HED_WEB_DIR} ..."
+rm -rf "${GIT_HED_WEB_DIR}"
+echo "Cleaning up ${CODE_DEPLOY_DIR}"
+rm -rf ${CODE_DEPLOY_DIR}
+echo "ROOT DIR is ${ROOT_DIR}"
 cd "${ROOT_DIR}" || error_exit "Cannot clean up directories"
 }
 
@@ -85,26 +93,31 @@ error_exit()
 output_paths()
 {
 echo "The relevant deployment information is:"
-echo "Root directory: ${ROOT_DIR}"
+echo "Deploy directory: ${DEPLOY_DIR}"
 echo "Docker image name: ${IMAGE_NAME}"
 echo "Docker container name: ${CONTAINER_NAME}"
 echo "Git tools repo: ${GIT_TOOLS_REPO_URL}"
 echo "Git web repo: ${GIT_WEB_REPO_URL}"
+echo "Git web repo branch: ${GIT_WEB_REPO_BRANCH}"
+echo "Git tools repo branch: ${GIT_TOOLS_REPO_BRANCH}"
+echo "Git hed web dir: ${GIT_HED_WEB_DIR}"
 echo "Host port: ${HOST_PORT}"
 echo "Container port: ${CONTAINER_PORT}"
 echo "Local deployment directory: ${DEPLOY_DIR}"
 echo "Local code deployment directory: ${CODE_DEPLOY_DIR}"
 echo "Configuration file: ${CONFIG_FILE}"
+echo "Base configuration file: ${BASE_CONFIG_FILE}"
 echo "WSGI file: ${WSGI_FILE}"
 echo "Local web code directory: ${WEB_CODE_DIR}"
 echo "Local validator code directory: ${VALIDATOR_CODE_DIR}"
 }
 
-
 ##### Main
 echo "Starting...."
 output_paths
 echo "....."
+echo "Cleaning up directories before deploying..."
+cleanup_directory
 if [ -z "$1" ]; then
 echo No branch specified... Using master branch
 else
