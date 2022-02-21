@@ -12,7 +12,8 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
         {{ create_actions('Pick an action:',to_long=True,to_short=True,flatten=True,validate=True,merge=True) }}
-        {{ create_options('Check applicable options (if any):',check_for_warnings=True,expand_defs=True) }}
+        {{ create_options('Check applicable options (if any):',
+                          check_for_warnings=True,expand_defs=True,include_definition_tags=True) }}
 
 
         {{ create_json_input('Upload BIDS-style JSON sidecar:') }}
