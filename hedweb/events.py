@@ -75,8 +75,8 @@ def process(arguments):
         results = validate(hed_schema, events, sidecar, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
     elif command == base_constants.COMMAND_ASSEMBLE:
         results = assemble(hed_schema, events, arguments.get(base_constants.EXPAND_DEFS, False))
-    elif command == base_constants.COMMAND_EXTRACT:
-        results = extract(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
+    elif command == base_constants.COMMAND_GENERATE:
+        results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -120,8 +120,8 @@ def assemble(hed_schema, events, expand_defs=True):
             'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 
-def extract(events, columns_selected):
-    """Extracts a JSON sidecar template from a BIDS-style events file.
+def generate_sidecar(events, columns_selected):
+    """Generate a JSON sidecar template from a BIDS-style events file.
 
     Parameters
     ----------
@@ -154,10 +154,10 @@ def extract(events, columns_selected):
     #             'data': issue_str, "output_display_name": file_name, "msg_category": "warning",
     #             'msg': f"Events file {display_name} had extraction errors"}
     # else:
-    file_name = generate_filename(display_name, name_suffix='_extracted', extension='.json')
-    return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT, 'data': json.dumps(hed_dict, indent=4),
+    file_name = generate_filename(display_name, name_suffix='_generated', extension='.json')
+    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE, 'data': json.dumps(hed_dict, indent=4),
             'output_display_name': file_name, 'msg_category': 'success',
-            'msg': 'Events extraction to JSON complete'}
+            'msg': 'JSON sidecar generation from event file complete'}
 
 
 def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
