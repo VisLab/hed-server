@@ -82,7 +82,7 @@ function setEventsTable(event_tag) {
     removeColumnInfo("show_events")
     let events = $(event_tag);
     let eventsFile = events[0].files[0];
-    if ($("#extract").is(":checked")) {
+    if ($("#generate_sidecar").is(":checked")) {
         setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_events")
     } else {
         setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_columns")
@@ -105,7 +105,7 @@ function setOptions() {
         $("#json_input_section").show();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
-    } else if ($("#extract").is(":checked")) {
+    } else if ($("#generate_sidecar").is(":checked")) {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         $("#json_input_section").hide();

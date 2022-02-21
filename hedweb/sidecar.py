@@ -36,6 +36,8 @@ def get_input_from_form(request):
                      form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
                  base_constants.EXPAND_DEFS:
                      form_has_option(request, base_constants.EXPAND_DEFS, 'on'),
+                 base_constants.INCLUDE_DEFINITION_TAGS:
+                     form_has_option(request, base_constants.INCLUDE_DEFINITION_TAGS, 'on'),
                  base_constants.SPREADSHEET_TYPE: file_constants.TSV_EXTENSION,
                  }
     if base_constants.JSON_FILE in request.files:
@@ -81,6 +83,7 @@ def process(arguments):
     command = arguments.get(base_constants.COMMAND, None)
     check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
     expand_defs = arguments.get(base_constants.EXPAND_DEFS, False)
+    include_definition_tags = arguments.get(base_constants.INCLUDE_DEFINITION_TAGS, False)
     if command == base_constants.COMMAND_VALIDATE:
         results = sidecar_validate(hed_schema, json_sidecar, check_for_warnings=check_for_warnings)
     elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
@@ -88,7 +91,7 @@ def process(arguments):
     elif command == base_constants.COMMAND_FLATTEN:
         results = sidecar_flatten(json_sidecar)
     elif command == base_constants.COMMAND_MERGE:
-        results = sidecar_merge(json_sidecar, spreadsheet)
+        results = sidecar_merge(json_sidecar, spreadsheet, include_definition_tags)
     else:
         raise HedFileError('UnknownProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -144,7 +147,7 @@ def sidecar_flatten(json_sidecar):
     """ Create a four-column spreadsheet with the HED portion of the JSON sidecar.
 
     Args:
-        json_sidecar (Sidecar): The Sidecar from which to extract the HED spreadsheet
+        json_sidecar (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
 
     Returns:
         dict
@@ -162,12 +165,13 @@ def sidecar_flatten(json_sidecar):
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully flattened'}
 
 
-def sidecar_merge(json_sidecar, spreadsheet):
+def sidecar_merge(json_sidecar, spreadsheet, include_definition_tags=False):
     """ Merge an edited 4-column spreadsheet with JSON sidecar.
 
     Args:
-        json_sidecar (Sidecar): The Sidecar from which to extract the HED spreadsheet
-        spreadsheet (Sidecar): The Sidecar from which to extract the HED spreadsheet
+        json_sidecar (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
+        spreadsheet (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
+        include_definition_tags (bool): If True, a Definition tag is generated from Levels and included.
 
     Returns:
         dict
@@ -178,7 +182,7 @@ def sidecar_merge(json_sidecar, spreadsheet):
     if not spreadsheet:
         raise HedFileError('MissingSpreadsheet', f'Cannot merge spreadsheet with sidecar', '')
     df = spreadsheet.dataframe
-    hed_dict = df_to_hed(df, description_tag=True)
+    hed_dict = df_to_hed(df, description_tag=include_definition_tags)
     json_string = json_sidecar.get_as_json_string()
     sidecar_dict = json.loads(json_string)
     merge_hed_dict(sidecar_dict, hed_dict)
