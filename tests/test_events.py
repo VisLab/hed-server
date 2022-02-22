@@ -123,6 +123,32 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'],
                              'assemble msg_category should be success when no errors')
 
+    def test_events_generate_sidecar_valid(self):
+        from hedweb.events import generate_sidecar
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
+        events = models.EventsInput(file=events_path, name='bids_events')
+        with self.app.app_context():
+            try:
+                results = generate_sidecar(None, columns_selected={'event_type': True})
+            except AttributeError:
+                pass
+            except Exception as ex:
+                self.fail(f"generate_sidecar threw {type(ex).__name__} for missing EventInput")
+            else:
+                self.fail('generate_sidecar should throw HedFileError when EventInput is None')
+
+    def test_events_generate_sidecar_valid(self):
+        from hedweb.events import generate_sidecar
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
+        events = models.EventsInput(file=events_path, name='bids_events')
+        results = generate_sidecar(events,
+                                   columns_selected={'event_type': True, 'bci_prediction': True, 'trial': False})
+
+        self.assertTrue(results['data'],
+                        'generate_sidecar results should have a data key when no errors')
+        self.assertEqual('success', results['msg_category'],
+                         'generate_sidecar msg_category should be success when no errors')
+
     def test_events_validate_invalid(self):
         from hedweb.events import validate
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')

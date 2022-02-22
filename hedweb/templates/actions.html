@@ -1,4 +1,4 @@
-{% macro create_actions(title,assemble=False,convert=False,generate=False,flatten=False,
+{% macro create_actions(title,assemble=False,convert=False,generate_sidecar=False,flatten=False,
 merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
     <h3> {{ title }} </h3>
     <div class="form-group" id="process_actions">
@@ -47,9 +47,9 @@ merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=Fa
             </div>
         {% endif %}
 
-        {% if generate %}
+        {% if generate_sidecar %}
             <div class="form-group">
-                <input class="radio-btn" type="radio" name="command_option" id="extract" value="generate_sidecar"
+                <input class="radio-btn" type="radio" name="command_option" id="generate_sidecar" value="generate_sidecar"
                        aria-label="Generate a template sidecar from an events file.">
                 <label class="secondary-label">Generate sidecar template</label>
             </div>
