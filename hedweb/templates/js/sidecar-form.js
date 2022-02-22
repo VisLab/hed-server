@@ -59,7 +59,7 @@ function setOptions() {
     if ($("#validate").is(":checked")) {
         hideOption("expand_defs");
         showOption("check_for_warnings");
-        hideOption("include_definition_tags");
+        hideOption("include_description_tags");
         $("#json_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
@@ -67,7 +67,7 @@ function setOptions() {
     } else if ($("#to_long").is(":checked")) {
         hideOption("check_for_warnings");
         showOption("expand_defs");
-        hideOption("include_definition_tags");
+        hideOption("include_description_tags");
         $("#json_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
@@ -75,7 +75,7 @@ function setOptions() {
     } else if ($("#to_short").is(":checked")) {
         hideOption("check_for_warnings");
         showOption("expand_defs");
-        hideOption("include_definition_tags");
+        hideOption("include_description_tags");
         $("#json_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
@@ -83,7 +83,7 @@ function setOptions() {
     } else if ($("#flatten").is(":checked")) {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
-        hideOption("include_definition_tags");
+        hideOption("include_description_tags");
         $("#json_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").hide();
@@ -91,7 +91,7 @@ function setOptions() {
     } else if ($("#merge").is(":checked")) {
         hideOption("expand_defs");
         hideOption("check_for_warnings");
-        showOption("include_definition_tags");
+        showOption("include_description_tags");
         $("#json_input_section").show();
         $("#spreadsheet_input_section").show();
         $("#schema_pulldown_section").hide();

@@ -52,6 +52,7 @@ HAS_COLUMN_NAMES = 'has_column_names'
 HEDSTRING = 'hedstring'
 
 INCLUDE_DEFINITION_TAGS = 'include_definition_tags'
+INCLUDE_DESCRIPTION_TAGS = 'include_description_tags'
 ISSUE_STRING = 'issue_string'
 
 JSON_DISPLAY_NAME = 'json_display_name'
