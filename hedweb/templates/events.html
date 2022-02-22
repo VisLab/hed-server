@@ -12,7 +12,7 @@
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('Pick an action:',assemble=True,generate=True,validate=True) }}
+        {{ create_actions('Pick an action:',assemble=True,generate_sidecar=True,validate=True) }}
 
         {{ create_options('Check applicable options if any:',check_for_warnings=True,expand_defs=True) }}
 
