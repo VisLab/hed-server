@@ -27,3 +27,11 @@ Note:  this is a work in progress. More information is coming.
    :caption: Resources:
 
    Documentation.md
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
