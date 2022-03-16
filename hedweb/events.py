@@ -30,13 +30,15 @@ def get_input_from_events_form(request):
         A dictionary containing input arguments for calling the underlying validation function.
     """
 
-    arguments = {base_constants.SCHEMA: get_hed_schema_from_pull_down(request), base_constants.EVENTS: None,
+    arguments = {base_constants.SCHEMA: None,
+                 base_constants.EVENTS: None,
                  base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
                  base_constants.CHECK_FOR_WARNINGS: form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
                  base_constants.EXPAND_DEFS: form_has_option(request, base_constants.EXPAND_DEFS, 'on'),
                  base_constants.COLUMNS_SELECTED: create_column_selections(request.form)
                  }
-
+    if arguments[base_constants.COMMAND] != base_constants.COMMAND_GENERATE_SIDECAR:
+        arguments[base_constants.SCHEMA] = get_hed_schema_from_pull_down(request)
     json_sidecar = None
     if base_constants.JSON_FILE in request.files:
         f = request.files[base_constants.JSON_FILE]
@@ -64,18 +66,19 @@ def process(arguments):
     """
     hed_schema = arguments.get('schema', None)
     command = arguments.get(base_constants.COMMAND, None)
-    if not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
+    if command == base_constants.COMMAND_GENERATE_SIDECAR:
+        pass
+    elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema for event processing", "")
     events = arguments.get(base_constants.EVENTS, None)
     sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
     if not events or not isinstance(events, models.EventsInput):
         raise HedFileError('InvalidEventsFile', "An events file was given but could not be processed", "")
-
     if command == base_constants.COMMAND_VALIDATE:
         results = validate(hed_schema, events, sidecar, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
     elif command == base_constants.COMMAND_ASSEMBLE:
         results = assemble(hed_schema, events, arguments.get(base_constants.EXPAND_DEFS, False))
-    elif command == base_constants.COMMAND_GENERATE:
+    elif command == base_constants.COMMAND_GENERATE_SIDECAR:
         results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
@@ -155,7 +158,7 @@ def generate_sidecar(events, columns_selected):
     #             'msg': f"Events file {display_name} had extraction errors"}
     # else:
     file_name = generate_filename(display_name, name_suffix='_generated', extension='.json')
-    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE, 'data': json.dumps(hed_dict, indent=4),
+    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR, 'data': json.dumps(hed_dict, indent=4),
             'output_display_name': file_name, 'msg_category': 'success',
             'msg': 'JSON sidecar generation from event file complete'}
 

@@ -16,16 +16,17 @@
                     "schema_url",
                     "schema_version"
                 ],
-                "check_for_warnings",
                 "expand_defs"
             ],
             "Returns": "A string containing the text of assembled events file or a list of errors."
         },
-        "events_extract": {
-            "Name": "events_extract",
+        "events_generate_sidecar": {
+            "Name": "events_generate_sidecar",
             "Description": "Extract a template JSON sidecar based on the contents of the event file.",
             "Parameters": [
-                "events_string"
+                "events_string",
+                "columns_categorical",
+                "columns_value"
             ],
             "Returns": "A JSON sidecar (template) in string form or a list of errors."
         },
@@ -44,6 +45,32 @@
             ],
             "Returns": "An error file as text if errors."
         },
+        "sidecar_extract_": {
+            "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
+            "Parameters": [
+                "json_string",
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "expand_defs"
+            ],
+            "Returns": "A converted JSON sidecar as text or a list of errors."
+        },
+               "sidecar_to_long": {
+            "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
+            "Parameters": [
+                "json_string",
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "expand_defs"
+            ],
+            "Returns": "A converted JSON sidecar as text or a list of errors."
+        },
         "sidecar_to_long": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
             "Parameters": [
@@ -52,7 +79,8 @@
                     "schema_string",
                     "schema_url",
                     "schema_version"
-                ]
+                ],
+                "expand_defs"
             ],
             "Returns": "A converted JSON sidecar as text or a list of errors."
         },
@@ -64,7 +92,8 @@
                     "schema_string",
                     "schema_url",
                     "schema_version"
-                ]
+                ],
+                "expand_defs"
             ],
             "Returns":  "A converted JSON sidecar as text or a list of errors."
         },
@@ -141,10 +170,13 @@
         "check_for_warnings": "If true, check for warnings when processing HED strings.",
         "column_x_check": "If present with value 'on' column x has HED tags.",
         "column_x_input": "Contains the prefix prepended to column x if column x has HED tags.",
+        "columns_categorical": "A list of names of categorical event file columns",
+        "columns_value": "A list of names of value event file columns",
         "events_string": "A BIDS events file as a string.",
-        "expand_defs": "If true replaces def/XXX with def-expand/XXX grouped with the definition content.",
-        "has_column_names": "If true, the first row of the spreadsheet or events file is interpreted as column names.",
+        "expand_defs": "If true replaces Def/XXX with Def-expand/XXX grouped with the definition content.",
+        "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
+        "include_description_tag": "Include the Description/XXX tag in the tag string",
         "json_string": "JSON sidecar as a string",
         "json_strings": "A list of BIDS JSON sidecars as strings.",
         "schema_string": "HED XML schema as a string.",
