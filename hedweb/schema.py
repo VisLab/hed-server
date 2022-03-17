@@ -109,7 +109,7 @@ def process(arguments):
         raise HedFileError('MissingCommand', 'Command is missing', '')
     elif arguments[base_constants.COMMAND] == base_constants.COMMAND_VALIDATE:
         results = schema_validate(hed_schema, display_name)
-    elif arguments[base_constants.COMMAND] == base_constants.COMMAND_CONVERT:
+    elif arguments[base_constants.COMMAND] == base_constants.COMMAND_CONVERT_SCHEMA:
         results = schema_convert(hed_schema, display_name)
     else:
         raise HedFileError('UnknownProcessingMethod', "Select a schema processing method", "")
@@ -143,7 +143,7 @@ def schema_convert(hed_schema, display_name):
         extension = '.xml'
     file_name = generate_filename(display_name,  extension=extension)
 
-    return {'command': base_constants.COMMAND_CONVERT, 'data': data, 'output_display_name': file_name,
+    return {'command': base_constants.COMMAND_CONVERT_SCHEMA, 'data': data, 'output_display_name': file_name,
             'schema_version': schema_version, 'msg_category': 'success',
             'msg': 'Schema was successfully converted'}
 

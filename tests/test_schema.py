@@ -20,12 +20,12 @@ class Test(TestWebBase):
             with open(schema_path, 'rb') as fp:
                 environ = create_environ(data={base_constants.SCHEMA_FILE: fp,
                                                base_constants.SCHEMA_UPLOAD_OPTIONS: base_constants.SCHEMA_FILE_OPTION,
-                                               base_constants.COMMAND_OPTION:  base_constants.COMMAND_CONVERT})
+                                               base_constants.COMMAND_OPTION:  base_constants.COMMAND_CONVERT_SCHEMA})
             request = Request(environ)
             arguments = get_input_from_form(request)
             self.assertIsInstance(arguments[base_constants.SCHEMA_STRING], str,
                                   "get_input_from_form should have a HED schema")
-            self.assertEqual(base_constants.COMMAND_CONVERT, arguments[base_constants.COMMAND],
+            self.assertEqual(base_constants.COMMAND_CONVERT_SCHEMA, arguments[base_constants.COMMAND],
                              "get_input_from_form should have a command")
             self.assertFalse(arguments[base_constants.CHECK_FOR_WARNINGS],
                              "get_input_from_form should have check_warnings false when not given")
