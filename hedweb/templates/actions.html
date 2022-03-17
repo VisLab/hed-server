@@ -1,5 +1,5 @@
-{% macro create_actions(title,assemble=False,convert=False,generate_sidecar=False,flatten=False,
-merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=False) %}
+{% macro create_actions(title,assemble=False,convert_schema=False,generate_sidecar=False,
+extract_spreadsheet=False,merge_spreadsheet=False,to_long=False,to_short=False,validate=False) %}
     <h3> {{ title }} </h3>
     <div class="form-group" id="process_actions">
         {% if validate %}
@@ -38,10 +38,10 @@ merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=Fa
             </div>
         {% endif %}
 
-        {% if convert %}
+        {% if convert_schema %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option" checked
-                       id="convert" value="convert"
+                       id="convert_schema" value="convert_schema"
                        aria-label="Convert a schema to a different format." aria-checked="true">
                 <label class="secondary-label">Convert schema</label>
             </div>
@@ -49,45 +49,27 @@ merge=False,remap=False,to_long=False,to_short=False,unflatten=False,validate=Fa
 
         {% if generate_sidecar %}
             <div class="form-group">
-                <input class="radio-btn" type="radio" name="command_option" id="generate_sidecar" value="generate_sidecar"
-                       aria-label="Generate a template sidecar from an events file.">
+                <input class="radio-btn" type="radio" name="command_option" id="generate_sidecar"
+                       value="generate_sidecar" aria-label="Generate a template sidecar from an events file.">
                 <label class="secondary-label">Generate sidecar template</label>
             </div>
         {% endif %}
 
-        {% if flatten %}
+        {% if extract_spreadsheet %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
-                       id="flatten" value="flatten"
+                       id="extract_spreadsheet" value="extract_spreadsheet"
                        aria-label="Extract the HED portion of a sidecar as a spreadsheet.">
                 <label class="secondary-label">Extract HED spreadsheet</label>
             </div>
         {% endif %}
 
-        {% if unflatten %}
+        {% if merge_spreadsheet %}
             <div class="form-group">
                 <input class="radio-btn" type="radio" name="command_option"
-                       id="unflatten" value="unflatten"
-                       aria-label="Convert to dictionary.">
-                <label class="secondary-label">Unflatten</label>
-            </div>
-        {% endif %}
-
-        {% if merge %}
-            <div class="form-group">
-                <input class="radio-btn" type="radio" name="command_option"
-                       id="merge" value="merge"
-                       aria-label="Merge a spreadsheet into a BIDS JSON sidecar.">
+                       id="merge_spreadsheet" value="merge_spreadsheet"
+                       aria-label="Convert spreadsheet to sidecar and merge with existing sidecar.">
                 <label class="secondary-label">Merge HED spreadsheet</label>
-            </div>
-        {% endif %}
-
-        {% if remap %}
-            <div class="form-group">
-                <input class="radio-btn" type="radio" name="command_option"
-                       id="remap" value="remap"
-                       aria-label="Remap event file columns.">
-                <label class="secondary-label">Remap columns</label>
             </div>
         {% endif %}
 

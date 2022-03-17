@@ -31,9 +31,20 @@ def get_input_from_request(request):
     service_request = json.loads(form_string)
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
+    get_columns_selected(arguments, service_request)
     get_input_objects(arguments, service_request)
     return arguments
 
+
+def get_columns_selected(arguments, service_request):
+    if 'columns_categorical' not in service_request and 'columns_value' not in service_request:
+        return
+    columns_selected = {}
+    for column in service_request['columns_categorical']:
+        columns_selected[column] = True
+    for column in service_request['columns_value']:
+        columns_selected[column] = False
+    arguments[base_constants.COLUMNS_SELECTED] = columns_selected
 
 def get_input_objects(arguments, params):
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
@@ -45,10 +56,11 @@ def get_input_objects(arguments, params):
                                sidecars=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
+        has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             models.HedInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                             tag_columns=tag_columns,
-                            has_column_names=arguments.get(base_constants.HAS_COLUMN_NAMES, None),
+                            has_column_names=has_column_names,
                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []

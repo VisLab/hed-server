@@ -53,9 +53,7 @@ def get_input_from_form(request):
         spreadsheet = HedInput(file=request.files[base_constants.SPREADSHEET_FILE],
                                file_type=arguments[base_constants.SPREADSHEET_TYPE],
                                worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
-                               tag_columns=['HED'],
-                               has_column_names=True,
-                               name=filename)
+                               tag_columns=['HED'], has_column_names=True, name=filename)
         arguments[base_constants.SPREADSHEET] = spreadsheet
     return arguments
 
@@ -74,13 +72,15 @@ def process(arguments):
         A dictionary of results.
     """
     hed_schema = arguments.get(base_constants.SCHEMA, None)
-    if not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
+    command = arguments.get(base_constants.COMMAND, None)
+    if command == base_constants.COMMAND_EXTRACT_SPREADSHEET or command == base_constants.COMMAND_MERGE_SPREADSHEET:
+        pass
+    elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
     json_sidecar = arguments.get(base_constants.JSON_SIDECAR, 'None')
     spreadsheet = arguments.get(base_constants.SPREADSHEET, 'None')
     if not json_sidecar or not isinstance(json_sidecar, Sidecar):
         raise HedFileError('InvalidJSONFile', "Please give a valid JSON file to process", "")
-    command = arguments.get(base_constants.COMMAND, None)
     check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
     expand_defs = arguments.get(base_constants.EXPAND_DEFS, False)
     include_description_tags = arguments.get(base_constants.INCLUDE_DESCRIPTION_TAGS, False)
@@ -88,9 +88,9 @@ def process(arguments):
         results = sidecar_validate(hed_schema, json_sidecar, check_for_warnings=check_for_warnings)
     elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
         results = sidecar_convert(hed_schema, json_sidecar, command=command, expand_defs=expand_defs)
-    elif command == base_constants.COMMAND_FLATTEN:
-        results = sidecar_flatten(json_sidecar)
-    elif command == base_constants.COMMAND_MERGE:
+    elif command == base_constants.COMMAND_EXTRACT_SPREADSHEET:
+        results = sidecar_extract(json_sidecar)
+    elif command == base_constants.COMMAND_MERGE_SPREADSHEET:
         results = sidecar_merge(json_sidecar, spreadsheet, include_description_tags)
     else:
         raise HedFileError('UnknownProcessingMethod', f'Command {command} is missing or invalid', '')
@@ -143,7 +143,7 @@ def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_
                 'msg': f'JSON sidecar {display_name} was successfully converted'}
 
 
-def sidecar_flatten(json_sidecar):
+def sidecar_extract(json_sidecar):
     """ Create a four-column spreadsheet with the HED portion of the JSON sidecar.
 
     Args:
@@ -160,9 +160,9 @@ def sidecar_flatten(json_sidecar):
     df = hed_to_df(sidecar)
     data = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = json_sidecar.name
-    file_name = generate_filename(display_name, name_suffix='_flattened', extension='.tsv')
-    return {base_constants.COMMAND: base_constants.COMMAND_FLATTEN, 'data': data, 'output_display_name': file_name,
-            'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully flattened'}
+    file_name = generate_filename(display_name, name_suffix='_extracted', extension='.tsv')
+    return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT_SPREADSHEET, 'data': data, 'output_display_name': file_name,
+            'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully extracted'}
 
 
 def sidecar_merge(json_sidecar, spreadsheet, include_description_tags=False):
@@ -188,8 +188,8 @@ def sidecar_merge(json_sidecar, spreadsheet, include_description_tags=False):
     merge_hed_dict(sidecar_dict, hed_dict)
     display_name = json_sidecar.name
     data = json.dumps(sidecar_dict,indent=4)
-    file_name = generate_filename(display_name, name_suffix='_flattened_merged', extension='.json')
-    return {base_constants.COMMAND: base_constants.COMMAND_FLATTEN, 'data': data, 'output_display_name': file_name,
+    file_name = generate_filename(display_name, name_suffix='_extracted_merged', extension='.json')
+    return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT_SPREADSHEET, 'data': data, 'output_display_name': file_name,
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully merged'}
 
 

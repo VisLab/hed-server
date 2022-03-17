@@ -8,7 +8,7 @@
     <form id="schema_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('Pick an action:',convert=True, validate=True) }}
+        {{ create_actions('Pick an action:',convert_schema=True, validate=True) }}
         {{ create_options('Select options:',check_for_warnings=True) }}
 
         <h3>Choose a schema source file (.xml/.mediawiki):</h3>
