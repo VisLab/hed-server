@@ -3,6 +3,7 @@ import io
 import json
 from flask import current_app
 from hed import models
+from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
 from hedweb import events, spreadsheet, sidecar, strings
@@ -30,9 +31,20 @@ def get_input_from_request(request):
     service_request = json.loads(form_string)
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
+    get_columns_selected(arguments, service_request)
     get_input_objects(arguments, service_request)
     return arguments
 
+
+def get_columns_selected(arguments, service_request):
+    if 'columns_categorical' not in service_request and 'columns_value' not in service_request:
+        return
+    columns_selected = {}
+    for column in service_request['columns_categorical']:
+        columns_selected[column] = True
+    for column in service_request['columns_value']:
+        columns_selected[column] = False
+    arguments[base_constants.COLUMNS_SELECTED] = columns_selected
 
 def get_input_objects(arguments, params):
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
@@ -41,13 +53,14 @@ def get_input_objects(arguments, params):
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             models.EventsInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                               sidecars=arguments[base_constants.JSON_SIDECAR], name='Events')
+                               sidecars=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
+        has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             models.HedInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                             tag_columns=tag_columns,
-                            has_column_names=arguments.get(base_constants.HAS_COLUMN_NAMES, None),
+                            has_column_names=has_column_names,
                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
@@ -67,30 +80,34 @@ def get_service_info(parameters):
     has_column_names = parameters.get(base_constants.HAS_COLUMN_NAMES, '') == 'on'
     expand_defs = parameters.get(base_constants.EXPAND_DEFS, '') == 'on'
     check_for_warnings = parameters.get(base_constants.CHECK_FOR_WARNINGS, '') == 'on'
+    include_description_tags = parameters.get(base_constants.INCLUDE_DESCRIPTION_TAGS, '') == 'on'
 
     return {base_constants.SERVICE: service,
             base_constants.COMMAND: command,
             base_constants.COMMAND_TARGET: command_target,
             base_constants.HAS_COLUMN_NAMES: has_column_names,
             base_constants.CHECK_FOR_WARNINGS: check_for_warnings,
-            base_constants.EXPAND_DEFS: expand_defs
+            base_constants.EXPAND_DEFS: expand_defs,
+            base_constants.INCLUDE_DESCRIPTION_TAGS: include_description_tags
             # base_constants.TAG_COLUMNS: tag_columns,
             # base_constants.COLUMN_PREFIX_DICTIONARY: prefix_dict
             }
 
 
 def get_input_schema(parameters):
+    the_schema = None
+    try:
+        if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
+            the_schema = hedschema.from_string(parameters[base_constants.SCHEMA_STRING])
+        elif base_constants.SCHEMA_URL in parameters and parameters[base_constants.SCHEMA_URL]:
+            schema_url = parameters[base_constants.SCHEMA_URL]
+            the_schema = hedschema.load_schema(schema_url)
+        elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
+            hed_file_path = hedschema.get_path_from_hed_version(parameters[base_constants.SCHEMA_VERSION])
+            the_schema = hedschema.load_schema(hed_file_path)
+    except HedFileError:
+        the_schema = None
 
-    if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
-        the_schema = hedschema.from_string(parameters[base_constants.SCHEMA_STRING])
-    elif base_constants.SCHEMA_URL in parameters and parameters[base_constants.SCHEMA_URL]:
-        schema_url = parameters[base_constants.SCHEMA_URL]
-        the_schema = hedschema.load_schema(schema_url)
-    elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
-        hed_file_path = hedschema.get_path_from_hed_version(parameters[base_constants.SCHEMA_VERSION])
-        the_schema = hedschema.load_schema(hed_file_path)
-    else:
-        the_schema = []
     return the_schema
 
 

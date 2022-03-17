@@ -80,7 +80,7 @@ function setOptions() {
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
-    } else if ($("#flatten").is(":checked")) {
+    } else if ($("#extract_spreadsheet").is(":checked")) {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_description_tags");
@@ -88,7 +88,7 @@ function setOptions() {
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#options_section").hide();
-    } else if ($("#merge").is(":checked")) {
+    } else if ($("#merge_spreadsheet").is(":checked")) {
         hideOption("expand_defs");
         hideOption("check_for_warnings");
         showOption("include_description_tags");

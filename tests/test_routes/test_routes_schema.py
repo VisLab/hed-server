@@ -42,7 +42,7 @@ class Test(TestWebBase):
         schema_buffer = io.BytesIO(bytes(x, 'utf-8'))
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
-                          'command_option': 'convert',
+                          'command_option': 'convert_schema',
                           'schema_file': (schema_buffer, 'HED8.0.0.mediawiki'),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
@@ -63,7 +63,7 @@ class Test(TestWebBase):
         schema_buffer = io.BytesIO(bytes(x, 'utf-8'))
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
-                          'command_option': 'convert',
+                          'command_option': 'convert_schema',
                           'schema_file': (schema_buffer, 'HED8.0.0.xml'),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
@@ -82,7 +82,7 @@ class Test(TestWebBase):
             'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
-                          'command_option': 'convert',
+                          'command_option': 'convert_schema',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
@@ -99,7 +99,7 @@ class Test(TestWebBase):
             'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
-                          'command_option': 'convert',
+                          'command_option': 'convert_schema',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
