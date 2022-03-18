@@ -124,7 +124,8 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
         spreadsheet.convert_to_short(hed_schema)
 
     file_name = generate_filename(display_name, name_suffix=suffix, extension=display_ext)
-    return {base_constants.COMMAND: command, 'data': '',
+    return {base_constants.COMMAND: command,
+            base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
             base_constants.SPREADSHEET: spreadsheet, 'output_display_name': file_name,
             base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
             'msg': f'Spreadsheet {display_name} converted_successfully'}
@@ -155,10 +156,12 @@ def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
         issue_str = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation errors")
         file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'spreadsheet',
                 'data': issue_str, "output_display_name": file_name,
                 base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
                 'msg': f"Spreadsheet {display_name} had validation errors"}
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, 'data': '',
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': f'Spreadsheet {display_name} had no validation errors'}

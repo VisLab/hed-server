@@ -119,6 +119,7 @@ def assemble(hed_schema, events, expand_defs=True):
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
+            base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
             'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
@@ -158,7 +159,9 @@ def generate_sidecar(events, columns_selected):
     #             'msg': f"Events file {display_name} had extraction errors"}
     # else:
     file_name = generate_filename(display_name, name_suffix='_generated', extension='.json')
-    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR, 'data': json.dumps(hed_dict, indent=4),
+    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR,
+            base_constants.COMMAND_TARGET: 'events',
+            'data': json.dumps(hed_dict, indent=4),
             'output_display_name': file_name, 'msg_category': 'success',
             'msg': 'JSON sidecar generation from event file complete'}
 
@@ -198,10 +201,12 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
     if issue_str:
         file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'events',
                 'data': issue_str, "output_display_name": file_name,
                 base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
                 'msg': f"Events file {display_name} had validation errors"}
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, 'data': '',
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'sidecar', 'data': '',
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': f"Events file {display_name} had no validation errors"}
