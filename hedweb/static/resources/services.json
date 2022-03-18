@@ -10,7 +10,7 @@
             "Description": "Validate a BIDS-style event file and JSON sidecar if provided. ",
             "Parameters": [
                 "events_string",
-                 "json_string",
+                "json_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -56,7 +56,7 @@
                 ],
                 "check_for_warnings"
             ],
-            "Returns":  "A list of errors if any."
+            "Returns": "A list of errors if any."
         },
         "sidecar_to_long": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
@@ -82,7 +82,7 @@
                 ],
                 "expand_defs"
             ],
-            "Returns":  "A converted JSON sidecar as text or a list of errors."
+            "Returns": "A converted JSON sidecar as text or a list of errors."
         },
         "sidecar_extract_spreadsheet": {
             "Description": "Convert the HED portion of a JSON sidecar to a 4-column spreadsheet.",
@@ -116,7 +116,7 @@
                 "check_for_warnings",
                 "has_column_names"
             ],
-            "Returns":  "A list of errors if any."
+            "Returns": "A list of errors if any."
         },
         "spreadsheet_to_long": {
             "Description": "Convert the indicated columns of a spreadsheet to long.",
@@ -136,7 +136,7 @@
             ],
             "Returns": "The spreadsheet converted to short form or a list of errors if any."
         },
-        "Spreadsheet_to_short": {
+        "spreadsheet_to_short": {
             "Description": "Convert the indicated columns of a spreadsheet to short.",
             "Parameters": [
                 "string_list",
@@ -166,8 +166,7 @@
                 "check_for_warnings"
             ],
             "Returns": "A list of errors if any."
-        }
-    },
+        },
         "strings_to_long": {
             "Description": "Convert a list of strings to long form if valid, otherwise return errors.",
             "Parameters": [
@@ -191,7 +190,8 @@
                 ]
             ],
             "Returns": "The string converted to short form or a list of errors if any."
-        },
+        }
+    },
     "parameter_meanings": {
         "check_for_warnings": "If true, check for warnings when processing HED strings.",
         "column_x_check": "If present with value 'on' column x has HED tags.",

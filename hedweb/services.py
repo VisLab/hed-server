@@ -129,7 +129,6 @@ def process(arguments):
     command = arguments.get(base_constants.COMMAND, '')
     target = arguments.get(base_constants.COMMAND_TARGET, '')
     response = {base_constants.SERVICE: arguments.get(base_constants.SERVICE, ''),
-                base_constants.COMMAND: command, base_constants.COMMAND_TARGET: target,
                 'results': '', 'error_type': '', 'error_msg': ''}
 
     if not arguments.get(base_constants.SERVICE, ''):
@@ -198,6 +197,7 @@ def services_list():
     for result_val, meaning in results.items():
         results_string += f'\t{result_val}: {meaning}\n'
     data = services_string + meanings_string + returns_string + results_string
-    return {base_constants.COMMAND: '', 'data': data, 'output_display_name': '',
+    return {base_constants.COMMAND: 'get_services', base_constants.COMMAND_TARGET: '',
+            'data': data, 'output_display_name': '',
             base_constants.SCHEMA_VERSION: '', 'msg_category': 'success',
             'msg': "List of available services and their meanings"}
