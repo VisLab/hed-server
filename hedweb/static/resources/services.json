@@ -217,11 +217,12 @@
         "error_msg": "Explanation of the message if the service failed."
     },
     "results": {
-        "command": "The command that was executed in response to the service request.",
-        "command_target": "The type of data on which the command was executed.",
-        "data": "The data returned by the service, either processed result or a list of errors.",
-        "schema_version": "The version of the HED schema used in the processing.",
-        "msg_category": "One of success, warning, or failure depending on the result of processing the service.",
-        "msg": "Explanation of the result of service processing."
+        "command": "Command executed in response to the service request.",
+        "command_target": "Type of data on which the command was executed.",
+        "data": "Data returned by the service (either processed result or a list of errors).",
+        "msg_category": "Success or warning depending on the result of processing the service.",
+        "msg": "Explanation of the output of the service.",
+        "output_display_name": "(Optional) File name for saving return data.",
+        "schema_version": "(Optional) Version of the HED schema used in the processing."
     }
 }
