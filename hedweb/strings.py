@@ -109,11 +109,14 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
         strings.append(converted_string)
 
     if conversion_errors:
-        return {base_constants.COMMAND: command, 'data': conversion_errors, 'additional_info': string_list,
+        return {base_constants.COMMAND: command,
+                base_constants.COMMAND_TARGET: 'strings',
+                'data': conversion_errors, 'additional_info': string_list,
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'warning',
                 'msg': 'Some strings had conversion errors, results of conversion in additional_info'}
     else:
-        return {base_constants.COMMAND: command, 'data': strings,
+        return {base_constants.COMMAND: command,
+                base_constants.COMMAND_TARGET: 'strings', 'data': strings,
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': 'Strings converted successfully'}
 
@@ -145,10 +148,12 @@ def validate(hed_schema, string_list, check_for_warnings=False):
         if issues:
             validation_errors.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
     if validation_errors:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, 'data': validation_errors,
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'strings', 'data': validation_errors,
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'warning',
                 'msg': 'Strings had validation errors'}
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, 'data': '',
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'strings', 'data': '',
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': 'Strings validated successfully...'}

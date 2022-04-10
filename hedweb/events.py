@@ -10,7 +10,7 @@ from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections
 from hed.util import generate_filename
-from hed.tools import get_columns_info, generate_sidecar_entry
+from hed.tools import generate_sidecar_entry, BidsTsvSummary
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
@@ -119,6 +119,7 @@ def assemble(hed_schema, events, expand_defs=True):
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
+            base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
             'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
@@ -139,7 +140,7 @@ def generate_sidecar(events, columns_selected):
         A dictionary pointing to extracted JSON file.
     """
 
-    columns_info = get_columns_info(events.dataframe)
+    columns_info = BidsTsvSummary.get_columns_info(events.dataframe)
     hed_dict = {}
     for column_name, column_type in columns_selected.items():
         if column_name not in columns_info:
@@ -150,15 +151,11 @@ def generate_sidecar(events, columns_selected):
             column_values = None
         hed_dict[column_name] = generate_sidecar_entry(column_name, column_values=column_values)
     display_name = events.name
-    # if issues:
-    #     issue_str = get_printable_issue_string(issues, f"{display_name} HED validation errors")
-    #     file_name = generate_filename(display_name, name_suffix='_errors', extension='.txt')
-    #     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-    #             'data': issue_str, "output_display_name": file_name, "msg_category": "warning",
-    #             'msg': f"Events file {display_name} had extraction errors"}
-    # else:
+
     file_name = generate_filename(display_name, name_suffix='_generated', extension='.json')
-    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR, 'data': json.dumps(hed_dict, indent=4),
+    return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR,
+            base_constants.COMMAND_TARGET: 'events',
+            'data': json.dumps(hed_dict, indent=4),
             'output_display_name': file_name, 'msg_category': 'success',
             'msg': 'JSON sidecar generation from event file complete'}
 
@@ -198,10 +195,12 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
     if issue_str:
         file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'events',
                 'data': issue_str, "output_display_name": file_name,
                 base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
                 'msg': f"Events file {display_name} had validation errors"}
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, 'data': '',
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'sidecar', 'data': '',
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': f"Events file {display_name} had no validation errors"}

@@ -101,7 +101,9 @@ def process(arguments):
         issue_str = get_exception_issue_string(issues, f"Schema for {display_name} had these errors")
         file_name = generate_filename(arguments[base_constants.SCHEMA_DISPLAY_NAME],
                                       name_suffix='schema__errors', extension='.txt')
-        return {'command': arguments[base_constants.COMMAND], 'data': issue_str, 'output_display_name': file_name,
+        return {'command': arguments[base_constants.COMMAND],
+                base_constants.COMMAND_TARGET: 'schema',
+                'data': issue_str, 'output_display_name': file_name,
                 'schema_version': 'unknown', 'msg_category': 'warning',
                 'msg': f'Schema {display_name} invalid and could not be loaded'}
 
@@ -143,7 +145,9 @@ def schema_convert(hed_schema, display_name):
         extension = '.xml'
     file_name = generate_filename(display_name,  extension=extension)
 
-    return {'command': base_constants.COMMAND_CONVERT_SCHEMA, 'data': data, 'output_display_name': file_name,
+    return {'command': base_constants.COMMAND_CONVERT_SCHEMA,
+            base_constants.COMMAND_TARGET: 'schema',
+            'data': data, 'output_display_name': file_name,
             'schema_version': schema_version, 'msg_category': 'success',
             'msg': 'Schema was successfully converted'}
 
@@ -170,10 +174,14 @@ def schema_validate(hed_schema, display_name):
     if issues:
         issue_str = get_printable_issue_string(issues, f"Schema HED 3G compliance errors for {display_name}:")
         file_name = generate_filename(display_name, name_suffix='schema_3G_compliance_errors', extension='.txt')
-        return {'command': base_constants.COMMAND_VALIDATE, 'data': issue_str, 'output_display_name': file_name,
+        return {'command': base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'schema',
+                'data': issue_str, 'output_display_name': file_name,
                 'schema_version': schema_version, 'msg_category': 'warning',
                 'msg': 'Schema is not HED 3G compliant'}
     else:
-        return {'command': base_constants.COMMAND_VALIDATE, 'data': '', 'output_display_name': display_name,
+        return {'command': base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'schema',
+                'data': '', 'output_display_name': display_name,
                 'schema_version': schema_version, 'msg_category': 'success',
                 'msg': 'Schema had no HED-3G validation errors'}
