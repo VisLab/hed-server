@@ -149,6 +149,36 @@ class Test(TestWebBase):
         self.assertEqual('success', results['msg_category'],
                          'generate_sidecar msg_category should be success when no errors')
 
+    def test_events_search_invalid(self):
+        from hedweb.events import search
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+        json_sidecar = models.Sidecar(file=json_path, name='bids_sidecar')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        hed_schema = hedschema.load_schema(schema_path)
+
+        events = models.EventsInput(file=events_path, sidecars=json_sidecar, name='bids_events')
+        with self.app.app_context():
+            results = search(hed_schema, events, query={})
+            self.assertTrue('data' in results, 'make_query results should have a data key when errors')
+            self.assertEqual('warning', results["msg_category"],
+                             'make_query msg_category should be warning when errors')
+
+    def test_events_search_valid(self):
+        from hedweb.events import search
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        hed_schema = hedschema.load_schema(schema_path)
+        json_sidecar = models.Sidecar(file=json_path, name='bids_json')
+        events = models.EventsInput(file=events_path, sidecars=json_sidecar, name='bids_events')
+        with self.app.app_context():
+            results = search(hed_schema, events, query={"tags": "Could be anything"})
+            self.assertTrue(results['data'],
+                            'make_query results should have a data key when no errors')
+            self.assertEqual('success', results['msg_category'],
+                             'make_query msg_category should be success when no errors')
+
     def test_events_validate_invalid(self):
         from hedweb.events import validate
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
