@@ -10,7 +10,10 @@
             "Description": "Validate a BIDS-style event file and JSON sidecar if provided. ",
             "Parameters": [
                 "events_string",
-                "json_string",
+                [
+                    "json_list",
+                    "json_string"
+                ],
                 [
                     "schema_string",
                     "schema_url",
@@ -20,12 +23,32 @@
             ],
             "Returns": "An error file as text if errors."
         },
+        "events_search": {
+            "Name": "events_search",
+            "Description": "Search a BIDS-style event file and return list of event numbers satisfying search.",
+            "Parameters": [
+                "events_string",
+                [
+                    "json_list",
+                    "json_string"
+                ],
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "json_query"
+            ],
+            "Returns": "An error file as text if errors."},
         "events_assemble": {
             "Name": "events_assemble",
             "Description": "Assemble annotations for each event. Returns: text of assembled events or error list.",
             "Parameters": [
                 "events_string",
-                "json_string",
+                [
+                    "json_list",
+                    "json_string"
+                ],
                 [
                     "schema_string",
                     "schema_url",
@@ -203,8 +226,9 @@
         "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
-        "json_string": "JSON sidecar as a string",
-        "json_strings": "A list of BIDS JSON sidecars as strings.",
+        "json_list": "A list of BIDS JSON sidecars as strings.",
+        "json_string": "A JSON sidecar as a string.",
+        "json_query": "A JSON string with the query.",
         "schema_string": "HED XML schema as a string.",
         "schema_url": "A URL from which a HED schema can be downloaded.",
         "schema_version": "Version of HED to used in processing.",

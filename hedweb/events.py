@@ -3,31 +3,32 @@ import json
 from werkzeug.utils import secure_filename
 import pandas as pd
 
-from hed import models
+from hed.models.hed_string import HedStringFrozen
+from hed.models.expression_parser import TagExpressionParser
+from hed.models.sidecar import Sidecar
+from hed.models.events_input import EventsInput
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections
 from hed.util import generate_filename
-from hed.tools import generate_sidecar_entry, BidsTsvSummary
+from hed.tools import BidsTsvSummary
+from hed.tools.annotation.annotation_util import generate_sidecar_entry
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
 
 
-def get_input_from_events_form(request):
-    """Gets the validation function input arguments from a request object associated with the validation form.
+def get_events_form_input(request):
+    """ Extract a dictionary of input for processing from the events form.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the validation form.
+    Args:
+        request (Request): A Request object containing user data from the validation form.
 
-    Returns
-    -------
-    dictionary
-        A dictionary containing input arguments for calling the underlying validation function.
+    Returns:
+        dict: A dictionary of events processing parameters in standard form.
+
     """
 
     arguments = {base_constants.SCHEMA: None,
@@ -39,30 +40,30 @@ def get_input_from_events_form(request):
                  }
     if arguments[base_constants.COMMAND] != base_constants.COMMAND_GENERATE_SIDECAR:
         arguments[base_constants.SCHEMA] = get_hed_schema_from_pull_down(request)
-    json_sidecar = None
+    json_sidecars = None
     if base_constants.JSON_FILE in request.files:
         f = request.files[base_constants.JSON_FILE]
-        json_sidecar = models.Sidecar(file=f, name=secure_filename(f.filename))
-    arguments[base_constants.JSON_SIDECAR] = json_sidecar
+        json_sidecars = [Sidecar(file=f, name=secure_filename(f.filename))]
+    arguments[base_constants.JSON_SIDECARS] = json_sidecars
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
         arguments[base_constants.EVENTS] = \
-            models.EventsInput(file=f, sidecars=json_sidecar, name=secure_filename(f.filename))
+            EventsInput(file=f, sidecars=json_sidecars, name=secure_filename(f.filename))
     return arguments
 
 
 def process(arguments):
-    """Perform the requested action for the events file and its sidecar
+    """ Perform the requested action for the events file and its sidecar.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the input arguments from the event form
+    Args:
+        arguments (dict): A dictionary with the input arguments from the event form or service request.
 
-    Returns
-    -------
-      dict
-        A dictionary with the results.
+    Returns:
+        dict: A dictionary of results in the standard results format.
+
+    Raises:
+        HedFileError:  If the command was not found or the input arguments were not valid.
+
     """
     hed_schema = arguments.get('schema', None)
     command = arguments.get(base_constants.COMMAND, None)
@@ -71,11 +72,14 @@ def process(arguments):
     elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema for event processing", "")
     events = arguments.get(base_constants.EVENTS, None)
-    sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
-    if not events or not isinstance(events, models.EventsInput):
+    sidecars = arguments.get(base_constants.JSON_SIDECARS, None)
+    query = arguments.get(base_constants.QUERY, None)
+    if not events or not isinstance(events, EventsInput):
         raise HedFileError('InvalidEventsFile', "An events file was given but could not be processed", "")
     if command == base_constants.COMMAND_VALIDATE:
-        results = validate(hed_schema, events, sidecar, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
+        results = validate(hed_schema, events, sidecars, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
+    elif command == base_constants.COMMAND_SEARCH:
+        results = search(hed_schema, events, query)
     elif command == base_constants.COMMAND_ASSEMBLE:
         results = assemble(hed_schema, events, arguments.get(base_constants.EXPAND_DEFS, False))
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
@@ -86,20 +90,16 @@ def process(arguments):
 
 
 def assemble(hed_schema, events, expand_defs=True):
-    """Creates a two-column event file with first column Onset and second column HED tags.
+    """ Create a two-column event file with first column Onset and second column HED tags.
 
-    Parameters
-    ----------
-    hed_schema: HedSchema
-        A HED schema
-    events: model.EventsInput
-        An events input object
-    expand_defs: bool
-        True if definitions should be expanded during assembly
-    Returns
-    -------
-    dict
-        A dictionary pointing to assembled string or errors
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
+        events (EventsInput):  An events input object.
+        expand_defs (bool): True if definitions should be expanded during assembly.
+
+    Returns:
+        dict: A dictionary of results in standard format including either the assembled events string or errors.
+
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
@@ -113,8 +113,7 @@ def assemble(hed_schema, events, expand_defs=True):
                                                       remove_definitions=True):
         hed_tags.append(str(row_dict.get("HED", "")))
         onsets.append(row_dict.get("onset", "n/a"))
-    data = {'onset': onsets, 'HED': hed_tags}
-    df = pd.DataFrame(data)
+    df = pd.DataFrame({'onset': onsets, 'HED': hed_tags})
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
@@ -125,19 +124,15 @@ def assemble(hed_schema, events, expand_defs=True):
 
 
 def generate_sidecar(events, columns_selected):
-    """Generate a JSON sidecar template from a BIDS-style events file.
+    """ Generate a JSON sidecar template from a BIDS-style events file.
 
-    Parameters
-    ----------
-    events: EventInput
-        An events input object
-    columns_selected: dict
-        dictionary of columns selected
+    Args:
+        events (EventInput):      An events input object to generate sidecars from.
+        columns_selected (dict):  A dictionary of columns selected.
 
-    Returns
-    -------
-    dict
-        A dictionary pointing to extracted JSON file.
+    Returns:
+        dict: A dictionary of results in standard format including either the generated sidecar string or errors.
+
     """
 
     columns_info = BidsTsvSummary.get_columns_info(events.dataframe)
@@ -160,34 +155,82 @@ def generate_sidecar(events, columns_selected):
             'msg': 'JSON sidecar generation from event file complete'}
 
 
-def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
-    """Validates and events input object and returns the results.
+def search(hed_schema, events, query):
+    """ Create a three-column tsv file with event number, matched string, and assembled strings for matched events.
 
-    Parameters
-    ----------
-    hed_schema: str or HedSchema
-        Version number or path or HedSchema object to be used
-    events: EventsInput
-        Events input object to be validated
-    sidecar: Sidecar
-        Representation of a BIDS JSON sidecar object
-    check_for_warnings: bool
-        If true, validation should include warnings
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
+        events (EventsInput):  An events input object.
+        query (str):           A string containing the query.
 
-    Returns
-    -------
-    dict
-         A dictionary containing results of validation in standard format
+    Returns:
+        dict: A dictionary pointing to results or errors.
+
+    """
+    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    results = validate(hed_schema, events)
+    if results['data']:
+        return results
+    results = validate_query(hed_schema, query)
+    if results['data']:
+        return results
+
+    matched_tags = []
+    hed_tags = []
+    row_numbers = []
+    expression = TagExpressionParser(query)
+    for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=True, remove_definitions=True):
+        expanded_string = str(row_dict.get("HED", ""))
+        hed_string = HedStringFrozen(expanded_string, hed_schema=hed_schema)
+        match = expression.search_hed_string(hed_string)
+        if  not match:
+            continue
+        match_str = ""
+        for m in match:
+            match_str = match_str + f" [{str(m)}] "
+
+        hed_tags.append(expanded_string)
+        matched_tags.append(match_str)
+        row_numbers.append(row_number)
+
+    if row_numbers:
+        df = pd.DataFrame({'row_number': row_numbers, 'matched_tags': matched_tags, 'HED': hed_tags})
+        csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+        msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
+    else:
+        csv_string = ''
+        msg = f"Events file has no events satisfying the query {query}."
+    display_name = events.name
+    file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv')
+    return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
+            base_constants.COMMAND_TARGET: 'events',
+            'data': csv_string, 'output_display_name': file_name,
+            'schema_version': schema_version, 'msg_category': 'success', 'msg': msg}
+
+
+def validate(hed_schema, events, sidecars=None, check_for_warnings=False):
+    """ Validate an events input object and return the results.
+
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): Schema or schemas used for validation.
+        events (EventsInput): Events input object representing an events file to be validated.
+        sidecars (list or None): A list of JSON sidecar objects to use in addition to those in events.
+        check_for_warnings (bool): If true, validation should include warnings.
+
+    Returns:
+        dict: A dictionary containing results of validation in standard format.
+
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
     display_name = events.name
     validator = HedValidator(hed_schema=hed_schema)
     issue_str = ''
-    if sidecar:
-        issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
-        if issues:
-            issue_str = issue_str + get_printable_issue_string(issues, title="Sidecar definition errors:")
+    if sidecars:
+        for sidecar in sidecars:
+            issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
+            if issues:
+                issue_str = issue_str + get_printable_issue_string(issues, title="Sidecar definition errors:")
     issues = events.validate_file(validator, check_for_warnings=check_for_warnings)
     if issues:
         issue_str = issue_str + get_printable_issue_string(issues, title="Event file errors:")
@@ -202,5 +245,35 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
     else:
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'sidecar', 'data': '',
+                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
+                'msg': f"Events file {display_name} had no validation errors"}
+
+
+def validate_query(hed_schema, query):
+    """ Validate the query and return the results.
+
+    Args:
+        hed_schema (HedSchema, or HedSchemaGroup): Schema or schemas used to validate the query.
+        query (dict):  A dictionary representing the query.
+
+    Returns
+        dict: A dictionary containing results of validation in standard format.
+
+    """
+
+    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    if not query:
+        display_name = 'empty_query'
+        issue_str = "Empty query could not be processed."
+        file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'query',
+                'data': issue_str, "output_display_name": file_name,
+                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
+                'msg': f"Query {display_name} had validation errors"}
+    else:
+        display_name = 'Nice_query'
+        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+                base_constants.COMMAND_TARGET: 'query', 'data': '',
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
                 'msg': f"Events file {display_name} had no validation errors"}
