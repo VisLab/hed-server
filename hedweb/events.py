@@ -3,27 +3,31 @@ import json
 from werkzeug.utils import secure_filename
 import pandas as pd
 
-from hed import models
+from hed.models.hed_string import HedStringFrozen
+from hed.models.expression_parser import TagExpressionParser
+from hed.models.sidecar import Sidecar
+from hed.models.events_input import EventsInput
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections
 from hed.util import generate_filename
-from hed.tools import generate_sidecar_entry, BidsTsvSummary
+from hed.tools import BidsTsvSummary
+from hed.tools.annotation.annotation_util import generate_sidecar_entry
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
 
 
-def get_input_from_events_form(request):
-    """Get the validation function input arguments from a request object associated with the validation form.
+def get_events_form_input(request):
+    """ Extract a dictionary of input for processing from the events form.
 
     Args:
         request (Request): A Request object containing user data from the validation form.
 
     Returns:
-        dict: A dictionary containing input arguments for calling the underlying validation function.
+        dict: A dictionary of events processing parameters in standard form.
 
     """
 
@@ -39,12 +43,12 @@ def get_input_from_events_form(request):
     json_sidecars = None
     if base_constants.JSON_FILE in request.files:
         f = request.files[base_constants.JSON_FILE]
-        json_sidecars = [models.Sidecar(file=f, name=secure_filename(f.filename))]
+        json_sidecars = [Sidecar(file=f, name=secure_filename(f.filename))]
     arguments[base_constants.JSON_SIDECARS] = json_sidecars
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
         arguments[base_constants.EVENTS] = \
-            models.EventsInput(file=f, sidecars=json_sidecars, name=secure_filename(f.filename))
+            EventsInput(file=f, sidecars=json_sidecars, name=secure_filename(f.filename))
     return arguments
 
 
@@ -52,10 +56,13 @@ def process(arguments):
     """ Perform the requested action for the events file and its sidecar.
 
     Args:
-        arguments (dict): A dictionary with the input arguments from the event form
+        arguments (dict): A dictionary with the input arguments from the event form or service request.
 
     Returns:
-      dict: A dictionary with the results.
+        dict: A dictionary of results in the standard results format.
+
+    Raises:
+        HedFileError:  If the command was not found or the input arguments were not valid.
 
     """
     hed_schema = arguments.get('schema', None)
@@ -67,7 +74,7 @@ def process(arguments):
     events = arguments.get(base_constants.EVENTS, None)
     sidecars = arguments.get(base_constants.JSON_SIDECARS, None)
     query = arguments.get(base_constants.QUERY, None)
-    if not events or not isinstance(events, models.EventsInput):
+    if not events or not isinstance(events, EventsInput):
         raise HedFileError('InvalidEventsFile', "An events file was given but could not be processed", "")
     if command == base_constants.COMMAND_VALIDATE:
         results = validate(hed_schema, events, sidecars, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
@@ -91,7 +98,7 @@ def assemble(hed_schema, events, expand_defs=True):
         expand_defs (bool): True if definitions should be expanded during assembly.
 
     Returns:
-        dict: A dictionary pointing to assembled string or errors.
+        dict: A dictionary of results in standard format including either the assembled events string or errors.
 
     """
 
@@ -124,7 +131,7 @@ def generate_sidecar(events, columns_selected):
         columns_selected (dict):  A dictionary of columns selected.
 
     Returns:
-        dict: A dictionary pointing to extracted JSON file.
+        dict: A dictionary of results in standard format including either the generated sidecar string or errors.
 
     """
 
@@ -149,12 +156,12 @@ def generate_sidecar(events, columns_selected):
 
 
 def search(hed_schema, events, query):
-    """ Create a two-column query response with first column event number and second column containing the evidence.
+    """ Create a three-column tsv file with event number, matched string, and assembled strings for matched events.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
         events (EventsInput):  An events input object.
-        query (dict):          A dictionary containing the query.
+        query (str):           A string containing the query.
 
     Returns:
         dict: A dictionary pointing to results or errors.
@@ -168,19 +175,31 @@ def search(hed_schema, events, query):
     if results['data']:
         return results
 
+    matched_tags = []
     hed_tags = []
     row_numbers = []
+    expression = TagExpressionParser(query)
     for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=True, remove_definitions=True):
-        hed_tags.append(str(row_dict.get("HED", "")))
+        expanded_string = str(row_dict.get("HED", ""))
+        hed_string = HedStringFrozen(expanded_string, hed_schema=hed_schema)
+        match = expression.search_hed_string(hed_string)
+        if  not match:
+            continue
+        match_str = ""
+        for m in match:
+            match_str = match_str + f" [{str(m)}] "
+
+        hed_tags.append(expanded_string)
+        matched_tags.append(match_str)
         row_numbers.append(row_number)
 
     if row_numbers:
-        df = pd.DataFrame({'row_number': row_numbers, 'HED': hed_tags})
+        df = pd.DataFrame({'row_number': row_numbers, 'matched_tags': matched_tags, 'HED': hed_tags})
         csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-        msg = f"Events file query satisfied by {len(row_numbers)} events."
+        msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
     else:
         csv_string = ''
-        msg = f"Events file has no events satisfying the query."
+        msg = f"Events file has no events satisfying the query {query}."
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,

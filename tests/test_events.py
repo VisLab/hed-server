@@ -14,15 +14,15 @@ class Test(TestWebBase):
     cache_schemas = True
 
     def test_get_input_from_events_form_empty(self):
-        from hedweb.events import get_input_from_events_form
-        self.assertRaises(TypeError, get_input_from_events_form, {},
+        from hedweb.events import get_events_form_input
+        self.assertRaises(TypeError, get_events_form_input, {},
                           "An exception should be raised if an empty request is passed")
-        self.assertTrue(1, "Testing get_input_from_events_form")
+        self.assertTrue(1, "Testing get_events_form_input")
 
     def test_get_input_from_events_form(self):
         from hed.models import EventsInput
         from hed.schema import HedSchema
-        from hedweb.events import get_input_from_events_form
+        from hedweb.events import get_events_form_input
         with self.app.test:
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
@@ -32,15 +32,15 @@ class Test(TestWebBase):
                                              base_constants.EVENTS_FILE: fpe, base_constants.EXPAND_DEFS: 'on',
                                              base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE})
             request = Request(environ)
-            arguments = get_input_from_events_form(request)
+            arguments = get_events_form_input(request)
             self.assertIsInstance(arguments[base_constants.EVENTS], EventsInput,
-                                  "get_input_from_events_form should have an events object")
+                                  "get_events_form_input should have an events object")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
-                                  "get_input_from_events_form should have a HED schema")
+                                  "get_events_form_input should have a HED schema")
             self.assertEqual(base_constants.COMMAND_ASSEMBLE, arguments[base_constants.COMMAND],
-                             "get_input_from_events_form should have a command")
+                             "get_events_form_input should have a command")
             self.assertTrue(arguments[base_constants.EXPAND_DEFS],
-                            "get_input_from_events_form should have expand_defs true when on")
+                            "get_events_form_input should have expand_defs true when on")
 
     def test_events_process_empty_file(self):
         # Test for empty events_path
@@ -173,7 +173,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=json_path, name='bids_json')
         events = models.EventsInput(file=events_path, sidecars=json_sidecar, name='bids_events')
         with self.app.app_context():
-            results = search(hed_schema, events, query={"tags": "Could be anything"})
+            results = search(hed_schema, events, query="Sensory-event")
             self.assertTrue(results['data'],
                             'make_query results should have a data key when no errors')
             self.assertEqual('success', results['msg_category'],

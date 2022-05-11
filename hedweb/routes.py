@@ -41,7 +41,7 @@ def events_results():
     """
 
     try:
-        input_arguments = events.get_input_from_events_form(request)
+        input_arguments = events.get_events_form_input(request)
         a = events.process(input_arguments)
         return package_results(a)
     except Exception as ex:
