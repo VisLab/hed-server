@@ -126,8 +126,8 @@ def services_results():
         return json.dumps(response)
     except Exception as ex:
         errors = handle_error(ex)
-        response['error_type'] = errors['error_type']
-        response['error_msg'] = errors['error_msg']
+        response['error_type'] = errors.get('error_type', 'Unknown error type')
+        response['error_msg'] = errors.get('error_msg', 'Unknown failure')
         return handle_error(ex)
 
 
