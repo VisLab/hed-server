@@ -15,17 +15,14 @@ app_config = current_app.config
 
 
 def get_schema(arguments):
-    """Return a schema object.
+    """ Return a HedSchema object from the given parameters.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the arguments extracted from the Request object.
+    Args:
+        arguments (dict): A dictionary with the input arguments extracted from the schema form or service request.
 
-    Returns
-    -------
-    (HedSchema,str)
-        The HedSchema object that is loaded and an empty str if no issues.
+    Returns:
+        HedSchema: The extracted HedSchema object if successful
+        list: A list of issues if problems or an empty list if successful.
     """
     hed_schema = None
     issues = []
@@ -48,22 +45,22 @@ def get_schema(arguments):
 
 
 def get_input_from_form(request):
-    """Gets the input for schema processing from the schema form.
+    """ Extract a dictionary of input for processing from the schema form.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the schema form
+    Args:
+        request (Request): A Request object containing user data from the schema form.
 
-    Returns
-    -------
-    dict
-        A dictionary containing input arguments for calling the underlying schema functions.
+    Returns:
+        dict: A dictionary of schema processing parameters in standard form.
+
+    Raises:
+        HedFileError:  If the input arguments were missing or not valid.
+
     """
 
     arguments = { base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
                   base_constants.CHECK_FOR_WARNINGS:
-                     form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
+                  form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
                 }
     if form_has_option(request, base_constants.SCHEMA_UPLOAD_OPTIONS, base_constants.SCHEMA_FILE_OPTION) and \
             form_has_file(request, base_constants.SCHEMA_FILE, file_constants.SCHEMA_EXTENSIONS):
@@ -83,17 +80,17 @@ def get_input_from_form(request):
 
 
 def process(arguments):
-    """Perform the requested action for the schema.
+    """ Perform the requested action for the schema.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the input arguments from the schema form
+    Args:
+        arguments (dict): A dictionary with the input arguments extracted from the schema form or service request.
 
-    Returns
-    -------
-      dict
-        A dictionary with results in standard format
+    Returns:
+        dict: A dictionary of results in the standard results format.
+
+    Raises:
+        HedFileError:  If the command was not found or the input arguments were not valid.
+
     """
     display_name = arguments.get('schema_display_name', 'unknown_source')
     hed_schema, issues = get_schema(arguments)
@@ -119,19 +116,14 @@ def process(arguments):
 
 
 def schema_convert(hed_schema, display_name):
-    """Return a string representation of hed_schema in the desired format
+    """ Return a string representation of hed_schema in the desired format as determined by the display name extention.
 
-    Parameters
-    ----------
-    hed_schema: HedSchema object
-        A HedSchema object containing the schema to be processed.
-    display_name: str
-        The display name associated with this schema object.
+    Args:
+        hed_schema (HedSchema): A HedSchema object containing the schema to be processed.
+        display_name (str): The schema display name whose extension determines the conversion format.
 
-    Returns
-    -------
-    result: dict
-        A dictionary in the standard results format containing the results of the operation
+    Returns:
+        dict: A dictionary of results in the standard results format.
 
     """
 
@@ -153,19 +145,14 @@ def schema_convert(hed_schema, display_name):
 
 
 def schema_validate(hed_schema, display_name):
-    """Run schema compliance for HED-3G
+    """ Run schema compliance for HED-3G.
 
-    Parameters
-    ----------
-    hed_schema: HedSchema object
-        A HedSchema object containing the schema to be processed.
-    display_name: str
-        The display name associated with this schema object.
+    Args:
+        hed_schema (HedSchema): A HedSchema object containing the schema to be processed.
+        display_name (str): The display name associated with this schema object (used in error reports).
 
-    Returns
-    -------
-    result: dict
-        A dictionary in the standard results format containing the results of the operation
+    Returns:
+        dict: A dictionary of results in the standard results format.
 
     """
 

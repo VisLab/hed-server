@@ -13,17 +13,14 @@ app_config = current_app.config
 
 
 def get_input_from_request(request):
-    """Gets a dictionary of input from a service request.
+    """ Get a dictionary of input from a service request.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data for the service request.
+    Args:
+        request (Request): A Request object containing user data for the service request.
 
-    Returns
-    -------
-    dict
-        A dictionary containing input arguments for calling the service request.
+    Returns:
+        dict: A dictionary containing input arguments for calling the service request.
+
     """
 
     form_data = request.data
@@ -32,28 +29,69 @@ def get_input_from_request(request):
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
     get_columns_selected(arguments, service_request)
+    get_sidecars(arguments, service_request)
     get_input_objects(arguments, service_request)
+    arguments[base_constants.QUERY] = service_request.get('query', None)
     return arguments
 
 
-def get_columns_selected(arguments, service_request):
-    if 'columns_categorical' not in service_request and 'columns_value' not in service_request:
+def get_columns_selected(arguments, params):
+    """ Update arguments with the columns that are categorical or value where appropriate.
+
+    Args:
+        arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+        params (dict): The service request dictionary extracted from the Request object.
+
+    Updates the arguments dictionary with the column information in service_request.
+
+    """
+    if 'columns_categorical' not in params and 'columns_value' not in params:
         return
     columns_selected = {}
-    for column in service_request['columns_categorical']:
+    for column in params['columns_categorical']:
         columns_selected[column] = True
-    for column in service_request['columns_value']:
+    for column in params['columns_value']:
         columns_selected[column] = False
     arguments[base_constants.COLUMNS_SELECTED] = columns_selected
 
-def get_input_objects(arguments, params):
+
+def get_sidecars(arguments, params):
+    """ Update arguments with the sidecars if there are any.
+
+     Args:
+         arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+         params (dict): The service request dictionary extracted from the Request object.
+
+     Updates the arguments dictionary with the sidecars.
+
+     """
+    sidecar_list = []
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        arguments[base_constants.JSON_SIDECAR] = \
-            models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')
+        sidecar_list = [models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')]
+    elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
+        for index, sidecar_string in params[base_constants.JSON_LIST].items():
+            if not sidecar_string:
+                continue
+            sidecar_list.append(models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]),
+                                               name=f"JSON_Sidecar {index}"))
+    arguments[base_constants.JSON_SIDECARS] = sidecar_list
+
+
+def get_input_objects(arguments, params):
+    """ Update arguments with the information in the params dictionary.
+
+    Args:
+        arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+        params (dict): A dictionary of the service request values.
+
+    Updates the arguments dictionary with the input objects including events, spreadsheets, schemas or strings.
+
+    """
+
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             models.EventsInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                               sidecars=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
+                               sidecars=arguments.get(base_constants.JSON_SIDECARS, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
@@ -69,18 +107,27 @@ def get_input_objects(arguments, params):
         arguments[base_constants.STRING_LIST] = s_list
 
 
-def get_service_info(parameters):
-    service = parameters.get(base_constants.SERVICE, '')
+def get_service_info(params):
+    """ Get a dictionary with the service request command information filled in..
+
+    Args:
+        params (dict): A dictionary of the service request values.
+
+    Returns:
+        dict: A dictionary with the command, command target and options resolved from the service request.
+
+    """
+    service = params.get(base_constants.SERVICE, '')
     command = service
     command_target = ''
     pieces = service.split('_', 1)
     if command != "get_services" and len(pieces) == 2:
         command = pieces[1]
         command_target = pieces[0]
-    has_column_names = parameters.get(base_constants.HAS_COLUMN_NAMES, '') == 'on'
-    expand_defs = parameters.get(base_constants.EXPAND_DEFS, '') == 'on'
-    check_for_warnings = parameters.get(base_constants.CHECK_FOR_WARNINGS, '') == 'on'
-    include_description_tags = parameters.get(base_constants.INCLUDE_DESCRIPTION_TAGS, '') == 'on'
+    has_column_names = params.get(base_constants.HAS_COLUMN_NAMES, '') == 'on'
+    expand_defs = params.get(base_constants.EXPAND_DEFS, '') == 'on'
+    check_for_warnings = params.get(base_constants.CHECK_FOR_WARNINGS, '') == 'on'
+    include_description_tags = params.get(base_constants.INCLUDE_DESCRIPTION_TAGS, '') == 'on'
 
     return {base_constants.SERVICE: service,
             base_constants.COMMAND: command,
@@ -112,18 +159,14 @@ def get_input_schema(parameters):
 
 
 def process(arguments):
-    """
-    Calls the desired service processing function and returns results
+    """ Call the desired service processing function and return the results in a standard format.
 
-    Parameters
-    ----------
-    arguments: dict
-        a dictionary of arguments for the processing
+    Args:
+        arguments (dict): A dictionary of arguments for the processing resolved from the request.
 
-    Returns
-    -------
-    dist
-        A dictionary of results in standard response format to be jsonified.
+    Returns:
+        dict: A dictionary of results in standard response format to be jsonified.
+
     """
 
     command = arguments.get(base_constants.COMMAND, '')
@@ -152,6 +195,16 @@ def process(arguments):
 
 
 def package_spreadsheet(results):
+    """ Get the transformed results dictionary where spreadsheets are converted to strings.
+
+    Args:
+        results (dict): The dictionary of results in standardized form returned from processing.
+
+    Returns:
+        dict: The results transformed so that all entries are strings.
+
+
+    """
     if results['msg_category'] == 'success' and base_constants.SPREADSHEET in results:
         results[base_constants.SPREADSHEET] = results[base_constants.SPREADSHEET].to_csv(file=None)
     elif base_constants.SPREADSHEET in results:
@@ -160,13 +213,11 @@ def package_spreadsheet(results):
 
 
 def services_list():
-    """
-     Returns a formatted string describing services using the resources/services.json file
+    """ Get a formatted string describing services using the resources/services.json file
 
-     Returns
-     -------
-     str
-         A formatted string listing available services.
+     Returns:
+        str: A formatted string listing available services.
+
      """
     dir_path = os.path.dirname(os.path.realpath(__file__))
     the_path = os.path.join(dir_path, 'static/resources/services.json')
@@ -179,10 +230,11 @@ def services_list():
     services_string = '\nServices:\n'
     for service, info in services.items():
         description = info['Description']
-        parm_string = json.dumps(info['Parameters'])
+        parameters = get_parameter_string(info['Parameters'])
+
         return_string = info['Returns']
         next_string = \
-            f'{service}:\n\tDescription: {description}\n\tParameters: {parm_string}\n\tReturns: {return_string}\n'
+            f'\n{service}:\n\tDescription: {description}\n{parameters}\n\tReturns: {return_string}\n'
         services_string += next_string
 
     meanings_string = '\nParameter meanings:\n'
@@ -201,3 +253,16 @@ def services_list():
             'data': data, 'output_display_name': '',
             base_constants.SCHEMA_VERSION: '', 'msg_category': 'success',
             'msg': "List of available services and their meanings"}
+
+
+def get_parameter_string(params):
+    if not params:
+        return "\tParameters: []"
+    param_list = []
+    for p in params:
+        if isinstance(p, list):
+            param_list.append( " or ".join(p))
+        else:
+            param_list.append(p)
+
+    return "\tParameters:\n\t\t" + "\n\t\t".join(param_list)
