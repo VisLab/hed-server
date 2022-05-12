@@ -120,7 +120,7 @@ def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_
     else:
         tag_form = 'short_tag'
     issues = []
-    for hed_string_obj, position_info, issue_items in json_sidecar.hed_string_iter(validators=hed_schema,
+    for hed_string_obj, position_info, issue_items in json_sidecar.hed_string_iter(hed_ops=hed_schema,
                                                                                    expand_defs=expand_defs,
                                                                                    remove_definitions=False):
 
