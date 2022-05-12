@@ -69,7 +69,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=fb, name='JSON_Sidecar')
         arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
                      base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
-                     base_constants.JSON_SIDECAR: json_sidecar}
+                     base_constants.JSON_SIDECARS: [json_sidecar]}
         with self.app.app_context():
             response = process(arguments)
             self.assertFalse(response['error_type'],

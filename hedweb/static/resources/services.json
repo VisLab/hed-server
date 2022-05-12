@@ -45,6 +45,7 @@
             "Description": "Assemble annotations for each event. Returns: text of assembled events or error list.",
             "Parameters": [
                 "events_string",
+                "columns_included",
                 [
                     "json_list",
                     "json_string"
@@ -220,6 +221,7 @@
         "column_x_check": "If present with value 'on' column x has HED tags.",
         "column_x_input": "Contains the prefix prepended to column x if column x has HED tags.",
         "columns_categorical": "A list of names of categorical event file columns",
+        "columns_included": "A list of event file column names to be included for assembly (onset if omitted)",
         "columns_value": "A list of names of value event file columns",
         "events_string": "A BIDS events file as a string.",
         "expand_defs": "If true replaces Def/XXX with Def-expand/XXX grouped with the definition content.",
