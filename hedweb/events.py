@@ -1,3 +1,4 @@
+import os
 from flask import current_app
 import json
 from werkzeug.utils import secure_filename
@@ -11,10 +12,9 @@ from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
-from hedweb.columns import create_column_selections
+from hedweb.columns import create_column_selections, create_columns_included
 from hed.util import generate_filename
-from hed.tools import BidsTsvSummary
-from hed.tools.annotation.annotation_util import generate_sidecar_entry
+from hed.tools import BidsTsvSummary, assemble_hed, generate_sidecar_entry, search_events
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
@@ -36,7 +36,8 @@ def get_events_form_input(request):
                  base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
                  base_constants.CHECK_FOR_WARNINGS: form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
                  base_constants.EXPAND_DEFS: form_has_option(request, base_constants.EXPAND_DEFS, 'on'),
-                 base_constants.COLUMNS_SELECTED: create_column_selections(request.form)
+                 base_constants.COLUMNS_SELECTED: create_column_selections(request.form),
+                 base_constants.COLUMNS_INCLUDED: create_columns_included(request.form)
                  }
     if arguments[base_constants.COMMAND] != base_constants.COMMAND_GENERATE_SIDECAR:
         arguments[base_constants.SCHEMA] = get_hed_schema_from_pull_down(request)
@@ -81,7 +82,9 @@ def process(arguments):
     elif command == base_constants.COMMAND_SEARCH:
         results = search(hed_schema, events, query)
     elif command == base_constants.COMMAND_ASSEMBLE:
-        results = assemble(hed_schema, events, arguments.get(base_constants.EXPAND_DEFS, False))
+        results = assemble(hed_schema, events,
+                           arguments.get(base_constants.COLUMNS_INCLUDED, None),
+                           arguments.get(base_constants.EXPAND_DEFS, False))
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
         results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
     else:
@@ -89,12 +92,13 @@ def process(arguments):
     return results
 
 
-def assemble(hed_schema, events, expand_defs=True):
+def assemble(hed_schema, events, additional_columns=None, expand_defs=True):
     """ Create a two-column event file with first column Onset and second column HED tags.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
         events (EventsInput):  An events input object.
+        additional_columns (dict): Optional dictionary of columns to include in the assembled output.
         expand_defs (bool): True if definitions should be expanded during assembly.
 
     Returns:
@@ -106,14 +110,28 @@ def assemble(hed_schema, events, expand_defs=True):
     results = validate(hed_schema, events)
     if results['data']:
         return results
-
-    hed_tags = []
-    onsets = []
-    for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=expand_defs,
-                                                      remove_definitions=True):
-        hed_tags.append(str(row_dict.get("HED", "")))
-        onsets.append(row_dict.get("onset", "n/a"))
-    df = pd.DataFrame({'onset': onsets, 'HED': hed_tags})
+    df = assemble_hed(events, additional_columns=additional_columns, expand_defs=expand_defs)
+    # eligible_columns = list(events.dataframe.columns)
+    # frame_dict = {}
+    # if additional_columns:
+    #     for column_name, column_type in additional_columns.items():
+    #         if column_type == 'included' and column_name in eligible_columns:
+    #             frame_dict[column_name] = []
+    # else:
+    #     frame_dict['onset'] = []
+    #
+    # hed_tags = []
+    # onsets = []
+    # for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=expand_defs,
+    #                                                   remove_definitions=True):
+    #     hed_tags.append(str(row_dict.get("HED", "")))
+    #     onsets.append(row_dict.get("onset", "n/a"))
+    #     for column in frame_dict:
+    #         frame_dict[column].append(events.dataframe.loc[row_number - 2, column])
+    # df = pd.DataFrame({'onset': onsets})
+    # for column, values in frame_dict.items():
+    #     df[column] = values
+    # df['HED'] = hed_tags
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
@@ -175,31 +193,38 @@ def search(hed_schema, events, query):
     if results['data']:
         return results
 
-    matched_tags = []
-    hed_tags = []
-    row_numbers = []
-    expression = TagExpressionParser(query)
-    for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=True, remove_definitions=True):
-        expanded_string = str(row_dict.get("HED", ""))
-        hed_string = HedStringFrozen(expanded_string, hed_schema=hed_schema)
-        match = expression.search_hed_string(hed_string)
-        if  not match:
-            continue
-        match_str = ""
-        for m in match:
-            match_str = match_str + f" [{str(m)}] "
-
-        hed_tags.append(expanded_string)
-        matched_tags.append(match_str)
-        row_numbers.append(row_number)
-
-    if row_numbers:
-        df = pd.DataFrame({'row_number': row_numbers, 'matched_tags': matched_tags, 'HED': hed_tags})
+    df = search_events(events, query, hed_schema)
+    if isinstance(df, pd.DataFrame):
         csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-        msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
+        msg = f"Events file query {query} satisfied by {len(df)} out of {len(events.dataframe)} events."
     else:
         csv_string = ''
         msg = f"Events file has no events satisfying the query {query}."
+    # matched_tags = []
+    # hed_tags = []
+    # row_numbers = []
+    # expression = TagExpressionParser(query)
+    # for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=True, remove_definitions=True):
+    #     expanded_string = str(row_dict.get("HED", ""))
+    #     hed_string = HedStringFrozen(expanded_string, hed_schema=hed_schema)
+    #     match = expression.search_hed_string(hed_string)
+    #     if  not match:
+    #         continue
+    #     match_str = ""
+    #     for m in match:
+    #         match_str = match_str + f" [{str(m)}] "
+    #
+    #     hed_tags.append(expanded_string)
+    #     matched_tags.append(match_str)
+    #     row_numbers.append(row_number)
+    #
+    # if row_numbers:
+    #     df = pd.DataFrame({'row_number': row_numbers, 'matched_tags': matched_tags, 'HED': hed_tags})
+    #     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+    #     msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
+    # else:
+    #     csv_string = ''
+    #     msg = f"Events file has no events satisfying the query {query}."
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
@@ -254,7 +279,7 @@ def validate_query(hed_schema, query):
 
     Args:
         hed_schema (HedSchema, or HedSchemaGroup): Schema or schemas used to validate the query.
-        query (dict):  A dictionary representing the query.
+        query (str):  A str representing the query.
 
     Returns
         dict: A dictionary containing results of validation in standard format.

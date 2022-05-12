@@ -28,15 +28,15 @@ def get_input_from_request(request):
     service_request = json.loads(form_string)
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
-    get_columns_selected(arguments, service_request)
+    get_column_parameters(arguments, service_request)
     get_sidecars(arguments, service_request)
     get_input_objects(arguments, service_request)
     arguments[base_constants.QUERY] = service_request.get('query', None)
     return arguments
 
 
-def get_columns_selected(arguments, params):
-    """ Update arguments with the columns that are categorical or value where appropriate.
+def get_column_parameters(arguments, params):
+    """ Update arguments with the columns that requested for the service.
 
     Args:
         arguments (dict):  A dictionary with the extracted parameters that are to be processed.
@@ -45,14 +45,20 @@ def get_columns_selected(arguments, params):
     Updates the arguments dictionary with the column information in service_request.
 
     """
-    if 'columns_categorical' not in params and 'columns_value' not in params:
-        return
+
     columns_selected = {}
-    for column in params['columns_categorical']:
-        columns_selected[column] = True
-    for column in params['columns_value']:
-        columns_selected[column] = False
+    if 'columns_categorical' in params:
+        for column in params['columns_categorical']:
+            columns_selected[column] = True
+    if 'columns_value' in params:
+        for column in params['columns_value']:
+            columns_selected[column] = False
     arguments[base_constants.COLUMNS_SELECTED] = columns_selected
+    columns_included = []
+    if 'columns_included' in params:
+        for column in params['columns_included']:
+            columns_included.append(column)
+    arguments[base_constants.COLUMNS_INCLUDED] = columns_included
 
 
 def get_sidecars(arguments, params):
