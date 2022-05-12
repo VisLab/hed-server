@@ -17,17 +17,14 @@ app_config = current_app.config
 
 
 def get_input_from_form(request):
-    """Gets the sidecar processing input arguments from a request object.
+    """ Gets the sidecar processing input arguments from a request object.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the sidecar processing form.
+    Args:
+        request (Request): A Request object containing user data from the sidecar processing form.
 
-    Returns
-    -------
-    dict
-        A dictionary containing input arguments for calling the underlying sidecar processing functions.
+    Returns:
+        dict: A dictionary containing input arguments for calling the underlying sidecar processing functions.
+
     """
 
     arguments = {base_constants.SCHEMA: get_hed_schema_from_pull_down(request), base_constants.JSON_SIDECAR: None,
@@ -43,9 +40,9 @@ def get_input_from_form(request):
     if base_constants.JSON_FILE in request.files:
         f = request.files[base_constants.JSON_FILE]
         fb = io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))
-        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=fb, name=secure_filename(f.filename))
+        arguments[base_constants.JSON_SIDECARS] = [Sidecar(file=fb, name=secure_filename(f.filename))]
     if base_constants.SPREADSHEET_FILE in request.files and \
-        request.files[base_constants.SPREADSHEET_FILE].filename:
+            request.files[base_constants.SPREADSHEET_FILE].filename:
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
         file_ext = get_file_extension(filename)
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
@@ -77,21 +74,24 @@ def process(arguments):
         pass
     elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
-    json_sidecar = arguments.get(base_constants.JSON_SIDECAR, 'None')
+    json_sidecars = arguments.get(base_constants.JSON_SIDECARS, [])
     spreadsheet = arguments.get(base_constants.SPREADSHEET, 'None')
-    if not json_sidecar or not isinstance(json_sidecar, Sidecar):
-        raise HedFileError('InvalidJSONFile', "Please give a valid JSON file to process", "")
+    if not json_sidecars:
+        raise HedFileError('MissingJSONFile', "Please give at least 1 valid JSON file to process", "")
+    for index, sidecar in enumerate(json_sidecars):
+        if not isinstance(sidecar, Sidecar):
+            raise HedFileError('InvalidJSONFile', f"Sidecar number {index+1} is invalid", "")
     check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
     expand_defs = arguments.get(base_constants.EXPAND_DEFS, False)
     include_description_tags = arguments.get(base_constants.INCLUDE_DESCRIPTION_TAGS, False)
     if command == base_constants.COMMAND_VALIDATE:
-        results = sidecar_validate(hed_schema, json_sidecar, check_for_warnings=check_for_warnings)
+        results = sidecar_validate(hed_schema, json_sidecars, check_for_warnings=check_for_warnings)
     elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
-        results = sidecar_convert(hed_schema, json_sidecar, command=command, expand_defs=expand_defs)
+        results = sidecar_convert(hed_schema, json_sidecars[0], command=command, expand_defs=expand_defs)
     elif command == base_constants.COMMAND_EXTRACT_SPREADSHEET:
-        results = sidecar_extract(json_sidecar)
+        results = sidecar_extract(json_sidecars[0])
     elif command == base_constants.COMMAND_MERGE_SPREADSHEET:
-        results = sidecar_merge(json_sidecar, spreadsheet, include_description_tags)
+        results = sidecar_merge(json_sidecars[0], spreadsheet, include_description_tags)
     else:
         raise HedFileError('UnknownProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -112,7 +112,7 @@ def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
-    results = sidecar_validate(hed_schema, json_sidecar, check_for_warnings=False)
+    results = sidecar_validate(hed_schema, [json_sidecar], check_for_warnings=False)
     if results['data']:
         return results
     if command == base_constants.COMMAND_TO_LONG:
@@ -123,6 +123,7 @@ def sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_
     for hed_string_obj, position_info, issue_items in json_sidecar.hed_string_iter(validators=hed_schema,
                                                                                    expand_defs=expand_defs,
                                                                                    remove_definitions=False):
+
         converted_string = hed_string_obj.get_as_form(tag_form)
         issues = issues + issue_items
         json_sidecar.set_hed_string(converted_string, position_info)
@@ -176,7 +177,7 @@ def sidecar_merge(json_sidecar, spreadsheet, include_description_tags=False):
 
     Args:
         json_sidecar (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
-        spreadsheet (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
+        spreadsheet (HedInput): The Sidecar from which to generate_sidecar the HED spreadsheet
         include_description_tags (bool): If True, a Description tag is generated from Levels and included.
 
     Returns:
@@ -193,7 +194,7 @@ def sidecar_merge(json_sidecar, spreadsheet, include_description_tags=False):
     sidecar_dict = json.loads(json_string)
     merge_hed_dict(sidecar_dict, hed_dict)
     display_name = json_sidecar.name
-    data = json.dumps(sidecar_dict,indent=4)
+    data = json.dumps(sidecar_dict, indent=4)
     file_name = generate_filename(display_name, name_suffix='_extracted_merged', extension='.json')
     return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT_SPREADSHEET,
             base_constants.COMMAND_TARGET: 'sidecar',
@@ -201,14 +202,12 @@ def sidecar_merge(json_sidecar, spreadsheet, include_description_tags=False):
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully merged'}
 
 
-def sidecar_validate(hed_schema, json_sidecar, check_for_warnings=False):
-    """ Validates the sidecar and returns the errors and/or a message in a dictionary
+def sidecar_validate(hed_schema, json_sidecars, check_for_warnings=False):
+    """ Validate the sidecars and return the errors and/or a message in a dictionary
 
-    Parameters
-    ----------
-    hed_schema: str or HedSchema
-        Version number or path or HedSchema object to be used
-    json_sidecar: Sidecar
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): The hed schemas to be used.
+    json_sidecars (list): A list of Sidecar
         Dictionary object
     check_for_warnings: bool
         Indicates whether validation should check for warnings as well as errors
@@ -220,11 +219,18 @@ def sidecar_validate(hed_schema, json_sidecar, check_for_warnings=False):
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
-    display_name = json_sidecar.name
+    display_name = json_sidecars[0].name
+    if len(json_sidecars) > 1:
+        display_name = f"List_of_{len(json_sidecars)}_starting_with_{display_name}"
     validator = HedValidator(hed_schema)
-    issues = json_sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
-    if issues:
-        issue_str = get_printable_issue_string(issues, f"JSON dictionary {display_name } validation errors")
+    issue_str = ''
+    for sidecar in json_sidecars:
+        issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
+        if issues:
+            issue_str = issue_str + \
+                        get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
+
+    if issue_str:
         file_name = generate_filename(display_name, name_suffix='validation_errors', extension='.txt')
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'sidecar',

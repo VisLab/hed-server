@@ -14,6 +14,7 @@ COLUMNS_DISPLAY_NAME = 'columns_display_name'
 COLUMNS_FILE = 'columns_file'
 COLUMNS_INFO = 'columns_info'
 COLUMNS_PATH = 'columns_path'
+COLUMNS_INCLUDED = 'columns_included'
 COLUMNS_SELECTED = 'columns_selected'
 COLUMNS_VALUE = 'columns_value'
 

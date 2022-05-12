@@ -44,6 +44,21 @@ def create_column_selections(form_dict):
     return columns_selections
 
 
+def create_columns_included(form_dict):
+    """ Return a list of columns to be included.
+
+    Args:
+
+    form_dict (dict): The dictionary returned from a form that contains the columns to be included.
+
+    Returns:
+        (list): A list of column names.
+
+    """
+
+    return []
+
+
 def create_columns_info(columns_file, has_column_names: True, sheet_name: None):
     header = None
     if has_column_names:
