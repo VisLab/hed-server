@@ -1,11 +1,8 @@
-import os
 from flask import current_app
 import json
 from werkzeug.utils import secure_filename
 import pandas as pd
 
-from hed.models.hed_string import HedStringFrozen
-from hed.models.expression_parser import TagExpressionParser
 from hed.models.sidecar import Sidecar
 from hed.models.events_input import EventsInput
 from hed import schema as hedschema
@@ -14,7 +11,7 @@ from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
 from hed.util import generate_filename
-from hed.tools import BidsTsvSummary, assemble_hed, generate_sidecar_entry, search_events
+from hed.tools import BidsTabularSummary, assemble_hed, generate_sidecar_entry, search_events
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
@@ -111,27 +108,6 @@ def assemble(hed_schema, events, additional_columns=None, expand_defs=True):
     if results['data']:
         return results
     df = assemble_hed(events, additional_columns=additional_columns, expand_defs=expand_defs)
-    # eligible_columns = list(events.dataframe.columns)
-    # frame_dict = {}
-    # if additional_columns:
-    #     for column_name, column_type in additional_columns.items():
-    #         if column_type == 'included' and column_name in eligible_columns:
-    #             frame_dict[column_name] = []
-    # else:
-    #     frame_dict['onset'] = []
-    #
-    # hed_tags = []
-    # onsets = []
-    # for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=expand_defs,
-    #                                                   remove_definitions=True):
-    #     hed_tags.append(str(row_dict.get("HED", "")))
-    #     onsets.append(row_dict.get("onset", "n/a"))
-    #     for column in frame_dict:
-    #         frame_dict[column].append(events.dataframe.loc[row_number - 2, column])
-    # df = pd.DataFrame({'onset': onsets})
-    # for column, values in frame_dict.items():
-    #     df[column] = values
-    # df['HED'] = hed_tags
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
@@ -153,7 +129,7 @@ def generate_sidecar(events, columns_selected):
 
     """
 
-    columns_info = BidsTsvSummary.get_columns_info(events.dataframe)
+    columns_info = BidsTabularSummary.get_columns_info(events.dataframe)
     hed_dict = {}
     for column_name, column_type in columns_selected.items():
         if column_name not in columns_info:
@@ -200,31 +176,6 @@ def search(hed_schema, events, query):
     else:
         csv_string = ''
         msg = f"Events file has no events satisfying the query {query}."
-    # matched_tags = []
-    # hed_tags = []
-    # row_numbers = []
-    # expression = TagExpressionParser(query)
-    # for row_number, row_dict in events.iter_dataframe(return_row_dict=True, expand_defs=True, remove_definitions=True):
-    #     expanded_string = str(row_dict.get("HED", ""))
-    #     hed_string = HedStringFrozen(expanded_string, hed_schema=hed_schema)
-    #     match = expression.search_hed_string(hed_string)
-    #     if  not match:
-    #         continue
-    #     match_str = ""
-    #     for m in match:
-    #         match_str = match_str + f" [{str(m)}] "
-    #
-    #     hed_tags.append(expanded_string)
-    #     matched_tags.append(match_str)
-    #     row_numbers.append(row_number)
-    #
-    # if row_numbers:
-    #     df = pd.DataFrame({'row_number': row_numbers, 'matched_tags': matched_tags, 'HED': hed_tags})
-    #     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-    #     msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
-    # else:
-    #     csv_string = ''
-    #     msg = f"Events file has no events satisfying the query {query}."
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
