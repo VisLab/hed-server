@@ -2,7 +2,7 @@ import os
 import io
 import json
 from flask import current_app
-from hed import models
+from hed.models import HedString, Sidecar, SpreadsheetInput, TabularInput
 from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
@@ -73,13 +73,13 @@ def get_sidecars(arguments, params):
      """
     sidecar_list = []
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        sidecar_list = [models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')]
+        sidecar_list = [Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
         for index, sidecar_string in params[base_constants.JSON_LIST].items():
             if not sidecar_string:
                 continue
-            sidecar_list.append(models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]),
-                                               name=f"JSON_Sidecar {index}"))
+            sidecar_list.append(Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]),
+                                        name=f"JSON_Sidecar {index}"))
     arguments[base_constants.JSON_SIDECARS] = sidecar_list
 
 
@@ -96,20 +96,19 @@ def get_input_objects(arguments, params):
 
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
-            models.EventsInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                               sidecars=arguments.get(base_constants.JSON_SIDECARS, None), name='Events')
+            TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
+                         sidecars=arguments.get(base_constants.JSON_SIDECARS, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
-            models.HedInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
-                            tag_columns=tag_columns,
-                            has_column_names=has_column_names,
-                            column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
+            SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
+                             tag_columns=tag_columns, has_column_names=has_column_names,
+                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:
-            s_list.append(models.HedString(s))
+            s_list.append(HedString(s))
         arguments[base_constants.STRING_LIST] = s_list
 
 
@@ -267,7 +266,7 @@ def get_parameter_string(params):
     param_list = []
     for p in params:
         if isinstance(p, list):
-            param_list.append( " or ".join(p))
+            param_list.append(" or ".join(p))
         else:
             param_list.append(p)
 

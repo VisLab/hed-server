@@ -66,16 +66,16 @@ class Test(TestWebBase):
 
     def test_generate_download_spreadsheet_excel(self):
         with self.app.test_request_context():
-            from hed.models import HedInput
+            from hed.models import SpreadsheetInput
             from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
-            spreadsheet = HedInput(file=spreadsheet_path, file_type='.xlsx',
-                                   tag_columns=[5], has_column_names=True,
-                                   column_prefix_dictionary={2: 'Attribute/Informational/Label/',
-                                                             4: 'Attribute/Informational/Description/'},
-                                   name='ExcelOneSheet.xlsx')
+            spreadsheet = SpreadsheetInput(file=spreadsheet_path, file_type='.xlsx',
+                                           tag_columns=[5], has_column_names=True,
+                                           column_prefix_dictionary={2: 'Attribute/Informational/Label/',
+                                                                     4: 'Attribute/Informational/Description/'},
+                                           name='ExcelOneSheet.xlsx')
             results = {base_constants.SPREADSHEET: spreadsheet,
                        base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx'}
             response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')
@@ -89,16 +89,16 @@ class Test(TestWebBase):
 
     def test_generate_download_spreadsheet_excel_code(self):
         with self.app.test_request_context():
-            from hed.models import HedInput
+            from hed.models import SpreadsheetInput
             from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
-            spreadsheet = HedInput(file=spreadsheet_path, file_type='.xlsx',
-                                   tag_columns=[5], has_column_names=True,
-                                   column_prefix_dictionary={2: 'Attribute/Informational/Label/',
-                                                             4: 'Attribute/Informational/Description/'},
-                                   name='ExcelOneSheet.xlsx')
+            spreadsheet = SpreadsheetInput(file=spreadsheet_path, file_type='.xlsx',
+                                           tag_columns=[5], has_column_names=True,
+                                           column_prefix_dictionary={2: 'Attribute/Informational/Label/',
+                                                                     4: 'Attribute/Informational/Description/'},
+                                           name='ExcelOneSheet.xlsx')
             results = {base_constants.SPREADSHEET: spreadsheet,
                        base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx'}
             response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')
@@ -112,17 +112,17 @@ class Test(TestWebBase):
 
     def test_generate_download_spreadsheet_tsv(self):
         with self.app.test_request_context():
-            from hed.models import HedInput
+            from hed.models import SpreadsheetInput
             from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                             'data/LKTEventCodesHED3.tsv')
 
-            spreadsheet = HedInput(file=spreadsheet_path, file_type='.tsv',
-                                   tag_columns=[5], has_column_names=True,
-                                   column_prefix_dictionary={2: 'Attribute/Informational/Label/',
-                                                             4: 'Attribute/Informational/Description/'},
-                                   name='LKTEventCodesHED3.tsv')
+            spreadsheet = SpreadsheetInput(file=spreadsheet_path, file_type='.tsv',
+                                           tag_columns=[5], has_column_names=True,
+                                           column_prefix_dictionary={2: 'Attribute/Informational/Label/',
+                                                                     4: 'Attribute/Informational/Description/'},
+                                           name='LKTEventCodesHED3.tsv')
             results = {base_constants.SPREADSHEET: spreadsheet,
                        base_constants.OUTPUT_DISPLAY_NAME: 'LKTEventCodesHED3.tsv'}
             response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')

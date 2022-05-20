@@ -3,8 +3,7 @@ import json
 from werkzeug.utils import secure_filename
 import pandas as pd
 
-from hed.models.sidecar import Sidecar
-from hed.models.events_input import EventsInput
+from hed.models import Sidecar, TabularInput
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.validator import HedValidator
@@ -46,7 +45,7 @@ def get_events_form_input(request):
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
         arguments[base_constants.EVENTS] = \
-            EventsInput(file=f, sidecars=json_sidecars, name=secure_filename(f.filename))
+            TabularInput(file=f, sidecars=json_sidecars, name=secure_filename(f.filename))
     return arguments
 
 
@@ -72,7 +71,7 @@ def process(arguments):
     events = arguments.get(base_constants.EVENTS, None)
     sidecars = arguments.get(base_constants.JSON_SIDECARS, None)
     query = arguments.get(base_constants.QUERY, None)
-    if not events or not isinstance(events, EventsInput):
+    if not events or not isinstance(events, TabularInput):
         raise HedFileError('InvalidEventsFile', "An events file was given but could not be processed", "")
     if command == base_constants.COMMAND_VALIDATE:
         results = validate(hed_schema, events, sidecars, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))

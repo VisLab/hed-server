@@ -7,7 +7,7 @@ from hed import schema as hedschema
 from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
-from hed.models import HedInput, Sidecar
+from hed.models import SpreadsheetInput, Sidecar
 from hed.tools import df_to_hed, hed_to_df, merge_hed_dict
 from hed.util import generate_filename, get_file_extension
 from hedweb.constants import base_constants, file_constants
@@ -47,7 +47,7 @@ def get_input_from_form(request):
         file_ext = get_file_extension(filename)
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
             arguments[base_constants.SPREADSHEET_TYPE] = file_constants.EXCEL_EXTENSION
-        spreadsheet = HedInput(file=request.files[base_constants.SPREADSHEET_FILE],
+        spreadsheet = SpreadsheetInput(file=request.files[base_constants.SPREADSHEET_FILE],
                                file_type=arguments[base_constants.SPREADSHEET_TYPE],
                                worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
                                tag_columns=['HED'], has_column_names=True, name=filename)
