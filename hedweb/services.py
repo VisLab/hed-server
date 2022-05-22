@@ -29,7 +29,7 @@ def get_input_from_request(request):
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
     get_column_parameters(arguments, service_request)
-    get_sidecars(arguments, service_request)
+    get_sidecar(arguments, service_request)
     get_input_objects(arguments, service_request)
     arguments[base_constants.QUERY] = service_request.get('query', None)
     return arguments
@@ -61,7 +61,7 @@ def get_column_parameters(arguments, params):
     arguments[base_constants.COLUMNS_INCLUDED] = columns_included
 
 
-def get_sidecars(arguments, params):
+def get_sidecar(arguments, params):
     """ Update arguments with the sidecars if there are any.
 
      Args:
@@ -71,16 +71,20 @@ def get_sidecars(arguments, params):
      Updates the arguments dictionary with the sidecars.
 
      """
-    sidecar_list = []
+    sidecar_str = ''
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        sidecar_list = [Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')]
+        sidecar_str = params[base_constants.JSON_STRING]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        for index, sidecar_string in params[base_constants.JSON_LIST].items():
-            if not sidecar_string:
-                continue
-            sidecar_list.append(Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]),
-                                        name=f"JSON_Sidecar {index}"))
-    arguments[base_constants.JSON_SIDECARS] = sidecar_list
+        merged_sidecar = {}
+        for s_string in params[base_constants.JSON_LIST].items():
+            sidecar_dict = json.dumps(s_string)
+            for key, item in sidecar_dict.items():
+                merged_sidecar[key] = item
+        sidecar_str = json.dumps(merged_sidecar)
+    if sidecar_str:
+        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=io.StringIO(sidecar_str), name=f"JSON_Sidecar")
+    else:
+        arguments[base_constants.JSON_SIDECAR] = None
 
 
 def get_input_objects(arguments, params):
@@ -97,7 +101,7 @@ def get_input_objects(arguments, params):
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                         sidecars=arguments.get(base_constants.JSON_SIDECARS, None), name='Events')
+                         sidecar=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
@@ -147,6 +151,12 @@ def get_service_info(params):
 
 
 def get_input_schema(parameters):
+    """ Get a HedSchema or HedSchemaGroup object from the parameters.
+
+    Args:
+        parameters (dict): A dictionary of parameters extracted from the service request.
+
+    """
     the_schema = None
     try:
         if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:

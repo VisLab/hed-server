@@ -16,17 +16,14 @@ app_config = current_app.config
 
 
 def get_input_from_form(request):
-    """Gets input argument dictionary from the spreadsheet form request.
+    """ Get the input argument dictionary from the spreadsheet form request.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the spreadsheet form.
+    Args:
+        request (Request object): A Request object containing user data from the spreadsheet form.
 
-    Returns
-    -------
-    dictionary
-        A dictionary containing input arguments for calling the underlying spreadsheet functions
+    Returns:
+        dict: A dictionary containing input arguments for calling the underlying spreadsheet functions.
+
     """
     arguments = {
         base_constants.SCHEMA: get_hed_schema_from_pull_down(request),
@@ -55,24 +52,22 @@ def get_input_from_form(request):
 
 
 def process(arguments):
-    """Perform the requested action for the spreadsheet.
+    """ Perform the requested action for the spreadsheet.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the input arguments from the spreadsheet form.
+    Args:
+        arguments (dict): A dictionary with the input arguments from the spreadsheet form.
 
-    Returns
-    -------
-      dict
-        A dictionary of results from spreadsheet processing in standard form.
+    Returns:
+        dict: A dictionary of results from spreadsheet processing in standard form.
+
     """
+
     hed_schema = arguments.get('schema', None)
     if not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
     spreadsheet = arguments.get(base_constants.SPREADSHEET, 'None')
     if not spreadsheet or not isinstance(spreadsheet, SpreadsheetInput):
-        raise HedFileError('InvalidSpreadsheet', "An spreadsheet was given but could not be processed", "")
+        raise HedFileError('InvalidSpreadsheet', "A spreadsheet was given but could not be processed", "")
 
     command = arguments.get(base_constants.COMMAND, None)
     check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
@@ -88,24 +83,17 @@ def process(arguments):
 
 
 def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_TO_LONG, check_for_warnings=False):
-    """Converts a spreadsheet long to short unless unless the command is not COMMAND_TO_LONG then converts to short
+    """ Convert a spreadsheet long to short unless unless the command is not COMMAND_TO_LONG then converts to short
 
-    Parameters
-    ----------
-    hed_schema:HedSchema
-        HedSchema object to be used
-    spreadsheet: HedInput
-        Previously created HedInput object
-    command: str
-        Name of the command to execute if not COMMAND_TO_LONG
-    check_for_warnings: bool
-        If True, check for war
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): HedSchema or HedSchemaGroup object to be used.
+        spreadsheet (SpreadsheetInput): Previously created SpreadsheetInput object.
+        command (str): Name of the command to execute if not TO_LONG.
+        check_for_warnings (bool): If True, check for warnings.
 
+    Returns:
+        dict: A downloadable dictionary in standard format.
 
-    Returns
-    -------
-    dict
-        A downloadable dictionary file or a file containing warnings
     """
 
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
@@ -134,19 +122,14 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
 def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
     """ Validates the spreadsheet.
 
-    Parameters
-    ----------
-    hed_schema: str or HedSchema
-        Version number or path or HedSchema object to be used
-    spreadsheet: HedFileInput
-        Spreadsheet input object to be validated
-    check_for_warnings: bool
-        Indicates whether validation should check for warnings as well as errors
+    Args:
+        hed_schema (HedSchema or HedSchemaGroup): The schema(s) against which to validate.
+        spreadsheet (SpreadsheetInput): Spreadsheet input object to be validated.
+        check_for_warnings (bool): Indicates whether validation should check for warnings as well as errors.
 
-    Returns
-    -------
-    dict
-         A dictionary containing results of validation in standard format
+    Returns:
+        dict: A dictionary containing results of validation in standard format.
+
     """
     schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
     validator = HedValidator(hed_schema=hed_schema)
