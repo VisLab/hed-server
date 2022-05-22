@@ -149,8 +149,9 @@ def generate_download_spreadsheet(results,  msg_category='success', msg=''):
         return generate_download_file_from_text(spreadsheet.to_csv(), display_name=display_name,
                                                 msg_category=msg_category, msg=msg)
     buffer = io.BytesIO()
-    spreadsheet.to_excel(buffer)
+    spreadsheet.to_excel(buffer, output_processed_file=True)
     buffer.seek(0)
+    spreadsheet.to_excel("D:/TempNew.xlsx", output_processed_file=True)
     response = make_response()
     response.data = buffer.read()
     response.headers['Content-Disposition'] = 'attachment; filename=' + display_name

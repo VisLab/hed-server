@@ -118,7 +118,7 @@ function showEvents(columnList, countCounts, hasColumnNames=true) {
     let columnEventsTable = $('#show_events_table');
     let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th><th>Categorical?</th></tr>'
     columnEventsTable.empty();
-    let i = 1;
+    let i = 0;
     for(const key of columnList) {
         let column = "column_" + i;
         let columnName = key;
@@ -147,7 +147,7 @@ function showEvents(columnList, countCounts, hasColumnNames=true) {
 function showIndices(columnList, hasColumnNames= true) {
     $('#show_indices').show();
     let contents = '<tr><th>Has tags</th><th>Column names</th><th>Tag prefix to use (prefixes end in /)</th></tr>'
-    let i = 1;
+    let i = 0;
     for(const key of columnList) {
         let column = "column_" + i;
         let columnName = key;

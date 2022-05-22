@@ -49,7 +49,7 @@ class Test(TestWebBase):
             self.assertFalse(response.data, "The response for validated spreadsheet should be empty")
             spreadsheet_buffer.close()
 
-    def test_spreadsheet_results_validate_invalid(self):
+    def test_results_validate_invalid(self):
         with self.app.app_context():
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                             '../data/ExcelMultipleSheets.xlsx')

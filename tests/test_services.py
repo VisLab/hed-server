@@ -30,12 +30,9 @@ class Test(TestWebBase):
             environ = create_environ(json=json_data)
             request = Request(environ)
             arguments = get_input_from_request(request)
-            self.assertIn(base_constants.JSON_SIDECARS, arguments, "get_input_from_request should have json sidecars")
-            self.assertIsInstance(arguments[base_constants.JSON_SIDECARS], list,
-                                  "get_input_from_request should have a list of sidecars")
-            sidecar_list = arguments[base_constants.JSON_SIDECARS]
-            self.assertIsInstance(sidecar_list[0], Sidecar,
-                                  "getInput_from_request list of sidecars should contain sidecars")
+            self.assertIn(base_constants.JSON_SIDECAR, arguments, "get_input_from_request should have a json sidecar")
+            self.assertIsInstance(arguments[base_constants.JSON_SIDECAR], Sidecar,
+                                  "get_input_from_request should contain a sidecar")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
                                   "get_input_from_request should have a HED schema")
             self.assertEqual('sidecar_validate', arguments[base_constants.SERVICE],
@@ -69,7 +66,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=fb, name='JSON_Sidecar')
         arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
                      base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
-                     base_constants.JSON_SIDECARS: [json_sidecar]}
+                     base_constants.JSON_SIDECAR: json_sidecar}
         with self.app.app_context():
             response = process(arguments)
             self.assertFalse(response['error_type'],
