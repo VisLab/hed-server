@@ -4,7 +4,7 @@ from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 from tests.test_web_base import TestWebBase
 import hed.schema as hedschema
-from hed import models
+from hed.models import SpreadsheetInput
 from hedweb.constants import base_constants
 
 
@@ -15,7 +15,7 @@ class Test(TestWebBase):
                           "An exception is raised if an empty request is passed to generate_input_from_spreadsheet")
 
     def test_get_input_from_spreadsheet_form(self):
-        from hed.models import HedInput
+        from hed.models import SpreadsheetInput
         from hed.schema import HedSchema
         from hedweb.spreadsheet import get_input_from_form
         with self.app.test:
@@ -26,14 +26,14 @@ class Test(TestWebBase):
                     environ = create_environ(data={base_constants.SPREADSHEET_FILE: fp,
                                                    base_constants.SCHEMA_VERSION: base_constants.OTHER_VERSION_OPTION,
                                                    base_constants.SCHEMA_PATH: sp,
-                                                   'column_5_check': 'on', 'column_5_input': '',
+                                                   'column_4_check': 'on', 'column_4_input': '',
                                                    base_constants.WORKSHEET_SELECTED: 'LKT 8HED3',
                                                    base_constants.HAS_COLUMN_NAMES: 'on',
                                                    base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE})
 
             request = Request(environ)
             arguments = get_input_from_form(request)
-            self.assertIsInstance(arguments[base_constants.SPREADSHEET], HedInput,
+            self.assertIsInstance(arguments[base_constants.SPREADSHEET], SpreadsheetInput,
                                   "generate_input_from_spreadsheet_form should have an events object")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
                                   "generate_input_from_spreadsheet_form should have a HED schema")
@@ -44,7 +44,7 @@ class Test(TestWebBase):
             self.assertTrue(arguments[base_constants.HAS_COLUMN_NAMES],
                             "generate_input_from_spreadsheet_form should have column names")
 
-    def test_spreadsheet_process_empty_file(self):
+    def test_process_empty_file(self):
         from hedweb.constants import base_constants
         from hedweb.spreadsheet import process
         from hed.errors.exceptions import HedFileError
@@ -63,13 +63,10 @@ class Test(TestWebBase):
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        prefix_dict = {3: "Event/Long name/", 2: "Event/Label/", 4: "Event/Description/"}
-        spreadsheet = models.HedInput(spreadsheet_path,
-                                      worksheet_name='LKT Events',
-                                      tag_columns=[5],
-                                      has_column_names=True,
-                                      column_prefix_dictionary=prefix_dict,
-                                      name=spreadsheet_path)
+        prefix_dict = {2: "Event/Long name/", 1: "Event/Label/", 3: "Event/Description/"}
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT Events',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict, name=spreadsheet_path)
         arguments = {base_constants.SCHEMA: hed_schema, base_constants.SPREADSHEET: spreadsheet,
                      base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                      base_constants.CHECK_FOR_WARNINGS: True}
@@ -82,18 +79,15 @@ class Test(TestWebBase):
             self.assertTrue(results['data'],
                             'process validate should return validation errors using HED 8.0.0-beta.1')
 
-    def test_spreadsheet_process_validate_valid(self):
+    def test_process_validate_valid(self):
         from hedweb.spreadsheet import process
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        prefix_dict = {2: "Property/Informational-property/Label/", 4: "Property/Informational-property/Description/"}
-        spreadsheet = models.HedInput(spreadsheet_path,
-                                      worksheet_name='LKT 8HED3A',
-                                      tag_columns=[5],
-                                      has_column_names=True,
-                                      column_prefix_dictionary=prefix_dict,
-                                      name=spreadsheet_path)
+        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3A',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict, name=spreadsheet_path)
         arguments = {base_constants.SCHEMA: hed_schema, base_constants.SPREADSHEET: spreadsheet,
                      base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                      base_constants.CHECK_FOR_WARNINGS: True}
@@ -106,18 +100,15 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'],
                              'process should return success if validated')
 
-    def test_spreadsheet_validate_valid_excel(self):
+    def test_validate_valid_excel(self):
         from hedweb.spreadsheet import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
-        prefix_dict = {2: "Property/Informational-property/Label/", 4: "Property/Informational-property/Description/"}
+        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         hed_schema = hedschema.load_schema(schema_path)
-        spreadsheet = models.HedInput(spreadsheet_path,
-                                      worksheet_name='LKT 8HED3A',
-                                      tag_columns=[5],
-                                      has_column_names=True,
-                                      column_prefix_dictionary=prefix_dict,
-                                      name=spreadsheet_path)
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3A',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict, name=spreadsheet_path)
         with self.app.app_context():
             results = spreadsheet_validate(hed_schema, spreadsheet)
             print(results['data'])
@@ -126,18 +117,16 @@ class Test(TestWebBase):
             self.assertEqual('success', results["msg_category"],
                              'spreadsheet_validate msg_category should be success when no errors')
 
-    def test_spreadsheet_validate_valid_excel1(self):
+    def test_validate_valid_excel1(self):
         from hedweb.spreadsheet import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.1.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        prefix_dict = {2: "Property/Informational-property/Label/", 4: "Property/Informational-property/Description/"}
-        spreadsheet = models.HedInput(spreadsheet_path,
-                                      worksheet_name='LKT 8HED3',
-                                      tag_columns=[5],
-                                      has_column_names=True,
-                                      column_prefix_dictionary=prefix_dict,
-                                      name=spreadsheet_path)
+        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict,
+                                       name=spreadsheet_path)
         with self.app.app_context():
             results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False)
             self.assertFalse(results['data'],
@@ -150,13 +139,10 @@ class Test(TestWebBase):
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        prefix_dict = {2: "Property/Informational-property/Label/", 4: "Property/Informational-property/Description/"}
-        spreadsheet = models.HedInput(spreadsheet_path,
-                                      worksheet_name='LKT Events',
-                                      tag_columns=[5],
-                                      has_column_names=True,
-                                      column_prefix_dictionary=prefix_dict,
-                                      name=spreadsheet_path)
+        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT Events',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict, name=spreadsheet_path)
         with self.app.app_context():
             results = spreadsheet_validate(hed_schema, spreadsheet)
             self.assertTrue(results['data'],

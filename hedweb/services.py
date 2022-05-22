@@ -2,7 +2,7 @@ import os
 import io
 import json
 from flask import current_app
-from hed import models
+from hed.models import HedString, Sidecar, SpreadsheetInput, TabularInput
 from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
@@ -29,7 +29,7 @@ def get_input_from_request(request):
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
     get_column_parameters(arguments, service_request)
-    get_sidecars(arguments, service_request)
+    get_sidecar(arguments, service_request)
     get_input_objects(arguments, service_request)
     arguments[base_constants.QUERY] = service_request.get('query', None)
     return arguments
@@ -61,7 +61,7 @@ def get_column_parameters(arguments, params):
     arguments[base_constants.COLUMNS_INCLUDED] = columns_included
 
 
-def get_sidecars(arguments, params):
+def get_sidecar(arguments, params):
     """ Update arguments with the sidecars if there are any.
 
      Args:
@@ -71,16 +71,20 @@ def get_sidecars(arguments, params):
      Updates the arguments dictionary with the sidecars.
 
      """
-    sidecar_list = []
+    sidecar_str = ''
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        sidecar_list = [models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]), name='JSON_Sidecar')]
+        sidecar_str = params[base_constants.JSON_STRING]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        for index, sidecar_string in params[base_constants.JSON_LIST].items():
-            if not sidecar_string:
-                continue
-            sidecar_list.append(models.Sidecar(file=io.StringIO(params[base_constants.JSON_STRING]),
-                                               name=f"JSON_Sidecar {index}"))
-    arguments[base_constants.JSON_SIDECARS] = sidecar_list
+        merged_sidecar = {}
+        for s_string in params[base_constants.JSON_LIST].items():
+            sidecar_dict = json.dumps(s_string)
+            for key, item in sidecar_dict.items():
+                merged_sidecar[key] = item
+        sidecar_str = json.dumps(merged_sidecar)
+    if sidecar_str:
+        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=io.StringIO(sidecar_str), name=f"JSON_Sidecar")
+    else:
+        arguments[base_constants.JSON_SIDECAR] = None
 
 
 def get_input_objects(arguments, params):
@@ -96,20 +100,19 @@ def get_input_objects(arguments, params):
 
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
-            models.EventsInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                               sidecars=arguments.get(base_constants.JSON_SIDECARS, None), name='Events')
+            TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
+                         sidecar=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
-            models.HedInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
-                            tag_columns=tag_columns,
-                            has_column_names=has_column_names,
-                            column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
+            SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
+                             tag_columns=tag_columns, has_column_names=has_column_names,
+                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:
-            s_list.append(models.HedString(s))
+            s_list.append(HedString(s))
         arguments[base_constants.STRING_LIST] = s_list
 
 
@@ -148,6 +151,12 @@ def get_service_info(params):
 
 
 def get_input_schema(parameters):
+    """ Get a HedSchema or HedSchemaGroup object from the parameters.
+
+    Args:
+        parameters (dict): A dictionary of parameters extracted from the service request.
+
+    """
     the_schema = None
     try:
         if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
@@ -267,7 +276,7 @@ def get_parameter_string(params):
     param_list = []
     for p in params:
         if isinstance(p, list):
-            param_list.append( " or ".join(p))
+            param_list.append(" or ".join(p))
         else:
             param_list.append(p)
 

@@ -26,9 +26,8 @@ class Test(TestWebBase):
                                          base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
             request = Request(environ)
             arguments = get_input_from_form(request)
-            self.assertIsInstance(arguments[base_constants.JSON_SIDECARS], list,
-                                  "generate_input_from_sidecar_form should have a list of sidecars")
-            self.assertIsInstance(arguments[base_constants.JSON_SIDECARS][0], Sidecar,
+
+            self.assertIsInstance(arguments[base_constants.JSON_SIDECAR], Sidecar,
                                   "generate_input_from_sidecar_form should have a JSON dictionary in sidecar list")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
                                   "generate_input_from_sidecar_form should have a HED schema")
@@ -58,7 +57,7 @@ class Test(TestWebBase):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
 
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECARS: [json_sidecar],
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
                      base_constants.JSON_DISPLAY_NAME: 'bids_events_bad',
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
@@ -76,7 +75,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECARS: [json_sidecar],
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
                      base_constants.JSON_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: False,
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
@@ -94,7 +93,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECARS: [json_sidecar],
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
                      base_constants.JSON_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: True,
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
@@ -112,7 +111,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECARS: [json_sidecar],
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
                      base_constants.JSON_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: False,
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
@@ -130,7 +129,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(file=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECARS: [json_sidecar],
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
                      base_constants.JSON_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: True,
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
@@ -208,7 +207,7 @@ class Test(TestWebBase):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         with self.app.app_context():
-            results = sidecar_validate(hed_schema, [json_sidecar])
+            results = sidecar_validate(hed_schema, json_sidecar)
             self.assertTrue(results['data'],
                             'sidecar_validate results should have a data key when validation errors')
             self.assertEqual('warning', results['msg_category'],
@@ -222,12 +221,11 @@ class Test(TestWebBase):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         with self.app.app_context():
-            results = sidecar_validate(hed_schema, [json_sidecar, json_sidecar])
+            results = sidecar_validate(hed_schema, json_sidecar)
             self.assertTrue(results['data'],
                             'sidecar_validate results should have a data key when validation errors')
             self.assertEqual('warning', results['msg_category'],
                              'sidecar_validate msg_category should be warning when errors')
-
 
     def test_sidecar_validate_valid(self):
         from hed import models
@@ -237,7 +235,7 @@ class Test(TestWebBase):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         with self.app.app_context():
-            results = sidecar_validate(hed_schema, [json_sidecar, json_sidecar])
+            results = sidecar_validate(hed_schema, json_sidecar)
             self.assertFalse(results['data'],
                              'sidecar_validate results should not have a data key when no validation errors')
             self.assertEqual('success', results["msg_category"],
