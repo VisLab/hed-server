@@ -103,7 +103,7 @@ def schema_versions_results():
     """
 
     try:
-        hedschema.cache_all_hed_xml_versions()
+        hedschema.cache_xml_versions()
         hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_all_hed_versions()}
         return json.dumps(hed_info)
     except Exception as ex:
@@ -125,10 +125,11 @@ def services_results():
         response = services.process(arguments)
         return json.dumps(response)
     except Exception as ex:
-        errors = handle_error(ex)
+        errors = handle_error(ex, return_as_str=False)
+        response = {}
         response['error_type'] = errors.get('error_type', 'Unknown error type')
-        response['error_msg'] = errors.get('error_msg', 'Unknown failure')
-        return handle_error(ex)
+        response['error_msg'] = errors.get('message', 'Unknown failure')
+        return json.dumps(response)
 
 
 @route_blueprint.route(route_constants.SIDECAR_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])

@@ -58,15 +58,12 @@ def get_input_from_form(request):
 def process(arguments):
     """Perform the requested action for the sidecar.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the input arguments from the sidecar form
+    Args:
+        arguments (dict): A dictionary with the input arguments from the sidecar form.
 
-    Returns
-    -------
-      dict
-        A dictionary of results.
+    Returns:
+        dict: A dictionary of results in standard form.
+
     """
     hed_schema = arguments.get(base_constants.SCHEMA, None)
     command = arguments.get(base_constants.COMMAND, None)
