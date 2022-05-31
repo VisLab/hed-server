@@ -213,21 +213,16 @@ def get_hed_schema_from_pull_down(request):
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):
-    """Handles an error by returning a dictionary or simple string
+    """ Handles an error by returning a dictionary or simple string.
 
-    Parameters
-    ----------
-    ex: Exception
-        The exception raised.
-    hed_info: dict
-        A dictionary of information.
-    title: str
-        A title to be included with the message.
-    return_as_str: bool
-        If true return as string otherwise as dictionary
-    Returns
-    -------
-    str or dict
+    Args:
+        ex (Exception): The exception raised.
+        hed_info (dict): A dictionary of information describing the error.
+        title (str):  A title to be included with the message.
+        return_as_str (bool): If true return as string otherwise as dictionary.
+
+    Returns:
+        str or dict: Contains error information.
 
     """
 
@@ -249,6 +244,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
     if return_as_str:
         return json.dumps(hed_info)
     else:
+        hed_info['error_type'] = error_code
         return hed_info
 
 

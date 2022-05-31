@@ -95,9 +95,9 @@ class Test(TestWebBase):
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
             spreadsheet = SpreadsheetInput(file=spreadsheet_path, file_type='.xlsx',
-                                           tag_columns=[5], has_column_names=True,
-                                           column_prefix_dictionary={2: 'Attribute/Informational/Label/',
-                                                                     4: 'Attribute/Informational/Description/'},
+                                           tag_columns=[4], has_column_names=True,
+                                           column_prefix_dictionary={1: 'Label/',
+                                                                     3: 'Description/'},
                                            name='ExcelOneSheet.xlsx')
             results = {base_constants.SPREADSHEET: spreadsheet,
                        base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx'}
