@@ -96,7 +96,7 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=check_for_warnings)
     if results['data']:
         return results
@@ -131,7 +131,7 @@ def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
         dict: A dictionary containing results of validation in standard format.
 
     """
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     validator = HedValidator(hed_schema=hed_schema)
     issues = spreadsheet.validate_file(validator, check_for_warnings=check_for_warnings)
     display_name = spreadsheet.name

@@ -85,7 +85,7 @@ def schema_version_results():
             f = request.files[base_constants.SCHEMA_PATH]
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
                                                file_type=secure_filename(f.filename))
-            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.header_attributes['version']
+            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.version
         return json.dumps(hed_info)
     except Exception as ex:
         return handle_error(ex)
@@ -104,7 +104,7 @@ def schema_versions_results():
 
     try:
         hedschema.cache_xml_versions()
-        hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_all_hed_versions()}
+        hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_hed_versions()}
         return json.dumps(hed_info)
     except Exception as ex:
         return handle_error(ex)

@@ -127,7 +127,7 @@ def schema_convert(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown')
+    schema_version = hed_schema.version
     schema_format = get_file_extension(display_name)
     if schema_format == file_constants.SCHEMA_XML_EXTENSION:
         data = hed_schema.get_as_mediawiki_string()
@@ -156,7 +156,7 @@ def schema_validate(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown')
+    schema_version = hed_schema.version
     issues = hed_schema.check_compliance()
     if issues:
         issue_str = get_printable_issue_string(issues, f"Schema HED 3G compliance errors for {display_name}:")
