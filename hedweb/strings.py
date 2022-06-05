@@ -93,7 +93,7 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
         A dictionary with the results of string processing in standard format.
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     results = validate(hed_schema, string_list, check_for_warnings=check_for_warnings)
     if results['data']:
         return results
@@ -139,7 +139,7 @@ def validate(hed_schema, string_list, check_for_warnings=False):
         A dictionary with results
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     hed_validator = HedValidator(hed_schema=hed_schema)
 
     validation_errors = []

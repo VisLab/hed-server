@@ -105,7 +105,7 @@ def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     # results = sidecar_validate(hed_schema, sidecar, check_for_warnings=False)
     # if results['data']:
     #     return results
@@ -208,7 +208,7 @@ def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     display_name = sidecar.name
     validator = HedValidator(hed_schema)
     issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
