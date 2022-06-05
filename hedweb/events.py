@@ -106,7 +106,7 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     results = validate(hed_schema, events)
     if results['data']:
         return results
@@ -165,7 +165,7 @@ def search(hed_schema, events, query, columns_included=None):
         dict: A dictionary pointing to results or errors.
 
     """
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     results = validate(hed_schema, events)
     if results['data']:
         return results
@@ -202,7 +202,7 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     display_name = events.name
     validator = HedValidator(hed_schema=hed_schema)
     issue_str = ''
@@ -241,7 +241,7 @@ def validate_query(hed_schema, query):
 
     """
 
-    schema_version = hed_schema.header_attributes.get('version', 'Unknown version')
+    schema_version = hed_schema.version
     if not query:
         display_name = 'empty_query'
         issue_str = "Empty query could not be processed."
