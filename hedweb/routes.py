@@ -67,15 +67,10 @@ def schema_results():
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])
 def schema_version_results():
-    """Finds the information about the HED version of a file and returns as JSON.
+    """ Return the version of the schema as a JSON string.
 
-    Parameters
-    ----------
-
-    Returns
-    -------
-    string
-        A serialized JSON string containing information related to the spreadsheet columns.
+    Returns:
+        string: A serialized JSON string containing the version of the schema.
 
     """
 
