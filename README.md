@@ -1,10 +1,10 @@
 # hedweb
 
 This project contains the web interface code for deploying HED tools as a web application running in a docker module. 
-The instructions assume that you have cloned the `hed-python` github repository:
+The instructions assume that you have cloned the `hed-web` github repository:
 
 ```
-git clone https://github.com/hed-standard/hed-python
+git clone https://github.com/hed-standard/hed-web
 ```
 
 
@@ -18,7 +18,7 @@ To do this you will have to do the following:
    2.  Change `BASE_DIRECTORY` in the `Config` class to point to the directory that
        you want the application to use to temporarily store uploads and to cache the
        HED schema.
-2. Use `pip` to install `hedtool` from the 
+2. Use `pip` to install `hedtools` from the 
 [GitHub](https://github.com/hed-standard/hed-python) repository,
 since `hedtools` is not yet available on PyPI:
 
@@ -26,16 +26,16 @@ since `hedtools` is not yet available on PyPI:
        pip install git+https://github.com/hed-standard/hed-python/@master
    ```
 
-Once this installation is complete, you can execute `runserver`. This call should
-bring up a Flask test server. Paste the indicated link into a web browser, and you are 
-ready to go.
+Once this installation is complete, you can execute `runserver`.
+This call should bring up a Flask test server.
+Paste the indicated link into a web browser, and you are ready to go.
 
 ### Deployment on an external webserver
 
 #### Overview
-The `deploy_hed` directory contains scripts and configuration files that are needed 
-to deploy the application as a docker container. These instructions assume that you
-have a Linux server with apache2 and docker installed.  
+The `deploy_hed` directory contains scripts and configuration files that are needed
+to deploy the application as a docker container.
+These instructions assume that you have a Linux server with apache2 and docker installed.  
 
 The current setup assumes that an apache web server runs inside a docker container
 using internal port 80.
@@ -46,8 +46,7 @@ internal server running on port 80.
 
 If you are on the Linux server, you can run the online tools directly in a web 
 browser using the address http://127.0.0.1:33000/hed.
-In a production environment,
-the tools are meant to be run through an Apache web server with proxies.
+In a production environment, the tools are meant to be run through an Apache web server with proxies.
 The description of how to set this up is described elsewhere.
 
 #### Deploying the docker module
@@ -60,7 +59,7 @@ The instructions assume that you have DOCKER installed.
 2. Download the
 [hed-web deployment script](https://raw.githubusercontent.com/hed-standard/hed-web/master/deploy_hed/deploy.sh)
 to your `deploy_hed` directory.
-3. Change to the `deploy_hed` directory and execute of `deploy.sh` script:
+3. Change to the `deploy_hed` directory:
 
 ```  
    cd ~/deploy_hed
