@@ -8,7 +8,7 @@ sys.path.append('hedtools')
 
 class TestWebBase(unittest.TestCase):
     enable_csrf = False
-    cache_schemas = False
+    cache_schemas = True
 
     @classmethod
     def setUpClass(cls):
