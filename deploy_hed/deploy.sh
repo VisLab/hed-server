@@ -2,6 +2,11 @@
 
 # deploy.sh - A script used to _build and deploy a docker container for the HEDTools online validator
 
+if [ $# -eq 0 ]; then
+  BRANCH="master"
+else
+  BRANCH="$1"
+fi
 ##### Constants
 
 DEPLOY_DIR=${PWD}
@@ -11,8 +16,8 @@ GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
 GIT_TOOLS_REPO_URL="https://github.com/hed-standard/hed-python"
 GIT_HED_PYTHON_DIR="${DEPLOY_DIR}/hed-python"
 GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
-GIT_WEB_REPO_BRANCH="master"
-GIT_TOOLS_REPO_BRANCH="master"
+GIT_WEB_REPO_BRANCH=${BRANCH}
+GIT_TOOLS_REPO_BRANCH=${BRANCH}
 HOST_PORT=33000
 CONTAINER_PORT=80
 
