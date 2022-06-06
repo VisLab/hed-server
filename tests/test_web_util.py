@@ -28,6 +28,8 @@ class Test(TestWebBase):
     def test_form_has_option(self):
         from hedweb.web_util import form_has_option
         from hedweb.constants import base_constants
+        import hed.schema as hedschema
+        print(f"\nCache directory {os.path.realpath(hedschema.get_cache_directory())}")
         with self.app.test as _:
             environ = create_environ(data={base_constants.CHECK_FOR_WARNINGS: 'on'})
             request = Request(environ)

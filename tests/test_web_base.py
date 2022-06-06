@@ -17,6 +17,7 @@ class TestWebBase(unittest.TestCase):
         with app.app_context():
             import hed.schema as hedschema
             hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
+
             if cls.cache_schemas:
                 hedschema.cache_xml_versions()
             from hedweb.routes import route_blueprint
