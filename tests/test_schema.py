@@ -12,7 +12,6 @@ class Test(TestWebBase):
                           "An exception is raised if an empty request is passed to generate_input_from_schema")
 
     def test_get_input_from_schema_form_valid(self):
-        from hed.schema import HedSchema
         from hedweb.constants import base_constants
         from hedweb.schema import get_input_from_form
         with self.app.test:

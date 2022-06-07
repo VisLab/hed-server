@@ -54,21 +54,19 @@ def form_has_file(request, file_field, valid_extensions=None):
 
 
 def form_has_option(request, option_name, target_value):
-    """Checks if the given option has a specific value. This is used for radio buttons and check boxes.
+    """ Return True if given option has a specific value.
 
-    Parameters
-    ----------
-    request: Request
-        A Request object produced by the post of a form
-    option_name: str
-        String containing the name of the radio button group in the hedweb form
-    target_value: str
-        String containing the name of the selected radio button option
+    Args:
+        request (Request): A Request object produced by the post of a form.
+        option_name (str): The name of the radio button group in the hedweb form.
+        target_value (str): The name of the selected radio button option.
 
-    Returns
-    -------
-    Bool
-        True if the target radio button has been set and false otherwise
+    Returns:
+        bool: True if the target radio button has been set and false otherwise.
+
+    Notes:
+        -  This is used for radio buttons and check boxes.
+
     """
 
     if option_name in request.form and request.form[option_name] == target_value:

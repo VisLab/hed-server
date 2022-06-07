@@ -1,10 +1,10 @@
+import os
 from os.path import basename
 from urllib.parse import urlparse
 from flask import current_app
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
-from hed.util import get_file_extension
 from hed.errors import get_exception_issue_string, get_printable_issue_string
 from hed.errors import HedFileError
 from hed.util import generate_filename
@@ -58,9 +58,10 @@ def get_input_from_form(request):
 
     """
 
-    arguments = { base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
-                  base_constants.CHECK_FOR_WARNINGS:
-                  form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
+    arguments = {
+                    base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
+                    base_constants.CHECK_FOR_WARNINGS:
+                    form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
                 }
     if form_has_option(request, base_constants.SCHEMA_UPLOAD_OPTIONS, base_constants.SCHEMA_FILE_OPTION) and \
             form_has_file(request, base_constants.SCHEMA_FILE, file_constants.SCHEMA_EXTENSIONS):
@@ -116,7 +117,7 @@ def process(arguments):
 
 
 def schema_convert(hed_schema, display_name):
-    """ Return a string representation of hed_schema in the desired format as determined by the display name extention.
+    """ Return a string representation of hed_schema in the desired format as determined by the display name extension.
 
     Args:
         hed_schema (HedSchema): A HedSchema object containing the schema to be processed.
@@ -128,7 +129,7 @@ def schema_convert(hed_schema, display_name):
     """
 
     schema_version = hed_schema.version
-    schema_format = get_file_extension(display_name)
+    schema_format = os.path.splitext(display_name)[1]
     if schema_format == file_constants.SCHEMA_XML_EXTENSION:
         data = hed_schema.get_as_mediawiki_string()
         extension = '.mediawiki'
