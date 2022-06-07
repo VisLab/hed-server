@@ -1,3 +1,4 @@
+import os
 import io
 import json
 from flask import current_app
@@ -9,7 +10,7 @@ from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models import SpreadsheetInput, Sidecar
 from hed.tools import df_to_hed, hed_to_df, merge_hed_dict
-from hed.util import generate_filename, get_file_extension
+from hed.util import generate_filename
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
@@ -44,13 +45,13 @@ def get_input_from_form(request):
     if base_constants.SPREADSHEET_FILE in request.files and \
             request.files[base_constants.SPREADSHEET_FILE].filename:
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
-        file_ext = get_file_extension(filename)
+        file_ext = os.path.splitext(filename)[1]
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
             arguments[base_constants.SPREADSHEET_TYPE] = file_constants.EXCEL_EXTENSION
         spreadsheet = SpreadsheetInput(file=request.files[base_constants.SPREADSHEET_FILE],
-                               file_type=arguments[base_constants.SPREADSHEET_TYPE],
-                               worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
-                               tag_columns=['HED'], has_column_names=True, name=filename)
+                                       file_type=arguments[base_constants.SPREADSHEET_TYPE],
+                                       worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
+                                       tag_columns=['HED'], has_column_names=True, name=filename)
         arguments[base_constants.SPREADSHEET] = spreadsheet
     return arguments
 
@@ -180,7 +181,7 @@ def sidecar_merge(sidecar, spreadsheet, include_description_tags=False):
     """
 
     if not spreadsheet:
-        raise HedFileError('MissingSpreadsheet', f'Cannot merge spreadsheet with sidecar', '')
+        raise HedFileError('MissingSpreadsheet', 'Cannot merge spreadsheet with sidecar', '')
     df = spreadsheet.dataframe
     hed_dict = df_to_hed(df, description_tag=include_description_tags)
     json_string = sidecar.get_as_json_string()

@@ -82,7 +82,7 @@ def get_sidecar(arguments, params):
                 merged_sidecar[key] = item
         sidecar_str = json.dumps(merged_sidecar)
     if sidecar_str:
-        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=io.StringIO(sidecar_str), name=f"JSON_Sidecar")
+        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=io.StringIO(sidecar_str), name="JSON_Sidecar")
     else:
         arguments[base_constants.JSON_SIDECAR] = None
 

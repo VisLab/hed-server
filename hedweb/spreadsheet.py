@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import SpreadsheetInput
-from hed.util import generate_filename, get_file_extension
+from hed.util import generate_filename
 from hed.validator import HedValidator
 
 from hedweb.constants import base_constants, file_constants
@@ -37,7 +37,7 @@ def get_input_from_form(request):
 
     tag_columns, prefix_dict = get_prefix_dict(request.form)
     filename = request.files[base_constants.SPREADSHEET_FILE].filename
-    file_ext = get_file_extension(filename)
+    file_ext = os.path.splitext(filename)[1]
     if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
         arguments[base_constants.SPREADSHEET_TYPE] = file_constants.EXCEL_EXTENSION
     spreadsheet = SpreadsheetInput(file=request.files[base_constants.SPREADSHEET_FILE],

@@ -131,7 +131,7 @@ class Test(TestWebBase):
             self.assertTrue(headers_dict['Message'],
                             "The error message for invalid mediawiki conversion should not be empty")
             self.assertGreater(len(headers_dict['Content-Disposition']), 0,
-                             "An error file should be returned if the mediawiki cannot load.")
+                               "An error file should be returned if the mediawiki cannot load.")
             schema_buffer.close()
 
     def test_schema_results_validate_mediawiki_valid(self):

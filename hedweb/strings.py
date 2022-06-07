@@ -15,17 +15,14 @@ app_config = current_app.config
 
 
 def get_input_from_form(request):
-    """Gets input arguments from a request object associated with the string form.
+    """ Get input arguments from a request object associated with the string form.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the string form.
+    Args:
+        request (Request): A Request object containing user data from the string form.
 
-    Returns
-    -------
-    dict
-        A dictionary containing input arguments for calling the underlying string processing functions.
+    Returns:
+        dict: Contains input arguments for calling the underlying string processing functions.
+
     """
     hed_schema = get_hed_schema_from_pull_down(request)
     hed_string = request.form.get(base_constants.STRING_INPUT, None)
@@ -42,17 +39,14 @@ def get_input_from_form(request):
 
 
 def process(arguments):
-    """Perform the requested string processing action
+    """ Perform the requested string processing action.
 
-    Parameters
-    ----------
-    arguments: dict
-        A dictionary with the input arguments from the string form or string service request.
+    Args:
+        arguments (dict): A dictionary with the input arguments from the string form or string service request.
 
-    Returns
-    -------
-    dict
-        A dictionary with the results in standard format.
+    Returns:
+        dict: The results in standard format.
+
     """
     hed_schema = arguments.get('schema', None)
     if not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
@@ -74,23 +68,17 @@ def process(arguments):
 
 
 def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, check_for_warnings=False):
-    """Converts a list of strings from long to short or long to short then converts to short
+    """ Convert a list of strings from long to short or long to short then converts to short.
 
-    Parameters
-    ----------
-    hed_schema: HedSchema
-        The HED schema to be used in processing
-    string_list: list of HedString
-        A list of HedString to be processed
-    command: str
-        Name of the command to execute (default to short if unrecognized)
-    check_for_warnings: bool
-        Indicates whether validation should check for warnings as well as errors
+    Args:
+        hed_schema (HedSchema or HedSchemas): The HED schema to be used in processing.
+        string_list (list): A list of HedString to be processed.
+        command (str): Name of the command to execute (default to short if unrecognized)
+        check_for_warnings (bool): Indicates whether validation should check for warnings as well as errors.
 
-    Returns
-    -------
-    dict
-        A dictionary with the results of string processing in standard format.
+    Returns:
+        dict: The results of string processing in standard format.
+
     """
 
     schema_version = hed_schema.version
@@ -122,21 +110,15 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
 
 
 def validate(hed_schema, string_list, check_for_warnings=False):
-    """Validates a list of strings and returns a dictionary containing the issues or a no errors message
+    """ Validate a list of strings and returns a dictionary containing the issues or a no errors message.
 
-    Parameters
-    ----------
-    hed_schema: HedSchema
-        The HED schema to be used in processing
-    string_list: list
-        A list of string to be processed
-    check_for_warnings: bool
-        Indicates whether validation should check for warnings as well as errors
+    Args:
+        hed_schema (HedSchema or HedSchemas): The HED schema to be used in processing.
+        string_list (list): A list of strings to be processed.
+        check_for_warnings (bool): If True, check for warnings as well as errors
 
-    Returns
-    -------
-    dict
-        A dictionary with results
+    Returns:
+        dict: The results in standard form.
     """
 
     schema_version = hed_schema.version
