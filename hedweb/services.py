@@ -71,18 +71,16 @@ def get_sidecar(arguments, params):
      Updates the arguments dictionary with the sidecars.
 
      """
-    sidecar_str = ''
+    sidecar_list = []
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        sidecar_str = params[base_constants.JSON_STRING]
+        sidecar_list = [params[base_constants.JSON_STRING]]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        merged_sidecar = {}
-        for s_string in params[base_constants.JSON_LIST].items():
-            sidecar_dict = json.dumps(s_string)
-            for key, item in sidecar_dict.items():
-                merged_sidecar[key] = item
-        sidecar_str = json.dumps(merged_sidecar)
-    if sidecar_str:
-        arguments[base_constants.JSON_SIDECAR] = Sidecar(file=io.StringIO(sidecar_str), name="JSON_Sidecar")
+        sidecar_list =  params[base_constants.JSON_LIST]
+    if sidecar_list:
+        file_list = []
+        for s_string in sidecar_list:
+            file_list.append(io.StringIO(s_string))
+        arguments[base_constants.JSON_SIDECAR] = Sidecar(files=file_list, name="Merged_JSON_Sidecar")
     else:
         arguments[base_constants.JSON_SIDECAR] = None
 

@@ -193,23 +193,22 @@ class Test(TestWebBase):
             self.assertTrue(headers_dict['Content-Disposition'],
                             "Validation of valid gen2 xml should return validation error file")
 
-    # TODO: Uncomment when version 8.0.1 is released --- it should work
-    # def test_schema_results_validate_xml_url_valid(self):
-    #     schema_url = \
-    #         'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.1.xml'
-    #     with self.app.app_context():
-    #         input_data = {'schema_upload_options': 'schema_url_option',
-    #                       'command_option': 'validate',
-    #                       'schema_url': schema_url,
-    #                       'check_for_warnings': 'on'}
-    #         response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
-    #         self.assertEqual(200, response.status_code, 'Validation of a valid xml url has a response')
-    #         headers_dict = dict(response.headers)
-    #         self.assertEqual("success", headers_dict["Category"],
-    #                          "The valid xml url should be successful")
-    #         self.assertFalse(response.data, "The validated xml url schema should return empty response data")
-    #         self.assertEqual(None, headers_dict.get('Content-Disposition', None),
-    #                          "Validation of valid xml url should not return an error file")
+    def test_schema_results_validate_xml_url_valid(self):
+        schema_url = \
+            'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.1.0.xml'
+        with self.app.app_context():
+            input_data = {'schema_upload_options': 'schema_url_option',
+                          'command_option': 'validate',
+                          'schema_url': schema_url,
+                          'check_for_warnings': 'on'}
+            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            self.assertEqual(200, response.status_code, 'Validation of a valid xml url has a response')
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"],
+                             "The valid xml url should be successful")
+            self.assertFalse(response.data, "The validated xml url schema should return empty response data")
+            self.assertEqual(None, headers_dict.get('Content-Disposition', None),
+                             "Validation of valid xml url should not return an error file")
 
 
 if __name__ == '__main__':

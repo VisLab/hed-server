@@ -12,38 +12,30 @@ from hedweb.constants import base_constants, file_constants
 app_config = current_app.config
 
 
-def file_extension_is_valid(filename, accepted_file_extensions=None):
-    """Checks the other extension against a list of accepted ones.
-    Parameters
-    ----------
-    filename: string
-        The name of the other.
-    accepted_file_extensions: list
-        A list containing all of the accepted other extensions.
-    Returns
-    -------
-    boolean
-        True if the other has a valid other extension.
+def file_extension_is_valid(filename, accepted_extensions=None):
+    """ Return True if the file extension is an accepted one.
+
+    Args:
+        filename (str): The name of the file to be checked.
+        accepted_extensions (list): A list of accepted extensions.
+
+    Returns:
+        bool: True if the file has an accepted extension.
+
     """
-    return not accepted_file_extensions or os.path.splitext(filename.lower())[1] in accepted_file_extensions
+    return not accepted_extensions or os.path.splitext(filename.lower())[1] in accepted_extensions
 
 
 def form_has_file(request, file_field, valid_extensions=None):
-    """Checks to see if a file name with valid extension is present in the request object.
+    """ Return True if a file with valid extension is in the request.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from the schema form.
-    file_field: str
-        Name of the form field containing the file name
-    valid_extensions: list of str
-        List of valid extensions
+    Args:
+        request (Request): A Request object containing user data from the form.
+        file_field (str): Name of the form field containing the file name.
+        valid_extensions (list): A list of valid extensions.
 
-    Returns
-    -------
-    boolean
-        True if a file is present in a request object.
+    Returns:
+        bool: True if a file is present in a request object.
 
     """
 
@@ -75,21 +67,15 @@ def form_has_option(request, option_name, target_value):
 
 
 def form_has_url(request, url_field, valid_extensions=None):
-    """Checks to see if the url_field has a value with a valid extension.
+    """ Return True if the url_field has a valid extension.
 
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from a form.
-    url_field: str
-        The name of the value field in the form containing the URL to be parsed.
-    valid_extensions: list of str
-        List of valid extensions
+    Args:
+        request (Request): A Request object containing form data.
+        url_field (str): The name of the form field with the URL to be parsed.
+        valid_extensions (list): A list of valid extensions.
 
-    Returns
-    -------
-    boolean
-        True if a URL is present in request object.
+    Returns:
+        bool: True if a URL is present in request object.
 
     """
     if url_field not in request.form:
@@ -100,25 +86,17 @@ def form_has_url(request, url_field, valid_extensions=None):
 
 def generate_download_file_from_text(download_text, display_name=None,
                                      header=None, msg_category='success', msg=''):
-    """Generates a download other response.
+    """ Generate a download file from text output.
 
-    Parameters
-    ----------
-    download_text: str
-        Text with newlines for iterating.
-    display_name: str
-        Name to be assigned to the file in the response
-    header: str
-        Optional header -- header for download file blob
-    msg_category: str
-        Category of the message to be displayed ('Success', 'Error', 'Warning')
-    msg: str
-        Optional message to be displayed in the submit-flash-field
+    Args:
+        download_text (str): Text with newlines for iterating.
+        display_name (str): Name to be assigned to the file in the response.
+        header (str): Optional header for download file blob.
+        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
+        msg (str): Optional message to be displayed in the submit-flash-field.
 
-    Returns
-    -------
-    response object
-        A response object containing the downloaded file.
+    Returns:
+        Response: A Response object containing the downloaded file.
 
     """
     if not display_name:
@@ -139,6 +117,17 @@ def generate_download_file_from_text(download_text, display_name=None,
 
 
 def generate_download_spreadsheet(results,  msg_category='success', msg=''):
+    """ Generate a download Excel file.
+
+    Args:
+        results (dict): Dictionary with the results to be downloaded.
+        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
+        msg (str): Optional message to be displayed in the submit-flash-field.
+
+    Returns:
+        Response: A Response object containing the downloaded file.
+
+    """
     # return generate_download_test()
     spreadsheet = results[base_constants.SPREADSHEET]
     display_name = results[base_constants.OUTPUT_DISPLAY_NAME]
@@ -159,21 +148,16 @@ def generate_download_spreadsheet(results,  msg_category='success', msg=''):
 
 
 def generate_text_response(download_text, msg_category='success', msg=''):
-    """Generates a download other response.
+    """ Generate a download response.
 
-    Parameters
-    ----------
-    download_text: str
-        Text to be downloaded as part of the response.
-    msg_category: str
-        Category of the message to be displayed ('Success', 'Error', 'Warning')
-    msg: str
-        Optional message to be displayed in the submit-flash-field
+    Args:
+        download_text (str): Text to be downloaded as part of the response.
+        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
+        msg (str): Optional message to be displayed in the submit-flash-field.
 
-    Returns
-    -------
-    response object
-        A response object containing the downloaded file.
+    Returns:
+        Response: A Response object containing the downloaded file.
+
 
     """
     headers = {'Category': msg_category, 'Message': msg}
@@ -183,16 +167,14 @@ def generate_text_response(download_text, msg_category='success', msg=''):
 
 
 def get_hed_schema_from_pull_down(request):
-    """Creates a HedSchema object from a section of form that uses a pull-down box and hed_cache
-    Parameters
-    ----------
-    request: Request object
-        A Request object containing user data from a form.
+    """ Create a HedSchema object from form pull-down box.
 
-    Returns
-    -------
-    tuple: str
-        A HedSchema object
+    Args:
+        request (Request): A Request object containing form data.
+
+    Returns:
+        HedSchema: The HED schema to use.
+
     """
 
     if base_constants.SCHEMA_VERSION not in request.form:
@@ -211,7 +193,7 @@ def get_hed_schema_from_pull_down(request):
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):
-    """ Handles an error by returning a dictionary or simple string.
+    """ Handle an error by returning a dictionary or simple string.
 
     Args:
         ex (Exception): The exception raised.
@@ -247,17 +229,13 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
 
 
 def handle_http_error(ex):
-    """Handles an http error.
+    """ Handle an http error.
 
-    Parameters
-    ----------
-    ex: Exception
-        A class that extends python Exception class
-    Returns
-    -------
-    Response
-        A response object indicating the field_type of error
+    Args:
+        ex (Exception): A class that extends python Exception class.
 
+    Returns:
+        Response: A response object indicating the field_type of error.
 
     """
     if hasattr(ex, 'error_type'):
@@ -273,6 +251,12 @@ def handle_http_error(ex):
 
 
 def package_results(results):
+    """Package a results dictionary into a standard form.
+
+    Args:
+        results (dict): A dictionary with the results
+
+    """
     msg = results.get('msg', '')
     msg_category = results.get('msg_category', 'success')
     display_name = results.get('output_display_name', '')
