@@ -15,12 +15,10 @@ route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 @route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
 def columns_info_results():
-    """Gets the names of the spreadsheet columns and sheet_name names if any.
+    """ Return spreadsheet column and sheet names.
 
-    Returns
-    -------
-    string
-        A serialized JSON string containing information related to the column and sheet_name information.
+    Returns:
+        str: A serialized JSON string with column and sheet_name information.
 
     """
     try:
@@ -32,12 +30,17 @@ def columns_info_results():
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
 def events_results():
-    """Process the events file and JSON sidecar in the form and return an attachment with results.
+    """ Process events form submission and return results.
 
-    Returns
-    -------
-        downloadable file
-        Contains the results of processing
+    Returns:
+        Response: The response appropriate to the request.
+
+    Notes:
+        The response depends on the request:
+        - validation: text file with validation errors
+        - assemble:  an assembled events file containing assembled events.
+        - generate:  a JSON sidecar generated from the events file.
+
     """
 
     try:
@@ -50,11 +53,15 @@ def events_results():
 
 @route_blueprint.route(route_constants.SCHEMA_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
 def schema_results():
-    """Get the results of schema processing.
+    """ Process schema form submission and return results.
 
-    Returns
-    -------
-        downloadable file if schema errors on validation or conversion was successful
+    Returns:
+        Response: The response appropriate to the request.
+
+    Notes:
+        The response depends on the request:
+        - validation: text file with validation errors
+        - convert:  text file with converted schema.
 
     """
     try:
@@ -88,12 +95,10 @@ def schema_version_results():
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET', 'POST'])
 def schema_versions_results():
-    """Gets a list of hed versions from the hed_cache and returns as a serialized JSON string
+    """ Return serialized JSON string with hed versions.
 
-    Returns
-    -------
-    string
-        A serialized JSON string containing a list of the HED versions.
+    Returns:
+        str: A serialized JSON string containing a list of the HED versions.
 
     """
 
@@ -107,34 +112,38 @@ def schema_versions_results():
 
 @route_blueprint.route(route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
 def services_results():
-    """Perform the requested web service and return the results in JSON.
+    """ Perform the requested web service and return the results in JSON.
 
-    Returns
-    -------
-        string
-        A serialized JSON string containing processed information.
+    Returns:
+        str: A serialized JSON string containing processed information.
+
     """
-    response = {}
+
     try:
         arguments = services.get_input_from_request(request)
         response = services.process(arguments)
         return json.dumps(response)
     except Exception as ex:
         errors = handle_error(ex, return_as_str=False)
-        response = {}
-        response['error_type'] = errors.get('error_type', 'Unknown error type')
-        response['error_msg'] = errors.get('message', 'Unknown failure')
+        response = {'error_type': errors.get('error_type', 'Unknown error type'),
+                    'error_msg': errors.get('message', 'Unknown failure')}
         return json.dumps(response)
 
 
 @route_blueprint.route(route_constants.SIDECAR_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
 def sidecar_results():
-    """Process the JSON sidecar after form submission and return an attachment containing the output.
+    """ Process sidecar form submission and return results.
 
-    Returns
-    -------
-        download file
-        A text file with the validation errors or a converted sidecar.
+    Returns:
+        Response: The response appropriate to the request.
+
+    Notes:
+        The response depends on the request:
+        - validation: text file with validation errors
+        - convert:  converted sidecar.
+        - extract:  4-column spreadsheet.
+        - merge:  a merged sidecar.
+
     """
 
     try:
@@ -147,12 +156,16 @@ def sidecar_results():
 
 @route_blueprint.route(route_constants.SPREADSHEET_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
 def spreadsheet_results():
-    """Process the spreadsheet in the form and return an attachment with the results.
+    """ Process the spreadsheet in the form and return results.
 
-    Returns
-    -------
-        string
-        Validation errors in readable format.
+    Returns:
+        Response: The response appropriate to the request.
+
+    Notes:
+        The response depends on the request:
+        - validation: text file with validation errors
+        - convert:  converted spreadsheet.
+
     """
 
     try:
@@ -166,14 +179,17 @@ def spreadsheet_results():
 
 @route_blueprint.route(route_constants.STRING_SUBMIT_ROUTE, strict_slashes=False, methods=['GET', 'POST'])
 def string_results():
-    """Process hed strings entered in a text box.
+    """ Process string entered in a form text box.
 
-    Returns
-    -------
-        A serialized JSON string
+    Returns:
+        Response: The response appropriate to the request.
+
+    Notes:
+        The response depends on the request, but appears in text box.
+        - validation: validation errors
+        - convert:  converted sting.
 
     """
-
     try:
         input_arguments = strings.get_input_from_form(request)
         a = strings.process(input_arguments)
@@ -184,12 +200,10 @@ def string_results():
 
 @route_blueprint.route(route_constants.EVENTS_ROUTE, strict_slashes=False, methods=['GET'])
 def render_events_form():
-    """The form for BIDS event file (with JSON sidecar) processing.
+    """ Form for BIDS event file (with JSON sidecar) processing.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the events form.
+    Returns:
+        template: A rendered template for the events form.
 
     """
     return render_template(page_constants.EVENTS_PAGE)
@@ -197,12 +211,10 @@ def render_events_form():
 
 @route_blueprint.route(route_constants.HED_TOOLS_HOME_ROUTE, strict_slashes=False, methods=['GET'])
 def render_home_page():
-    """The home page.
+    """ The home page.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the home page.
+    Returns:
+        template: A rendered template for the home page.
 
     """
     return render_template(page_constants.HED_TOOLS_HOME_PAGE)
@@ -210,12 +222,10 @@ def render_home_page():
 
 @route_blueprint.route(route_constants.SCHEMA_ROUTE, strict_slashes=False, methods=['GET'])
 def render_schema_form():
-    """Handles the site root and conversion tab functionality.
+    """ The schema processing form.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the schema processing form.
+    Returns:
+        template: A rendered template for the schema processing form.
 
     """
     return render_template(page_constants.SCHEMA_PAGE)
@@ -223,12 +233,10 @@ def render_schema_form():
 
 @route_blueprint.route(route_constants.SERVICES_ROUTE, strict_slashes=False, methods=['GET'])
 def render_services_form():
-    """Landing page for HED hedweb services designed to be called from programs such as MATLAB.
+    """ Landing page for HED hedweb services.
 
-    Returns
-    -------
-    Rendered template
-        A dummy rendered template so that the service can get a csrf token.
+    Returns:
+        template: A dummy rendered template so that the service can get a csrf token.
 
     """
     return render_template(page_constants.SERVICES_PAGE)
@@ -236,12 +244,10 @@ def render_services_form():
 
 @route_blueprint.route(route_constants.SIDECAR_ROUTE, strict_slashes=False, methods=['GET'])
 def render_sidecar_form():
-    """Page with the sidecar processing form.
+    """ The sidecar form.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the sidecar form.
+    Returns:
+        template: A rendered template for the sidecar form.
 
     """
     return render_template(page_constants.SIDECAR_PAGE)
@@ -249,12 +255,10 @@ def render_sidecar_form():
 
 @route_blueprint.route(route_constants.SPREADSHEET_ROUTE, strict_slashes=False, methods=['GET'])
 def render_spreadsheet_form():
-    """Displays the spreadsheet Validation form.
+    """ The spreadsheet form.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the spreadsheet hed tags form.
+    Returns:
+        template: A rendered template for the spreadsheet form.
 
     """
     return render_template(page_constants.SPREADSHEET_PAGE)
@@ -262,12 +266,10 @@ def render_spreadsheet_form():
 
 @route_blueprint.route(route_constants.STRING_ROUTE, strict_slashes=False, methods=['GET'])
 def render_string_form():
-    """Renders a form for different hed string operations.
+    """ The HED string form.
 
-    Returns
-    -------
-    Rendered template
-        A rendered template for the hedstring form.
+    Returns:
+        template: A rendered template for the HED string form.
 
     """
     return render_template(page_constants.STRING_PAGE)

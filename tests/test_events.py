@@ -60,7 +60,7 @@ class Test(TestWebBase):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        json_sidecar = Sidecar(file=json_path, name='bids_events_bad')
+        json_sidecar = Sidecar(files=json_path, name='bids_events_bad')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         arguments = {base_constants.EVENTS: events, base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                      base_constants.EXPAND_DEFS: True,
@@ -78,7 +78,7 @@ class Test(TestWebBase):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        json_sidecar = Sidecar(file=json_path, name='bids_json')
+        json_sidecar = Sidecar(files=json_path, name='bids_json')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         arguments = {base_constants.EVENTS: events, base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                      base_constants.EXPAND_DEFS: True,
@@ -95,7 +95,7 @@ class Test(TestWebBase):
         from hedweb.events import assemble
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        json_sidecar = Sidecar(file=json_path, name='bids_events_bad')
+        json_sidecar = Sidecar(files=json_path, name='bids_events_bad')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
 
@@ -113,7 +113,7 @@ class Test(TestWebBase):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        json_sidecar = Sidecar(file=json_path, name='bids_json')
+        json_sidecar = Sidecar(files=json_path, name='bids_json')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         with self.app.app_context():
             results = assemble(hed_schema, events, expand_defs=True)
@@ -150,7 +150,7 @@ class Test(TestWebBase):
         from hedweb.events import search
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        json_sidecar = Sidecar(file=json_path, name='bids_sidecar')
+        json_sidecar = Sidecar(files=json_path, name='bids_sidecar')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
 
@@ -167,7 +167,7 @@ class Test(TestWebBase):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        json_sidecar = Sidecar(file=json_path, name='bids_json')
+        json_sidecar = Sidecar(files=json_path, name='bids_json')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         with self.app.app_context():
             results = search(hed_schema, events, query="Sensory-event")
@@ -182,7 +182,7 @@ class Test(TestWebBase):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        json_sidecar = Sidecar(file=json_path, name='bids_events_bad')
+        json_sidecar = Sidecar(files=json_path, name='bids_events_bad')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         with self.app.app_context():
             results = validate(hed_schema, events)
@@ -195,7 +195,7 @@ class Test(TestWebBase):
         from hedweb.events import validate
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        json_sidecar = Sidecar(file=json_path, name='bids_events')
+        json_sidecar = Sidecar(files=json_path, name='bids_events')
         events = TabularInput(file=events_path, sidecar=json_sidecar, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)

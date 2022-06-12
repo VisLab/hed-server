@@ -42,7 +42,7 @@ def get_events_form_input(request):
     json_sidecar = None
     if base_constants.JSON_FILE in request.files:
         f = request.files[base_constants.JSON_FILE]
-        json_sidecar = Sidecar(file=f, name=secure_filename(f.filename))
+        json_sidecar = Sidecar(files=f, name=secure_filename(f.filename))
     arguments[base_constants.JSON_SIDECAR] = json_sidecar
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
@@ -98,7 +98,7 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
     Args:
         hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
         events (TabularInput):  An tabular input object.
-        columns_included (dict): Optional dictionary of columns to include in the assembled output.
+        columns_included (list): Optional list of columns to include in the assembled output.
         expand_defs (bool): True if definitions should be expanded during assembly.
 
     Returns:
