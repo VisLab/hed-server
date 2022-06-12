@@ -1,0 +1,2 @@
+include versioneer.py
+include hedweb/_version.py
