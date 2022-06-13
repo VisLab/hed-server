@@ -75,7 +75,7 @@ def get_sidecar(arguments, params):
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
         sidecar_list = [params[base_constants.JSON_STRING]]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        sidecar_list =  params[base_constants.JSON_LIST]
+        sidecar_list = params[base_constants.JSON_LIST]
     if sidecar_list:
         file_list = []
         for s_string in sidecar_list:
@@ -240,7 +240,10 @@ def services_list():
     meanings = service_info['parameter_meanings']
     returns = service_info['returns']
     results = service_info['results']
-    services_string = '\nServices:\n'
+
+    ver = app_config['VERSIONS']
+    services_string = f"\nServices:\n\tHEDTools version: {ver['tool_ver']} Date: {ver['tool_date']}\n" \
+                      f"\tHEDServices version: {ver['web_ver']} Date: {ver['web_date']}"
     for service, info in services.items():
         description = info['Description']
         parameters = get_parameter_string(info['Parameters'])

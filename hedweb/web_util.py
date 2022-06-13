@@ -6,6 +6,7 @@ from flask import current_app, Response, make_response
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
+
 from hed.errors import HedFileError
 from hedweb.constants import base_constants, file_constants
 
