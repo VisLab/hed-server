@@ -12,6 +12,7 @@ class TestWebBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        from hedweb.runserver import get_version_dict
         cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/upload')
         app = AppFactory.create_app('config.TestConfig')
         with app.app_context():
@@ -26,6 +27,7 @@ class TestWebBase(unittest.TestCase):
                 os.mkdir(cls.upload_directory)
             app.config['UPLOAD_FOLDER'] = cls.upload_directory
             app.config['WTF_CSRF_ENABLED'] = cls.enable_csrf
+            app.config['VERSIONS'] = get_version_dict()
             cls.app = app
             cls.app.test = app.test_client()
 

@@ -42,9 +42,10 @@ class Test(TestWebBase):
 
     def test_services_process_empty(self):
         from hedweb.services import process
-        arguments = {'service': ''}
-        response = process(arguments)
-        self.assertEqual(response["error_type"], "HEDServiceMissing", "process must have a service key")
+        with self.app.app_context():
+            arguments = {'service': ''}
+            response = process(arguments)
+            self.assertEqual(response["error_type"], "HEDServiceMissing", "process must have a service key")
 
     def test_services_list(self):
         from hedweb.services import services_list
