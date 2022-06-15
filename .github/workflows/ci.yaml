@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         with:
-          hedtools: git+https://github.com/hed-standard/hed-python/@${{CI_COMMIT_BRANCH}}
+          hedtools: git+https://github.com/hed-standard/hed-python/@develop
         run: |
           python -m pip install --upgrade pip
           pip install flake8
