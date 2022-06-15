@@ -110,13 +110,13 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
     results = validate(hed_schema, events)
     if results['data']:
         return results
-    df = assemble_hed(events, columns_included=columns_included, expand_defs=expand_defs)
+    df, defs = assemble_hed(events, columns_included=columns_included, expand_defs=expand_defs)
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
             base_constants.COMMAND_TARGET: 'events',
-            'data': csv_string, 'output_display_name': file_name,
+            'data': csv_string, 'output_display_name': file_name, 'definitions': defs,
             'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 

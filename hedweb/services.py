@@ -185,7 +185,7 @@ def process(arguments):
     command = arguments.get(base_constants.COMMAND, '')
     target = arguments.get(base_constants.COMMAND_TARGET, '')
     response = {base_constants.SERVICE: arguments.get(base_constants.SERVICE, ''),
-                'results': '', 'error_type': '', 'error_msg': ''}
+                'results': {}, 'error_type': '', 'error_msg': ''}
 
     if not arguments.get(base_constants.SERVICE, ''):
         response["error_type"] = 'HEDServiceMissing'
@@ -204,6 +204,9 @@ def process(arguments):
     else:
         response["error_type"] = 'HEDServiceNotSupported'
         response["error_msg"] = f"{command} for {target} not supported"
+    results = response.get("results", {})
+    results["software_version"] = app_config['VERSIONS']
+    response["results"] = results
     return response
 
 
@@ -229,7 +232,7 @@ def services_list():
     """ Get a formatted string describing services using the resources/services.json file
 
      Returns:
-        str: A formatted string listing available services.
+        dict: dictionary in standard form with data as formatted string of services.
 
      """
     dir_path = os.path.dirname(os.path.realpath(__file__))
