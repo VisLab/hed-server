@@ -28,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           pip install coverage
-          echo Using ${{CI_COMMIT_BRANCH}}
+          echo Using ${CI_COMMIT_BRANCH}
           pip install git+https://github.com/hed-standard/hed-python/@${{CI_COMMIT_BRANCH}}
           pip install -r requirements.txt
           pip install -r docs/requirements.txt
