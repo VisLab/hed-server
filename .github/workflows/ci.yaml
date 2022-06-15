@@ -1,5 +1,7 @@
 name: CI
 
+variables:
+  hedtools: "git+https://github.com/hed-standard/hed-python/@develop"
 on:
   push:
     branches: ["*"]
@@ -24,14 +26,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        variables:
-          hedtools: git+https://github.com/hed-standard/hed-python/@develop
+
         run: |
           python -m pip install --upgrade pip
           pip install flake8
           pip install coverage
           echo Using ${CI_COMMIT_BRANCH}
-          pip install hedtools
+          pip install ${hedtools}
           pip install -r requirements.txt
           pip install -r docs/requirements.txt
 
