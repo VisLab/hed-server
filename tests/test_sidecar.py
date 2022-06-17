@@ -39,16 +39,10 @@ class Test(TestWebBase):
     def test_sidecar_process_empty_file(self):
         from hedweb.sidecar import process
         from hed.errors.exceptions import HedFileError
-        with self.app.app_context():
-            arguments = {'json_path': ''}
-            try:
+        with self.assertRaises(HedFileError):
+            with self.app.app_context():
+                arguments = {'json_path': ''}
                 process(arguments)
-            except HedFileError:
-                pass
-            except Exception:
-                self.fail('process threw the wrong exception when sidecar path was empty')
-            else:
-                self.fail('process should have thrown a HedFileError exception when json_path was empty')
 
     def test_sidecar_process_invalid(self):
         from hedweb.sidecar import process

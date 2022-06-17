@@ -1,8 +1,4 @@
-import os
 import unittest
-from werkzeug.test import create_environ
-from werkzeug.wrappers import Request, Response
-
 from hedweb.runserver import get_version_dict
 
 

@@ -48,7 +48,6 @@ app = configure_app()
 with app.app_context():
     from hedweb.routes import route_blueprint
 
-
     app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
