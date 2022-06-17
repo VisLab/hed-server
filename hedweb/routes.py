@@ -221,7 +221,7 @@ def render_home_page():
         template: A rendered template for the home page.
 
     """
-    ver=app_config['VERSIONS']
+    ver = app_config['VERSIONS']
     return render_template(page_constants.HED_TOOLS_HOME_PAGE,
                            tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
                            web_ver=ver["web_ver"], web_date=ver["web_date"])

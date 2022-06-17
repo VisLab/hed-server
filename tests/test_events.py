@@ -45,14 +45,8 @@ class Test(TestWebBase):
         # Test for empty events_path
         from hedweb.events import process
         arguments = {'events_path': ''}
-        try:
+        with self.assertRaises(HedFileError):
             process(arguments)
-        except HedFileError:
-            pass
-        except Exception as ex:
-            self.fail(f'process threw the wrong exception {str(ex)} when events_path was empty')
-        else:
-            self.fail('process should have thrown a HedFileError exception when events_path was empty')
 
     def test_events_process_invalid(self):
         from hedweb.events import process
@@ -124,15 +118,9 @@ class Test(TestWebBase):
 
     def test_generate_sidecar_invalid(self):
         from hedweb.events import generate_sidecar
-        with self.app.app_context():
-            try:
-                results = generate_sidecar(None, columns_selected={'event_type': True})
-            except AttributeError:
-                pass
-            except Exception as ex:
-                self.fail(f"generate_sidecar threw {type(ex).__name__} for missing EventInput")
-            else:
-                self.fail('generate_sidecar should throw HedFileError when EventInput is None')
+        with self.assertRaises(AttributeError):
+            with self.app.app_context():
+                generate_sidecar(None, columns_selected={'event_type': True})
 
     def test_generate_sidecar_valid(self):
         from hedweb.events import generate_sidecar
