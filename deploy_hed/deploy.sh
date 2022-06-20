@@ -30,16 +30,13 @@ SOURCE_DOCKERFILE="${SOURCE_DEPLOY_DIR}/Dockerfile"
 SOURCE_REQUIREMENTS_FILE="${SOURCE_DEPLOY_DIR}/requirements.txt"
 SOURCE_HTTPD_CONF="${SOURCE_DEPLOY_DIR}/httpd.conf"
 WEB_CODE_DIR="${DEPLOY_DIR}/hed-web/hedweb"
-VALIDATOR_CODE_DIR="${DEPLOY_DIR}/hed-python/hed"
 
 ##### Functions
 
 clone_github_repos(){
 echo "Deploy dir: ${DEPLOY_DIR}"
 cd ${DEPLOY_DIR}
-echo "Cloning repo ${GIT_TOOLS_REPO_URL} in ${DEPLOY_DIR} using ${GIT_TOOLS_REPO_BRANCH} branch"
-git clone $GIT_TOOLS_REPO_URL -b $GIT_TOOLS_REPO_BRANCH
-echo "Cloning repo ${GIT_WEB_REPO_URL}  in ${DEPLOY_DIR} using ${GIT_WEB_REPO_BRANCH} branch"
+echo "Cloning repo ${GIT_WEB_REPO_URL} in ${DEPLOY_DIR} using ${GIT_WEB_REPO_BRANCH} branch"
 git clone $GIT_WEB_REPO_URL -b $GIT_WEB_REPO_BRANCH
 }
 
@@ -60,11 +57,6 @@ echo "Copy ${SOURCE_HTTPD_CONF} to ${DEPLOY_DIR}"
 cp "${SOURCE_HTTPD_CONF}" "${DEPLOY_DIR}/."
 echo "Copy ${WEB_CODE_DIR} directory to ${CODE_DEPLOY_DIR}"
 cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}"
-echo "Copy ${VALIDATOR_CODE_DIR} directory to ${CODE_DEPLOY_DIR}"
-cp -r "${VALIDATOR_CODE_DIR}" "${CODE_DEPLOY_DIR}"
-echo "Copy ${SOURCE_DEPLOY_DIR} directory to ${CODE_DEPLOY_DIR}"
-cp -r "${VALIDATOR_CODE_DIR}" "${CODE_DEPLOY_DIR}"
-
 }
 
 switch_to_web_directory()
@@ -142,10 +134,10 @@ cleanup_directory
 #echo Branch specified... Using "$1" branch
 #GIT_REPO_BRANCH="$1"
 #fi
-clone_github_repos || error_exit "Cannot clone repo ${GIT_TOOLS_REPO_URL} or ${GIT_WEB_REPO_URL}"
+clone_github_repos || error_exit "Cannot clone repo ${GIT_WEB_REPO_URL}"
 create_web_directory
 switch_to_web_directory
 build_new_container
 delete_old_container
 run_new_container
-cleanup_directory
+# cleanup_directory
