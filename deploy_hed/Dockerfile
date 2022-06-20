@@ -10,7 +10,7 @@ apache2 \
 apache2-dev && \
 pip3 install --upgrade pip && \
 pip3 install --no-cache-dir -r requirements.txt && \
-pip3 install hedtools
+pip3 install hedtools \
 mkdir -p /var/www/localhost/htdocs && \
 cp /etc/mime.types /var/www/mime.types && \
 mkdir -p /var/log/hedtools && \
