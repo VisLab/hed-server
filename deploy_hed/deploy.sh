@@ -13,11 +13,8 @@ DEPLOY_DIR=${PWD}
 IMAGE_NAME="hedtools:latest"
 CONTAINER_NAME="hedtools"
 GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
-GIT_TOOLS_REPO_URL="https://github.com/hed-standard/hed-python"
-GIT_HED_PYTHON_DIR="${DEPLOY_DIR}/hed-python"
 GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 GIT_WEB_REPO_BRANCH=${BRANCH}
-GIT_TOOLS_REPO_BRANCH=${BRANCH}
 HOST_PORT=33000
 CONTAINER_PORT=80
 
@@ -108,7 +105,6 @@ echo "Docker container name: ${CONTAINER_NAME}"
 echo "Git tools repo: ${GIT_TOOLS_REPO_URL}"
 echo "Git web repo: ${GIT_WEB_REPO_URL}"
 echo "Git web repo branch: ${GIT_WEB_REPO_BRANCH}"
-echo "Git tools repo branch: ${GIT_TOOLS_REPO_BRANCH}"
 echo "Git hed web dir: ${GIT_HED_WEB_DIR}"
 echo "Host port: ${HOST_PORT}"
 echo "Container port: ${CONTAINER_PORT}"
@@ -119,7 +115,6 @@ echo "Configuration file: ${CONFIG_FILE}"
 echo "Base configuration file: ${BASE_CONFIG_FILE}"
 echo "Source WSGI file: ${SOURCE_WSGI_FILE}"
 echo "Source web code directory: ${WEB_CODE_DIR}"
-echo "Source validator code directory: ${VALIDATOR_CODE_DIR}"
 }
 
 ##### Main
