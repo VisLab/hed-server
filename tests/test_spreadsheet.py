@@ -49,14 +49,8 @@ class Test(TestWebBase):
         from hedweb.spreadsheet import process
         from hed.errors.exceptions import HedFileError
         arguments = {base_constants.SPREADSHEET: None}
-        try:
+        with self.assertRaises(HedFileError):
             process(arguments)
-        except HedFileError:
-            pass
-        except Exception:
-            self.fail('process threw the wrong exception when spreadsheet-path was empty')
-        else:
-            self.fail('process should have thrown a HedFileError exception when spreadsheet-path was empty')
 
     def test_spreadsheet_process_validate_invalid(self):
         from hedweb.spreadsheet import process

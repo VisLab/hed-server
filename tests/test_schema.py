@@ -33,14 +33,8 @@ class Test(TestWebBase):
         from hedweb.schema import process
         from hed.errors.exceptions import HedFileError
         arguments = {'schema_path': ''}
-        try:
+        with self.assertRaises(HedFileError):
             process(arguments)
-        except HedFileError:
-            pass
-        except Exception:
-            self.fail('process threw the wrong exception when schema_path was empty')
-        else:
-            self.fail('process should have thrown a HedFileError exception when schema_path was empty')
 
     def test_schema_check(self):
         from hedweb.schema import schema_validate
@@ -73,16 +67,10 @@ class Test(TestWebBase):
 
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HEDbad.xml')
         display_name = 'HEDbad.xml'
-        with self.app.app_context():
-            try:
+        with self.assertRaises(HedFileError):
+            with self.app.app_context():
                 hed_schema = hedschema.load_schema(schema_path)
                 schema_convert(hed_schema, display_name)
-            except HedFileError:
-                pass
-            except Exception as ex:
-                self.fail(f"schema_convert threw {type(ex).__name__} for invalid schema file header")
-            else:
-                self.fail('process should throw HedFileError when the schema file header was invalid')
 
 
 if __name__ == '__main__':

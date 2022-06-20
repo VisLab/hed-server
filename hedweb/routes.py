@@ -3,9 +3,10 @@ from werkzeug.utils import secure_filename
 import json
 
 from hed import schema as hedschema
+
 from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
-from hedweb.web_util import handle_http_error, package_results, handle_error
+from hedweb.web_util import handle_http_error, handle_error, package_results
 from hedweb import sidecar, events, spreadsheet, services, strings, schema
 from hedweb.columns import get_columns_request
 
@@ -206,7 +207,10 @@ def render_events_form():
         template: A rendered template for the events form.
 
     """
-    return render_template(page_constants.EVENTS_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.EVENTS_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.HED_TOOLS_HOME_ROUTE, strict_slashes=False, methods=['GET'])
@@ -217,7 +221,10 @@ def render_home_page():
         template: A rendered template for the home page.
 
     """
-    return render_template(page_constants.HED_TOOLS_HOME_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.HED_TOOLS_HOME_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.SCHEMA_ROUTE, strict_slashes=False, methods=['GET'])
@@ -228,7 +235,10 @@ def render_schema_form():
         template: A rendered template for the schema processing form.
 
     """
-    return render_template(page_constants.SCHEMA_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.SCHEMA_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.SERVICES_ROUTE, strict_slashes=False, methods=['GET'])
@@ -239,7 +249,10 @@ def render_services_form():
         template: A dummy rendered template so that the service can get a csrf token.
 
     """
-    return render_template(page_constants.SERVICES_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.SERVICES_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.SIDECAR_ROUTE, strict_slashes=False, methods=['GET'])
@@ -250,7 +263,10 @@ def render_sidecar_form():
         template: A rendered template for the sidecar form.
 
     """
-    return render_template(page_constants.SIDECAR_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.SIDECAR_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.SPREADSHEET_ROUTE, strict_slashes=False, methods=['GET'])
@@ -261,7 +277,10 @@ def render_spreadsheet_form():
         template: A rendered template for the spreadsheet form.
 
     """
-    return render_template(page_constants.SPREADSHEET_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.SPREADSHEET_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
 @route_blueprint.route(route_constants.STRING_ROUTE, strict_slashes=False, methods=['GET'])
@@ -272,4 +291,7 @@ def render_string_form():
         template: A rendered template for the HED string form.
 
     """
-    return render_template(page_constants.STRING_PAGE)
+    ver = app_config['VERSIONS']
+    return render_template(page_constants.STRING_PAGE,
+                           tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
+                           web_ver=ver["web_ver"], web_date=ver["web_date"])

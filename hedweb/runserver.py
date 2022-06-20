@@ -1,10 +1,26 @@
 import os
 from hedweb.app_factory import AppFactory
+from hedweb._version import get_versions
+from hed import _version as vr
 from hed import schema as hedschema
 from logging.handlers import RotatingFileHandler
 from logging import ERROR
 
 CONFIG_ENVIRON_NAME = 'HEDTOOLS_CONFIG_CLASS'
+
+
+def get_version_dict():
+    """ Create a dictionary of versions and dates.
+
+    Returns:
+        dict: Keys are tools_ver, tools_date, web_ver, web_date
+
+    """
+
+    web_dict = get_versions()
+    tools_dict = vr.get_versions()
+    return {'tool_ver': tools_dict['version'], 'tool_date': tools_dict['date'],
+            'web_ver': web_dict['version'], 'web_date': web_dict['date']}
 
 
 def setup_logging():
@@ -34,7 +50,11 @@ with app.app_context():
 
     app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    print(app.config['HED_CACHE_FOLDER'])
+
+    app.config['VERSIONS'] = get_version_dict()
+    print(f"Versions: {app.config['VERSIONS']}")
+    print(f"Using cache directory {app.config['HED_CACHE_FOLDER']}")
+
     hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
     setup_logging()
 

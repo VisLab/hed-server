@@ -58,7 +58,7 @@
                 ],
                 "expand_defs"
             ],
-            "Returns": "A string containing the text of assembled events file or a list of errors."
+            "Returns": "A string containing the text of assembled events file or a list of errors. The definitions are also returned if any."
         },
         "events_generate_sidecar": {
             "Name": "events_generate_sidecar",
@@ -246,10 +246,12 @@
     "results": {
         "command": "Command executed in response to the service request.",
         "command_target": "Type of data on which the command was executed.",
+        "definitions": "A dictionary of definitions used in processing.",
         "data": "Data returned by the service (either processed result or a list of errors).",
         "msg_category": "Success or warning depending on the result of processing the service.",
         "msg": "Explanation of the output of the service.",
         "output_display_name": "(Optional) File name for saving return data.",
-        "schema_version": "(Optional) Version of the HED schema used in the processing."
+        "schema_version": "(Optional) Version of the HED schema used in the processing.",
+        "software_version": "A dictionary of the version and date of hedtools and hed services."
     }
 }

@@ -75,7 +75,7 @@ def get_sidecar(arguments, params):
     if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
         sidecar_list = [params[base_constants.JSON_STRING]]
     elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        sidecar_list =  params[base_constants.JSON_LIST]
+        sidecar_list = params[base_constants.JSON_LIST]
     if sidecar_list:
         file_list = []
         for s_string in sidecar_list:
@@ -185,7 +185,7 @@ def process(arguments):
     command = arguments.get(base_constants.COMMAND, '')
     target = arguments.get(base_constants.COMMAND_TARGET, '')
     response = {base_constants.SERVICE: arguments.get(base_constants.SERVICE, ''),
-                'results': '', 'error_type': '', 'error_msg': ''}
+                'results': {}, 'error_type': '', 'error_msg': ''}
 
     if not arguments.get(base_constants.SERVICE, ''):
         response["error_type"] = 'HEDServiceMissing'
@@ -204,6 +204,9 @@ def process(arguments):
     else:
         response["error_type"] = 'HEDServiceNotSupported'
         response["error_msg"] = f"{command} for {target} not supported"
+    results = response.get("results", {})
+    results["software_version"] = app_config['VERSIONS']
+    response["results"] = results
     return response
 
 
@@ -229,7 +232,7 @@ def services_list():
     """ Get a formatted string describing services using the resources/services.json file
 
      Returns:
-        str: A formatted string listing available services.
+        dict: dictionary in standard form with data as formatted string of services.
 
      """
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -240,7 +243,10 @@ def services_list():
     meanings = service_info['parameter_meanings']
     returns = service_info['returns']
     results = service_info['results']
-    services_string = '\nServices:\n'
+
+    ver = app_config['VERSIONS']
+    services_string = f"\nServices:\n\tHEDTools version: {ver['tool_ver']} Date: {ver['tool_date']}\n" \
+                      f"\tHEDServices version: {ver['web_ver']} Date: {ver['web_date']}"
     for service, info in services.items():
         description = info['Description']
         parameters = get_parameter_string(info['Parameters'])

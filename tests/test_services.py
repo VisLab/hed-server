@@ -42,9 +42,10 @@ class Test(TestWebBase):
 
     def test_services_process_empty(self):
         from hedweb.services import process
-        arguments = {'service': ''}
-        response = process(arguments)
-        self.assertEqual(response["error_type"], "HEDServiceMissing", "process must have a service key")
+        with self.app.app_context():
+            arguments = {'service': ''}
+            response = process(arguments)
+            self.assertEqual(response["error_type"], "HEDServiceMissing", "process must have a service key")
 
     def test_services_list(self):
         from hedweb.services import services_list
@@ -102,18 +103,27 @@ class Test(TestWebBase):
             data_upper = json.load(f)
         with open(sidecar_path_lower2) as f:
             data_lower2 = json.load(f)
-        with open(sidecar_path_lower3) as f:
-            data_lower3 = json.load(f)
         params2= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower2)]}
         arguments2 = {}
         get_sidecar(arguments2, params2)
-        self.assertIn(base_constants.JSON_SIDECAR, arguments2, 'get_sidecar results in a json_sidecar entry in arguments')
+        self.assertIn(base_constants.JSON_SIDECAR, arguments2, 'get_sidecar arguments should have a sidecar')
         self.assertIsInstance(arguments2[base_constants.JSON_SIDECAR], Sidecar)
         sidecar2 = arguments2[base_constants.JSON_SIDECAR]
         self.assertIn('event_type', data_upper, "get_sidecar upper has key event_type")
         self.assertNotIn('event_type', data_lower2, "get_sidecar lower2 does not have event_type")
         self.assertIn('event_type', sidecar2.loaded_dict, "get_sidecar merged sidecar has event_type")
 
+        with open(sidecar_path_lower3) as f:
+            data_lower3 = json.load(f)
+        params3= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower3)]}
+        arguments3 = {}
+        get_sidecar(arguments3, params3)
+        self.assertIn(base_constants.JSON_SIDECAR, arguments3, 'get_sidecar arguments should have a sidecar')
+        self.assertIsInstance(arguments3[base_constants.JSON_SIDECAR], Sidecar)
+        sidecar3 = arguments3[base_constants.JSON_SIDECAR]
+        self.assertIn('event_type', data_upper, "get_sidecar upper has key event_type")
+        self.assertNotIn('event_type', data_lower3, "get_sidecar lower3 does not have event_type")
+        self.assertIn('event_type', sidecar3.loaded_dict, "get_sidecar merged sidecar has event_type")
 
 if __name__ == '__main__':
     unittest.main()
