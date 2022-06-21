@@ -121,18 +121,12 @@ echo "Source web code directory: ${WEB_CODE_DIR}"
 echo "Starting...."
 output_paths
 echo "....."
-# echo "Cleaning up directories before deploying..."
+echo "Cleaning up directories before deploying..."
 cleanup_directory
-#if [ -z "$1" ]; then
-#echo No branch specified... Using master branch
-#else
-#echo Branch specified... Using "$1" branch
-#GIT_REPO_BRANCH="$1"
-#fi
 clone_github_repos || error_exit "Cannot clone repo ${GIT_WEB_REPO_URL}"
 create_web_directory
 switch_to_web_directory
 build_new_container
 delete_old_container
 run_new_container
-# cleanup_directory
+cleanup_directory
