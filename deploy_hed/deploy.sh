@@ -32,9 +32,9 @@ WEB_CODE_DIR="${DEPLOY_DIR}/hed-web/hedweb"
 
 clone_github_repos(){
 echo "Deploy dir: ${DEPLOY_DIR}"
-cd ${DEPLOY_DIR}
+cd "${DEPLOY_DIR}" || exit_error
 echo "Cloning repo ${GIT_WEB_REPO_URL} in ${DEPLOY_DIR} using ${GIT_WEB_REPO_BRANCH} branch"
-git clone $GIT_WEB_REPO_URL -b $GIT_WEB_REPO_BRANCH
+git clone "${GIT_WEB_REPO_URL}" -b "${GIT_WEB_REPO_BRANCH}"
 }
 
 create_web_directory()
@@ -82,12 +82,10 @@ docker run --restart=always --name $CONTAINER_NAME -d -p 127.0.0.1:$HOST_PORT:$C
 
 cleanup_directory()
 {
-echo "Cleaning up directory ${GIT_HED_PYTHON_DIR} ..."
-rm -rf "${GIT_HED_PYTHON_DIR}"
 echo "Cleaning up directory ${GIT_HED_WEB_DIR} ..."
 rm -rf "${GIT_HED_WEB_DIR}"
 echo "Cleaning up ${CODE_DEPLOY_DIR}"
-rm -rf ${CODE_DEPLOY_DIR}
+rm -rf "${CODE_DEPLOY_DIR}"
 }
 
 error_exit()
@@ -122,11 +120,11 @@ echo "Starting...."
 output_paths
 echo "....."
 echo "Cleaning up directories before deploying..."
-# cleanup_directory
+cleanup_directory
 clone_github_repos || error_exit "Cannot clone repo ${GIT_WEB_REPO_URL}"
 create_web_directory
 switch_to_web_directory
 build_new_container
 delete_old_container
 run_new_container
-# cleanup_directory
+cleanup_directory
