@@ -608,8 +608,7 @@ def render(pieces, style):
         raise ValueError("unknown style '%s'" % style)
 
     return {"version": rendered, "full-revisionid": pieces["long"],
-            "dirty": pieces["dirty"], "error": None,
-            "date": pieces.get("date")}
+            "dirty": pieces["dirty"], "error": None, "date": pieces["date"]}
 
 
 def get_versions():

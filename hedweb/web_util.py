@@ -181,6 +181,7 @@ def get_hed_schema_from_pull_down(request):
     if base_constants.SCHEMA_VERSION not in request.form:
         raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
     elif request.form[base_constants.SCHEMA_VERSION] != base_constants.OTHER_VERSION_OPTION:
+
         hed_file_path = hedschema.get_path_from_hed_version(request.form[base_constants.SCHEMA_VERSION])
         hed_schema = hedschema.load_schema(hed_file_path)
     elif request.form[base_constants.SCHEMA_VERSION] == \

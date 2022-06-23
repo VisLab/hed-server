@@ -13,6 +13,19 @@ from hedweb.columns import get_columns_request
 app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
+# with app.app_context():
+#     from hedweb.routes import route_blueprint
+#
+#     app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
+#     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+#
+#     app.config['VERSIONS'] = get_version_dict()
+#     print(f"Versions: {app.config['VERSIONS']}")
+#     print(f"Using cache directory {app.config['HED_CACHE_FOLDER']}")
+#
+#     hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
+#
+# hedschema.set_cache_directory(app_config[])
 
 @route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
 def columns_info_results():
@@ -121,6 +134,7 @@ def services_results():
     """
 
     try:
+        hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
         arguments = services.get_input_from_request(request)
         response = services.process(arguments)
         return json.dumps(response)
