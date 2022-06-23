@@ -32,7 +32,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     URL_PREFIX = '/hed'
-    STATIC_URL_PATH = '/hed/hedweb/static'
+    STATIC_URL_PATH = '/hedweb/static'
 
 
 class TestConfig(Config):

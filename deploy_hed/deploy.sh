@@ -122,11 +122,11 @@ echo "Starting...."
 output_paths
 echo "....."
 echo "Cleaning up directories before deploying..."
-cleanup_directory
+# cleanup_directory
 clone_github_repos || error_exit "Cannot clone repo ${GIT_WEB_REPO_URL}"
 create_web_directory
 switch_to_web_directory
 build_new_container
 delete_old_container
 run_new_container
-cleanup_directory
+# cleanup_directory
