@@ -135,6 +135,8 @@ def services_results():
 
     try:
         hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
+        hedschema.cache_xml_versions()
+        print(f"Current folder is {current_app.config['HED_CACHE_FOLDER']}")
         arguments = services.get_input_from_request(request)
         response = services.process(arguments)
         return json.dumps(response)
