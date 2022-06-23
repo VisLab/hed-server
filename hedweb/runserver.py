@@ -52,6 +52,7 @@ with app.app_context():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     app.config['VERSIONS'] = get_version_dict()
+    print("Hello world is this an error?")
     print(f"Versions: {app.config['VERSIONS']}")
     print(f"Using cache directory {app.config['HED_CACHE_FOLDER']}")
 
