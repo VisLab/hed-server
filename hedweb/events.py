@@ -3,14 +3,13 @@ import json
 from werkzeug.utils import secure_filename
 import pandas as pd
 
-from hed.models import Sidecar, TabularInput
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
+from hed.tools import assemble_hed, BidsTabularSummary, generate_filename, generate_sidecar_entry, search_tabular
+from hed.models import DefinitionDict, Sidecar, TabularInput
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
-from hed.util import generate_filename
-from hed.tools import BidsTabularSummary, assemble_hed, generate_sidecar_entry, search_tabular
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
@@ -116,7 +115,7 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
             base_constants.COMMAND_TARGET: 'events',
-            'data': csv_string, 'output_display_name': file_name, 'definitions': defs,
+            'data': csv_string, 'output_display_name': file_name, 'definitions': DefinitionDict.get_as_strings(defs),
             'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 

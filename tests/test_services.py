@@ -103,7 +103,7 @@ class Test(TestWebBase):
             data_upper = json.load(f)
         with open(sidecar_path_lower2) as f:
             data_lower2 = json.load(f)
-        params2= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower2)]}
+        params2 = {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower2)]}
         arguments2 = {}
         get_sidecar(arguments2, params2)
         self.assertIn(base_constants.JSON_SIDECAR, arguments2, 'get_sidecar arguments should have a sidecar')
@@ -115,7 +115,7 @@ class Test(TestWebBase):
 
         with open(sidecar_path_lower3) as f:
             data_lower3 = json.load(f)
-        params3= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower3)]}
+        params3 = {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower3)]}
         arguments3 = {}
         get_sidecar(arguments3, params3)
         self.assertIn(base_constants.JSON_SIDECAR, arguments3, 'get_sidecar arguments should have a sidecar')
@@ -124,6 +124,7 @@ class Test(TestWebBase):
         self.assertIn('event_type', data_upper, "get_sidecar upper has key event_type")
         self.assertNotIn('event_type', data_lower3, "get_sidecar lower3 does not have event_type")
         self.assertIn('event_type', sidecar3.loaded_dict, "get_sidecar merged sidecar has event_type")
+
 
 if __name__ == '__main__':
     unittest.main()
