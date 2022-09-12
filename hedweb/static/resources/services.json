@@ -70,6 +70,25 @@
             ],
             "Returns": "A JSON sidecar (template) in string form or a list of errors."
         },
+        "events_remodel": {
+            "Name": "events_remodel",
+            "Description": "Restructure and events file. Returns: remodeled events or error list.",
+            "Parameters": [
+                "events_string",
+                "remodel_string",
+                [
+                    "json_list",
+                    "json_string"
+                ],
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "expand_defs"
+            ],
+            "Returns": "A string containing the text of remodeled events file or a list of errors."
+        },
         "sidecar_validate": {
             "Description": "Validate a BIDS JSON sidecar (in string form) and return errors.",
             "Parameters": [
@@ -232,6 +251,7 @@
         "json_list": "A list of BIDS JSON sidecars as strings.",
         "json_string": "A JSON sidecar as a string.",
         "query_list": "A list of query strings for searching.",
+        "remodel_string": "JSON remodel commands as a string",
         "schema_string": "HED XML schema as a string.",
         "schema_url": "A URL from which a HED schema can be downloaded.",
         "schema_version": "Version of HED to used in processing.",

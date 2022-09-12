@@ -57,6 +57,7 @@ function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
     clearJsonInputFlashMessages();
+    clearRemodelInputFlashMessages();
     flashMessageOnScreen('', 'success', 'events_flash');
     flashMessageOnScreen('', 'success', 'events_submit_flash');
 }
@@ -84,7 +85,7 @@ function setEventsTable(event_tag) {
     let eventsFile = events[0].files[0];
     if ($("#generate_sidecar").is(":checked")) {
         setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_events")
-    } else {
+    } else if (!$("#remodel").is(":checked")){
         setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_columns")
     }
 }
@@ -95,22 +96,36 @@ function setEventsTable(event_tag) {
 function setOptions() {
     if ($("#validate").is(":checked")) {
         hideOption("expand_defs");
+        hideOption("use_hed");
         showOption("check_for_warnings");
+        $("#remodel_input_section").hide();
         $("#json_input_section").show();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
     } else if ($("#assemble").is(":checked")) {
         hideOption("check_for_warnings");
+        hideOption("use_hed");
         showOption("expand_defs");
+        $("#remodel_input_section").hide();
         $("#json_input_section").show();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
     } else if ($("#generate_sidecar").is(":checked")) {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
+        hideOption("use_hed");
+        $("#remodel_input_section").hide();
         $("#json_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#options_section").hide();
+    } else if ($("#remodel").is(":checked")) {
+        hideOption("check_for_warnings");
+        hideOption("expand_defs");
+        hideOption("use_hed");
+        $("#options_section").hide();
+        $("#json_input_section").show();
+        $("#remodel_input_section").show();
+        $("#schema_pulldown_section").show();
     }
 }
 

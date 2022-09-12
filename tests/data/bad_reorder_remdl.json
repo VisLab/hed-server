@@ -1,0 +1,46 @@
+[
+    {
+        "badcommand": "remove_columns",
+        "description": "bad structure",
+        "parameters": {
+            "ignore_missing": true
+        }
+    },
+    {
+        "command": "remove_columns",
+        "description": "Get rid of the sample and the value columns",
+        "parameters": {
+            "remove_names": [
+                "sample",
+                "value"
+            ],
+            "ignore_missing": true
+        }
+    },
+    {
+        "command": "unknown_command",
+        "description": "bad command",
+        "parameters": {
+            "ignore_missing": true
+        }
+    },
+    {
+        "command": "reorder_columns",
+        "description": "Order columns so that response_time and trial_type come after onset and duration",
+        "parameters": {
+            "column_order": [
+                "onset",
+                "duration"
+            ],
+            "ignore_missing": true,
+            "keep_others": true
+        }
+    },
+    {
+        "command": "remove_columns",
+        "description": "bad parameters",
+        "parameters": {
+            "ignore_missing": true
+        }
+    }
+]

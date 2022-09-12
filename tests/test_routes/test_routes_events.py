@@ -71,6 +71,66 @@ class Test(TestWebBase):
                             "The response data for invalid event assembly should have error messages")
             json_buffer.close()
 
+    def test_events_results_remodel_valid(self):
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   '../data/sub-002_task-FacePerception_run-1_events.tsv')
+        remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    '../data/simple_reorder_remdl.json')
+        with open(events_path, 'r') as sc:
+            y = sc.read()
+        events_buffer = io.BytesIO(bytes(y, 'utf-8'))
+
+        with open(remodel_path, 'r') as sc:
+            x = sc.read()
+        remodel_buffer = io.BytesIO(bytes(x, 'utf-8'))
+
+        with self.app.app_context():
+            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+                          base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
+                          base_constants.REMODEL_FILE: (remodel_buffer, 'simple_reorder_remdl.json'),
+                          base_constants.EVENTS_FILE: (events_buffer,
+                                                       'sub-002_task-FacePerception_run-1_events.tsv.tsv')}
+            response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
+            self.assertTrue(isinstance(response, Response),
+                            'events_submit remodel should return a Response when commands are valid')
+            self.assertEqual(200, response.status_code, 'Remodeling valid file has a valid status code')
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"],
+                             "A valid remodeling operation should be successful")
+            self.assertTrue(response.data, "The remodeled events file should return data")
+            remodel_buffer.close()
+            events_buffer.close()
+
+    def test_events_results_remodel_invalid(self):
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   '../data/sub-002_task-FacePerception_run-1_events.tsv')
+        remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    '../data/bad_reorder_remdl.json')
+        with open(events_path, 'r') as sc:
+            y = sc.read()
+        events_buffer = io.BytesIO(bytes(y, 'utf-8'))
+
+        with open(remodel_path, 'r') as sc:
+            x = sc.read()
+        remodel_buffer = io.BytesIO(bytes(x, 'utf-8'))
+
+        with self.app.app_context():
+            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+                          base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
+                          base_constants.REMODEL_FILE: (remodel_buffer, 'bad_reorder_remdl.json'),
+                          base_constants.EVENTS_FILE: (events_buffer,
+                                                       'sub-002_task-FacePerception_run-1_events.tsv.tsv')}
+            response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
+            self.assertTrue(isinstance(response, Response),
+                            'events_submit remodel should return a Response when commands are valid')
+            self.assertEqual(200, response.status_code, 'Remodeling valid file has a valid status code')
+            headers_dict = dict(response.headers)
+            self.assertEqual("warning", headers_dict["Category"],
+                             "An invalid remodeling operation should result in warning")
+            self.assertTrue(response.data, "The invalid commands should return data")
+            remodel_buffer.close()
+            events_buffer.close()
+
     def test_events_results_validate_valid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.tsv')

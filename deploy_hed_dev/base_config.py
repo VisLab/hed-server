@@ -26,15 +26,13 @@ class Config(object):
 class DevelopmentConfig(Config):
     DEBUG = False
     TESTING = False
-    URL_PREFIX = '/heddev'
-    STATIC_URL_PATH = '/heddev/hedweb/static'
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
-    URL_PREFIX = '/hed'
-    STATIC_URL_PATH = '/hed/hedweb/static'
+    URL_PREFIX = '/hed_dev'
+    STATIC_URL_PATH = '/hed_dev/hedweb/static'
 
 
 class TestConfig(Config):

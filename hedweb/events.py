@@ -5,7 +5,7 @@ import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
-from hed.tools import assemble_hed, BidsTabularSummary, generate_filename, generate_sidecar_entry, search_tabular
+from hed.tools import assemble_hed, Dispatcher, TabularSummary, generate_filename, generate_sidecar_entry, search_tabular
 from hed.models import DefinitionDict, Sidecar, TabularInput
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
@@ -43,6 +43,12 @@ def get_events_form_input(request):
         f = request.files[base_constants.JSON_FILE]
         json_sidecar = Sidecar(files=f, name=secure_filename(f.filename))
     arguments[base_constants.JSON_SIDECAR] = json_sidecar
+    remodel = None
+    if base_constants.REMODEL_FILE in request.files:
+        f = request.files[base_constants.REMODEL_FILE]
+        name = secure_filename(f.filename)
+        remodel = {'name': name, 'commands': json.load(f)}
+    arguments[base_constants.REMODEL_COMMANDS] = remodel
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
         arguments[base_constants.EVENTS] = \
@@ -72,6 +78,7 @@ def process(arguments):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema for event processing", "")
     events = arguments.get(base_constants.EVENTS, None)
     sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
+    remodeler = arguments.get(base_constants.REMODEL_COMMANDS, None)
     query = arguments.get(base_constants.QUERY, None)
     columns_included = arguments.get(base_constants.COLUMNS_INCLUDED, None)
     if not events or not isinstance(events, TabularInput):
@@ -86,6 +93,8 @@ def process(arguments):
                            arguments.get(base_constants.EXPAND_DEFS, False))
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
         results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
+    elif command == base_constants.COMMAND_REMODEL:
+        results = remodel(hed_schema, events, sidecar, remodeler)
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -131,7 +140,7 @@ def generate_sidecar(events, columns_selected):
 
     """
 
-    columns_info = BidsTabularSummary.get_columns_info(events.dataframe)
+    columns_info = TabularSummary.get_columns_info(events.dataframe)
     hed_dict = {}
     for column_name, column_type in columns_selected.items():
         if column_name not in columns_info:
@@ -149,6 +158,50 @@ def generate_sidecar(events, columns_selected):
             'data': json.dumps(hed_dict, indent=4),
             'output_display_name': file_name, 'msg_category': 'success',
             'msg': 'JSON sidecar generation from event file complete'}
+
+
+def remodel(hed_schema, events, sidecar, remodeler):
+    """ Remodel a given events file.
+
+    Args:
+        hed_schema (HedSchema, HedSchemaGroup or None): A HED schema or HED schema group.
+        events (EventsInput):     An events input object.
+        sidecar (Sidecar or None):        A sidecar object.
+        remodeler (dict):         Remodeling file.
+
+    Returns:
+        dict: A dictionary pointing to results or errors.
+
+    """
+
+    display_name = events.name
+    if hed_schema:
+        schema_version = hed_schema.version
+    else:
+        schema_version = None
+    remodeler_name = remodeler['name']
+    remodeler_commands = remodeler['commands']
+    command_list, errors = Dispatcher.parse_commands(remodeler_commands)
+    if errors:
+        issue_str = Dispatcher.errors_to_str(errors)
+        file_name = generate_filename(remodeler_name, name_suffix='_command_parse_errors', extension='.txt')
+        return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
+                base_constants.COMMAND_TARGET: 'events',
+                'data': issue_str, "output_display_name": file_name,
+                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
+                'msg': f"Remodeling command file for {display_name} had validation errors"}
+    df = events.dataframe
+    dispatch = Dispatcher(remodeler_commands, data_root=None, hed_versions=schema_version)
+    df = dispatch.prep_events(df)
+    for operation in dispatch.parsed_ops:
+        df = operation.do_op(dispatch, df, display_name, sidecar=sidecar)
+    df = df.fillna('n/a')
+    csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+    file_name = generate_filename(display_name, name_suffix='_remodeled', extension='.tsv')
+    return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
+            base_constants.COMMAND_TARGET: 'events', 'data': csv_string, "output_display_name": file_name,
+            base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
+            'msg': f"Command parsing for {display_name} remodeling was successful"}
 
 
 def search(hed_schema, events, query, columns_included=None):

@@ -1,4 +1,5 @@
 import os
+import json
 import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
@@ -194,6 +195,49 @@ class Test(TestWebBase):
                              'validate results should not have a data key when no validation errors')
             self.assertEqual('success', results['msg_category'],
                              'validate msg_category should be success when no errors')
+
+    def test_events_remodel_valid_no_hed(self):
+        from hedweb.events import remodel
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   'data/sub-002_task-FacePerception_run-1_events.tsv')
+        remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    'data/simple_reorder_remdl.json')
+        events = TabularInput(file=events_path, name='wh_events')
+        df = events.dataframe
+        df_rows = len(df)
+        df_cols = len(df.columns)
+        with open(remodel_path, 'r') as fp:
+            remodel_json = json.load(fp)
+        remodeler = {'name': "simple_reorder_remdl.json", 'commands': remodel_json}
+        hed_schema = None
+        sidecar = None
+
+        with self.app.app_context():
+            results = remodel(hed_schema, events, sidecar, remodeler)
+        self.assertTrue(results['data'], 'remodel results should have a data key when successful')
+        self.assertEqual('success', results['msg_category'],'remodel msg_category should be success when no errors')
+        # TODO: Test the rows and columns of result.
+
+    def test_events_remodel_invalid_no_hed(self):
+        from hedweb.events import remodel
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   'data/sub-002_task-FacePerception_run-1_events.tsv')
+        remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    'data/simple_reorder_remdl.json')
+        events = TabularInput(file=events_path, name='wh_events')
+        with open(remodel_path, 'r') as fp:
+            remodeler = json.load(fp)
+        hed_schema = None
+        sidecar = None
+        command_0 = {'badcommand': 'remove_columns', 'description': 'bad structure', 'parameters': {'ignore_missing': True}}
+        command_1 = {'command': 'unknown_command', 'description': 'bad command', 'parameters': {'ignore_missing': True}}
+        command_2 = {'command': 'remove_columns', 'description': 'bad parameters', 'parameters': {'ignore_missing': True}}
+        commands_bad = [command_0, remodeler[0], command_1, remodeler[1], command_2]
+        remodel_bad = {'name': 'remodel_bad.json', 'commands': commands_bad}
+        with self.app.app_context():
+            results = remodel(hed_schema, events, sidecar, remodel_bad)
+        self.assertTrue(results['data'], 'remodel results should have a data key when unsuccessful')
+        self.assertEqual('warning', results['msg_category'],'remodel msg_category should be success when no errors')
 
 
 if __name__ == '__main__':
