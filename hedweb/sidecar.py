@@ -9,8 +9,7 @@ from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models import SpreadsheetInput, Sidecar
-from hed.tools import df_to_hed, hed_to_df, merge_hed_dict
-from hed.util import generate_filename
+from hed.tools import df_to_hed, generate_filename, hed_to_df, merge_hed_dict
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 

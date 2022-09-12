@@ -29,6 +29,7 @@ def get_input_from_request(request):
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
     get_column_parameters(arguments, service_request)
+    get_remodeler(arguments, service_request)
     get_sidecar(arguments, service_request)
     get_input_objects(arguments, service_request)
     arguments[base_constants.QUERY] = service_request.get('query', None)
@@ -112,6 +113,25 @@ def get_input_objects(arguments, params):
         for s in params[base_constants.STRING_LIST]:
             s_list.append(HedString(s))
         arguments[base_constants.STRING_LIST] = s_list
+
+
+def get_remodeler(arguments, params):
+    """ Update arguments with the remodeler information if any.
+
+     Args:
+         arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+         params (dict): The service request dictionary extracted from the Request object.
+
+     Updates the arguments dictionary with the sidecars.
+
+     """
+
+    remodel = None
+    if base_constants.REMODEL_FILE in params:
+        f = io.StringIO(base_constants.REMODEL_FILE)
+        name = 'remodel_commands.json'
+        remodel = {'name': name, 'commands': json.load(f)}
+    arguments[base_constants.REMODEL_COMMANDS] = remodel
 
 
 def get_service_info(params):

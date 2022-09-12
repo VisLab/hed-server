@@ -26,6 +26,7 @@ COMMAND_EXTRACT_SPREADSHEET = 'extract_spreadsheet'
 COMMAND_MERGE_SPREADSHEET = 'merge_spreadsheet'
 COMMAND_OPTION = 'command_option'
 COMMAND_REMAP = 'remap'
+COMMAND_REMODEL = 'remodel'
 COMMAND_SEARCH = 'search'
 COMMAND_TARGET = 'command_target'
 COMMAND_TO_LONG = 'to_long'
@@ -70,7 +71,8 @@ OTHER_VERSION_OPTION = 'Other'
 OUTPUT_DISPLAY_NAME = 'output_display_name'
 
 QUERY = 'query'
-
+REMODEL_FILE = 'remodel_file'
+REMODEL_COMMANDS = 'remodel_commands'
 REMOVE_DEFS = 'remove_defs'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 

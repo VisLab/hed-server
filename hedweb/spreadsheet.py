@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import SpreadsheetInput
-from hed.util import generate_filename
+from hed.tools import generate_filename
 from hed.validator import HedValidator
 
 from hedweb.constants import base_constants, file_constants
