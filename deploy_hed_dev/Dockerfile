@@ -13,12 +13,12 @@ pip3 install --no-cache-dir -r requirements.txt && \
 pip3 install git+https://github.com/hed-standard/hed-python/@develop \
 mkdir -p /var/www/localhost/htdocs && \
 cp /etc/mime.types /var/www/mime.types && \
-mkdir -p /var/log/hedtools_dev && \
-chown -R www-data:www-data /var/log/hedtools_dev && \
+mkdir -p /var/log/hedtools && \
+chown -R www-data:www-data /var/log/hedtools && \
 mkdir -p /var/cache/schema_cache && \
 chown -R www-data:www-data /var/cache/schema_cache
 COPY httpd.conf /etc/apache2/apache2.conf
-COPY ./hedtools /var/www/hedtools_dev/
-COPY ./hedtools/hedweb /var/www/hedtools_dev/hedweb/
+COPY ./hedtools /var/www/hedtools/
+COPY ./hedtools/hedweb /var/www/hedtools/hedweb/
 ENTRYPOINT /usr/sbin/apache2 -D FOREGROUND -f /etc/apache2/apache2.conf
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
