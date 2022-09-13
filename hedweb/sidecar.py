@@ -126,14 +126,15 @@ def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT
     display_name = sidecar.name
     if issues:
         issue_str = get_printable_issue_string(issues, f"JSON conversion for {display_name} was unsuccessful")
-        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}_conversion_errors", extension='.txt')
+        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}_conversion_errors",
+                                      extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: command,
                 base_constants.COMMAND_TARGET: 'sidecar',
                 'data': issue_str, 'output_display_name': file_name,
                 base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'warning',
                 'msg': f'JSON file {display_name} had validation errors'}
     else:
-        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json')
+        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
         data = sidecar.get_as_json_string()
         return {base_constants.COMMAND: command,
                 base_constants.COMMAND_TARGET: 'sidecar',
@@ -158,7 +159,7 @@ def sidecar_extract(sidecar):
     df = hed_to_df(str_sidecar)
     data = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = sidecar.name
-    file_name = generate_filename(display_name, name_suffix='_extracted', extension='.tsv')
+    file_name = generate_filename(display_name, name_suffix='_extracted', extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT_SPREADSHEET,
             base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
@@ -188,7 +189,8 @@ def sidecar_merge(sidecar, spreadsheet, include_description_tags=False):
     merge_hed_dict(sidecar_dict, hed_dict)
     display_name = sidecar.name
     data = json.dumps(sidecar_dict, indent=4)
-    file_name = generate_filename(display_name, name_suffix='_extracted_merged', extension='.json')
+    file_name = generate_filename(display_name, name_suffix='_extracted_merged',
+                                  extension='.json', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_EXTRACT_SPREADSHEET,
             base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
@@ -214,7 +216,8 @@ def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
     issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
     if issues:
         issue_str = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
-        file_name = generate_filename(display_name, name_suffix='validation_errors', extension='.txt')
+        file_name = generate_filename(display_name, name_suffix='validation_errors',
+                                      extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'sidecar',
                 'data': issue_str, 'output_display_name': file_name,

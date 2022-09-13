@@ -78,7 +78,7 @@ def process(arguments):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema for event processing", "")
     events = arguments.get(base_constants.EVENTS, None)
     sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
-    remodeler = arguments.get(base_constants.REMODEL_COMMANDS, None)
+    remodel_commands = arguments.get(base_constants.REMODEL_COMMANDS, None)
     query = arguments.get(base_constants.QUERY, None)
     columns_included = arguments.get(base_constants.COLUMNS_INCLUDED, None)
     if not events or not isinstance(events, TabularInput):
@@ -94,7 +94,7 @@ def process(arguments):
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
         results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
     elif command == base_constants.COMMAND_REMODEL:
-        results = remodel(hed_schema, events, sidecar, remodeler)
+        results = remodel(hed_schema, events, sidecar, remodel_commands)
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -121,7 +121,7 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
     df, defs = assemble_hed(events, columns_included=columns_included, expand_defs=expand_defs)
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
-    file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv')
+    file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name, 'definitions': DefinitionDict.get_as_strings(defs),
@@ -152,7 +152,7 @@ def generate_sidecar(events, columns_selected):
         hed_dict[column_name] = generate_sidecar_entry(column_name, column_values=column_values)
     display_name = events.name
 
-    file_name = generate_filename(display_name, name_suffix='_generated', extension='.json')
+    file_name = generate_filename(display_name, name_suffix='_generated', extension='.json', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR,
             base_constants.COMMAND_TARGET: 'events',
             'data': json.dumps(hed_dict, indent=4),
@@ -160,14 +160,14 @@ def generate_sidecar(events, columns_selected):
             'msg': 'JSON sidecar generation from event file complete'}
 
 
-def remodel(hed_schema, events, sidecar, remodeler):
+def remodel(hed_schema, events, sidecar, remodel_commands):
     """ Remodel a given events file.
 
     Args:
         hed_schema (HedSchema, HedSchemaGroup or None): A HED schema or HED schema group.
-        events (EventsInput):     An events input object.
-        sidecar (Sidecar or None):        A sidecar object.
-        remodeler (dict):         Remodeling file.
+        events (EventsInput):      An events input object.
+        sidecar (Sidecar or None): A sidecar object.
+        remodel_commands (dict):   A dictionary with the name and command list of the remodeling file.
 
     Returns:
         dict: A dictionary pointing to results or errors.
@@ -179,25 +179,27 @@ def remodel(hed_schema, events, sidecar, remodeler):
         schema_version = hed_schema.version
     else:
         schema_version = None
-    remodeler_name = remodeler['name']
-    remodeler_commands = remodeler['commands']
-    command_list, errors = Dispatcher.parse_commands(remodeler_commands)
+    remodel_name = remodel_commands['name']
+    commands = remodel_commands['commands']
+    command_list, errors = Dispatcher.parse_commands(commands)
     if errors:
         issue_str = Dispatcher.errors_to_str(errors)
-        file_name = generate_filename(remodeler_name, name_suffix='_command_parse_errors', extension='.txt')
+        file_name = generate_filename(remodel_name, name_suffix='_command_parse_errors',
+                                      extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
                 base_constants.COMMAND_TARGET: 'events',
                 'data': issue_str, "output_display_name": file_name,
                 base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
                 'msg': f"Remodeling command file for {display_name} had validation errors"}
     df = events.dataframe
-    dispatch = Dispatcher(remodeler_commands, data_root=None, hed_versions=schema_version)
+    dispatch = Dispatcher(commands, data_root=None, hed_versions=schema_version)
     df = dispatch.prep_events(df)
     for operation in dispatch.parsed_ops:
         df = operation.do_op(dispatch, df, display_name, sidecar=sidecar)
     df = df.fillna('n/a')
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-    file_name = generate_filename(display_name, name_suffix='_remodeled', extension='.tsv')
+    name_suffix = f"_remodeled_by_{remodel_name}"
+    file_name = generate_filename(display_name, name_suffix=name_suffix, extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
             base_constants.COMMAND_TARGET: 'events', 'data': csv_string, "output_display_name": file_name,
             base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
@@ -233,7 +235,7 @@ def search(hed_schema, events, query, columns_included=None):
         csv_string = ''
         msg = f"Events file has no events satisfying the query {query}."
     display_name = events.name
-    file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv')
+    file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
@@ -268,7 +270,8 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
             issue_str = get_printable_issue_string(issues, title="Event file errors:")
 
     if issue_str:
-        file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
+        file_name = generate_filename(display_name, name_suffix='_validation_errors',
+                                      extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'events',
                 'data': issue_str, "output_display_name": file_name,
@@ -297,7 +300,8 @@ def validate_query(hed_schema, query):
     if not query:
         display_name = 'empty_query'
         issue_str = "Empty query could not be processed."
-        file_name = generate_filename(display_name, name_suffix='_validation_errors', extension='.txt')
+        file_name = generate_filename(display_name, name_suffix='_validation_errors',
+                                      extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'query',
                 'data': issue_str, "output_display_name": file_name,
