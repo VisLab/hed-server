@@ -201,14 +201,14 @@ class Test(TestWebBase):
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    'data/sub-002_task-FacePerception_run-1_events.tsv')
         remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    'data/simple_reorder_remdl.json')
+                                    'data/simple_reorder_rmdl.json')
         events = TabularInput(file=events_path, name='wh_events')
         df = events.dataframe
         df_rows = len(df)
         df_cols = len(df.columns)
         with open(remodel_path, 'r') as fp:
             remodel_json = json.load(fp)
-        remodeler = {'name': "simple_reorder_remdl.json", 'commands': remodel_json}
+        remodeler = {'name': "simple_reorder_rmdl.json", 'operations': remodel_json}
         hed_schema = None
         sidecar = None
 
@@ -220,20 +220,21 @@ class Test(TestWebBase):
 
     def test_events_remodel_invalid_no_hed(self):
         from hedweb.events import remodel
+
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    'data/sub-002_task-FacePerception_run-1_events.tsv')
         remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    'data/simple_reorder_remdl.json')
+                                    'data/simple_reorder_rmdl.json')
         events = TabularInput(file=events_path, name='wh_events')
         with open(remodel_path, 'r') as fp:
             remodeler = json.load(fp)
         hed_schema = None
         sidecar = None
-        command_0 = {'badcommand': 'remove_columns', 'description': 'bad structure', 'parameters': {'ignore_missing': True}}
-        command_1 = {'command': 'unknown_command', 'description': 'bad command', 'parameters': {'ignore_missing': True}}
-        command_2 = {'command': 'remove_columns', 'description': 'bad parameters', 'parameters': {'ignore_missing': True}}
-        commands_bad = [command_0, remodeler[0], command_1, remodeler[1], command_2]
-        remodel_bad = {'name': 'remodel_bad.json', 'commands': commands_bad}
+        operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure', 'parameters': {'ignore_missing': True}}
+        operation_1 = {'operation': 'unknown_command', 'description': 'bad command', 'parameters': {'ignore_missing': True}}
+        operation_2 = {'command': 'remove_columns', 'description': 'bad parameters', 'parameters': {'ignore_missing': True}}
+        operation_bad = [operation_0, remodeler[0], operation_1, remodeler[1], operation_2]
+        remodel_bad = {'name': 'remodel_bad.json', 'operations': operation_bad}
         with self.app.app_context():
             results = remodel(hed_schema, events, sidecar, remodel_bad)
         self.assertTrue(results['data'], 'remodel results should have a data key when unsuccessful')

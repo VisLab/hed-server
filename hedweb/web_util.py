@@ -1,8 +1,9 @@
 import io
 import json
 import os
+import base64
 from urllib.parse import urlparse
-from flask import current_app, Response, make_response
+from flask import current_app, Response, make_response, send_file
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
@@ -85,45 +86,44 @@ def form_has_url(request, url_field, valid_extensions=None):
     return file_extension_is_valid(parsed_url.path, valid_extensions)
 
 
-def generate_download_file_from_text(download_text, display_name=None,
-                                     header=None, msg_category='success', msg=''):
+def generate_download_file_from_text(results, file_header=None):
     """ Generate a download file from text output.
 
     Args:
-        download_text (str): Text with newlines for iterating.
-        display_name (str): Name to be assigned to the file in the response.
-        header (str): Optional header for download file blob.
-        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
-        msg (str): Optional message to be displayed in the submit-flash-field.
+        results: Text with newlines for iterating.
+        file_header (str): Optional header for download file blob.
 
     Returns:
         Response: A Response object containing the downloaded file.
 
     """
-    if not display_name:
+    display_name = results.get('output_display_name', None)
+    if display_name is None:
         display_name = 'download.txt'
 
+    download_text = results.get('data', '')
     if not download_text:
         raise HedFileError('EmptyDownloadText', "No download text given", "")
-
+    headers = {'Content-Disposition': f"attachment filename={display_name}",
+               'Category': results[base_constants.MSG_CATEGORY],
+               'Message': results[base_constants.MSG]}
     def generate():
-        if header:
-            yield header
+        if file_header:
+            yield file_header
         for issue in download_text.splitlines(True):
             yield issue
 
     return Response(generate(), mimetype='text/plain charset=utf-8',
                     headers={'Content-Disposition': f"attachment filename={display_name}",
-                             'Category': msg_category, 'Message': msg})
+                             'Category': results[base_constants.MSG_CATEGORY],
+                             'Message': results[base_constants.MSG]})
 
 
-def generate_download_spreadsheet(results,  msg_category='success', msg=''):
+def generate_download_spreadsheet(results):
     """ Generate a download Excel file.
 
     Args:
         results (dict): Dictionary with the results to be downloaded.
-        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
-        msg (str): Optional message to be displayed in the submit-flash-field.
 
     Returns:
         Response: A Response object containing the downloaded file.
@@ -131,41 +131,95 @@ def generate_download_spreadsheet(results,  msg_category='success', msg=''):
     """
     # return generate_download_test()
     spreadsheet = results[base_constants.SPREADSHEET]
-    display_name = results[base_constants.OUTPUT_DISPLAY_NAME]
-
     if not spreadsheet.loaded_workbook:
-        return generate_download_file_from_text(spreadsheet.to_csv(), display_name=display_name,
-                                                msg_category=msg_category, msg=msg)
+        return generate_download_file_from_text({'data': spreadsheet.to_csv(),
+                                                 'output_display_name': results[base_constants.OUTPUT_DISPLAY_NAME],
+                                                 base_constants.MSG_CATEGORY: results[base_constants.MSG_CATEGORY],
+                                                 base_constants.MSG: results[base_constants.MSG]})
     buffer = io.BytesIO()
     spreadsheet.to_excel(buffer, output_processed_file=True)
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers['Content-Disposition'] = 'attachment; filename=' + display_name
-    response.headers['Category'] = msg_category
-    response.headers['Message'] = msg
+    response.headers['Content-Disposition'] = 'attachment; filename=' + results[base_constants.OUTPUT_DISPLAY_NAME]
+    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
+    response.headers['Message'] = results[base_constants.MSG]
     response.mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return response
 
 
-def generate_text_response(download_text, msg_category='success', msg=''):
+def generate_text_response(results):
     """ Generate a download response.
 
     Args:
-        download_text (str): Text to be downloaded as part of the response.
-        msg_category (str): Category of the message to be displayed ('Success', 'Error', 'Warning')
-        msg (str): Optional message to be displayed in the submit-flash-field.
+        results (dict): Dictionary containing the results of the data.
 
     Returns:
         Response: A Response object containing the downloaded file.
 
 
     """
-    headers = {'Category': msg_category, 'Message': msg}
+    headers = {'Category': results[base_constants.MSG_CATEGORY], 'Message': results[base_constants.MSG]}
+    download_text = results.get('data', '')
     if len(download_text) > 0:
         headers['Content-Length'] = len(download_text)
     return Response(download_text, mimetype='text/plain charset=utf-8', headers=headers)
 
+
+def generate_download_zip_file(results):
+    """ Generate a download response.
+
+    Args:
+        results (dict): Dictionary of results to use in constructing response.
+
+    Returns:
+        Response: A Response object containing the downloaded file.
+
+
+    """
+
+    archive = results['zip_data']
+    response = make_response()
+    response.data = archive
+    response.headers['Content-type'] = 'zip'
+    response.headers['Content-Disposition'] = 'attachment; filename=tempA.zip'
+    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
+    response.headers['Message'] = results[base_constants.MSG]
+    response.mimetype = 'application/zip'
+    return response
+    # archive = results['zip_data']
+    # with open('d:/junk/temp2.zip', 'wb') as fp:
+    #     fp.write(archive)
+    # buffer = io.BytesIO(archive)
+    # response = make_response()
+    # buffer.seek(0)
+    # buflen = len(archive)
+    # response.data = buffer.read()
+    # response.headers['Content-Disposition'] = 'attachment; filename=temp.zip'
+    # response.headers['Category'] = results[base_constants.MSG_CATEGORY]
+    # response.headers['Message'] = results[base_constants.MSG]
+    # response.headers['Content-Type'] = 'application/zip; charset=utf-8'
+    # response.headers['Content-Length'] = buflen
+    # response.mimetype = 'application/zip'
+    # return response
+    # fileobj = io.BytesIO()
+    # with zipfile.ZipFile(fileobj, 'w') as zip_file:
+    #     zip_info = zipfile.ZipInfo(FILEPATH)
+    #     zip_info.date_time = time.localtime(time.time())[:6]
+    #     zip_info.compress_type = zipfile.ZIP_DEFLATED
+    #     with open(FILEPATH, 'rb') as fd:
+    #         zip_file.writestr(zip_info, fd.read())
+    # fileobj.seek(0)
+    #
+    # response = make_response(fileobj.read())
+    # response.headers.set('Content-Type', 'zip')
+    # response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.basename(FILEPATH))
+
+    # archive = results['zip_data']
+    # with open('d:/junk/temp2.zip', 'wb') as fp:
+    #     fp.write(archive)
+    # response = send_file('d:/junk/junk3.zip', mimetype='application/zip', as_attachment=True, attachment_filename='junk3.zip')
+    return response
 
 def get_hed_schema_from_pull_down(request):
     """ Create a HedSchema object from form pull-down box.
@@ -249,7 +303,7 @@ def handle_http_error(ex):
     else:
         message = str(ex)
     error_message = f"{error_code}: [{message}]"
-    return generate_text_response('', msg_category='error', msg=error_message)
+    return generate_text_response({'data': '', base_constants.MSG_CATEGORY: 'error', base_constants.MSG: error_message})
 
 
 def package_results(results):
@@ -259,13 +313,12 @@ def package_results(results):
         results (dict): A dictionary with the results
 
     """
-    msg = results.get('msg', '')
-    msg_category = results.get('msg_category', 'success')
-    display_name = results.get('output_display_name', '')
-    if results['data']:
-        return generate_download_file_from_text(results['data'], display_name=display_name,
-                                                msg_category=msg_category, msg=msg)
+
+    if results.get('data', None):
+        return generate_download_file_from_text(results)
+    elif results.get('zip_data', None):
+        return generate_download_zip_file(results)
     elif not results.get('spreadsheet', None):
-        return generate_text_response("", msg=msg, msg_category=msg_category)
+        return generate_text_response(results)
     else:
-        return generate_download_spreadsheet(results, msg_category=msg_category, msg=msg)
+        return generate_download_spreadsheet(results)

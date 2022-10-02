@@ -75,7 +75,7 @@ class Test(TestWebBase):
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/sub-002_task-FacePerception_run-1_events.tsv')
         remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '../data/simple_reorder_remdl.json')
+                                    '../data/simple_reorder_rmdl.json')
         with open(events_path, 'r') as sc:
             y = sc.read()
         events_buffer = io.BytesIO(bytes(y, 'utf-8'))
@@ -87,7 +87,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
-                          base_constants.REMODEL_FILE: (remodel_buffer, 'simple_reorder_remdl.json'),
+                          base_constants.REMODEL_FILE: (remodel_buffer, 'simple_reorder_rmdl.json'),
                           base_constants.EVENTS_FILE: (events_buffer,
                                                        'sub-002_task-FacePerception_run-1_events.tsv.tsv')}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)

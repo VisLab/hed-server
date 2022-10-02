@@ -130,8 +130,8 @@ def get_remodeler(arguments, params):
     if base_constants.REMODEL_FILE in params:
         f = io.StringIO(base_constants.REMODEL_FILE)
         name = 'remodel_commands.json'
-        remodel = {'name': name, 'commands': json.load(f)}
-    arguments[base_constants.REMODEL_COMMANDS] = remodel
+        remodel = {'name': name, 'operations': json.load(f)}
+    arguments[base_constants.REMODEL_OPERATIONS] = remodel
 
 
 def get_service_info(params):

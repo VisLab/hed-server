@@ -67,12 +67,14 @@ JSON_SIDECAR = 'json_sidecar'
 JSON_SIDECARS = 'json_sidecars'
 JSON_STRING = 'json_string'
 
+MSG = 'msg'
+MSG_CATEGORY = 'msg_category'
 OTHER_VERSION_OPTION = 'Other'
 OUTPUT_DISPLAY_NAME = 'output_display_name'
 
 QUERY = 'query'
 REMODEL_FILE = 'remodel_file'
-REMODEL_COMMANDS = 'remodel_commands'
+REMODEL_OPERATIONS = 'remodel_operations'
 REMOVE_DEFS = 'remove_defs'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 
