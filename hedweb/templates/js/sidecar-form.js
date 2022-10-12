@@ -14,7 +14,7 @@ $('#process_actions').change(function(){
  * Submit the form on click if schema and json file specified.
  */
 $('#sidecar_submit').on('click', function () {
-    if (fileIsSpecified('#json_file', 'json_flash', 'JSON is not specified.' ) &&
+    if (fileIsSpecified('#sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.' ) &&
         schemaSpecifiedWhenOtherIsSelected()) {
         submitForm();
     }
@@ -29,7 +29,7 @@ function clearForm() {
     clearWorksheet()
     setOptions();
     clearFlashMessages()
-    clearJsonFileLabel();
+    clearSidecarFileLabel();
     hideOtherSchemaVersionFileUpload()
 }
 
@@ -37,7 +37,7 @@ function clearForm() {
  * Clear the flash messages that aren't related to the form submission.
  */
 function clearFlashMessages() {
-    clearJsonInputFlashMessages();
+    clearJsonSidecarFlashMessages();
     clearSchemaSelectFlashMessages();
     flashMessageOnScreen('', 'success', 'sidecar_submit_flash');
 }
@@ -60,7 +60,7 @@ function setOptions() {
         hideOption("expand_defs");
         showOption("check_for_warnings");
         hideOption("include_description_tags");
-        $("#json_input_section").show();
+        $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
@@ -68,7 +68,7 @@ function setOptions() {
         hideOption("check_for_warnings");
         showOption("expand_defs");
         hideOption("include_description_tags");
-        $("#json_input_section").show();
+        $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
@@ -76,7 +76,7 @@ function setOptions() {
         hideOption("check_for_warnings");
         showOption("expand_defs");
         hideOption("include_description_tags");
-        $("#json_input_section").show();
+        $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
@@ -84,7 +84,7 @@ function setOptions() {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_description_tags");
-        $("#json_input_section").show();
+        $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#options_section").hide();
@@ -92,7 +92,7 @@ function setOptions() {
         hideOption("expand_defs");
         hideOption("check_for_warnings");
         showOption("include_description_tags");
-        $("#json_input_section").show();
+        $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").show();
         $("#schema_pulldown_section").hide();
         $("#options_section").show();

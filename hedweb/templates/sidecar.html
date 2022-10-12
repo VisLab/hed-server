@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "json-input.html" import create_json_input %}
+{% from "sidecar-input.html" import create_sidecar_input %}
 {% from "schema-pulldown.html" import create_schema_pulldown %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
@@ -17,7 +17,7 @@
                           check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
 
 
-        {{ create_json_input('Upload BIDS-style JSON sidecar:') }}
+        {{ create_sidecar_input('Upload BIDS-style JSON sidecar:') }}
 
         {{ create_spreadsheet_input('Upload 4-column HED spreadsheet:',has_column_names_option=False) }}
 
@@ -34,7 +34,7 @@
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/options.js' %}
-        {%  include 'js/json-input.js' %}
+        {%  include 'js/sidecar-input.js' %}
         {%  include 'js/spreadsheet-input.js' %}
         {%  include 'js/schema-pulldown.js' %}
         {%  include 'js/sidecar-form.js' %}

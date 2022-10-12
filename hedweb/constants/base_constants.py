@@ -47,6 +47,7 @@ EVENTS_SUBMIT_FLASH = 'events_submit_flash'
 
 EXPAND_DEFS = 'expand_defs'
 
+FILE_LIST = 'file_list'
 FORMAT_OPTION = 'format_option'
 FORMAT_TO_EXCEL = 'to_excel'
 FORMAT_TO_JSON = 'to_json'
@@ -57,15 +58,9 @@ HEDSTRING = 'hedstring'
 
 INCLUDE_DEFINITION_TAGS = 'include_definition_tags'
 INCLUDE_DESCRIPTION_TAGS = 'include_description_tags'
+INCLUDE_SUMMARIES = 'include_summaries'
 ISSUE_STRING = 'issue_string'
 
-JSON_DISPLAY_NAME = 'json_display_name'
-JSON_FILE = 'json_file'
-JSON_LIST = 'json_list'
-JSON_PATH = 'json_path'
-JSON_SIDECAR = 'json_sidecar'
-JSON_SIDECARS = 'json_sidecars'
-JSON_STRING = 'json_string'
 
 MSG = 'msg'
 MSG_CATEGORY = 'msg_category'
@@ -75,6 +70,7 @@ OUTPUT_DISPLAY_NAME = 'output_display_name'
 QUERY = 'query'
 REMODEL_FILE = 'remodel_file'
 REMODEL_OPERATIONS = 'remodel_operations'
+REMODEL_STRING = 'remodel_string'
 REMOVE_DEFS = 'remove_defs'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 
@@ -99,10 +95,16 @@ SCHEMA_URL_FLASH = 'schema_url_flash'
 SCHEMA_URL_OPTION = 'schema_url_option'
 SCHEMA_VERSION = 'schema_version'
 SCHEMA_VERSION_LIST = 'schema_version_list'
+SCHEMA_VERSION_STRING = 'schema_version_string'
 
 SERVICE = 'service'
 SERVICE_PARAMETERS = 'service_parameters'
 
+SIDECAR = 'sidecar'
+SIDECAR_DISPLAY_NAME = 'sidecar_display_name'
+SIDECAR_FILE = 'sidecar_file'
+SIDECAR_PATH = 'sidecar_path'
+SIDECAR_STRING = 'sidecar_string'
 
 SPREADSHEET = 'spreadsheet'
 SPREADSHEET_DISPLAY_NAME = 'spreadsheet_display_name'
@@ -123,7 +125,7 @@ WORKSHEET_NAME = 'worksheet_name'
 WORKSHEET_NAMES = 'worksheet_names'
 WORKSHEET_SELECT = 'worksheet_select'
 WORKSHEET_SELECTED = 'worksheet_selected'
-
+ZIP_NAME = 'zip_name'
 
 # Type constants
 BOOLEAN = 'boolean'

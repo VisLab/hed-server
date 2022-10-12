@@ -13,16 +13,16 @@ class Test(TestWebBase):
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file
         with self.app.test as _:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-            with open(json_path, 'rb') as fp:
-                environ = create_environ(data={'json_file': fp})
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            with open(sidecar_path, 'rb') as fp:
+                environ = create_environ(data={'sidecar_file': fp})
 
             request = Request(environ)
-            self.assertTrue(form_has_file(request, 'json_file'), "Form has file when no extension requirements")
+            self.assertTrue(form_has_file(request, 'sidecar_file'), "Form has file when no extension requirements")
             self.assertFalse(form_has_file(request, 'temp'), "Form does not have file when form name is wrong")
-            self.assertFalse(form_has_file(request, 'json_file', file_constants.SPREADSHEET_EXTENSIONS),
+            self.assertFalse(form_has_file(request, 'sidecar_file', file_constants.SPREADSHEET_EXTENSIONS),
                              "Form does not have file when extension is wrong")
-            self.assertTrue(form_has_file(request, 'json_file', [".json"]),
+            self.assertTrue(form_has_file(request, 'sidecar_file', [".json"]),
                             "Form has file when extensions and form field match")
 
     def test_form_has_option(self):

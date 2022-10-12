@@ -9,9 +9,10 @@ from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models import SpreadsheetInput, Sidecar
+from hed.schema.hed_schema_io import get_schema_versions
 from hed.tools import df_to_hed, generate_filename, hed_to_df, merge_hed_dict
 from hedweb.constants import base_constants, file_constants
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
+from hedweb.web_util import form_has_option, filter_issues, get_hed_schema_from_pull_down
 
 app_config = current_app.config
 
@@ -27,7 +28,7 @@ def get_input_from_form(request):
 
     """
 
-    arguments = {base_constants.SCHEMA: get_hed_schema_from_pull_down(request), base_constants.JSON_SIDECAR: None,
+    arguments = {base_constants.SCHEMA: get_hed_schema_from_pull_down(request), base_constants.SIDECAR: None,
                  base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, None),
                  base_constants.CHECK_FOR_WARNINGS:
                      form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
@@ -37,10 +38,10 @@ def get_input_from_form(request):
                      form_has_option(request, base_constants.INCLUDE_DESCRIPTION_TAGS, 'on'),
                  base_constants.SPREADSHEET_TYPE: file_constants.TSV_EXTENSION,
                  }
-    if base_constants.JSON_FILE in request.files:
-        f = request.files[base_constants.JSON_FILE]
+    if base_constants.SIDECAR_FILE in request.files:
+        f = request.files[base_constants.SIDECAR_FILE]
         fb = io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))
-        arguments[base_constants.JSON_SIDECAR] = Sidecar(files=fb, name=secure_filename(f.filename))
+        arguments[base_constants.SIDECAR] = Sidecar(files=fb, name=secure_filename(f.filename))
     if base_constants.SPREADSHEET_FILE in request.files and \
             request.files[base_constants.SPREADSHEET_FILE].filename:
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
@@ -71,10 +72,10 @@ def process(arguments):
         pass
     elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
-    sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
+    sidecar = arguments.get(base_constants.SIDECAR, None)
     spreadsheet = arguments.get(base_constants.SPREADSHEET, 'None')
     if not sidecar:
-        raise HedFileError('MissingJSONFile', "Please give a valid JSON file to process", "")
+        raise HedFileError('MissingSidecarFile', "Please give a valid JSON sidecar file to process", "")
     check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
     expand_defs = arguments.get(base_constants.EXPAND_DEFS, False)
     include_description_tags = arguments.get(base_constants.INCLUDE_DESCRIPTION_TAGS, False)
@@ -105,10 +106,6 @@ def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT
 
     """
 
-    schema_version = hed_schema.version
-    # results = sidecar_validate(hed_schema, sidecar, check_for_warnings=False)
-    # if results['data']:
-    #     return results
     if command == base_constants.COMMAND_TO_LONG:
         tag_form = 'long_tag'
     else:
@@ -124,23 +121,22 @@ def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT
 
     # issues = ErrorHandler.filter_issues_by_severity(issues, ErrorSeverity.ERROR)
     display_name = sidecar.name
+    issues = filter_issues(issues, False)
     if issues:
-        issue_str = get_printable_issue_string(issues, f"JSON conversion for {display_name} was unsuccessful")
+        data = get_printable_issue_string(issues, f"JSON conversion for {display_name} was unsuccessful")
         file_name = generate_filename(display_name, name_suffix=f"_{tag_form}_conversion_errors",
                                       extension='.txt', append_datetime=True)
-        return {base_constants.COMMAND: command,
-                base_constants.COMMAND_TARGET: 'sidecar',
-                'data': issue_str, 'output_display_name': file_name,
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'warning',
-                'msg': f'JSON file {display_name} had validation errors'}
+        category = 'warning'
+        msg = f'Sidecar file {display_name} had validation errors'
     else:
         file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
         data = sidecar.get_as_json_string()
-        return {base_constants.COMMAND: command,
-                base_constants.COMMAND_TARGET: 'sidecar',
-                'data': data, 'output_display_name': file_name,
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-                'msg': f'JSON sidecar {display_name} was successfully converted'}
+        category = 'success'
+        msg = f'Sidecar file {display_name} was successfully converted'
+    return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
+            'data': data, 'output_display_name': file_name,
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            'msg_category': category, 'msg': msg}
 
 
 def sidecar_extract(sidecar):
@@ -210,21 +206,22 @@ def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
 
     """
 
-    schema_version = hed_schema.version
     display_name = sidecar.name
     validator = HedValidator(hed_schema)
     issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
     if issues:
-        issue_str = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
+        data = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
         file_name = generate_filename(display_name, name_suffix='validation_errors',
                                       extension='.txt', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'sidecar',
-                'data': issue_str, 'output_display_name': file_name,
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'warning',
-                'msg': f'JSON sidecar {display_name} had validation errors'}
+        category = 'warning'
+        msg = f'JSON sidecar {display_name} had validation errors'
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'sidecar', 'data': '',
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-                'msg': f'JSON file {display_name} had no validation errors'}
+        data = ''
+        file_name = display_name
+        category = 'success'
+        msg = f'JSON file {display_name} had no validation errors'
+
+    return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'sidecar',
+            'data': data, 'output_display_name': file_name,
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

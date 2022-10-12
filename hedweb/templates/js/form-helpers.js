@@ -186,12 +186,10 @@ function splitExt(filename) {
  * @param {String} content_type - Type of file to create
  */
 function triggerDownloadBlob(download_blob, display_name, content_type) {
-    // const url = URL.createObjectURL(new Blob([download_blob]));
-    const url = URL.createObjectURL(new Blob([download_blob], {type: content_type}))
+    const url = URL.createObjectURL(new Blob([download_blob], {type:content_type}));
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', display_name);
-    link.setAttribute('type', content_type)
     document.body.appendChild(link);
     link.click();
 }

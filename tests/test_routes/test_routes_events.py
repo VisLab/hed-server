@@ -17,12 +17,12 @@ class Test(TestWebBase):
         self.assertFalse(response.data, "The response data for empty events request is empty")
 
     def test_events_results_assemble_valid(self):
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.tsv')
 
-        with open(json_path, 'r') as sc:
+        with open(sidecar_path, 'r') as sc:
             x = sc.read()
-        json_buffer = io.BytesIO(bytes(x, 'utf-8'))
+        sidecar_buffer = io.BytesIO(bytes(x, 'utf-8'))
 
         with open(events_path, 'r') as sc:
             y = sc.read()
@@ -31,7 +31,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          'json_file': (json_buffer, 'bids_events.json'),
+                          'sidecar_file': (sidecar_buffer, 'bids_events.json'),
                           'events_file': (events_buffer, 'bids_events.tsv'),
                           'expand_defs': 'on',
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
@@ -41,7 +41,7 @@ class Test(TestWebBase):
             self.assertEqual("success", headers_dict["Category"],
                              "The valid events file should assemble successfully")
             self.assertTrue(response.data, "The assembled events file should not be empty")
-            json_buffer.close()
+            sidecar_buffer.close()
             events_buffer.close()
 
     def test_events_results_assemble_invalid(self):
@@ -59,7 +59,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          base_constants.JSON_FILE: (json_buffer, 'bids_events.json'),
+                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'bids_events.tsv'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
@@ -146,7 +146,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.JSON_FILE: (json_buffer, 'bids_events.json'),
+                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'bids_events.tsv'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
@@ -175,7 +175,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.JSON_FILE: (json_buffer, 'bids_events.json'),
+                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'events_file'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)

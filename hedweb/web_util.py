@@ -1,14 +1,14 @@
 import io
 import json
 import os
-import base64
+import zipfile
 from urllib.parse import urlparse
 from flask import current_app, Response, make_response, send_file
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
 
-from hed.errors import HedFileError
+from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config
@@ -26,6 +26,13 @@ def file_extension_is_valid(filename, accepted_extensions=None):
 
     """
     return not accepted_extensions or os.path.splitext(filename.lower())[1] in accepted_extensions
+
+
+def filter_issues(issues, check_for_warnings):
+    """ Filter an issues list by severity level to allow warnings. """
+    if not check_for_warnings:
+        issues = ErrorHandler.filter_issues_by_severity(issues, ErrorSeverity.ERROR)
+    return issues
 
 
 def form_has_file(request, file_field, valid_extensions=None):
@@ -104,9 +111,7 @@ def generate_download_file_from_text(results, file_header=None):
     download_text = results.get('data', '')
     if not download_text:
         raise HedFileError('EmptyDownloadText', "No download text given", "")
-    headers = {'Content-Disposition': f"attachment filename={display_name}",
-               'Category': results[base_constants.MSG_CATEGORY],
-               'Message': results[base_constants.MSG]}
+
     def generate():
         if file_header:
             yield file_header
@@ -178,48 +183,18 @@ def generate_download_zip_file(results):
 
     """
 
-    archive = results['zip_data']
-    response = make_response()
-    response.data = archive
-    response.headers['Content-type'] = 'zip'
-    response.headers['Content-Disposition'] = 'attachment; filename=tempA.zip'
-    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
+    file_list = results[base_constants.FILE_LIST]
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, mode="a", compression=zipfile.ZIP_DEFLATED) as zf:
+        for item in file_list:
+            zf.writestr(item['file_name'], str.encode(item['content'], 'utf-8'))
+    archive.seek(0)
+    zip_name = results.get('zip_name', results['output_display_name'])
+    response = send_file(archive, as_attachment=True, download_name=zip_name)
     response.headers['Message'] = results[base_constants.MSG]
-    response.mimetype = 'application/zip'
+    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
     return response
-    # archive = results['zip_data']
-    # with open('d:/junk/temp2.zip', 'wb') as fp:
-    #     fp.write(archive)
-    # buffer = io.BytesIO(archive)
-    # response = make_response()
-    # buffer.seek(0)
-    # buflen = len(archive)
-    # response.data = buffer.read()
-    # response.headers['Content-Disposition'] = 'attachment; filename=temp.zip'
-    # response.headers['Category'] = results[base_constants.MSG_CATEGORY]
-    # response.headers['Message'] = results[base_constants.MSG]
-    # response.headers['Content-Type'] = 'application/zip; charset=utf-8'
-    # response.headers['Content-Length'] = buflen
-    # response.mimetype = 'application/zip'
-    # return response
-    # fileobj = io.BytesIO()
-    # with zipfile.ZipFile(fileobj, 'w') as zip_file:
-    #     zip_info = zipfile.ZipInfo(FILEPATH)
-    #     zip_info.date_time = time.localtime(time.time())[:6]
-    #     zip_info.compress_type = zipfile.ZIP_DEFLATED
-    #     with open(FILEPATH, 'rb') as fd:
-    #         zip_file.writestr(zip_info, fd.read())
-    # fileobj.seek(0)
-    #
-    # response = make_response(fileobj.read())
-    # response.headers.set('Content-Type', 'zip')
-    # response.headers.set('Content-Disposition', 'attachment', filename='%s.zip' % os.path.basename(FILEPATH))
 
-    # archive = results['zip_data']
-    # with open('d:/junk/temp2.zip', 'wb') as fp:
-    #     fp.write(archive)
-    # response = send_file('d:/junk/junk3.zip', mimetype='application/zip', as_attachment=True, attachment_filename='junk3.zip')
-    return response
 
 def get_hed_schema_from_pull_down(request):
     """ Create a HedSchema object from form pull-down box.
@@ -235,7 +210,6 @@ def get_hed_schema_from_pull_down(request):
     if base_constants.SCHEMA_VERSION not in request.form:
         raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
     elif request.form[base_constants.SCHEMA_VERSION] != base_constants.OTHER_VERSION_OPTION:
-
         hed_file_path = hedschema.get_path_from_hed_version(request.form[base_constants.SCHEMA_VERSION])
         hed_schema = hedschema.load_schema(hed_file_path)
     elif request.form[base_constants.SCHEMA_VERSION] == \
@@ -246,6 +220,14 @@ def get_hed_schema_from_pull_down(request):
     else:
         raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")
     return hed_schema
+
+
+# def get_hed_versions(hed_schema):
+#     if hed_schema:
+#         hed_versions = hed_schema.get_formatted_version(as_string=False)
+#     else:
+#         hed_versions = None
+#     return hed_versions
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):
@@ -314,10 +296,10 @@ def package_results(results):
 
     """
 
-    if results.get('data', None):
-        return generate_download_file_from_text(results)
-    elif results.get('zip_data', None):
+    if results.get(base_constants.FILE_LIST, None):
         return generate_download_zip_file(results)
+    elif results.get('data', None):
+        return generate_download_file_from_text(results)
     elif not results.get('spreadsheet', None):
         return generate_text_response(results)
     else:
