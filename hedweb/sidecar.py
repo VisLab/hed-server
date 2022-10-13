@@ -9,7 +9,6 @@ from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models import SpreadsheetInput, Sidecar
-from hed.schema.hed_schema_io import get_schema_versions
 from hed.tools import df_to_hed, generate_filename, hed_to_df, merge_hed_dict
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_option, filter_issues, get_hed_schema_from_pull_down
@@ -135,7 +134,7 @@ def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT
         msg = f'Sidecar file {display_name} was successfully converted'
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             'msg_category': category, 'msg': msg}
 
 
@@ -223,5 +222,5 @@ def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

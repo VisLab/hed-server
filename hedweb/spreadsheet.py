@@ -2,7 +2,6 @@ import os
 from flask import current_app
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
-from hed.schema.hed_schema_io import get_schema_versions
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import SpreadsheetInput
 from hed.tools import generate_filename
@@ -115,7 +114,7 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
     return {base_constants.COMMAND: command,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
             base_constants.SPREADSHEET: spreadsheet, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             base_constants.MSG_CATEGORY: 'success',
             base_constants.MSG: f'Spreadsheet {display_name} converted_successfully'}
 
@@ -151,6 +150,6 @@ def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': data,
-            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             "output_display_name": file_name,
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
