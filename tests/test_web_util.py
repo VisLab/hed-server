@@ -2,6 +2,7 @@ import os
 import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request, Response
+from hedweb.constants import base_constants, file_constants
 
 
 from tests.test_web_base import TestWebBase
@@ -11,23 +12,21 @@ class Test(TestWebBase):
 
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file
-        from hedweb.constants import file_constants
         with self.app.test as _:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-            with open(json_path, 'rb') as fp:
-                environ = create_environ(data={'json_file': fp})
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            with open(sidecar_path, 'rb') as fp:
+                environ = create_environ(data={'sidecar_file': fp})
 
             request = Request(environ)
-            self.assertTrue(form_has_file(request, 'json_file'), "Form has file when no extension requirements")
+            self.assertTrue(form_has_file(request, 'sidecar_file'), "Form has file when no extension requirements")
             self.assertFalse(form_has_file(request, 'temp'), "Form does not have file when form name is wrong")
-            self.assertFalse(form_has_file(request, 'json_file', file_constants.SPREADSHEET_EXTENSIONS),
+            self.assertFalse(form_has_file(request, 'sidecar_file', file_constants.SPREADSHEET_EXTENSIONS),
                              "Form does not have file when extension is wrong")
-            self.assertTrue(form_has_file(request, 'json_file', [".json"]),
+            self.assertTrue(form_has_file(request, 'sidecar_file', [".json"]),
                             "Form has file when extensions and form field match")
 
     def test_form_has_option(self):
         from hedweb.web_util import form_has_option
-        from hedweb.constants import base_constants
 
         with self.app.test as _:
             environ = create_environ(data={base_constants.CHECK_FOR_WARNINGS: 'on'})
@@ -41,7 +40,6 @@ class Test(TestWebBase):
 
     def test_form_has_url(self):
         from hedweb.web_util import form_has_url
-        from hedweb.constants import base_constants, file_constants
         with self.app.test as _:
             environ = create_environ(data={base_constants.SCHEMA_URL: 'https://www.google.com/my.json'})
             request = Request(environ)
@@ -54,21 +52,20 @@ class Test(TestWebBase):
         from hedweb.web_util import generate_download_file_from_text
         with self.app.test_request_context():
             the_text = 'The quick brown fox\nIs too slow'
-            response = generate_download_file_from_text(the_text, 'temp',
-                                                        msg_category='success', msg='Successful')
+            response = generate_download_file_from_text({'data': the_text, 'msg_category':'success',
+                                                         'msg': 'Successful'})
             self.assertIsInstance(response, Response,
                                   'Generate_response_download_file_from_text returns a response for string')
             self.assertEqual(200, response.status_code,
                              "Generate_response_download_file_from_text has status code 200 for string")
             header_content = dict(response.headers)
             self.assertEqual('success', header_content['Category'], "The msg_category is success")
-            self.assertEqual('attachment filename=temp', header_content['Content-Disposition'],
+            self.assertEqual('attachment filename=download.txt', header_content['Content-Disposition'],
                              "generate_download_file has the correct attachment file name")
 
     def test_generate_download_spreadsheet_excel(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
-            from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
@@ -78,8 +75,9 @@ class Test(TestWebBase):
                                                                      4: 'Attribute/Informational/Description/'},
                                            name='ExcelOneSheet.xlsx')
             results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx'}
-            response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')
+                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
+                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for xlsx files')
             headers_dict = dict(response.headers)
             self.assertEqual(200, response.status_code, 'generate_download_spreadsheet should return status code 200')
@@ -91,7 +89,6 @@ class Test(TestWebBase):
     def test_generate_download_spreadsheet_excel_code(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
-            from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
@@ -101,8 +98,9 @@ class Test(TestWebBase):
                                                                      3: 'Description/'},
                                            name='ExcelOneSheet.xlsx')
             results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx'}
-            response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')
+                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
+                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for tsv files')
             headers_dict = dict(response.headers)
             self.assertEqual(200, response.status_code, 'generate_download_spreadsheet should return status code 200')
@@ -114,7 +112,6 @@ class Test(TestWebBase):
     def test_generate_download_spreadsheet_tsv(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
-            from hedweb.constants import base_constants
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                             'data/LKTEventCodesHED3.tsv')
@@ -125,8 +122,9 @@ class Test(TestWebBase):
                                                                      4: 'Attribute/Informational/Description/'},
                                            name='LKTEventCodesHED3.tsv')
             results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'LKTEventCodesHED3.tsv'}
-            response = generate_download_spreadsheet(results, msg_category='success', msg='Successful download')
+                       base_constants.OUTPUT_DISPLAY_NAME: 'LKTEventCodesHED3.tsv',
+                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for tsv files')
             headers_dict = dict(response.headers)
             self.assertEqual(200, response.status_code, 'generate_download_spreadsheet should return status code 200')
@@ -138,17 +136,16 @@ class Test(TestWebBase):
     def test_generate_text_response(self):
         with self.app.test_request_context():
             from hedweb.web_util import generate_text_response
-            download_text = 'testme'
-            test_msg = 'testing'
-            response = generate_text_response(download_text, msg_category='success', msg=test_msg)
+            results = {'data': 'testme', base_constants.MSG: 'testing', base_constants.MSG_CATEGORY: 'success'}
+            response = generate_text_response(results)
             self.assertIsInstance(response, Response, 'generate_download_text_response returns a response')
             headers_dict = dict(response.headers)
             self.assertEqual(200, response.status_code, 'generate_download_text_response should return status code 200')
             self.assertEqual('text/plain charset=utf-8', response.mimetype,
                              "generate_download_download_text_response should return text")
-            self.assertEqual(test_msg, headers_dict['Message'],
+            self.assertEqual(results[base_constants.MSG], headers_dict['Message'],
                              "generate_download_text_response have the correct message in the response")
-            self.assertEqual(download_text, response.data.decode('ascii'),
+            self.assertEqual(results['data'], response.data.decode('ascii'),
                              "generate_download_text_response have the download text as response data")
 
     def test_get_hed_schema_from_pull_down_empty(self):

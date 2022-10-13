@@ -2,6 +2,7 @@ import os
 from flask import current_app
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
+from hed.schema.hed_schema_io import get_schema_versions
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import SpreadsheetInput
 from hed.tools import generate_filename
@@ -9,7 +10,7 @@ from hed.validator import HedValidator
 
 from hedweb.constants import base_constants, file_constants
 from hedweb.columns import get_prefix_dict
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
+from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down
 
 
 app_config = current_app.config
@@ -96,7 +97,6 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
 
     """
 
-    schema_version = hed_schema.version
     results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=check_for_warnings)
     if results['data']:
         return results
@@ -115,8 +115,9 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
     return {base_constants.COMMAND: command,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
             base_constants.SPREADSHEET: spreadsheet, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-            'msg': f'Spreadsheet {display_name} converted_successfully'}
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.MSG_CATEGORY: 'success',
+            base_constants.MSG: f'Spreadsheet {display_name} converted_successfully'}
 
 
 def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
@@ -131,21 +132,25 @@ def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
         dict: A dictionary containing results of validation in standard format.
 
     """
-    schema_version = hed_schema.version
+
     validator = HedValidator(hed_schema=hed_schema)
     issues = spreadsheet.validate_file(validator, check_for_warnings=check_for_warnings)
     display_name = spreadsheet.name
+    issues = filter_issues(issues, check_for_warnings)
     if issues:
-        issue_str = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation errors")
+        data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation errors")
         file_name = generate_filename(display_name, name_suffix='_validation_errors',
                                       extension='.txt', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'spreadsheet',
-                'data': issue_str, "output_display_name": file_name,
-                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
-                'msg': f"Spreadsheet {display_name} had validation errors"}
+        category = "warning"
+        msg = f"Spreadsheet {file_name} had validation errors"
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-                'msg': f'Spreadsheet {display_name} had no validation errors'}
+        data = ''
+        file_name = display_name
+        category = 'success'
+        msg = f'Spreadsheet {display_name} had no validation errors'
+
+    return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
+            base_constants.COMMAND_TARGET: 'spreadsheet', 'data': data,
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            "output_display_name": file_name,
+            base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

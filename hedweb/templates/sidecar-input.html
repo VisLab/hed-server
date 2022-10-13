@@ -1,0 +1,14 @@
+{% macro create_sidecar_input(title) %}
+    <div id="sidecar_input_section">
+        <h3>{{ title }}</h3>
+        <div class="form-group">
+            <label class="secondary-label" for="sidecar_file">Sidecar file:</label>
+            <label class="btn-group file-browse-group">
+                <button for="sidecar_file">Browse ...</button>
+                <label id="sidecar_display_name"></label>
+                <input type="file" name="sidecar_file" id="sidecar_file"/>
+            </label>
+            <p class="flash" id="sidecar_flash"></p>
+        </div>
+    </div>
+{% endmacro %}

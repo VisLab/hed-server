@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "schema-pulldown.html" import create_schema_pulldown %}
-{% from "json-input.html" import create_json_input %}
+{% from "sidecar-input.html" import create_sidecar_input %}
 {% from "remodel-input.html" import create_remodel_input %}
 {% from "column-info.html" import create_column_info %}
 {% from "actions.html" import create_actions %}
@@ -15,7 +15,7 @@
 
         {{ create_actions('Pick an action:',assemble=True,generate_sidecar=True,validate=True,remodel=True) }}
 
-        {{ create_options('Check applicable options if any:',check_for_warnings=True,expand_defs=True) }}
+        {{ create_options('Check applicable options if any:',check_for_warnings=True,expand_defs=True,include_summaries=True) }}
 
         <h3>Upload events file:</h3>
         <div class="form-group">
@@ -35,7 +35,7 @@
 
         {{ create_remodel_input('Upload remodel instructions (JSON):') }}
 
-        {{ create_json_input('Upload BIDS-style JSON sidecar if needed:') }}
+        {{ create_sidecar_input('Upload BIDS-style JSON sidecar if needed:') }}
 
         {{ create_schema_pulldown('Choose a HED schema version if needed:') }}
 
@@ -51,7 +51,7 @@
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/schema-pulldown.js' %}
-        {%  include 'js/json-input.js' %}
+        {%  include 'js/sidecar-input.js' %}
         {%  include 'js/remodel-input.js' %}
         {%  include 'js/options.js' %}
         {%  include 'js/events-form.js' %}

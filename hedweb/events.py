@@ -5,12 +5,14 @@ import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
-from hed.tools import assemble_hed, Dispatcher, TabularSummary, generate_filename, generate_sidecar_entry, search_tabular
 from hed.models import DefinitionDict, Sidecar, TabularInput
+from hed.schema.hed_schema_io import get_schema_versions
+from hed.tools import assemble_hed, Dispatcher, TabularSummary, generate_filename, \
+    generate_sidecar_entry, search_tabular
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
+from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down
 
 app_config = current_app.config
 
@@ -31,6 +33,7 @@ def get_events_form_input(request):
                  base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
                  base_constants.CHECK_FOR_WARNINGS: form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
                  base_constants.EXPAND_DEFS: form_has_option(request, base_constants.EXPAND_DEFS, 'on'),
+                 base_constants.INCLUDE_SUMMARIES: form_has_option(request, base_constants.INCLUDE_SUMMARIES, 'on'),
                  base_constants.COLUMNS_SELECTED: create_column_selections(request.form),
                  base_constants.COLUMNS_INCLUDED: create_columns_included(request.form)
                  }
@@ -38,21 +41,22 @@ def get_events_form_input(request):
         arguments[base_constants.COLUMNS_INCLUDED] = ['onset']   # TODO  add user interface option to choose columns.
     if arguments[base_constants.COMMAND] != base_constants.COMMAND_GENERATE_SIDECAR:
         arguments[base_constants.SCHEMA] = get_hed_schema_from_pull_down(request)
-    json_sidecar = None
-    if base_constants.JSON_FILE in request.files:
-        f = request.files[base_constants.JSON_FILE]
-        json_sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-    arguments[base_constants.JSON_SIDECAR] = json_sidecar
-    remodel = None
-    if base_constants.REMODEL_FILE in request.files:
+    sidecar = None
+    if base_constants.SIDECAR_FILE in request.files:
+        f = request.files[base_constants.SIDECAR_FILE]
+        sidecar = Sidecar(files=f, name=secure_filename(f.filename))
+    arguments[base_constants.SIDECAR] = sidecar
+    remodel_operations = None
+    if arguments[base_constants.COMMAND] == base_constants.COMMAND_REMODEL and \
+            base_constants.REMODEL_FILE in request.files:
         f = request.files[base_constants.REMODEL_FILE]
         name = secure_filename(f.filename)
-        remodel = {'name': name, 'commands': json.load(f)}
-    arguments[base_constants.REMODEL_COMMANDS] = remodel
+        remodel_operations = {'name': name, 'operations': json.load(f)}
+    arguments[base_constants.REMODEL_OPERATIONS] = remodel_operations
     if base_constants.EVENTS_FILE in request.files:
         f = request.files[base_constants.EVENTS_FILE]
         arguments[base_constants.EVENTS] = \
-            TabularInput(file=f, sidecar=arguments.get(base_constants.JSON_SIDECAR, None),
+            TabularInput(file=f, sidecar=arguments.get(base_constants.SIDECAR, None),
                          name=secure_filename(f.filename))
     return arguments
 
@@ -74,11 +78,12 @@ def process(arguments):
     command = arguments.get(base_constants.COMMAND, None)
     if command == base_constants.COMMAND_GENERATE_SIDECAR:
         pass
-    elif not hed_schema or not isinstance(hed_schema, hedschema.hed_schema.HedSchema):
+    elif not hed_schema or not \
+            isinstance(hed_schema, (hedschema.hed_schema.HedSchema, hedschema.hed_schema_group.HedSchemaGroup)):
         raise HedFileError('BadHedSchema', "Please provide a valid HedSchema for event processing", "")
     events = arguments.get(base_constants.EVENTS, None)
-    sidecar = arguments.get(base_constants.JSON_SIDECAR, None)
-    remodel_commands = arguments.get(base_constants.REMODEL_COMMANDS, None)
+    sidecar = arguments.get(base_constants.SIDECAR, None)
+    remodel_operations = arguments.get(base_constants.REMODEL_OPERATIONS, None)
     query = arguments.get(base_constants.QUERY, None)
     columns_included = arguments.get(base_constants.COLUMNS_INCLUDED, None)
     if not events or not isinstance(events, TabularInput):
@@ -94,7 +99,8 @@ def process(arguments):
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
         results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
     elif command == base_constants.COMMAND_REMODEL:
-        results = remodel(hed_schema, events, sidecar, remodel_commands)
+        results = remodel(hed_schema, events, sidecar, remodel_operations,
+                          include_summaries=arguments.get(base_constants.INCLUDE_SUMMARIES, False))
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
@@ -114,7 +120,6 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
 
     """
 
-    schema_version = hed_schema.version
     results = validate(hed_schema, events)
     if results['data']:
         return results
@@ -125,7 +130,8 @@ def assemble(hed_schema, events, columns_included=None, expand_defs=True):
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name, 'definitions': DefinitionDict.get_as_strings(defs),
-            'schema_version': schema_version, 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
+            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 
 def generate_sidecar(events, columns_selected):
@@ -160,14 +166,15 @@ def generate_sidecar(events, columns_selected):
             'msg': 'JSON sidecar generation from event file complete'}
 
 
-def remodel(hed_schema, events, sidecar, remodel_commands):
+def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=True):
     """ Remodel a given events file.
 
     Args:
         hed_schema (HedSchema, HedSchemaGroup or None): A HED schema or HED schema group.
         events (EventsInput):      An events input object.
         sidecar (Sidecar or None): A sidecar object.
-        remodel_commands (dict):   A dictionary with the name and command list of the remodeling file.
+        remodel_operations (dict): A dictionary with the name and list of operations in the remodeling file.
+        include_summaries (bool):  If true and summaries exist, package event file and summaries in a zip file.
 
     Returns:
         dict: A dictionary pointing to results or errors.
@@ -175,35 +182,43 @@ def remodel(hed_schema, events, sidecar, remodel_commands):
     """
 
     display_name = events.name
-    if hed_schema:
-        schema_version = hed_schema.version
-    else:
-        schema_version = None
-    remodel_name = remodel_commands['name']
-    commands = remodel_commands['commands']
-    command_list, errors = Dispatcher.parse_commands(commands)
+    remodel_name = remodel_operations['name']
+    operations = remodel_operations['operations']
+    operations_list, errors = Dispatcher.parse_operations(operations)
     if errors:
         issue_str = Dispatcher.errors_to_str(errors)
-        file_name = generate_filename(remodel_name, name_suffix='_command_parse_errors',
+        file_name = generate_filename(remodel_name, name_suffix='_operation_parse_errors',
                                       extension='.txt', append_datetime=True)
         return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
                 base_constants.COMMAND_TARGET: 'events',
-                'data': issue_str, "output_display_name": file_name,
-                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
-                'msg': f"Remodeling command file for {display_name} had validation errors"}
+                'data': issue_str, 'output_display_name': file_name,
+                'msg_category': "warning",
+                'msg': f"Remodeling operation list for {display_name} had validation errors"}
     df = events.dataframe
-    dispatch = Dispatcher(commands, data_root=None, hed_versions=schema_version)
+    dispatch = Dispatcher(operations, data_root=None, hed_versions=hed_schema)
     df = dispatch.prep_events(df)
     for operation in dispatch.parsed_ops:
         df = operation.do_op(dispatch, df, display_name, sidecar=sidecar)
     df = df.fillna('n/a')
-    csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+    data = df.to_csv(None, sep='\t', index=False, header=True)
     name_suffix = f"_remodeled_by_{remodel_name}"
     file_name = generate_filename(display_name, name_suffix=name_suffix, extension='.tsv', append_datetime=True)
-    return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
-            base_constants.COMMAND_TARGET: 'events', 'data': csv_string, "output_display_name": file_name,
-            base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-            'msg': f"Command parsing for {display_name} remodeling was successful"}
+    output_name = file_name
+
+    response = {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
+                base_constants.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
+                base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+                base_constants.MSG_CATEGORY: 'success',
+                base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
+    if dispatch.context_dict and include_summaries:
+        file_list = dispatch.get_context_summaries()
+        file_list.append({'file_name': output_name, 'file_format': '.tsv', 'file_type': 'tabular', 'content': data})
+        response[base_constants.FILE_LIST] = file_list
+        response[base_constants.ZIP_NAME] = generate_filename(display_name, name_suffix=name_suffix + '_zip',
+                                                              extension='.zip', append_datetime=True)
+    else:
+        response['data'] = data
+    return response
 
 
 def search(hed_schema, events, query, columns_included=None):
@@ -219,7 +234,7 @@ def search(hed_schema, events, query, columns_included=None):
         dict: A dictionary pointing to results or errors.
 
     """
-    schema_version = hed_schema.version
+
     results = validate(hed_schema, events)
     if results['data']:
         return results
@@ -239,7 +254,8 @@ def search(hed_schema, events, query, columns_included=None):
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
-            'schema_version': schema_version, 'msg_category': 'success', 'msg': msg}
+            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            base_constants.MSG_CATEGORY: 'success', base_constants.MSG: msg}
 
 
 def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
@@ -256,32 +272,36 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
 
     """
 
-    schema_version = hed_schema.version
     display_name = events.name
     validator = HedValidator(hed_schema=hed_schema)
     issue_str = ''
     if sidecar:
         issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
+        issues = filter_issues(issues, check_for_warnings)
         if issues:
             issue_str = issue_str + get_printable_issue_string(issues, title="Sidecar definition errors:")
     if not issue_str:
         issues = events.validate_file(validator, check_for_warnings=check_for_warnings)
+        issues = filter_issues(issues, check_for_warnings)
         if issues:
             issue_str = get_printable_issue_string(issues, title="Event file errors:")
 
     if issue_str:
+        data = issue_str
         file_name = generate_filename(display_name, name_suffix='_validation_errors',
                                       extension='.txt', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'events',
-                'data': issue_str, "output_display_name": file_name,
-                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
-                'msg': f"Events file {display_name} had validation errors"}
+        category = 'warning'
+        msg = f"Events file {display_name} had validation errors"
     else:
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'sidecar', 'data': '',
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-                'msg': f"Events file {display_name} had no validation errors"}
+        data = ''
+        file_name = display_name
+        category = 'success'
+        msg = f"Events file {display_name} had validation errors"
+
+    return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
+            'data': data, "output_display_name": file_name,
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
 
 
 def validate_query(hed_schema, query):
@@ -296,20 +316,18 @@ def validate_query(hed_schema, query):
 
     """
 
-    schema_version = hed_schema.version
     if not query:
-        display_name = 'empty_query'
-        issue_str = "Empty query could not be processed."
-        file_name = generate_filename(display_name, name_suffix='_validation_errors',
+        data = "Empty query could not be processed."
+        file_name = generate_filename('empty_query', name_suffix='_validation_errors',
                                       extension='.txt', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'query',
-                'data': issue_str, "output_display_name": file_name,
-                base_constants.SCHEMA_VERSION: schema_version, "msg_category": "warning",
-                'msg': f"Query {display_name} had validation errors"}
+        category = 'warning'
+        msg = f"Empty query could not be processed"
     else:
-        display_name = 'Nice_query'
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'query', 'data': '',
-                base_constants.SCHEMA_VERSION: schema_version, 'msg_category': 'success',
-                'msg': f"Events file {display_name} had no validation errors"}
+        data = ''
+        file_name = 'Nice_query'
+        category = 'success'
+        msg = f"Query had no validation errors"
+
+    return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'query',
+            'data': data, base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

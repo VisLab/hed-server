@@ -128,7 +128,6 @@ def schema_convert(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.version
     schema_format = os.path.splitext(display_name)[1]
     if schema_format == file_constants.SCHEMA_XML_EXTENSION:
         data = hed_schema.get_as_mediawiki_string()
@@ -141,7 +140,8 @@ def schema_convert(hed_schema, display_name):
     return {'command': base_constants.COMMAND_CONVERT_SCHEMA,
             base_constants.COMMAND_TARGET: 'schema',
             'data': data, 'output_display_name': file_name,
-            'schema_version': schema_version, 'msg_category': 'success',
+            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            'msg_category': 'success',
             'msg': 'Schema was successfully converted'}
 
 
@@ -157,7 +157,6 @@ def schema_validate(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.version
     issues = hed_schema.check_compliance()
     if issues:
         issue_str = get_printable_issue_string(issues, f"Schema HED 3G compliance errors for {display_name}:")
@@ -165,11 +164,13 @@ def schema_validate(hed_schema, display_name):
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': issue_str, 'output_display_name': file_name,
-                'schema_version': schema_version, 'msg_category': 'warning',
+                'schema_version': hed_schema.get_formatted_version(as_string=True),
+                'msg_category': 'warning',
                 'msg': 'Schema is not HED 3G compliant'}
     else:
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': '', 'output_display_name': display_name,
-                'schema_version': schema_version, 'msg_category': 'success',
+                'schema_version': hed_schema.get_formatted_version(as_string=True),
+                'msg_category': 'success',
                 'msg': 'Schema had no HED-3G validation errors'}
