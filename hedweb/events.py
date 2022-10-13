@@ -6,7 +6,6 @@ import pandas as pd
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import DefinitionDict, Sidecar, TabularInput
-from hed.schema.hed_schema_io import get_schema_versions
 from hed.tools import assemble_hed, Dispatcher, TabularSummary, generate_filename, \
     generate_sidecar_entry, search_tabular
 from hed.validator import HedValidator
@@ -207,7 +206,7 @@ def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=T
 
     response = {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
                 base_constants.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
-                base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+                base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
                 base_constants.MSG_CATEGORY: 'success',
                 base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
     if dispatch.context_dict and include_summaries:
@@ -300,7 +299,7 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
             'data': data, "output_display_name": file_name,
-            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
 
 
@@ -318,16 +317,13 @@ def validate_query(hed_schema, query):
 
     if not query:
         data = "Empty query could not be processed."
-        file_name = generate_filename('empty_query', name_suffix='_validation_errors',
-                                      extension='.txt', append_datetime=True)
         category = 'warning'
         msg = f"Empty query could not be processed"
     else:
         data = ''
-        file_name = 'Nice_query'
         category = 'success'
         msg = f"Query had no validation errors"
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'query',
-            'data': data, base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema, as_string=True),
+            'data': data, base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
