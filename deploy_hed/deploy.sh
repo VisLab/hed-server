@@ -77,7 +77,7 @@ docker rm -f $CONTAINER_NAME
 run_new_container()
 {
 echo "Running new container $CONTAINER_NAME ..."
-docker run --restart=always --name $CONTAINER_NAME -d -p 127.0.0.1:$HOST_PORT:$CONTAINER_PORT $IMAGE_NAME
+docker run --restart=always --name $CONTAINER_NAME -d -p 127.0.0.1:$HOST_PORT:$CONTAINER_PORT $IMAGE_NAME --log-opt max-size=50m
 }
 
 cleanup_directory()
