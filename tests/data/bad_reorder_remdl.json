@@ -7,7 +7,7 @@
         }
     },
     {
-        "command": "remove_columns",
+        "operation": "remove_columns",
         "description": "Get rid of the sample and the value columns",
         "parameters": {
             "remove_names": [
@@ -18,17 +18,17 @@
         }
     },
     {
-        "command": "unknown_command",
+        "operation": "unknown_command",
         "description": "bad command",
         "parameters": {
             "ignore_missing": true
         }
     },
     {
-        "command": "reorder_columns",
+        "operation": "reorder_columns",
         "description": "Order columns so that response_time and trial_type come after onset and duration",
         "parameters": {
-            "column_order": [
+            "column_names": [
                 "onset",
                 "duration"
             ],
@@ -37,7 +37,7 @@
         }
     },
     {
-        "command": "remove_columns",
+        "operation": "remove_columns",
         "description": "bad parameters",
         "parameters": {
             "ignore_missing": true
