@@ -1,6 +1,6 @@
 [
     {
-        "command": "rename_columns",
+        "operation": "rename_columns",
         "description": "Create separate response event from response time column.",
         "parameters": {
             "column_mapping": {
@@ -10,7 +10,7 @@
         }
     },
     {
-        "command": "split_event",
+        "operation": "split_event",
         "description": "Create separate response event from response time column.",
         "parameters": {
             "anchor_column": "event_type",
