@@ -195,15 +195,15 @@ def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=T
                 'msg': f"Remodeling operation list for {display_name} had validation errors"}
     df = events.dataframe
     dispatch = Dispatcher(operations, data_root=None, hed_versions=hed_schema)
-    df = dispatch.prep_data(df)
+
     for operation in dispatch.parsed_ops:
+        df = dispatch.prep_data(df)
         df = operation.do_op(dispatch, df, display_name, sidecar=sidecar)
-    df = dispatch.post_proc_data(df)
+        df = dispatch.post_proc_data(df)
     data = df.to_csv(None, sep='\t', index=False, header=True)
     name_suffix = f"_remodeled_by_{remodel_name}"
     file_name = generate_filename(display_name, name_suffix=name_suffix, extension='.tsv', append_datetime=True)
     output_name = file_name
-
     response = {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
                 base_constants.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
                 base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),

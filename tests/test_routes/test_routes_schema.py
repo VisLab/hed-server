@@ -126,7 +126,7 @@ class Test(TestWebBase):
             self.assertEqual(200, response.status_code, 'Validation of a invalid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
-                             "A schema that cannot be loaded should return an a warning")
+                             "A schema that cannot be loaded should return an error")
             self.assertTrue(response.data, "The response data for invalid mediawiki validation should not be empty")
             self.assertTrue(headers_dict['Message'],
                             "The error message for invalid mediawiki conversion should not be empty")
