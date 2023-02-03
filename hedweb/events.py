@@ -210,7 +210,7 @@ def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=T
                 base_constants.MSG_CATEGORY: 'success',
                 base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
     if dispatch.context_dict and include_summaries:
-        file_list = dispatch.get_context_summaries()
+        file_list = dispatch.get_summaries()
         file_list.append({'file_name': output_name, 'file_format': '.tsv', 'file_type': 'tabular', 'content': data})
         response[base_constants.FILE_LIST] = file_list
         response[base_constants.ZIP_NAME] = generate_filename(display_name, name_suffix=name_suffix + '_zip',
