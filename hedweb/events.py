@@ -6,8 +6,11 @@ import pandas as pd
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.models import DefinitionDict, Sidecar, TabularInput
-from hed.tools import assemble_hed, Dispatcher, TabularSummary, generate_filename, \
-    generate_sidecar_entry, search_tabular
+from hed.tools.util.io_util import generate_filename
+from hed.tools.remodeling.dispatcher import Dispatcher
+from hed.tools.analysis.tabular_summary import TabularSummary
+from hed.tools.analysis.annotation_util import generate_sidecar_entry
+from hed.tools.analysis.analysis_util import search_tabular, assemble_hed
 from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
