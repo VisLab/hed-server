@@ -41,7 +41,7 @@ jobs:
           pip install -r docs/requirements.txt
 
       - name: Install dependencies(using develop hed-python)
-        if: ${{ env.BRANCH_NAME != 'stable' and env.BRANCH_NAME != 'master' }}
+        if: ${{ env.BRANCH_NAME != 'stable' || env.BRANCH_NAME != 'master' }}
         run: |
           python -m pip install --upgrade pip
           pip install flake8
