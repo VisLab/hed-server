@@ -76,7 +76,10 @@ and the `hed-web` repositories and deploy.
 
 ### Branches and versions
 
-The `hed-python` repository
+The web tools are built on the `hedtools` package housed in the `hed-python`
+GitHub repository.
+The tools are related to the `hed-specification` and `hed-schemas` repositories.
+The branches correspond as follows:
 
 | Branch |  Meaning | Synchronized with |
 | ------ | -------- | ------------------ |
@@ -88,7 +91,7 @@ As features are integrated, they first appear in the `develop` branches of the
 repositories.
 The `develop` branches of the repositories will be kept in sync as much as possible
 If an interface change in `hed-python` triggers a change in `hed-web` or `hed-examples`,
-every effort will be made to get the master/main branches of the respective repositories in
+every effort will be made to get the `master`/`main` branches of the respective repositories in
 sync.
 The `stable` version refers to the last officially released version.
 It generally refers to a version without the latest features.
