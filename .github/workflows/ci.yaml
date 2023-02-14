@@ -62,6 +62,7 @@ jobs:
 
       - name: publish-coverages
         if: ${{ env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' }}
+        continue-on-error: true
         with:
           coverageCommand: coverage xml
           debug: true
