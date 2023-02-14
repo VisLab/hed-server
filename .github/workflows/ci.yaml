@@ -6,9 +6,11 @@ on:
   pull_request:
     branches: ["*"]
 
+env:
+  BRANCH_NAME: ${{ github.event.pull_request.base.ref || github.ref_name }}
+
 jobs:
   build:
-
     strategy:
       matrix:
         platform: [ubuntu-latest]
@@ -17,20 +19,34 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}-${{ env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' }}
 
+      - name: Install dependencies(using github hed-python)
+        if: ${{ env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' }}
         run: |
           python -m pip install --upgrade pip
           pip install flake8
           pip install coverage
-          echo Using ${CI_COMMIT_BRANCH}
-          pip install git+https://github.com/hed-standard/hed-python/@develop
+          pip install git+https://github.com/hed-standard/hed-python/@${{env.BRANCH_NAME}}
+          pip install -r requirements.txt
+          pip install -r docs/requirements.txt
+
+      - name: Install dependencies(using pip)
+        if: ${{ env.BRANCH_NAME != 'develop' && env.BRANCH_NAME != 'master' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+          pip install coverage
+          pip install hedtools
           pip install -r requirements.txt
           pip install -r docs/requirements.txt
 
@@ -38,19 +54,17 @@ jobs:
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --show-source --statistics --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics 
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics 
 
       - name: Test with unittest
         run: |
           cp -f ./config_template.py ./config.py
           coverage run -m unittest
 
-
       - name: publish-coverages
-        uses: paambaati/codeclimate-action@v2.7.5
+        if: ${{ env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' }}
+        with:
+          coverageCommand: coverage xml
+          debug: true
+        uses: paambaati/codeclimate-action@v3.2.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID_WEB }}
-        with:
-            coverageCommand: coverage xml
-            debug: true
