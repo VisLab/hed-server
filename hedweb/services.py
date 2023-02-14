@@ -29,6 +29,7 @@ def get_input_from_request(request):
     arguments = get_service_info(service_request)
     arguments[base_constants.SCHEMA] = get_input_schema(service_request)
     get_column_parameters(arguments, service_request)
+    get_remodel_parameters(arguments, service_request)
     get_sidecar(arguments, service_request)
     get_input_objects(arguments, service_request)
     arguments[base_constants.QUERY] = service_request.get('query', None)
@@ -72,17 +73,18 @@ def get_sidecar(arguments, params):
 
      """
     sidecar_list = []
-    if base_constants.JSON_STRING in params and params[base_constants.JSON_STRING]:
-        sidecar_list = [params[base_constants.JSON_STRING]]
-    elif base_constants.JSON_LIST in params and params[base_constants.JSON_LIST]:
-        sidecar_list = params[base_constants.JSON_LIST]
+    if base_constants.SIDECAR_STRING in params and params[base_constants.SIDECAR_STRING]:
+        sidecar_list = params[base_constants.SIDECAR_STRING]
+        if not isinstance(sidecar_list, list):
+            sidecar_list = [sidecar_list]
     if sidecar_list:
         file_list = []
         for s_string in sidecar_list:
             file_list.append(io.StringIO(s_string))
-        arguments[base_constants.JSON_SIDECAR] = Sidecar(files=file_list, name="Merged_JSON_Sidecar")
+        schema = arguments.get('schema', None)
+        arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar", hed_schema=schema)
     else:
-        arguments[base_constants.JSON_SIDECAR] = None
+        arguments[base_constants.SIDECAR] = None
 
 
 def get_input_objects(arguments, params):
@@ -96,22 +98,39 @@ def get_input_objects(arguments, params):
 
     """
 
+    schema = arguments.get('schema', None)
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                         sidecar=arguments.get(base_constants.JSON_SIDECAR, None), name='Events')
+                         sidecar=arguments.get(base_constants.SIDECAR, None), name='Events', hed_schema=schema)
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                              tag_columns=tag_columns, has_column_names=has_column_names,
-                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
+                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv', hed_schema=schema)
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:
-            s_list.append(HedString(s))
+            s_list.append(HedString(s, hed_schema=schema))
         arguments[base_constants.STRING_LIST] = s_list
+
+
+def get_remodel_parameters(arguments, params):
+    """ Update arguments with the remodeler information if any.
+
+     Args:
+         arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+         params (dict): The service request dictionary extracted from the Request object.
+
+     Updates the arguments dictionary with the sidecars.
+
+     """
+
+    if base_constants.REMODEL_STRING in params:
+        arguments[base_constants.REMODEL_OPERATIONS] = \
+            {'name': 'remodel_commands.json', 'operations': json.loads(params[base_constants.REMODEL_STRING])}
 
 
 def get_service_info(params):
@@ -163,8 +182,9 @@ def get_input_schema(parameters):
             schema_url = parameters[base_constants.SCHEMA_URL]
             the_schema = hedschema.load_schema(schema_url)
         elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
-            hed_file_path = hedschema.get_path_from_hed_version(parameters[base_constants.SCHEMA_VERSION])
-            the_schema = hedschema.load_schema(hed_file_path)
+            # hed_file_path = hedschema.get_path_from_hed_version(parameters[base_constants.SCHEMA_VERSION])
+            versions = parameters[base_constants.SCHEMA_VERSION]
+            the_schema = hedschema.load_schema_version(versions)
     except HedFileError:
         the_schema = None
 

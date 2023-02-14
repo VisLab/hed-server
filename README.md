@@ -73,3 +73,29 @@ to your `deploy_hed` directory.
 
 The `deploy.sh` script will download the latest versions of the `hed-python`
 and the `hed-web` repositories and deploy.
+
+### Branches and versions
+
+The web tools are built on the `hedtools` package housed in the `hed-python`
+GitHub repository.
+The tools are related to the `hed-specification` and `hed-schemas` repositories.
+The branches correspond as follows:
+
+| Branch |  Meaning | Synchronized with |
+| ------ | -------- | ------------------ |
+| stable | Tagged as a released version - will not change. | `stable@hed-python`<br/>`stable@hed-specification`<br/>`stable@hed-examples` |
+| master | Most recent usable version.<br/>[https://hedtools/edu/hed](https://hedtools/edu/hed). | `master@hed-python`<br/>`master@hed-specification`<br/>`main@hed-examples` |
+| develop | Experimental and evolving.<br/>[https://hedtools/edu/hed_dev](https://hedtools/edu/hed_dev). | `develop@hed-python`<br/>`develop@hed-specification`<br/>`develop@hed-examples` |
+
+As features are integrated, they first appear in the `develop` branches of the
+repositories.
+The `develop` branches of the repositories will be kept in sync as much as possible
+If an interface change in `hed-python` triggers a change in `hed-web` or `hed-examples`,
+every effort will be made to get the `master`/`main` branches of the respective repositories in
+sync.
+The `stable` version refers to the last officially released version.
+It generally refers to a version without the latest features.
+
+API documentation is generated on ReadTheDocs when a new version is
+pushed on any of the three branches. For example, the API documentation for the
+`latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/).

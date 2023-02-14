@@ -10,16 +10,16 @@ fi
 ##### Constants
 
 DEPLOY_DIR=${PWD}
-IMAGE_NAME="hedtools:latest"
-CONTAINER_NAME="hedtools"
+IMAGE_NAME="hedtools_dev:latest"
+CONTAINER_NAME="hedtools_dev"
 GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
 GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 GIT_WEB_REPO_BRANCH=${BRANCH}
-HOST_PORT=33000
+HOST_PORT=33004
 CONTAINER_PORT=80
 
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
-SOURCE_DEPLOY_DIR="${DEPLOY_DIR}/hed-web/deploy_hed"
+SOURCE_DEPLOY_DIR="${DEPLOY_DIR}/hed-web/deploy_hed_dev"
 BASE_CONFIG_FILE="${SOURCE_DEPLOY_DIR}/base_config.py"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 SOURCE_WSGI_FILE="${SOURCE_DEPLOY_DIR}/web.wsgi"

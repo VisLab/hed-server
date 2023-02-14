@@ -1,0 +1,11 @@
+[
+   {
+       "operation": "rename_columns",
+       "description": "Create separate response event from response time column.",
+       "parameters": {
+           "column_mapping": {"sex": "face_gender"},
+           "ignore_missing": false
+       }
+   }
+]
+

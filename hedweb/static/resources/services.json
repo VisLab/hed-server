@@ -10,10 +10,7 @@
             "Description": "Validate a BIDS-style event file and JSON sidecar if provided. ",
             "Parameters": [
                 "events_string",
-                [
-                    "json_list",
-                    "json_string"
-                ],
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -28,10 +25,7 @@
             "Description": "Search a BIDS-style event file and return list of event numbers satisfying search.",
             "Parameters": [
                 "events_string",
-                [
-                    "json_list",
-                    "json_string"
-                ],
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -47,10 +41,7 @@
             "Parameters": [
                 "events_string",
                 "columns_included",
-                [
-                    "json_list",
-                    "json_string"
-                ],
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -70,10 +61,26 @@
             ],
             "Returns": "A JSON sidecar (template) in string form or a list of errors."
         },
+        "events_remodel": {
+            "Name": "events_remodel",
+            "Description": "Restructure and events file. Returns: remodeled events or error list.",
+            "Parameters": [
+                "events_string",
+                "remodel_string",
+                "sidecar_string",
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "expand_defs"
+            ],
+            "Returns": "A string containing the text of remodeled events file or a list of errors."
+        },
         "sidecar_validate": {
             "Description": "Validate a BIDS JSON sidecar (in string form) and return errors.",
             "Parameters": [
-                "json_string",
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -86,7 +93,7 @@
         "sidecar_to_long": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
             "Parameters": [
-                "json_string",
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -99,7 +106,7 @@
         "sidecar_to_short": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in short form.",
             "Parameters": [
-                "json_string",
+                "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
@@ -112,14 +119,14 @@
         "sidecar_extract_spreadsheet": {
             "Description": "Convert the HED portion of a JSON sidecar to a 4-column spreadsheet.",
             "Parameters": [
-                "json_string"
+                "sidecar_string"
             ],
             "Returns": "A string containing a 4-column tab-separated value spreadsheet extracted from the JSON."
         },
         "sidecar_merge_spreadsheet": {
             "Description": "Merge the information in a 4-column spreadsheet into the HED portion of a JSON sidecar.",
             "Parameters": [
-                "json_string",
+                "sidecar_string",
                 "spreadsheet_string",
                 "include_description_tags"
             ],
@@ -229,12 +236,12 @@
         "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
-        "json_list": "A list of BIDS JSON sidecars as strings.",
-        "json_string": "A JSON sidecar as a string.",
         "query_list": "A list of query strings for searching.",
+        "remodel_string": "JSON remodel commands as a string",
         "schema_string": "HED XML schema as a string.",
         "schema_url": "A URL from which a HED schema can be downloaded.",
         "schema_version": "Version of HED to used in processing.",
+        "sidecar_string": "A JSON sidecar as a string or a list of JSON sidecar strings.",
         "spreadsheet_string": "A spreadsheet tsv as a string."
     },
     "returns": {

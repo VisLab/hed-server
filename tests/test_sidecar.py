@@ -20,14 +20,14 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.sidecar import get_input_from_form
         with self.app.test:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-            with open(json_path, 'rb') as fp:
-                environ = create_environ(data={base_constants.JSON_FILE: fp, base_constants.SCHEMA_VERSION: '8.0.0',
-                                         base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            with open(sidecar_path, 'rb') as fp:
+                environ = create_environ(data={base_constants.SIDECAR_FILE: fp, base_constants.SCHEMA_VERSION: '8.0.0',
+                                               base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
             request = Request(environ)
             arguments = get_input_from_form(request)
 
-            self.assertIsInstance(arguments[base_constants.JSON_SIDECAR], Sidecar,
+            self.assertIsInstance(arguments[base_constants.SIDECAR], Sidecar,
                                   "generate_input_from_sidecar_form should have a JSON dictionary in sidecar list")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
                                   "generate_input_from_sidecar_form should have a HED schema")
@@ -41,18 +41,18 @@ class Test(TestWebBase):
         from hed.errors.exceptions import HedFileError
         with self.assertRaises(HedFileError):
             with self.app.app_context():
-                arguments = {'json_path': ''}
+                arguments = {'sidecar_path': ''}
                 process(arguments)
 
     def test_sidecar_process_invalid(self):
         from hedweb.sidecar import process
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
+        json_sidecar = models.Sidecar(files=sidecar_path, name='bids_events_bad')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
 
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
-                     base_constants.JSON_DISPLAY_NAME: 'bids_events_bad',
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events_bad',
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
             results = process(arguments)
@@ -69,8 +69,8 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
-                     base_constants.JSON_DISPLAY_NAME: 'bids_events',
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: False,
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
 
@@ -87,8 +87,8 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
-                     base_constants.JSON_DISPLAY_NAME: 'bids_events',
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: True,
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
 
@@ -105,8 +105,8 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
-                     base_constants.JSON_DISPLAY_NAME: 'bids_events',
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: False,
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
 
@@ -123,8 +123,8 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        arguments = {base_constants.SCHEMA: hed_schema, base_constants.JSON_SIDECAR: json_sidecar,
-                     base_constants.JSON_DISPLAY_NAME: 'bids_events',
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
                      base_constants.EXPAND_DEFS: True,
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
 

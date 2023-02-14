@@ -2,6 +2,7 @@ FROM python:3.9-slim-buster
 COPY requirements.txt /root/
 WORKDIR /root
 RUN apt-get update && apt-get install -y gcc \
+git \
 musl-dev \
 openrc \
 libxslt-dev \
@@ -10,7 +11,7 @@ apache2 \
 apache2-dev && \
 pip3 install --upgrade pip && \
 pip3 install --no-cache-dir -r requirements.txt && \
-pip3 install git+https://github.com/hed-standard/hed-python/@master && \
+pip3 install git+https://github.com/hed-standard/hed-python/@develop && \
 mkdir -p /var/www/localhost/htdocs && \
 cp /etc/mime.types /var/www/mime.types && \
 mkdir -p /var/log/hedtools && \

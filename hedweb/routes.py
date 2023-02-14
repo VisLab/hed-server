@@ -13,19 +13,6 @@ from hedweb.columns import get_columns_request
 app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
-# with app.app_context():
-#     from hedweb.routes import route_blueprint
-#
-#     app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
-#     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-#
-#     app.config['VERSIONS'] = get_version_dict()
-#     print(f"Versions: {app.config['VERSIONS']}")
-#     print(f"Using cache directory {app.config['HED_CACHE_FOLDER']}")
-#
-#     hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
-#
-# hedschema.set_cache_directory(app_config[])
 
 @route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
 def columns_info_results():
@@ -101,7 +88,7 @@ def schema_version_results():
             f = request.files[base_constants.SCHEMA_PATH]
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
                                                file_type=secure_filename(f.filename))
-            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.version
+            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version(as_string=True)
         return json.dumps(hed_info)
     except Exception as ex:
         return handle_error(ex)

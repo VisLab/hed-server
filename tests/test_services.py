@@ -22,16 +22,16 @@ class Test(TestWebBase):
         from hed.schema import HedSchema
         from hedweb.services import get_input_from_request
         with self.app.test:
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-            with open(json_path, 'rb') as fp:
-                json_string = fp.read().decode('ascii')
-            json_data = {base_constants.JSON_STRING: json_string, base_constants.CHECK_FOR_WARNINGS: 'on',
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            with open(sidecar_path, 'rb') as fp:
+                sidecar_string = fp.read().decode('ascii')
+            json_data = {base_constants.SIDECAR_STRING: sidecar_string, base_constants.CHECK_FOR_WARNINGS: 'on',
                          base_constants.SCHEMA_VERSION: '8.0.0', base_constants.SERVICE: 'sidecar_validate'}
             environ = create_environ(json=json_data)
             request = Request(environ)
             arguments = get_input_from_request(request)
-            self.assertIn(base_constants.JSON_SIDECAR, arguments, "get_input_from_request should have a json sidecar")
-            self.assertIsInstance(arguments[base_constants.JSON_SIDECAR], Sidecar,
+            self.assertIn(base_constants.SIDECAR, arguments, "get_input_from_request should have a json sidecar")
+            self.assertIsInstance(arguments[base_constants.SIDECAR], Sidecar,
                                   "get_input_from_request should contain a sidecar")
             self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
                                   "get_input_from_request should have a HED schema")
@@ -39,6 +39,27 @@ class Test(TestWebBase):
                              "get_input_from_request should have a service request")
             self.assertTrue(arguments[base_constants.CHECK_FOR_WARNINGS],
                             "get_input_from_request should have check_warnings true when on")
+
+    def test_get_remodel_parameters(self):
+        from hedweb.services import get_remodel_parameters
+        remodel_file = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                     'data/simple_reorder_rmdl.json'))
+        with open(remodel_file, 'r') as fp:
+            json_obj = json.load(fp)
+        params = {'remodel_string': json.dumps(json_obj)}
+        arguments = {}
+        get_remodel_parameters(arguments, params)
+        self.assertTrue(arguments)
+        self.assertIn('remodel_operations', arguments)
+        self.assertEqual(len(arguments['remodel_operations']), 2)
+
+    def test_get_remodel_parameters_empty(self):
+        from hedweb.services import get_remodel_parameters
+        params = {}
+        arguments = {}
+        get_remodel_parameters(arguments, params)
+        self.assertFalse(arguments)
+        self.assertNotIn('remodel_operations', arguments)
 
     def test_services_process_empty(self):
         from hedweb.services import process
@@ -67,7 +88,7 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=fb, name='JSON_Sidecar')
         arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
                      base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
-                     base_constants.JSON_SIDECAR: json_sidecar}
+                     base_constants.SIDECAR: json_sidecar}
         with self.app.app_context():
             response = process(arguments)
             self.assertFalse(response['error_type'],
@@ -103,27 +124,28 @@ class Test(TestWebBase):
             data_upper = json.load(f)
         with open(sidecar_path_lower2) as f:
             data_lower2 = json.load(f)
-        params2= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower2)]}
+        params2 = {base_constants.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower2)]}
         arguments2 = {}
         get_sidecar(arguments2, params2)
-        self.assertIn(base_constants.JSON_SIDECAR, arguments2, 'get_sidecar arguments should have a sidecar')
-        self.assertIsInstance(arguments2[base_constants.JSON_SIDECAR], Sidecar)
-        sidecar2 = arguments2[base_constants.JSON_SIDECAR]
+        self.assertIn(base_constants.SIDECAR, arguments2, 'get_sidecar arguments should have a sidecar')
+        self.assertIsInstance(arguments2[base_constants.SIDECAR], Sidecar)
+        sidecar2 = arguments2[base_constants.SIDECAR]
         self.assertIn('event_type', data_upper, "get_sidecar upper has key event_type")
         self.assertNotIn('event_type', data_lower2, "get_sidecar lower2 does not have event_type")
         self.assertIn('event_type', sidecar2.loaded_dict, "get_sidecar merged sidecar has event_type")
 
         with open(sidecar_path_lower3) as f:
             data_lower3 = json.load(f)
-        params3= {base_constants.JSON_LIST: [json.dumps(data_upper), json.dumps(data_lower3)]}
+        params3 = {base_constants.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower3)]}
         arguments3 = {}
         get_sidecar(arguments3, params3)
-        self.assertIn(base_constants.JSON_SIDECAR, arguments3, 'get_sidecar arguments should have a sidecar')
-        self.assertIsInstance(arguments3[base_constants.JSON_SIDECAR], Sidecar)
-        sidecar3 = arguments3[base_constants.JSON_SIDECAR]
+        self.assertIn(base_constants.SIDECAR, arguments3, 'get_sidecar arguments should have a sidecar')
+        self.assertIsInstance(arguments3[base_constants.SIDECAR], Sidecar)
+        sidecar3 = arguments3[base_constants.SIDECAR]
         self.assertIn('event_type', data_upper, "get_sidecar upper has key event_type")
         self.assertNotIn('event_type', data_lower3, "get_sidecar lower3 does not have event_type")
         self.assertIn('event_type', sidecar3.loaded_dict, "get_sidecar merged sidecar has event_type")
+
 
 if __name__ == '__main__':
     unittest.main()

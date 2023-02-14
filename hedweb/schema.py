@@ -5,9 +5,9 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
-from hed.errors import get_exception_issue_string, get_printable_issue_string
+from hed.errors import get_printable_issue_string
 from hed.errors import HedFileError
-from hed.util import generate_filename
+from hed.tools.util.io_util import generate_filename
 from hedweb.web_util import form_has_file, form_has_option, form_has_url
 from hedweb.constants import base_constants, file_constants
 
@@ -38,9 +38,9 @@ def get_schema(arguments):
         else:
             file_found = False
     except HedFileError as e:
-        issues = e.issues
+        issues.append({'code': e.args[0], 'message': e.args[1]})
     if not file_found:
-        raise HedFileError("NoSchemaProvided", "Must provide a loadable schema", "")
+        raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
     return hed_schema, issues
 
 
@@ -76,7 +76,7 @@ def get_input_from_form(request):
         arguments[base_constants.SCHEMA_FILE_TYPE] = basename(url_parsed.path)
         arguments[base_constants.SCHEMA_DISPLAY_NAME] = basename(url_parsed.path)
     else:
-        raise HedFileError("NoSchemaProvided", "Must provide a loadable schema", "")
+        raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
     return arguments
 
 
@@ -96,7 +96,7 @@ def process(arguments):
     display_name = arguments.get('schema_display_name', 'unknown_source')
     hed_schema, issues = get_schema(arguments)
     if issues:
-        issue_str = get_exception_issue_string(issues, f"Schema for {display_name} had these errors")
+        issue_str = get_issue_string(issues, f"Schema for {display_name} had these errors")
         file_name = generate_filename(arguments[base_constants.SCHEMA_DISPLAY_NAME],
                                       name_suffix='schema__errors', extension='.txt')
         return {'command': arguments[base_constants.COMMAND],
@@ -128,7 +128,6 @@ def schema_convert(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.version
     schema_format = os.path.splitext(display_name)[1]
     if schema_format == file_constants.SCHEMA_XML_EXTENSION:
         data = hed_schema.get_as_mediawiki_string()
@@ -141,7 +140,8 @@ def schema_convert(hed_schema, display_name):
     return {'command': base_constants.COMMAND_CONVERT_SCHEMA,
             base_constants.COMMAND_TARGET: 'schema',
             'data': data, 'output_display_name': file_name,
-            'schema_version': schema_version, 'msg_category': 'success',
+            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            'msg_category': 'success',
             'msg': 'Schema was successfully converted'}
 
 
@@ -157,7 +157,6 @@ def schema_validate(hed_schema, display_name):
 
     """
 
-    schema_version = hed_schema.version
     issues = hed_schema.check_compliance()
     if issues:
         issue_str = get_printable_issue_string(issues, f"Schema HED 3G compliance errors for {display_name}:")
@@ -165,11 +164,44 @@ def schema_validate(hed_schema, display_name):
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': issue_str, 'output_display_name': file_name,
-                'schema_version': schema_version, 'msg_category': 'warning',
+                'schema_version': hed_schema.get_formatted_version(as_string=True),
+                'msg_category': 'warning',
                 'msg': 'Schema is not HED 3G compliant'}
     else:
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': '', 'output_display_name': display_name,
-                'schema_version': schema_version, 'msg_category': 'success',
+                'schema_version': hed_schema.get_formatted_version(as_string=True),
+                'msg_category': 'success',
                 'msg': 'Schema had no HED-3G validation errors'}
+
+
+def get_issue_string(issues, title=None):
+    """ Return a string with issues list flatted into single string, one issue per line.
+
+    Parameters:
+        issues (list):  A list of strings containing issues to print.
+        title (str or None): An optional title that will always show up first if present.
+
+    Returns:
+        str: A str containing printable version of the issues or ''.
+
+    """
+
+    issue_str = ''
+    if issues:
+        issue_list = []
+        for issue in issues:
+            if isinstance(issue, str):
+                issue_list.append(f"ERROR: {issue}.")
+            else:
+                this_str = f"{issue['message']}"
+                if 'code' in issue:
+                    this_str = f"{issue['code']}:" + this_str
+                if 'line_number' in issue:
+                    this_str = this_str + f"\n\tLine number {issue['line_number']}: {issue.get('line', '')} "
+                issue_list.append(this_str)
+        issue_str += '\n' + '\n'.join(issue_list)
+    if title:
+        issue_str = title + '\n' + issue_str
+    return issue_str

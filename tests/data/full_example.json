@@ -1,0 +1,49 @@
+[
+   {
+       "command": "rename_columns",
+       "description": "Create separate response event from response time column.",
+       "parameters": {
+         "column_mapping": {"sex": "face_gender"},
+         "ignore_missing": false
+       }
+   },
+   {
+        "command": "split_event",
+        "description": "Split trial encoding into event encoding including trial events.",
+        "parameters": {
+          "anchor_column": "event_type",
+          "new_events": {"response": {"onset_source": ["response_time"],
+                                      "duration": [0],
+                                      "copy_columns": ["response_accuracy",
+                                                       "response_hand",
+                                                       "trial_type"]},
+                         "stop_signal": {"onset_source": ["stop_signal_delay"],
+                                         "duration": [0.5],
+                                         "copy_columns": ["response_accuracy",
+                                                          "response_hand",
+                                                          "trial_type"]},
+                         "go_signal": {"onset_source": [0],
+                                       "duration": ["duration"],
+                                       "copy_columns": ["response_accuracy",
+                                                        "response_hand",
+                                                        "trial_type",
+                                                        "face_gender"]},
+                         "trial": {"onset_source": [0],
+                                      "duration": [2],
+                                      "copy_columns": ["response_accuracy",
+                                                       "response_hand",
+                                                       "trial_type",
+                                                       "face_gender"]}},
+          "remove_parent_event": true
+        }
+   },
+   {
+     "command": "remove_columns",
+     "description": "Remove offset columns events.",
+     "parameters": {
+       "remove_names": ["stop_signal_delay", "response_time"],
+       "ignore_missing": true
+     }
+   }
+]
+
