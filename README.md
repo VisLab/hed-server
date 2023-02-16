@@ -1,6 +1,6 @@
 # hedweb
 
-This project contains the web interface code for deploying HED tools as a web application running in a docker module. 
+This project contains the web interface code for deploying HED tools as a web application running in a docker module.   
 The instructions assume that you have cloned the 
 `hed-web` GitHub repository:
 
