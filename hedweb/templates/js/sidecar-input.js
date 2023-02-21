@@ -27,7 +27,7 @@ function clearSidecarFileLabel() {
 /**
  * Resets the flash messages that aren't related to the form submission.
  */
-function clearSidecarInputFlashMessages() {
+function clearSidecarFlashMessages() {
     flashMessageOnScreen('', 'success', 'sidecar_flash');
 }
 
