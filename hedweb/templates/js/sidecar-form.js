@@ -37,7 +37,7 @@ function clearForm() {
  * Clear the flash messages that aren't related to the form submission.
  */
 function clearFlashMessages() {
-    clearJsonSidecarFlashMessages();
+    clearSidecarFlashMessages();
     clearSchemaSelectFlashMessages();
     flashMessageOnScreen('', 'success', 'sidecar_submit_flash');
 }
@@ -107,7 +107,7 @@ function submitForm() {
     let sidecarForm = document.getElementById("sidecar_form");
     let formData = new FormData(sidecarForm);
 
-    let sidecarFile = getJsonFileLabel();
+    let sidecarFile = getSidecarFileLabel();
     let display_name = convertToResultsName(sidecarFile, 'issues')
     clearFlashMessages();
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_submit_flash')
