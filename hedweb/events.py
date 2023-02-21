@@ -298,7 +298,7 @@ def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
         data = ''
         file_name = display_name
         category = 'success'
-        msg = f"Events file {display_name} had validation errors"
+        msg = f"Events file {display_name} did not have validation errors"
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
             'data': data, "output_display_name": file_name,
