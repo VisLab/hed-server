@@ -56,8 +56,8 @@ function clearForm() {
 function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
-    clearSidecarInputFlashMessages();
-    clearRemodelInputFlashMessages();
+    clearSidecarFlashMessages();
+    clearRemodelFlashMessages();
     flashMessageOnScreen('', 'success', 'events_flash');
     flashMessageOnScreen('', 'success', 'events_submit_flash');
 }
