@@ -82,7 +82,7 @@ def get_sidecar(arguments, params):
         for s_string in sidecar_list:
             file_list.append(io.StringIO(s_string))
         schema = arguments.get('schema', None)
-        arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar", hed_schema=schema)
+        arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar")
     else:
         arguments[base_constants.SIDECAR] = None
 
@@ -102,14 +102,14 @@ def get_input_objects(arguments, params):
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                         sidecar=arguments.get(base_constants.SIDECAR, None), name='Events', hed_schema=schema)
+                         sidecar=arguments.get(base_constants.SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                              tag_columns=tag_columns, has_column_names=has_column_names,
-                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv', hed_schema=schema)
+                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:

@@ -63,6 +63,25 @@ class Test(TestWebBase):
             self.assertTrue(results['data'],
                             'process to short should not convert using HED 8.0.0.xml')
 
+    def test_sidecar_process_invalid_v2(self):
+        from hedweb.sidecar import process
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events_errors.json')
+        json_sidecar = models.Sidecar(files=sidecar_path, name='bids_events_bad')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        hed_schema = hedschema.load_schema(schema_path)
+
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SIDECAR: json_sidecar,
+                     base_constants.SIDECAR_DISPLAY_NAME: 'bids_events_bad',
+                     base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
+        with self.app.app_context():
+            results = process(arguments)
+            self.assertTrue(isinstance(results, dict),
+                            'process to short should return a dictionary when errors')
+            self.assertEqual('warning', results['msg_category'],
+                             'process to short should give warning when JSON with errors')
+            self.assertTrue(results['data'],
+                            'process to short should not convert using HED 8.0.0.xml')
+            
     def test_sidecar_process_valid_to_short(self):
         from hedweb.sidecar import process
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
@@ -143,9 +162,9 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-
+        options = {base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
         with self.app.app_context():
-            results = sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_LONG)
+            results = sidecar_convert(hed_schema, json_sidecar, options)
             self.assertTrue(results['data'],
                             'sidecar_convert to long results should have data key')
             self.assertEqual('warning', results['msg_category'],
@@ -159,8 +178,9 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
+        options = {base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
         with self.app.app_context():
-            results = sidecar_convert(hed_schema, json_sidecar, command=base_constants.COMMAND_TO_LONG)
+            results = sidecar_convert(hed_schema, json_sidecar, options)
             self.assertTrue(results['data'],
                             'sidecar_convert to long results should have data key')
             self.assertEqual('success', results["msg_category"],
@@ -173,11 +193,22 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
+        options = {base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
-            results = sidecar_convert(hed_schema, json_sidecar)
+            results = sidecar_convert(hed_schema, json_sidecar, options)
             self.assertTrue(results['data'], 'sidecar_convert results should have data key')
             self.assertEqual('warning', results['msg_category'],
                              'sidecar_convert msg_category should be warning for errors')
+
+    def test_bad_sidecar(self):
+        from hed import models
+        from hed.schema import load_schema_version
+        from hedweb.sidecar import sidecar_convert
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events.json')
+        json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
+        hed_schema = load_schema_version('8.1.0')
+        issues = json_sidecar.validate(hed_schema)
+        print('to here')
 
     def test_sidecar_convert_to_short_valid(self):
         from hed import models
@@ -186,9 +217,9 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-
+        options = {base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
-            results = sidecar_convert(hed_schema, json_sidecar)
+            results = sidecar_convert(hed_schema, json_sidecar, options)
             self.assertTrue(results['data'], 'sidecar_convert results should have data key')
             self.assertEqual('success', results['msg_category'],
                              'sidecar_convert msg_category should be success when no errors')

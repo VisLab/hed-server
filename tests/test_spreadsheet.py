@@ -94,6 +94,53 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'],
                              'process should return success if validated')
 
+    def test_convert_to_long_excel(self):
+        from hedweb.spreadsheet import spreadsheet_convert
+        spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        prefix_dict = {1: "Label/", 3: "Description/"}
+        options = {base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
+        hed_schema = hedschema.load_schema(schema_path)
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3A',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=prefix_dict, name=spreadsheet_path)
+        with self.app.app_context():
+            tags1 = spreadsheet.dataframe.iloc[0, 4]
+            results = spreadsheet_convert(hed_schema, spreadsheet, options=options)
+            print(results['data'])
+            tags2 = results['spreadsheet'].dataframe.iloc[0, 4]
+            self.assertGreater(len(tags2), len(tags1))
+            # hed1 = HedString(tags1, hed_schema=hed_schema)
+            # hed2 = HedString(tags2, hed_schema=hed_schema)
+            self.assertFalse(results['data'],
+                             'spreadsheet_convert_to_long results should not have a data key')
+            
+            self.assertEqual('success', results["msg_category"],
+                             'spreadsheet_validate msg_category should be success when no errors')
+
+    def test_process_convert_to_long(self):
+        from hedweb.spreadsheet import process
+        spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        hed_schema = hedschema.load_schema(schema_path)
+        spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3A',
+                                       tag_columns=[4], has_column_names=True,
+                                       column_prefix_dictionary=None, name=spreadsheet_path)
+        arguments = {base_constants.SCHEMA: hed_schema, base_constants.SPREADSHEET: spreadsheet,
+                     base_constants.COMMAND: base_constants.COMMAND_TO_LONG,
+                     base_constants.CHECK_FOR_WARNINGS: False}
+        arguments[base_constants.SCHEMA] = hed_schema
+
+        with self.app.app_context():
+            tags1 = arguments['spreadsheet'].dataframe.iloc[0, 4]
+            results = process(arguments)
+            self.assertTrue(isinstance(results, dict),
+                            'process should return a dict when no errors')
+            self.assertEqual('success', results['msg_category'],
+                             'process should return success if validated')
+            tags2 = results['spreadsheet'].dataframe.iloc[0, 4]
+            self.assertGreater(len(tags2), len(tags1))
+
     def test_validate_valid_excel(self):
         from hedweb.spreadsheet import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
@@ -122,7 +169,8 @@ class Test(TestWebBase):
                                        column_prefix_dictionary=prefix_dict,
                                        name=spreadsheet_path)
         with self.app.app_context():
-            results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False)
+            options = {base_constants.CHECK_FOR_WARNINGS: False}
+            results = spreadsheet_validate(hed_schema, spreadsheet, options)
             self.assertFalse(results['data'],
                              'spreadsheet_validate results should have empty data when no errors')
             self.assertEqual('success', results['msg_category'],

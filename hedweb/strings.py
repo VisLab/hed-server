@@ -2,7 +2,7 @@ from flask import current_app
 
 # from hed.models.hed_string import HedString
 
-
+from hed.errors import ErrorHandler
 from hed.models.hed_string import HedString
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError
@@ -122,11 +122,10 @@ def validate(hed_schema, string_list, check_for_warnings=False):
         dict: The results in standard form.
     """
 
-    hed_validator = HedValidator(hed_schema=hed_schema)
-
     validation_errors = []
+    error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
     for pos, h_string in enumerate(string_list, start=1):
-        issues = h_string.validate(hed_validator, check_for_warnings=check_for_warnings)
+        issues = h_string.validate(hed_schema, error_handler=error_handler)
         if issues:
             validation_errors.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
     if validation_errors:

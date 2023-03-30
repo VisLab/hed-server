@@ -4,17 +4,17 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 
 from hed import schema as hedschema
-from hed.errors import get_printable_issue_string, HedFileError
-from hed.models import DefinitionDict, Sidecar, TabularInput
+from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
+from hed.models import DefinitionDict, Sidecar, TabularInput, df_util
 from hed.tools.util.io_util import generate_filename
+from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
+from hed.tools.analysis import analysis_util
 from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
-from hed.tools.analysis.analysis_util import search_tabular, assemble_hed
-from hed.validator import HedValidator
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
-from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down
+from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down, get_option
 
 app_config = current_app.config
 
@@ -87,67 +87,92 @@ def process(arguments):
     sidecar = arguments.get(base_constants.SIDECAR, None)
     remodel_operations = arguments.get(base_constants.REMODEL_OPERATIONS, None)
     query = arguments.get(base_constants.QUERY, None)
-    columns_included = arguments.get(base_constants.COLUMNS_INCLUDED, None)
     if not events or not isinstance(events, TabularInput):
         raise HedFileError('InvalidEventsFile', "An events file was given but could not be processed", "")
     if command == base_constants.COMMAND_VALIDATE:
-        results = validate(hed_schema, events, sidecar, arguments.get(base_constants.CHECK_FOR_WARNINGS, False))
+        results = validate(hed_schema, events, sidecar, arguments)
     elif command == base_constants.COMMAND_SEARCH:
-        results = search(hed_schema, events, query, columns_included=columns_included)
+        results = search(hed_schema, events, sidecar, query, arguments)
     elif command == base_constants.COMMAND_ASSEMBLE:
-        results = assemble(hed_schema, events,
-                           arguments.get(base_constants.COLUMNS_INCLUDED, None),
-                           arguments.get(base_constants.EXPAND_DEFS, False))
+        results = assemble(hed_schema, events, sidecar, arguments)
     elif command == base_constants.COMMAND_GENERATE_SIDECAR:
-        results = generate_sidecar(events, arguments.get(base_constants.COLUMNS_SELECTED, None))
+        results = generate_sidecar(events, arguments)
     elif command == base_constants.COMMAND_REMODEL:
-        results = remodel(hed_schema, events, sidecar, remodel_operations,
-                          include_summaries=arguments.get(base_constants.INCLUDE_SUMMARIES, False))
+        results = remodel(hed_schema, events, sidecar, remodel_operations, arguments)
     else:
         raise HedFileError('UnknownEventsProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
 
 
-def assemble(hed_schema, events, columns_included=None, expand_defs=True):
+def assemble(hed_schema, events, sidecar, options=None):
     """ Create a tabular file with the first column, specified additional columns and a HED column.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
         events (TabularInput):  An tabular input object.
-        columns_included (list): Optional list of columns to include in the assembled output.
-        expand_defs (bool): True if definitions should be expanded during assembly.
+        sidecar (Sidecar): An associated sidecar.
+        options (dict): Dictionary of options
 
     Returns:
         dict: A dictionary of results in standard format including either the assembled events string or errors.
 
+    Notes:
+        options include columns_included and expand_defs.
     """
 
-    results = validate(hed_schema, events)
+    
+    options[base_constants.CHECK_FOR_WARNINGS] = False
+    results = validate(hed_schema, events, sidecar=sidecar, options=options)
     if results['data']:
         return results
-    df, defs = assemble_hed(events, columns_included=columns_included, expand_defs=expand_defs)
+    columns_included = get_option(options, base_constants.COLUMNS_INCLUDED, [])
+    expand_defs = get_option(options, base_constants.EXPAND_DEFS, False)
+    df, _, definitions = _assemble(hed_schema, events, sidecar, columns_included=columns_included,
+                                   expand_defs=expand_defs)
     csv_string = df.to_csv(None, sep='\t', index=False, header=True)
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
             base_constants.COMMAND_TARGET: 'events',
-            'data': csv_string, 'output_display_name': file_name, 'definitions': DefinitionDict.get_as_strings(defs),
+            'data': csv_string, 'output_display_name': file_name,
+            'definitions': DefinitionDict.get_as_strings(definitions),
             'schema_version': hed_schema.get_formatted_version(as_string=True),
             'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 
-def generate_sidecar(events, columns_selected):
+def _assemble(hed_schema, events, sidecar, columns_included=[], expand_defs=True):
+    x = list(events.dataframe.columns)
+    y = columns_included
+    eligible_columns, missing_columns = separate_values(x, columns_included)
+    if expand_defs:
+        shrink_defs = False
+    else:
+        shrink_defs = True
+    hed_strings, definitions = df_util.get_assembled(events, sidecar, hed_schema, extra_def_dicts=None,
+                                                     join_columns=True, shrink_defs=shrink_defs,
+                                                     expand_defs=expand_defs)
+    if not eligible_columns:
+        df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
+    else:
+        df = events.dataframe[eligible_columns].copy(deep=True)
+        df['HED_assembled'] = pd.Series(hed_strings).astype(str)
+    return df, hed_strings, definitions
+
+
+def generate_sidecar(events, options=None):
     """ Generate a JSON sidecar template from a BIDS-style events file.
 
     Args:
         events (EventInput):      An events input object to generate sidecars from.
-        columns_selected (dict):  A dictionary of columns selected.
+        options (dict):  A dictionary of options.
 
     Returns:
         dict: A dictionary of results in standard format including either the generated sidecar string or errors.
 
-    """
+    Notes: Options are the columns selected. If None, all columns are used.
 
+    """
+    columns_selected = get_option(options, base_constants.COLUMNS_SELECTED, None)
     columns_info = TabularSummary.get_columns_info(events.dataframe)
     hed_dict = {}
     for column_name, column_type in columns_selected.items():
@@ -168,7 +193,7 @@ def generate_sidecar(events, columns_selected):
             'msg': 'JSON sidecar generation from event file complete'}
 
 
-def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=True):
+def remodel(hed_schema, events, sidecar, remodel_operations, options=None):
     """ Remodel a given events file.
 
     Args:
@@ -176,13 +201,17 @@ def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=T
         events (EventsInput):      An events input object.
         sidecar (Sidecar or None): A sidecar object.
         remodel_operations (dict): A dictionary with the name and list of operations in the remodeling file.
-        include_summaries (bool):  If true and summaries exist, package event file and summaries in a zip file.
+        options (dict): A dictionary of options.
 
     Returns:
         dict: A dictionary pointing to results or errors.
 
+    Notes: The options for this are
+        - include_summaries (bool):  If true and summaries exist, package event file and summaries in a zip file.
+
     """
 
+    include_summaries = get_option(options, base_constants.INCLUDE_SUMMARIES, True)
     display_name = events.name
     remodel_name = remodel_operations['name']
     operations = remodel_operations['operations']
@@ -223,34 +252,47 @@ def remodel(hed_schema, events, sidecar, remodel_operations, include_summaries=T
     return response
 
 
-def search(hed_schema, events, query, columns_included=None):
+def search(hed_schema, events, sidecar, query, options=None):
     """ Create a three-column tsv file with event number, matched string, and assembled strings for matched events.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): A HED schema or HED schema group.
-        events (EventsInput):     An events input object.
+        events (TabularInput):     An events input object.
+        sidecar (Sidecar):   A Sidecar object with HED annotations.
         query (str):              A string containing the query.
-        columns_included (list):  A list of column names of columns to include.
+        options (dict):  A dictionary of options
 
     Returns:
         dict: A dictionary pointing to results or errors.
 
-    """
+    Notes:  The options for this are
+        columns_included (list):  A list of column names of columns to include.
+        expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise shrink definitions.
 
+    """
+    columns_included = get_option(options, base_constants.COLUMNS_INCLUDED, None)
+    expand_defs = get_option(options, base_constants.EXPAND_DEFS, True)
     results = validate(hed_schema, events)
     if results['data']:
         return results
     results = validate_query(hed_schema, query)
     if results['data']:
         return results
-
-    df = search_tabular(events, hed_schema, query, columns_included=columns_included)
-    if isinstance(df, pd.DataFrame):
-        csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-        msg = f"Events file query {query} satisfied by {len(df)} out of {len(events.dataframe)} events."
-    else:
-        csv_string = ''
+    df, hed_strings, definitions = _assemble(hed_schema, events, sidecar, columns_included=columns_included,
+                                             expand_defs=True)
+    if not expand_defs:
+        df_util.shrink_defs(df, hed_schema)
+    df_factor = analysis_util.search_strings(hed_strings, [query], query_names=['query_results'])
+    row_numbers = list(events.dataframe.index[df_factor.loc[:, 'query_results'] == 1])
+    if not row_numbers:
         msg = f"Events file has no events satisfying the query {query}."
+        csv_string = ""
+    else:
+        df['query_results'] = df_factor.loc[:, 'query_results']
+        df = events.dataframe.iloc[row_numbers].reset_index()
+        csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+        msg = f"Events file query {query} satisfied by {len(row_numbers)} out of {len(events.dataframe)} events."
+
     display_name = events.name
     file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv', append_datetime=True)
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
@@ -260,36 +302,33 @@ def search(hed_schema, events, query, columns_included=None):
             base_constants.MSG_CATEGORY: 'success', base_constants.MSG: msg}
 
 
-def validate(hed_schema, events, sidecar=None, check_for_warnings=False):
+def validate(hed_schema, events, sidecar=None, options=None):
     """ Validate a tabular input object and return the results.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): Schema or schemas used for validation.
         events (TabularInput): Tabular input object representing a file to be validated.
         sidecar (Sidecar or None): The Sidecar associated with this tabular data file.
-        check_for_warnings (bool): If true, validation should include warnings.
+        options (dict): Dictionary of options
 
     Returns:
         dict: A dictionary containing results of validation in standard format.
 
+    Notes: The dictionary of options includes the following.
+        - check_for_warnings (bool): If true, validation should include warnings. (default False)
+
+
     """
-
+    check_for_warnings = get_option(options, base_constants.CHECK_FOR_WARNINGS, False)
     display_name = events.name
-    validator = HedValidator(hed_schema=hed_schema)
-    issue_str = ''
+    error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
+    issues = []
     if sidecar:
-        issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
-        issues = filter_issues(issues, check_for_warnings)
-        if issues:
-            issue_str = issue_str + get_printable_issue_string(issues, title="Sidecar definition errors:")
-    if not issue_str:
-        issues = events.validate_file(validator, check_for_warnings=check_for_warnings)
-        issues = filter_issues(issues, check_for_warnings)
-        if issues:
-            issue_str = get_printable_issue_string(issues, title="Event file errors:")
-
-    if issue_str:
-        data = issue_str
+        issues = sidecar.validate(hed_schema, name=sidecar.name, error_handler=error_handler)
+    if not issues:
+        issues = events.validate(hed_schema, name=events.name, error_handler=error_handler)
+    if issues:
+        data = get_printable_issue_string(issues, title="Event file errors:")
         file_name = generate_filename(display_name, name_suffix='_validation_errors',
                                       extension='.txt', append_datetime=True)
         category = 'warning'
