@@ -112,11 +112,16 @@ function showColumnInfo(columnList, countCounts, hasColumnNames= true, displayTy
  * @param {Array} columnList - An array containing the spreadsheet column names.
  * @param {Object} columnCounts - A dictionary of the count of unique values in each column.
  * @param {boolean} hasColumnNames - A boolean indicating whether the first row represents column names
+ * @param {boolean} show_categorical - A boolean indicating whether to show categorical checkboxes
  */
-function showEvents(columnList, countCounts, hasColumnNames=true) {
+function showEvents(columnList, countCounts, hasColumnNames=true, show_categorical=true) {
     $('#show_events').show();
     let columnEventsTable = $('#show_events_table');
-    let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th><th>Categorical?</th></tr>'
+    let categorical = ''
+    if (show_categorical) {
+        categorical = '<th>Categorical?</th>';
+    }
+    let contents = '<tr><th>Include?</th><th>Column name (unique entries)</th>' + categorical + '</tr>'
     columnEventsTable.empty();
     let i = 0;
     for(const key of columnList) {
@@ -127,12 +132,15 @@ function showEvents(columnList, countCounts, hasColumnNames=true) {
         }
         let useName = column + "_use";
         let categoryName = column + "_category";
-        let columnField = column + "_name"
-        let row = '<tr><td><input type="checkbox" name="' + useName + '" id="' + useName + '"></td>' +
-            '<td>' + columnName  + ' (' + countCounts[columnName] + ')</td>' +
-            '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
+        let columnField = column + "_name";
+        let categoryBoxes = '';
+        if (show_categorical) {
+            categoryBoxes = '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
                 '<input type="text" hidden id="' + columnField + '" name="' + columnField +
-                '" value="' + columnName + '"</td></tr>';
+                '" value="' + columnName + '"</td>';
+        }
+        let row = '<tr><td><input type="checkbox" name="' + useName + '" id="' + useName + '"></td>' +
+            '<td>' + columnName  + ' (' + countCounts[columnName] + ')</td>' + categoryBoxes + '</tr>';
         contents = contents + row;
         i = i + 1;
     }

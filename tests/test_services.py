@@ -77,6 +77,30 @@ class Test(TestWebBase):
 
     def test_process_services_sidecar(self):
         from hedweb.services import process
+        from hed.schema import load_schema_version
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events_errors.json')
+        with open(json_path) as f:
+            data = json.load(f)
+        json_text = json.dumps(data)
+        fb = io.StringIO(json_text)
+        hed_schema = load_schema_version('8.1.0')
+        
+        json_sidecar = models.Sidecar(files=fb, name='JSON_Sidecar')
+        arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
+                     base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
+                     base_constants.SIDECAR: json_sidecar}
+        with self.app.app_context():
+            response = process(arguments)
+            self.assertFalse(response['error_type'],
+                             'sidecar_validation services should not have a fatal error when file is invalid')
+            results = response['results']
+            self.assertEqual('success', results['msg_category'],
+                             "sidecar_validation services has success on bids_events.json")
+            self.assertEqual('8.0.0', results[base_constants.SCHEMA_VERSION], 'Version 8.0.0 was used')
+
+
+    def test_process_services_sidecar(self):
+        from hedweb.services import process
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         with open(json_path) as f:
             data = json.load(f)

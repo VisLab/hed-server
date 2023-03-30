@@ -2,14 +2,13 @@ import os
 from flask import current_app
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
-from hed.errors import get_printable_issue_string, HedFileError
+from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.models import SpreadsheetInput
 from hed.tools.util.io_util import generate_filename
-from hed.validator import HedValidator
 
 from hedweb.constants import base_constants, file_constants
 from hedweb.columns import get_prefix_dict
-from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down
+from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down, get_option
 
 
 app_config = current_app.config
@@ -70,39 +69,39 @@ def process(arguments):
         raise HedFileError('InvalidSpreadsheet', "A spreadsheet was given but could not be processed", "")
 
     command = arguments.get(base_constants.COMMAND, None)
-    check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
     if command == base_constants.COMMAND_VALIDATE:
-        results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=check_for_warnings)
-    elif command == base_constants.COMMAND_TO_SHORT:
-        results = spreadsheet_convert(hed_schema, spreadsheet, command, check_for_warnings=check_for_warnings)
-    elif command == base_constants.COMMAND_TO_LONG:
-        results = spreadsheet_convert(hed_schema, spreadsheet, command, check_for_warnings=check_for_warnings)
+        results = spreadsheet_validate(hed_schema, spreadsheet, arguments)
+    elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
+        results = spreadsheet_convert(hed_schema, spreadsheet, arguments)
     else:
         raise HedFileError('UnknownSpreadsheetProcessingMethod', f"Command {command} is missing or invalid", "")
     return results
 
 
-def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_TO_LONG, check_for_warnings=False):
+def spreadsheet_convert(hed_schema, spreadsheet, options=None):
     """ Convert a spreadsheet long to short unless unless the command is not COMMAND_TO_LONG then converts to short
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): HedSchema or HedSchemaGroup object to be used.
         spreadsheet (SpreadsheetInput): Previously created SpreadsheetInput object.
-        command (str): Name of the command to execute if not TO_LONG.
-        check_for_warnings (bool): If True, check for warnings.
+        options (dict or None): A dictionary of options
 
     Returns:
         dict: A downloadable dictionary in standard format.
 
+    Notes: the allowed options are
+        command (str): Name of the command to execute.
+        check_for_warnings (bool): If True, check for warnings.
+
     """
 
-    results = spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=check_for_warnings)
+    options[base_constants.CHECK_FOR_WARNINGS] = False
+    results = spreadsheet_validate(hed_schema, spreadsheet, options)
     if results['data']:
         return results
-
+    command = get_option(options, base_constants.COMMAND, base_constants.COMMAND_TO_LONG)
     display_name = spreadsheet.name
     display_ext = os.path.splitext(secure_filename(display_name))[1]
-
     if command == base_constants.COMMAND_TO_LONG:
         suffix = '_to_long'
         spreadsheet.convert_to_long(hed_schema)
@@ -119,21 +118,24 @@ def spreadsheet_convert(hed_schema, spreadsheet, command=base_constants.COMMAND_
             base_constants.MSG: f'Spreadsheet {display_name} converted_successfully'}
 
 
-def spreadsheet_validate(hed_schema, spreadsheet, check_for_warnings=False):
+def spreadsheet_validate(hed_schema, spreadsheet, options=None):
     """ Validates the spreadsheet.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): The schema(s) against which to validate.
         spreadsheet (SpreadsheetInput): Spreadsheet input object to be validated.
-        check_for_warnings (bool): Indicates whether validation should check for warnings as well as errors.
+        options (dict or None): Indicates whether validation should check for warnings as well as errors.
 
     Returns:
         dict: A dictionary containing results of validation in standard format.
 
-    """
+    Notes: The allowed options are
+        check_for_warnings (bool): Indicates whether validation should check for warnings as well as errors.
 
-    validator = HedValidator(hed_schema=hed_schema)
-    issues = spreadsheet.validate_file(validator, check_for_warnings=check_for_warnings)
+    """
+    check_for_warnings = get_option(options, base_constants.CHECK_FOR_WARNINGS, True)
+    error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
+    issues = spreadsheet.validate(hed_schema, error_handler=error_handler, name=spreadsheet.name)
     display_name = spreadsheet.name
     issues = filter_issues(issues, check_for_warnings)
     if issues:

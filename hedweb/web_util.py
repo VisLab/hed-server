@@ -142,7 +142,7 @@ def generate_download_spreadsheet(results):
                                                  base_constants.MSG_CATEGORY: results[base_constants.MSG_CATEGORY],
                                                  base_constants.MSG: results[base_constants.MSG]})
     buffer = io.BytesIO()
-    spreadsheet.to_excel(buffer, output_processed_file=True)
+    spreadsheet.to_excel(buffer, output_assembled=True)
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
@@ -222,12 +222,11 @@ def get_hed_schema_from_pull_down(request):
     return hed_schema
 
 
-# def get_hed_versions(hed_schema):
-#     if hed_schema:
-#         hed_versions = hed_schema.get_formatted_version(as_string=False)
-#     else:
-#         hed_versions = None
-#     return hed_versions
+def get_option(options, option_name, default_value):
+    option_value = default_value
+    if options and option_name in options:
+        option_value = options[option_name]
+    return option_value
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):

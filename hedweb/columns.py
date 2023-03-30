@@ -150,6 +150,7 @@ def get_prefix_dict(form_dict):
     Returns:
         dict: A dictionary whose keys names (or COLUMN_XX) and values are tag prefixes to prepend.
 
+    Note: The form counts columns starting from 1 but prefix dictionary starts with index 0.
     """
     tag_columns = []
     prefix_dict = {}
@@ -162,9 +163,9 @@ def get_prefix_dict(form_dict):
         if form_dict.get(check, None) != 'on':
             continue
         if form_dict[key]:
-            prefix_dict[int(pieces[1])] = form_dict[key]
+            prefix_dict[int(pieces[1]) - 1] = form_dict[key]
         else:
-            tag_columns.append(int(pieces[1]))
+            tag_columns.append(int(pieces[1]) - 1)
     return tag_columns, prefix_dict
 
 

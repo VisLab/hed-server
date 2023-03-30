@@ -4,15 +4,15 @@ import json
 from flask import current_app
 from werkzeug.utils import secure_filename
 
+from hed.errors import ErrorHandler
 from hed import schema as hedschema
-from hed.validator import HedValidator
 from hed.errors import HedFileError, get_printable_issue_string
 
-from hed.models import SpreadsheetInput, Sidecar
+from hed.models import SpreadsheetInput, Sidecar, HedString
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
-from hed.tools.util.io_util import  generate_filename
+from hed.tools.util.io_util import generate_filename
 from hedweb.constants import base_constants, file_constants
-from hedweb.web_util import form_has_option, filter_issues, get_hed_schema_from_pull_down
+from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down, get_option
 
 app_config = current_app.config
 
@@ -76,63 +76,56 @@ def process(arguments):
     spreadsheet = arguments.get(base_constants.SPREADSHEET, 'None')
     if not sidecar:
         raise HedFileError('MissingSidecarFile', "Please give a valid JSON sidecar file to process", "")
-    check_for_warnings = arguments.get(base_constants.CHECK_FOR_WARNINGS, False)
-    expand_defs = arguments.get(base_constants.EXPAND_DEFS, False)
-    include_description_tags = arguments.get(base_constants.INCLUDE_DESCRIPTION_TAGS, False)
+
     if command == base_constants.COMMAND_VALIDATE:
-        results = sidecar_validate(hed_schema, sidecar, check_for_warnings=check_for_warnings)
+        results = sidecar_validate(hed_schema, sidecar, arguments)
     elif command == base_constants.COMMAND_TO_SHORT or command == base_constants.COMMAND_TO_LONG:
-        results = sidecar_convert(hed_schema, sidecar, command=command, expand_defs=expand_defs)
+        results = sidecar_convert(hed_schema, sidecar, arguments)
     elif command == base_constants.COMMAND_EXTRACT_SPREADSHEET:
         results = sidecar_extract(sidecar)
     elif command == base_constants.COMMAND_MERGE_SPREADSHEET:
-        results = sidecar_merge(sidecar, spreadsheet, include_description_tags)
+        results = sidecar_merge(sidecar, spreadsheet, arguments)
     else:
         raise HedFileError('UnknownProcessingMethod', f'Command {command} is missing or invalid', '')
     return results
 
 
-def sidecar_convert(hed_schema, sidecar, command=base_constants.COMMAND_TO_SHORT, expand_defs=False):
+def sidecar_convert(hed_schema, sidecar, options=None):
     """ Convert a sidecar from long to short form or short to long form.
 
     Args:
         hed_schema (HedSchema):  HedSchema object used in the conversion.
         sidecar (Sidecar):  Sidecar object to be converted in place.
-        command (str):           Either 'to short' or 'to long' indicating type of conversion.
-        expand_defs (bool):      If True, expand definitions when converting, otherwise do no expansion.
+        options (dict or None):  Options for this operation.
 
     Returns:
         dict:  A downloadable response dictionary
 
-    """
+    Notes:
+        command (str):           Either 'to short' or 'to long' indicating type of conversion.
+        expand_defs (bool):      If True, expand definitions when converting, otherwise do no expansion
 
+    """
+    options[base_constants.CHECK_FOR_WARNINGS] = False
+    results = sidecar_validate(hed_schema, sidecar, options)
+    if results[base_constants.MSG_CATEGORY] == 'warning':
+        return results
+    display_name = sidecar.name
+    command = get_option(options, base_constants.COMMAND, None)
     if command == base_constants.COMMAND_TO_LONG:
         tag_form = 'long_tag'
     else:
         tag_form = 'short_tag'
-    issues = []
-    for hed_string_obj, position_info, issue_items in sidecar.hed_string_iter(hed_ops=hed_schema,
-                                                                              expand_defs=expand_defs,
-                                                                              remove_definitions=False):
-
+    error_handler = ErrorHandler(check_for_warnings=False)
+    for hed_string, column_data, position_info in sidecar.hed_string_iter(error_handler):
+        hed_string_obj = HedString(hed_string, hed_schema, def_dict=sidecar.get_def_dict(hed_schema))
         converted_string = hed_string_obj.get_as_form(tag_form)
-        issues = issues + issue_items
-        sidecar.set_hed_string(converted_string, position_info)
+        sidecar.set_hed_string(converted_string, (column_data.column_name, position_info))
 
-    # issues = ErrorHandler.filter_issues_by_severity(issues, ErrorSeverity.ERROR)
-    display_name = sidecar.name
-    issues = filter_issues(issues, False)
-    if issues:
-        data = get_printable_issue_string(issues, f"JSON conversion for {display_name} was unsuccessful")
-        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}_conversion_errors",
-                                      extension='.txt', append_datetime=True)
-        category = 'warning'
-        msg = f'Sidecar file {display_name} had validation errors'
-    else:
-        file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
-        data = sidecar.get_as_json_string()
-        category = 'success'
-        msg = f'Sidecar file {display_name} was successfully converted'
+    file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
+    data = sidecar.get_as_json_string()
+    category = 'success'
+    msg = f'Sidecar file {display_name} was successfully converted'
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
             base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
@@ -162,20 +155,24 @@ def sidecar_extract(sidecar):
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully extracted'}
 
 
-def sidecar_merge(sidecar, spreadsheet, include_description_tags=False):
+def sidecar_merge(sidecar, spreadsheet, options=None):
     """ Merge an edited 4-column spreadsheet with JSON sidecar.
 
     Args:
         sidecar (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
         spreadsheet (HedInput): The Sidecar from which to generate_sidecar the HED spreadsheet
-        include_description_tags (bool): If True, a Description tag is generated from Levels and included.
+        options (dict or None): The options allowed for this operation.
 
     Returns:
         dict
         A downloadable dictionary file or a file containing warnings
 
+    Notes: The allowed option for merge is:
+        include_description_tags (bool): If True, a Description tag is generated from Levels and included.
+
     """
 
+    include_description_tags = get_option(options, base_constants.INCLUDE_DESCRIPTION_TAGS, False)
     if not spreadsheet:
         raise HedFileError('MissingSpreadsheet', 'Cannot merge spreadsheet with sidecar', '')
     df = spreadsheet.dataframe
@@ -193,22 +190,27 @@ def sidecar_merge(sidecar, spreadsheet, include_description_tags=False):
             'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully merged'}
 
 
-def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
+def sidecar_validate(hed_schema, sidecar, options=None):
     """ Validate the sidecars and return the errors and/or a message in a dictionary.
 
     Args:
         hed_schema (HedSchema or HedSchemaGroup): The hed schemas to be used.
         sidecar (Sidecar): A Sidecar object to validate.
-        check_for_warnings (bool): If True, check for warnings as well as errors.
+        options (dict or None): A dictionary of options.
 
     Returns:
         dict: A dictionary of response values in standard form.
 
+    Notes:  The allowed option for validate is:
+        check_for_warnings (bool): If True, check for warnings as well as errors.
+
     """
 
+    check_for_warnings = get_option(options, base_constants.CHECK_FOR_WARNINGS, True)
+    command = get_option(options, base_constants.COMMAND, None)
     display_name = sidecar.name
-    validator = HedValidator(hed_schema)
-    issues = sidecar.validate_entries(validator, check_for_warnings=check_for_warnings)
+    error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
+    issues = sidecar.validate(hed_schema, name=sidecar.name, error_handler=error_handler)
     if issues:
         data = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
         file_name = generate_filename(display_name, name_suffix='validation_errors',
@@ -221,7 +223,7 @@ def sidecar_validate(hed_schema, sidecar, check_for_warnings=False):
         category = 'success'
         msg = f'JSON file {display_name} had no validation errors'
 
-    return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'sidecar',
+    return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
             base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
