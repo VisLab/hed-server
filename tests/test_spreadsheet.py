@@ -161,7 +161,7 @@ class Test(TestWebBase):
     def test_validate_valid_excel1(self):
         from hedweb.spreadsheet import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.1.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.1.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         spreadsheet = SpreadsheetInput(spreadsheet_path, worksheet_name='LKT 8HED3',

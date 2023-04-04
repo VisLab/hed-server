@@ -5,6 +5,7 @@ import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
+from hed.errors.error_reporter import check_for_any_errors
 from hed.models import DefinitionDict, Sidecar, TabularInput, df_util
 from hed.tools.util.io_util import generate_filename
 from hed.tools.util.data_util import separate_values
@@ -325,8 +326,8 @@ def validate(hed_schema, events, sidecar=None, options=None):
     issues = []
     if sidecar:
         issues = sidecar.validate(hed_schema, name=sidecar.name, error_handler=error_handler)
-    if not issues:
-        issues = events.validate(hed_schema, name=events.name, error_handler=error_handler)
+    if not check_for_any_errors(issues):
+        issues += events.validate(hed_schema, name=events.name, error_handler=error_handler)
     if issues:
         data = get_printable_issue_string(issues, title="Event file errors:")
         file_name = generate_filename(display_name, name_suffix='_validation_errors',
