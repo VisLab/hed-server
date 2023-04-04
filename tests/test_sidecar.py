@@ -208,7 +208,8 @@ class Test(TestWebBase):
         json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
         hed_schema = load_schema_version('8.1.0')
         issues = json_sidecar.validate(hed_schema)
-        print('to here')
+        self.assertIsInstance(issues, list)
+        self.assertEqual(len(issues), 16)
 
     def test_sidecar_convert_to_short_valid(self):
         from hed import models

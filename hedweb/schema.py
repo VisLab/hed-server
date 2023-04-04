@@ -38,7 +38,8 @@ def get_schema(arguments):
         else:
             file_found = False
     except HedFileError as e:
-        issues.append({'code': e.args[0], 'message': e.args[1]})
+        # issues.append({'code': e.args[0], 'message': e.args[1]})
+        issues = issues + e.issues
     if not file_found:
         raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
     return hed_schema, issues

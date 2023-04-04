@@ -46,9 +46,9 @@ class Test(TestWebBase):
             results = schema_validate(hed_schema, display_name)
             self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.1.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.1.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        display_name = 'HED8.0.1.xml'
+        display_name = 'HED8.1.0.xml'
         with self.app.app_context():
             results = schema_validate(hed_schema, display_name)
             self.assertFalse(results['data'], "HED8.0.0 is HED-3G compliant")
