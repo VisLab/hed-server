@@ -7,7 +7,7 @@ from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
 from hed.models import DefinitionDict, Sidecar, TabularInput
-from hed.models import df_util as df_util
+from hed.models.df_util import get_assembled, shrink_defs
 from hed.tools.util.io_util import generate_filename
 from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
@@ -147,9 +147,8 @@ def _assemble(hed_schema, events, sidecar, columns_included=[], expand_defs=True
         shrink_defs = False
     else:
         shrink_defs = True
-    hed_strings, definitions = df_util.get_assembled(events, sidecar, hed_schema, extra_def_dicts=None,
-                                                     join_columns=True, shrink_defs=shrink_defs,
-                                                     expand_defs=expand_defs)
+    hed_strings, definitions = get_assembled(events, sidecar, hed_schema, extra_def_dicts=None,
+                                             join_columns=True, shrink_defs=shrink_defs, expand_defs=expand_defs)
     if not eligible_columns:
         df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
     else:
@@ -280,7 +279,7 @@ def search(hed_schema, events, sidecar, query, options=None):
     df, hed_strings, definitions = _assemble(hed_schema, events, sidecar, columns_included=columns_included,
                                              expand_defs=True)
     if not expand_defs:
-        df_util.shrink_defs(df, hed_schema)
+        shrink_defs(df, hed_schema)
     df_factor = analysis_util.search_strings(hed_strings, [query], query_names=['query_results'])
     row_numbers = list(events.dataframe.index[df_factor.loc[:, 'query_results'] == 1])
     if not row_numbers:

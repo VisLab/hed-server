@@ -94,9 +94,9 @@ class Test(TestWebBase):
             self.assertFalse(response['error_type'],
                              'sidecar_validation services should not have a fatal error when file is invalid')
             results = response['results']
-            self.assertEqual('success', results['msg_category'],
+            self.assertEqual('warning', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual('8.0.0', results[base_constants.SCHEMA_VERSION], 'Version 8.0.0 was used')
+            self.assertEqual('8.1.0', results[base_constants.SCHEMA_VERSION], 'Version 8.1.0 was used')
 
     def test_process_services_sidecar_a(self):
         from hedweb.services import process
