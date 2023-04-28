@@ -6,7 +6,8 @@ import pandas as pd
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
-from hed.models import DefinitionDict, Sidecar, TabularInput, df_util
+from hed.models import DefinitionDict, Sidecar, TabularInput
+from hed.models import df_util as df_util
 from hed.tools.util.io_util import generate_filename
 from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
@@ -121,7 +122,6 @@ def assemble(hed_schema, events, sidecar, options=None):
         options include columns_included and expand_defs.
     """
 
-    
     options[base_constants.CHECK_FOR_WARNINGS] = False
     results = validate(hed_schema, events, sidecar=sidecar, options=options)
     if results['data']:
@@ -142,9 +142,7 @@ def assemble(hed_schema, events, sidecar, options=None):
 
 
 def _assemble(hed_schema, events, sidecar, columns_included=[], expand_defs=True):
-    x = list(events.dataframe.columns)
-    y = columns_included
-    eligible_columns, missing_columns = separate_values(x, columns_included)
+    eligible_columns, missing_columns = separate_values(list(events.dataframe.columns), columns_included)
     if expand_defs:
         shrink_defs = False
     else:
