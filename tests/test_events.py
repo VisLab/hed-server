@@ -218,7 +218,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = remodel(hed_schema, events, sidecar, remodeler)
         self.assertTrue(results['data'], 'remodel results should have a data key when successful')
-        self.assertEqual('success', results['msg_category'],'remodel msg_category should be success when no errors')
+        self.assertEqual('success', results['msg_category'], 'remodel msg_category should be success when no errors')
         # TODO: Test the rows and columns of result.
 
     def test_events_remodel_invalid_no_hed(self):
@@ -233,15 +233,18 @@ class Test(TestWebBase):
             remodeler = json.load(fp)
         hed_schema = None
         sidecar = None
-        operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure', 'parameters': {'ignore_missing': True}}
-        operation_1 = {'operation': 'unknown_command', 'description': 'bad command', 'parameters': {'ignore_missing': True}}
-        operation_2 = {'command': 'remove_columns', 'description': 'bad parameters', 'parameters': {'ignore_missing': True}}
+        operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure',
+                       'parameters': {'ignore_missing': True}}
+        operation_1 = {'operation': 'unknown_command', 'description': 'bad command',
+                       'parameters': {'ignore_missing': True}}
+        operation_2 = {'command': 'remove_columns', 'description': 'bad parameters',
+                       'parameters': {'ignore_missing': True}}
         operation_bad = [operation_0, remodeler[0], operation_1, remodeler[1], operation_2]
         remodel_bad = {'name': 'remodel_bad.json', 'operations': operation_bad}
         with self.app.app_context():
             results = remodel(hed_schema, events, sidecar, remodel_bad)
         self.assertTrue(results['data'], 'remodel results should have a data key when unsuccessful')
-        self.assertEqual('warning', results['msg_category'],'remodel msg_category should be success when no errors')
+        self.assertEqual('warning', results['msg_category'], 'remodel msg_category should be success when no errors')
 
 
 if __name__ == '__main__':
