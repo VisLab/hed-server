@@ -84,7 +84,7 @@ class Test(TestWebBase):
         json_text = json.dumps(data)
         fb = io.StringIO(json_text)
         hed_schema = load_schema_version('8.1.0')
-        
+
         json_sidecar = models.Sidecar(files=fb, name='JSON_Sidecar')
         arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
                      base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
@@ -98,8 +98,7 @@ class Test(TestWebBase):
                              "sidecar_validation services has success on bids_events.json")
             self.assertEqual('8.0.0', results[base_constants.SCHEMA_VERSION], 'Version 8.0.0 was used')
 
-
-    def test_process_services_sidecar(self):
+    def test_process_services_sidecar_a(self):
         from hedweb.services import process
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         with open(json_path) as f:

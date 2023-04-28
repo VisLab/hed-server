@@ -114,7 +114,7 @@ class Test(TestWebBase):
             # hed2 = HedString(tags2, hed_schema=hed_schema)
             self.assertFalse(results['data'],
                              'spreadsheet_convert_to_long results should not have a data key')
-            
+
             self.assertEqual('success', results["msg_category"],
                              'spreadsheet_validate msg_category should be success when no errors')
 

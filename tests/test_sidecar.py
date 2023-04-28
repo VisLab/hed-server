@@ -81,7 +81,7 @@ class Test(TestWebBase):
                              'process to short should give warning when JSON with errors')
             self.assertTrue(results['data'],
                             'process to short should not convert using HED 8.0.0.xml')
-            
+
     def test_sidecar_process_valid_to_short(self):
         from hedweb.sidecar import process
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
