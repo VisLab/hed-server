@@ -209,8 +209,7 @@ class Test(TestWebBase):
             response = handle_http_error(ex)
             headers = dict(response.headers)
             self.assertEqual('error', headers["Category"], "handle_http_error should have category error")
-            self.assertTrue(headers['Message'].startswith(HedExceptions.BAD_PARAMETERS),
-                            "handle_http_error error message starts with the error_type")
+            self.assertTrue(headers['Message'].startswith('HedFileError'))
             self.assertFalse(response.data, "handle_http_error should have empty data")
             ex = Exception()
             response = handle_http_error(ex)
