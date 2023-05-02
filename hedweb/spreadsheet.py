@@ -3,7 +3,7 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
-from hed.models import SpreadsheetInput
+from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.tools.util.io_util import generate_filename
 
 from hedweb.constants import base_constants, file_constants

@@ -8,7 +8,9 @@ from hed.errors import ErrorHandler
 from hed import schema as hedschema
 from hed.errors import HedFileError, get_printable_issue_string
 
-from hed.models import SpreadsheetInput, Sidecar, HedString
+from hed.models.spreadsheet_input import SpreadsheetInput
+from hed.models.sidecar import Sidecar
+from hed.models.hed_string import HedString
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 from hed.tools.util.io_util import generate_filename
 from hedweb.constants import base_constants, file_constants

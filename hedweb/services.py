@@ -2,11 +2,17 @@ import os
 import io
 import json
 from flask import current_app
-from hed.models import HedString, Sidecar, SpreadsheetInput, TabularInput
+from hed.models.hed_string import HedString
+from hed.models.sidecar import Sidecar
+from hed.models.spreadsheet_input import SpreadsheetInput
+from hed.models.tabular_input import TabularInput
 from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
-from hedweb import events, spreadsheet, sidecar, strings
+from hedweb import events as events
+from hedweb import spreadsheet as spreadsheet
+from hedweb import sidecar as sidecar
+from hedweb import strings as strings
 
 
 app_config = current_app.config
@@ -81,7 +87,6 @@ def get_sidecar(arguments, params):
         file_list = []
         for s_string in sidecar_list:
             file_list.append(io.StringIO(s_string))
-        schema = arguments.get('schema', None)
         arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar")
     else:
         arguments[base_constants.SIDECAR] = None
