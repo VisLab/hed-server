@@ -6,7 +6,9 @@ import pandas as pd
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
-from hed.models import DefinitionDict, Sidecar, TabularInput
+from hed.models.definition_dict import DefinitionDict
+from hed.models.sidecar import Sidecar
+from hed.models.tabular_input import TabularInput
 from hed.models.df_util import get_assembled, shrink_defs
 from hed.tools.util.io_util import generate_filename
 from hed.tools.util.data_util import separate_values
@@ -144,11 +146,11 @@ def assemble(hed_schema, events, sidecar, options=None):
 def _assemble(hed_schema, events, sidecar, columns_included=[], expand_defs=True):
     eligible_columns, missing_columns = separate_values(list(events.dataframe.columns), columns_included)
     if expand_defs:
-        shrink_defs = False
+        shrink = False
     else:
-        shrink_defs = True
+        shrink = True
     hed_strings, definitions = get_assembled(events, sidecar, hed_schema, extra_def_dicts=None,
-                                             join_columns=True, shrink_defs=shrink_defs, expand_defs=expand_defs)
+                                             join_columns=True, shrink_defs=shrink, expand_defs=expand_defs)
     if not eligible_columns:
         df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
     else:
