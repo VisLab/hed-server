@@ -10,9 +10,10 @@ from hed.errors import HedFileError, get_printable_issue_string
 
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.sidecar import Sidecar
-from hed.models.hed_string import HedString
+from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 from hed.tools.util.io_util import generate_filename
+
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down, get_option
 
@@ -119,10 +120,10 @@ def sidecar_convert(hed_schema, sidecar, options=None):
     else:
         tag_form = 'short_tag'
     error_handler = ErrorHandler(check_for_warnings=False)
-    for hed_string, column_data, position_info in sidecar.hed_string_iter(error_handler):
-        hed_string_obj = HedString(hed_string, hed_schema, def_dict=sidecar.get_def_dict(hed_schema))
-        converted_string = hed_string_obj.get_as_form(tag_form)
-        sidecar.set_hed_string(converted_string, (column_data.column_name, position_info))
+    for column_data in sidecar:
+        hed_strings = column_data.get_hed_strings()
+        hed_strings = df_util.convert_to_form(hed_strings, hed_schema, "long_tag")
+        column_data.set_hed_strings(hed_strings)
 
     file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
     data = sidecar.get_as_json_string()
