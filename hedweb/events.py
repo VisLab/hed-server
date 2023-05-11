@@ -10,7 +10,6 @@ from hed.models.definition_dict import DefinitionDict
 from hed.models.sidecar import Sidecar
 from hed.models.tabular_input import TabularInput
 from hed.models.df_util import get_assembled, shrink_defs
-from hed.tools.util.io_util import generate_filename
 from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
 from hed.tools.analysis import analysis_util
@@ -18,7 +17,7 @@ from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
 
 app_config = current_app.config
 
