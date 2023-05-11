@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 import json
 import os
 import zipfile
@@ -12,6 +13,8 @@ from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config
+
+TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 
 def file_extension_is_valid(filename, accepted_extensions=None):
