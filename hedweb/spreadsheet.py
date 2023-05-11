@@ -4,11 +4,10 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.models.spreadsheet_input import SpreadsheetInput
-from hed.tools.util.io_util import generate_filename
 
 from hedweb.constants import base_constants, file_constants
 from hedweb.columns import get_prefix_dict
-from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import filter_issues, form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
 
 
 app_config = current_app.config
