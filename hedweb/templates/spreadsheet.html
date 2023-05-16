@@ -1,29 +1,30 @@
 {% extends "layout.html" %}
-{% from "schema-pulldown.html" import create_schema_pulldown %}
+{% from "schema-pulldown_new.html" import create_schema_pulldown %}
 {% from "column-info.html" import create_column_info %}
-{% from "actions.html" import create_actions %}
-{% from "options.html" import create_options %}
+{% from "actions_new.html" import create_actions %}
+{% from "options_new.html" import create_options %}
 {% from "spreadsheet-input.html" import create_spreadsheet_input %}
 
 {% block content %}
-    <h2>Process a spreadsheet with HED tags</h2>
+    <h3>Spreadsheets with HED tags</h3>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/forms.css') }}">
     <form id="spreadsheet_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('Pick an action:',to_long=True,to_short=True,validate=True) }}
-        {{ create_options('Select options:',check_for_warnings=True,expand_defs=True) }}
-
+        {{ create_actions(to_long=True,to_short=True,validate=True) }}
+        <p> </p>
+        {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
+        <p> </p>
+        
         {{create_spreadsheet_input('Upload a spreadsheet (tab-separated or Excel):',has_column_names_option=True) }}
 
         {{ create_column_info('show_indices') }}
 
-        {{ create_schema_pulldown('Choose a HED schema:') }}
-
-        <h3>Process:</h3>
+        {{ create_schema_pulldown() }}
+        
         <div class="form-group">
-            <button id="spreadsheet_submit" type="button">Process</button>
+            <button id="spreadsheet_submit" type="button" class="btn btn-primary btn-large">Process</button>
             <p class="flash" id="spreadsheet_submit_flash"></p>
         </div>
     </form>

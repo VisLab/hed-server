@@ -1,0 +1,6 @@
+{% macro create_file_input(title, file_id, flash_id ) %}
+        <label for="formFile" class="form-label mt-4">{{ title }}</label>
+        <input class="form-control" type="file" id={{ file_id }}>
+        <p class="flash" id={{ flash_id }}></p>
+
+{% endmacro %}

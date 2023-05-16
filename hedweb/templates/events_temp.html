@@ -8,28 +8,29 @@
 {% from "options_new.html" import create_options %}
 
 {% block content %}
-    <h3 data-toggle="collapse" data-target="#eventsinfo">Process a BIDS-style event file</h3>
+    <h2 data-toggle="collapse" data-target="#eventsinfo">Process a BIDS-style event file</h2>
     <div id="eventsinfo" class="collapse">
-    This is a test
     </div>
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
         {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True) }}
-        <p> </p>
+
         {{ create_options(check_for_warnings=True,expand_defs=True,include_summaries=True) }}
-         <p> </p>
+
         <fieldset class="form-group">
             <legend>Files to upload:</legend>
         {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_flash') }}
+        <div class="form-group">
             <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
-                     </fieldset>
+        </div>
         {{ create_column_info('show_columns') }}
         {{ create_column_info('show_events') }}
+        <p class="flash" id="tag_columns_flash"></p>
         {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file', 'remodel_flash') }}
         {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 'sidecar_flash') }}
-        <p class="flash" id="tag_columns_flash"></p>
+         </fieldset>
             
             {{ create_schema_pulldown() }}
 

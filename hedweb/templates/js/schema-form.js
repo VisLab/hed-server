@@ -53,7 +53,7 @@ $('#schema_url_option').on('change',function () {
  */
 function clearForm() {
     $('#schema_form')[0].reset();
-    $("#validate").prop('checked', true);
+    $('#process_actions').val('validate');
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
     setOptions();

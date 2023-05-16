@@ -42,7 +42,7 @@ $('#events_submit').on('click', function () {
 function clearForm() {
     $('#events_form')[0].reset();
     $('#events_display_name').text('');
-    $("#validate").prop('checked', true);
+    $('#process_actions').val('validate');
     setOptions();
     clearFlashMessages();
     hideColumnInfo("show_columns");
@@ -140,6 +140,8 @@ function setOptions() {
 function submitForm() {
     let eventsForm = document.getElementById("events_form");
     let formData = new FormData(eventsForm);
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
     let prefix = 'issues';
     let eventsFile = $('#events_file')[0].files[0].name;
     let includeSummaries = $('#include_summaries').is(':checked')

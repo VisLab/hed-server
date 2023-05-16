@@ -27,7 +27,7 @@ $('#string_submit').on('click', function () {
 function clearForm() {
     $('#string_form')[0].reset();
     clearFormFlashMessages();
-    $("#validate").prop('checked', true);
+    $('#process_actions').val('validate');
     setOptions();
     hideOtherSchemaVersionFileUpload()
 }
@@ -81,6 +81,8 @@ function stringIsSpecified() {
 function submitStringForm() {
     let stringForm = document.getElementById("string_form");
     let formData = new FormData(stringForm);
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
     clearFormFlashMessages();
     flashMessageOnScreen('HED string is being processed ...', 'success', 'string_submit_flash')
     $.ajax({
