@@ -41,7 +41,9 @@ $('#events_submit').on('click', function () {
  */
 function clearForm() {
     $('#events_form')[0].reset();
-    $('#events_display_name').text('');
+    $('#sidecar_file').val('');
+    $('#events_file').val('');
+    $('#remodel_file').val('');
     $('#process_actions').val('validate');
     setOptions();
     clearFlashMessages();
@@ -56,10 +58,7 @@ function clearForm() {
 function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
-    clearSidecarFlashMessages();
-    clearRemodelFlashMessages();
     flashMessageOnScreen('', 'success', 'events_flash');
-    flashMessageOnScreen('', 'success', 'events_submit_flash');
 }
 
 
@@ -94,7 +93,8 @@ function setEventsTable(event_tag) {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         hideOption("expand_defs");
         hideOption("include_summaries")
         hideOption("use_hed");
@@ -103,7 +103,7 @@ function setOptions() {
         $("#sidecar_input_section").show();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
-    } else if ($("#assemble").is(":checked")) {
+    } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
         hideOption("include_summaries")
         hideOption("use_hed");
@@ -112,7 +112,7 @@ function setOptions() {
         $("#sidecar_input_section").show();
         $("#schema_pulldown_section").show();
         $("#options_section").show();
-    } else if ($("#generate_sidecar").is(":checked")) {
+    } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_summaries")
@@ -121,7 +121,7 @@ function setOptions() {
         $("#sidecar_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#options_section").hide();
-    } else if ($("#remodel").is(":checked")) {
+    } else if (selectedElement.value === "remodel") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("use_hed");
@@ -147,8 +147,7 @@ function submitForm() {
     let includeSummaries = $('#include_summaries').is(':checked')
     let display_name = convertToResultsName(eventsFile, prefix)
     clearFlashMessages();
-    flashMessageOnScreen('Event file is being processed ...', 'success',
-        'events_submit_flash')
+    flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
     let postType = {
         type: 'POST',
         url: "{{url_for('route_blueprint.events_results')}}",
@@ -157,10 +156,10 @@ function submitForm() {
         processData: false,
 
         success: function (download, status, xhr) {
-            getResponseSuccess(download, xhr, display_name, 'events_submit_flash')
+            getResponseSuccess(download, xhr, display_name, 'events_flash')
         },
         error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'events_submit_flash')
+            getResponseFailure(xhr, status, errorThrown, display_name, 'events_flash')
         }
     }
     if (includeSummaries){

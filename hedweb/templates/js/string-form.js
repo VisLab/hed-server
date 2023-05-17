@@ -15,7 +15,7 @@ $('#process_actions').change(function(){
  */
 $('#string_submit').on('click', function () {
    if (!stringIsSpecified()) {
-        flashMessageOnScreen('Must give a non-empty string.  See above.', 'error', 'string_submit_flash')
+        flashMessageOnScreen('Must give a non-empty string.  See above.', 'error', 'string_flash')
     } else {
         submitStringForm();
     }
@@ -26,7 +26,7 @@ $('#string_submit').on('click', function () {
  */
 function clearForm() {
     $('#string_form')[0].reset();
-    clearFormFlashMessages();
+    clearFormFlash();
     $('#process_actions').val('validate');
     setOptions();
     hideOtherSchemaVersionFileUpload()
@@ -35,10 +35,9 @@ function clearForm() {
 /**
  * Clear the flash messages that aren't related to the form submission.
  */
-function clearFormFlashMessages() {
+function clearFormFlash() {
     clearSchemaSelectFlashMessages();
     flashMessageOnScreen('', 'success', 'string_flash');
-    flashMessageOnScreen('', 'success', 'string_submit_flash');
 }
 
 /**
@@ -55,15 +54,17 @@ function prepareForm() {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
-        hideOption("expand_defs");
+    // let action_value = $("#process_actions").val;
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
-    } else if ($("#to_long").is(":checked")) {
+        $("#options_section").show();
+    } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
-    } else if ($("#to_short").is(":checked")) {
+        $("#options_section").hide();
+    } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
+        $("#options_section").hide();
     }
 }
 
@@ -83,8 +84,8 @@ function submitStringForm() {
     let formData = new FormData(stringForm);
     let selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value)
-    clearFormFlashMessages();
-    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_submit_flash')
+    clearFormFlash();
+    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash')
     $.ajax({
             type: 'POST',
             url: "{{url_for('route_blueprint.string_results')}}",
@@ -93,16 +94,16 @@ function submitStringForm() {
             processData: false,
             dataType: 'json',
             success: function (hedInfo) {
-                clearFormFlashMessages();
+                clearFormFlash();
                 if (hedInfo['data']) {
                     $('#string_result').val(hedInfo['data'])
                 } else {
                     $('#string_result').val('')
                 }
-                flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_submit_flash')
+                flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_flash')
             },
             error: function (jqXHR) {
-                flashMessageOnScreen(jqXHR.responseJSON.message, 'error', 'string_submit_flash')
+                flashMessageOnScreen(jqXHR.responseJSON.message, 'error', 'string_flash')
             }
         }
     )

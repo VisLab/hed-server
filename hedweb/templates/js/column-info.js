@@ -82,7 +82,7 @@ function showColumns(columnList) {
     let columnNamesRow = $('<tr/>');
 
     for(const key of columnList) {
-        columnNamesRow.append('<td>' + key + '</td>');
+        columnNamesRow.append('<td>' + key + '&nbsp;</td>');
     }
     let columnTable = $('#show_columns_table');
     columnTable.empty();
@@ -135,7 +135,8 @@ function showEvents(columnList, countCounts, hasColumnNames=true, show_categoric
         let columnField = column + "_name";
         let categoryBoxes = '';
         if (show_categorical) {
-            categoryBoxes = '<td><input type="checkbox" name="' + categoryName + '" id="' + categoryName + '">' +
+            categoryBoxes = '<td><input type="checkbox" + class="form-check-input form-check form-switch" ' +
+                'name="' + categoryName + '" id="' + categoryName + '">' +
                 '<input type="text" hidden id="' + columnField + '" name="' + columnField +
                 '" value="' + columnName + '"</td>';
         }
@@ -154,7 +155,7 @@ function showEvents(columnList, countCounts, hasColumnNames=true, show_categoric
  */
 function showIndices(columnList, hasColumnNames= true) {
     $('#show_indices').show();
-    let contents = '<tr><th>Has tags</th><th>Column names</th><th>Tag prefix to use (prefixes end in /)</th></tr>'
+    let contents = '<tr><th>Tags?</th><th>Column names</th><th>Tag prefix to use (prefixes end in /)</th></tr>'
     let i = 0;
     for(const key of columnList) {
         let column = "column_" + i;

@@ -1,16 +1,13 @@
 {% extends "layout.html" %}
-{% from "schema-pulldown_new.html" import create_schema_pulldown %}
-{% from "sidecar-input.html" import create_sidecar_input %}
-{% from "remodel-input.html" import create_remodel_input %}
+{% from "schema-pulldown.html" import create_schema_pulldown %}
 {% from "file-input.html" import create_file_input %}
 {% from "column-info.html" import create_column_info %}
-{% from "actions_new.html" import create_actions %}
-{% from "options_new.html" import create_options %}
+{% from "actions.html" import create_actions %}
+{% from "options.html" import create_options %}
 
 {% block content %}
-    <h3 data-toggle="collapse" data-target="#eventsinfo">Process a BIDS-style event file</h3>
+    <h3 data-toggle="collapse" data-target="#eventsinfo">BIDS-style event (tsv) file:</h3>
     <div id="eventsinfo" class="collapse">
-    This is a test
     </div>
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
@@ -20,23 +17,24 @@
         <p> </p>
         {{ create_options(check_for_warnings=True,expand_defs=True,include_summaries=True) }}
          <p> </p>
+        {{ create_schema_pulldown() }}
+         <p> </p>
         <fieldset class="form-group">
-            <legend>Files to upload:</legend>
-        {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_flash') }}
-            <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
-                     </fieldset>
-        {{ create_column_info('show_columns') }}
-        {{ create_column_info('show_events') }}
-        {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file', 'remodel_flash') }}
-        {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 'sidecar_flash') }}
-        <p class="flash" id="tag_columns_flash"></p>
-            
-            {{ create_schema_pulldown() }}
+            <legend>Upload:</legend>
+            {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file',
+                                 flash_id='events_flash', div_id='remodel_input_section') }}
+            {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 
+                                 flash_id='events_flash', div_id='sidecar_input_section') }}
+            {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_flash') }}
+                <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
+            {{ create_column_info('show_columns') }}
+            {{ create_column_info('show_events') }}
+        </fieldset>
+        <p>&nbsp;</p>
+        <button id="events_submit" type="button" class="btn btn-primary btn-large">Process</button>
+        <p>&nbsp;</p>
+        <p class="flash" id="events_flash"></p>
 
-        <div class="form-group">
-            <button id="events_submit" type="button" class="btn btn-primary btn-large">Process</button>
-            <p class="flash" id="events_submit_flash"></p>
-        </div>
     </form>
     </div>
     <script type="module">
@@ -44,7 +42,6 @@
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/schema-pulldown.js' %}
-        {%  include 'js/sidecar-input.js' %}
         {%  include 'js/remodel-input.js' %}
         {%  include 'js/options.js' %}
         {%  include 'js/events-form.js' %}

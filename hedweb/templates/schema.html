@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
-{% from "actions_new.html" import create_actions %}
-{% from "options_new.html" import create_options %}
+{% from "actions.html" import create_actions %}
+{% from "options.html" import create_options %}
 {% block content %}
-    <h3>HED Schemas</h3>
+    <h3>HED Schemas:</h3>
 
     <form id="schema_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -19,8 +19,7 @@
                  id="schema_url_option" value="schema_url_option" 
                  aria-label="Select this button for HED schema URL" checked="">
           <label class="form-check-label" for="schema_url_option">Enter HED schema URL:</label>
-        <input class="form-control" type="url" id="schema_url" 
-         aria-label="Enter schema URL here">
+          <input class="form-control" type="url" id="schema_url"  aria-label="Enter schema URL here">
         </div>
             <p></p>
           <div class="form-check" id="schema_file_group">
@@ -34,15 +33,13 @@
                      id="schema_file" aria-label="Enter schema file to upload here">
           </div>
         </fieldset>
-        <div>
-            <p class="flash" id="schema_file_flash"></p>
-        </div>
-        
+      
+        <p>&nbsp;</p>
         <div class="form-group">
-            <button id="sidecar_submit" type="button" class="btn btn-primary btn-large">Process</button>
-            <p class="flash" id="sidecar_submit_flash"></p>
+            <button id="schema_submit" type="button" class="btn btn-primary btn-large">Process</button>
         </div>
-
+        <p> </p>
+        <p class="flash" id="schema_flash"></p>
     </form>
     <script type="module">
         {%  include 'js/constants.js' %}

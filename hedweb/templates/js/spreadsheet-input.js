@@ -16,16 +16,9 @@ $('#spreadsheet_file').on('change', function () {
     let spreadsheet = $('#spreadsheet_file');
     let spreadsheetPath = spreadsheet.val();
     let spreadsheetFile = spreadsheet[0].files[0];
-    clearFlashMessages();
-    removeColumnInfo("show_indices")
-    if (!fileHasValidExtension(spreadsheetPath, VALID_FILE_EXTENSIONS)) {
-        clearForm();
-        flashMessageOnScreen('Upload a valid spreadsheet (.xlsx, .tsv, .txt)', 'error', 'spreadsheet_flash');
-        return
-    }
-    updateFileLabel(spreadsheetPath, '#spreadsheet_display_name');
+
     let hasColumnNames = $("#has_column_names").is(':checked');
-    let worksheetNames = setColumnsInfo(spreadsheetFile, 'spreadsheet_flash',
+    let worksheetNames = setColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash',
         undefined, hasColumnNames, "show_indices");
     if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
         populateWorksheetDropdown(worksheetNames);
@@ -56,7 +49,7 @@ function clearWorksheet() {
 }
 
 function clearWorksheetFlashMessages() {
-    flashMessageOnScreen('', 'success', 'spreadsheet_flash');
+    flashMessageOnScreen('', 'success', 'spreadsheet_input_flash');
 }
 
 function getSpreadsheetFileName() {

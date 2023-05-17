@@ -1,6 +1,13 @@
-{% macro create_file_input(title, file_id, flash_id ) %}
+{% macro create_file_input(title, file_id, flash_id="", div_id="" ) %}
+   {% if div_id|string != '' %}
+      <div id={{ div_id }}>
+   {% endif %}
         <label for="formFile" class="form-label mt-4">{{ title }}</label>
-        <input class="form-control" type="file" id={{ file_id }}>
-        <p class="flash" id={{ flash_id }}></p>
-
+        <input class="form-control" type="file" id={{ file_id }} name={{ file_id }}>
+        {% if flash_id|string != '' %}
+             <p class="flash" id={{ flash_id }}></p>
+        {% endif %}
+   {% if div_id|string != '' %} 
+    </div>
+   {% endif %}
 {% endmacro %}

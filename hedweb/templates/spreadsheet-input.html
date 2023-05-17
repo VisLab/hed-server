@@ -1,31 +1,18 @@
-{% macro create_spreadsheet_input(title, has_column_names_option=True) %}
-    <div id="spreadsheet_input_section">
-        <h3>{{ title }}</h3>
-        <div class="form-group">
-            <label class="secondary-label" for="spreadsheet_file">Spreadsheet file:</label>
-            <label class="btn-group file-browse-group">
-                <button>Browse ...</button>
-                <label for="spreadsheet_file" id="spreadsheet_display_name"></label>
-                <input type="file" name="spreadsheet_file" id="spreadsheet_file"/>
-            </label>
+{% macro create_spreadsheet_input(has_column_names_option=True) %}
 
-            <div class="form-group" name="worksheet_select" id="worksheet_select">
-                <label class="secondary-label" for="worksheet_name">Worksheet name:</label>
-                <select name="worksheet_name" id="worksheet_name"></select>
-            </div>
-            <div class="form-group">
-                {% if has_column_names_option %}
-                    <div class="form-group" id="has_column_names_option">
-                        <div class="checkbox-group">
-                            <div class="inline-field">
-                                <input type="checkbox" name="has_column_names" id="has_column_names" checked>
-                                <label for="has_column_names">Has column names</label>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-                <p class="flash" id="spreadsheet_flash"></p>
-            </div>
-        </div>
-    </div>
+     <label for="spreadsheet_file" class="form-label mt-4">Spreadsheet file:</label>
+     <input class="form-control" type="file" id="spreadsheet_file" name="spreadsheet_file" >
+    
+     <div id="worksheet_select">
+         <label class="form-label mt-4" for="worksheet_name">Worksheet name:</label>
+         <select name="worksheet_name" id="worksheet_name" class="form-select" name="worksheet_name"></select>
+     </div>
+    
+     {% if has_column_names_option %}
+         <div class="form-check form-switch" id="has_column_names_option">
+             <input class="form-check-input" type="checkbox" name="has_column_names" id="has_column_names" >
+             <label class="form-check-label" for="has_column_names">Has column names</label>
+         </div>
+     {% endif %}
+     <p class="flash" id="spreadsheet_input_flash"></p>
 {% endmacro %}

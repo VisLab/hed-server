@@ -40,7 +40,7 @@ function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
     clearWorksheetFlashMessages();
-    flashMessageOnScreen('', 'success', 'spreadsheet_submit_flash');
+    flashMessageOnScreen('', 'success', 'spreadsheet_flash');
 }
 
 
@@ -58,13 +58,14 @@ function prepareForm() {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         hideOption("expand_defs");
         showOption("check_for_warnings");
-    } else if ($("#to_long").is(":checked")) {
+    } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
         showOption("expand_defs");
-    } else if ($("#to_short").is(":checked")) {
+    } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
         showOption("expand_defs");
     }
@@ -79,6 +80,8 @@ function submitForm() {
     let formData = new FormData(spreadsheetForm);
     let worksheetName = getWorksheetName();
     formData.append('worksheet_selected', worksheetName)
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
     let prefix = 'issues';
     if(worksheetName) {
         prefix = prefix + '_worksheet_' + worksheetName;
@@ -87,7 +90,7 @@ function submitForm() {
     let display_name = convertToResultsName(spreadsheetFile, prefix)
     clearFlashMessages();
     flashMessageOnScreen('Spreadsheet is being processed ...', 'success',
-        'spreadsheet_submit_flash')
+        'spreadsheet_flash')
     let isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
             !$("#validate").prop("checked");
     $.ajax({
@@ -110,10 +113,10 @@ function submitForm() {
             return xhr;
         },
         success: function (data, status, xqXHR) {
-            getResponseSuccess(data, xqXHR, display_name, 'spreadsheet_submit_flash')
+            getResponseSuccess(data, xqXHR, display_name, 'spreadsheet_flash')
         },
         error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'spreadsheet_submit_flash')
+            getResponseFailure(xhr, status, errorThrown, display_name, 'spreadsheet_flash')
         }
     })
 }
