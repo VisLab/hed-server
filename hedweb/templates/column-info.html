@@ -1,7 +1,6 @@
-{% macro create_column_info(display_type) %}
-    <div class="form-group" id="{{ display_type }}">
-    {% set table_name =  display_type + "_table" %}
-        <table id="{{ table_name }}" class="table table-hover table-secondary"></table>
+{% macro create_column_info(table_name) %}
+    <div class="form-group" id="{{ table_name }}_section">
+    <table id="{{ table_name }}_table" class="table table-striped table-hover"></table>
     <p class="flash" id="column_info_flash"></p>
     </div>
     

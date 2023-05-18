@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Latest compiled and minified CSS -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/hedlogo-01.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/forms.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap/bootstrap.css') }}">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% block head %}
     {% endblock %}
@@ -21,8 +22,9 @@
 <header class="page-header">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <img src={{ url_for('static', filename='img/hed-logo-transparent.png') }}
-                     class="img-fluid" width="60" height="60" alt="Logo image"><span class="navbar-brand">&nbsp; &nbsp; ONLINE</span>
+        <a href="{{ url_for('route_blueprint.render_home_page') }}" class="navbar-brand">
+            <img src={{ url_for('static', filename='img/hed-logo-transparent.png') }}
+             class="img-fluid" width="80" height="80" alt="Logo image"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" 
             aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -74,7 +76,7 @@
   </div>
 </nav>
      <div class="text text-center py-2">
-    <p><em>Hierarchical event descriptors: Linking brain, body, behavior and experience in experiments through metadata to enable analysis</em></p>
+    <p><em>Hierarchical event descriptors (HED): Linking brain, body, behavior and experience in experiments through metadata to enable analysis</em></p>
     </div>
     
 </header>
@@ -106,7 +108,7 @@
     });
 </script>
 
-<script>
+<script type="text/javascript">
         function searchDoc() {
             let search_endpoint = "https://www.hed-resources.org/en/latest/search.html?q=";
             let input = encodeURIComponent($("#searchInput").val());
@@ -114,6 +116,17 @@
             
             window.location.href = search_endpoint + input + search_args;
         }
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".navbar-nav .nav-link.btn").click(function() {
+      // Remove active class from all links
+      $(".navbar-nav .nav-link.btn").removeClass("active");
+      // Add active class to the clicked link
+      $(this).addClass("active");
+    });
+  });
 </script>
 </body>
 </html>

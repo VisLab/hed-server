@@ -8,11 +8,5 @@
          <select name="worksheet_name" id="worksheet_name" class="form-select" name="worksheet_name"></select>
      </div>
     
-     {% if has_column_names_option %}
-         <div class="form-check form-switch" id="has_column_names_option">
-             <input class="form-check-input" type="checkbox" name="has_column_names" id="has_column_names" >
-             <label class="form-check-label" for="has_column_names">Has column names</label>
-         </div>
-     {% endif %}
      <p class="flash" id="spreadsheet_input_flash"></p>
 {% endmacro %}

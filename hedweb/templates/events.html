@@ -22,12 +22,11 @@
         <fieldset class="form-group">
             <legend>Upload:</legend>
             {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file',
-                                 flash_id='events_flash', div_id='remodel_input_section') }}
+                                 flash_id='', div_id='remodel_input_section') }}
             {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 
-                                 flash_id='events_flash', div_id='sidecar_input_section') }}
-            {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_flash') }}
-                <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
-            {{ create_column_info('show_columns') }}
+                                 flash_id='', div_id='sidecar_input_section') }}
+            {{ create_file_input('Upload events (tsv file):', 'events_file', '') }}
+            <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
             {{ create_column_info('show_events') }}
         </fieldset>
         <p>&nbsp;</p>

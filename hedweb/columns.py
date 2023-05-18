@@ -148,7 +148,8 @@ def get_prefix_dict(form_dict):
         form_dict (dict): The dictionary returned from a form that contains a column prefix table.
 
     Returns:
-        dict: A dictionary whose keys names (or COLUMN_XX) and values are tag prefixes to prepend.
+        list: List of selected columns
+        dict: 
 
     Note: The form counts columns starting from 1 but prefix dictionary starts with index 0.
     """
@@ -156,12 +157,14 @@ def get_prefix_dict(form_dict):
     prefix_dict = {}
     keys = form_dict.keys()
     for key in keys:
-        if not key.startswith('column') or key.endswith('check'):
+        index_check = key.rfind('_check')
+        if index_check == -1 or form_dict[key] != 'on':
             continue
-        pieces = key.split('_')
-        check = 'column_' + pieces[1] + '_check'
-        if form_dict.get(check, None) != 'on':
-            continue
+        column_name = key[0:index_check]
+        tag_columns
+        info = key[0:index_check] + '_input'
+        prefix = form_dict.get(info, '')
+        input_key = pieces[0] + '_' + pieces[1] + '_input'
         if form_dict[key]:
             prefix_dict[int(pieces[1]) - 1] = form_dict[key]
         else:

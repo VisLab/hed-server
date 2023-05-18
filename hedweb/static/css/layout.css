@@ -33,6 +33,12 @@ a:hover {
     background-image: linear-gradient(to bottom, #2c3e50, #233e55, #2c3e65, #2c3e8f);
 }
 
+.navbar {
+    max-width: 64em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .project-name {
     margin-top: 0;
     margin-bottom: 0.1rem;
@@ -60,6 +66,12 @@ a:hover {
     display: block;
     font-weight: bold;
 }
+
+/*
+ .nav-link.btn.active {
+    background-color: cyan;
+}
+*/
 
 
 @media screen and (min-width: 64em) {

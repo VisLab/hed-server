@@ -7,7 +7,7 @@ $(function () {
 
 $('#process_actions').change(function(){
     setOptions();
-    setEventsTable('#events_file')
+    setEventsTable()
 });
 
 
@@ -22,7 +22,6 @@ $('#events_file').on('change', function () {
         return;
     }
     setEventsTable('#events_file')
-    updateFileLabel(eventsPath, '#events_display_name');
 });
 
 /**
@@ -47,8 +46,6 @@ function clearForm() {
     $('#process_actions').val('validate');
     setOptions();
     clearFlashMessages();
-    hideColumnInfo("show_columns");
-    hideColumnInfo("show_events");
     hideOtherSchemaVersionFileUpload();
 }
 
@@ -74,18 +71,18 @@ function prepareForm() {
 
 /**
  * Sets the column table for this event file
- * @param {string} event_tag  - jquery tag pointing to the event file.
  */
-function setEventsTable(event_tag) {
-    clearFlashMessages();
-    removeColumnInfo("show_columns");
+function setEventsTable() {
+    clearColumnInfoFlashMessages();
     removeColumnInfo("show_events")
-    let events = $(event_tag);
+    let action = $('#process_actions').val()
+    let events = $('#events_file');
     let eventsFile = events[0].files[0];
-    if ($("#generate_sidecar").is(":checked")) {
-        setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_events")
-    } else if (!$("#remodel").is(":checked")){
-        setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_columns")
+    if (action === 'generate_sidecar' && eventsFile != null) {
+        let info = getColumnsInfo(eventsFile, 'events_flash', undefined, true)
+        let cols = info['column_list']
+        let counts = info['column_counts']
+        showEvents(cols, counts)
     }
 }
 
@@ -99,37 +96,41 @@ function setOptions() {
         hideOption("include_summaries")
         hideOption("use_hed");
         showOption("check_for_warnings");
+        $("#options_section").show();
+        $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
+        $("#show_events_section").hide();
     } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
         hideOption("include_summaries")
         hideOption("use_hed");
         showOption("expand_defs");
+        $("#options_section").show();
+        $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
+        $("#show_events_section").hide();
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_summaries")
         hideOption("use_hed");
+        $("#options_section").hide();
+        $("#schema_pulldown_section").hide();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").hide();
-        $("#schema_pulldown_section").hide();
-        $("#options_section").hide();
+        $("#show_events_section").show();
     } else if (selectedElement.value === "remodel") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("use_hed");
         showOption("include_summaries")
         $("#options_section").show();
-        $("#sidecar_input_section").show();
-        $("#remodel_input_section").show();
         $("#schema_pulldown_section").show();
+        $("#remodel_input_section").show();
+        $("#sidecar_input_section").show();
+        $("#show_events_section").hide();
     }
 }
 
