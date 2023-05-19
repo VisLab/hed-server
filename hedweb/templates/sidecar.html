@@ -1,40 +1,40 @@
 {% extends "layout.html" %}
-{% from "sidecar-input.html" import create_sidecar_input %}
 {% from "schema-pulldown.html" import create_schema_pulldown %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
+{% from "file-input.html" import create_file_input %}
 {% from "spreadsheet-input.html" import create_spreadsheet_input %}
 
 {% block content %}
-    <h2>Process BIDS-style JSON sidecar</h2>
+    <h3>BIDS-style JSON sidecar:</h3>
 
     <form id="sidecar_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions('Pick an action:',to_long=True,to_short=True,extract_spreadsheet=True,
+        {{ create_actions(to_long=True,to_short=True,extract_spreadsheet=True,
                           validate=True,merge_spreadsheet=True) }}
-        {{ create_options('Check applicable options (if any):',
-                          check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
-
-
-        {{ create_sidecar_input('Upload BIDS-style JSON sidecar:') }}
-
-        {{ create_spreadsheet_input('Upload 4-column HED spreadsheet:',has_column_names_option=False) }}
-
-        {{ create_schema_pulldown('Choose a HED schema version:') }}
-
-        <h3>Process:</h3>
-        <div class="form-group">
-            <button id="sidecar_submit" type="button">Process</button>
-            <p class="flash" id="sidecar_submit_flash"></p>
-        </div>
+        <p> </p>
+        {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
+        <p> </p>
+        {{ create_schema_pulldown() }}
+        <p> </p>
+        <fieldset  class="form-group">
+            <legend>Upload:</legend>
+            {{ create_file_input('JSON sidecar', 'sidecar_file') }}
+            <div id="spreadsheet_input_section">
+             {{ create_spreadsheet_input(has_column_names_option=False) }}
+             </div>
+        </fieldset>
+        <p> </p>
+        <button id="sidecar_submit" type="button" class="btn btn-primary btn-large">Process</button>
+        <p> </p>
+        <p class="flash" id="sidecar_flash"></p>
     </form>
     <script type="module">
         {%  include 'js/constants.js' %}
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/options.js' %}
-        {%  include 'js/sidecar-input.js' %}
         {%  include 'js/spreadsheet-input.js' %}
         {%  include 'js/schema-pulldown.js' %}
         {%  include 'js/sidecar-form.js' %}

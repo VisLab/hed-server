@@ -30,7 +30,7 @@ def get_input_from_form(request):
         base_constants.WORKSHEET_NAME: request.form.get(base_constants.WORKSHEET_SELECTED, None),
         base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
         base_constants.HAS_COLUMN_NAMES: form_has_option(request, base_constants.HAS_COLUMN_NAMES, 'on'),
-        base_constants.CHECK_FOR_WARNINGS: form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
+        base_constants.CHECK_FOR_WARNINGS: True,
     }
 
     tag_columns, prefix_dict = get_prefix_dict(request.form)
@@ -42,7 +42,7 @@ def get_input_from_form(request):
                                    file_type=arguments[base_constants.SPREADSHEET_TYPE],
                                    worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
                                    tag_columns=tag_columns,
-                                   has_column_names=arguments.get(base_constants.HAS_COLUMN_NAMES, None),
+                                   has_column_names=True,
                                    column_prefix_dictionary=prefix_dict,
                                    name=filename)
     arguments[base_constants.SPREADSHEET] = spreadsheet

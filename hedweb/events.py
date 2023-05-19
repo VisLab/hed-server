@@ -240,7 +240,7 @@ def remodel(hed_schema, events, sidecar, remodel_operations, options=None):
                 base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
                 base_constants.MSG_CATEGORY: 'success',
                 base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
-    if dispatch.context_dict and include_summaries:
+    if dispatch.summary_dicts and include_summaries:
         file_list = dispatch.get_summaries()
         file_list.append({'file_name': output_name, 'file_format': '.tsv', 'file_type': 'tabular', 'content': data})
         response[base_constants.FILE_LIST] = file_list

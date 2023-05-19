@@ -52,7 +52,7 @@ class Test(TestWebBase):
         from hedweb.web_util import generate_download_file_from_text
         with self.app.test_request_context():
             the_text = 'The quick brown fox\nIs too slow'
-            response = generate_download_file_from_text({'data': the_text, 'msg_category':'success',
+            response = generate_download_file_from_text({'data': the_text, 'msg_category': 'success',
                                                          'msg': 'Successful'})
             self.assertIsInstance(response, Response,
                                   'Generate_response_download_file_from_text returns a response for string')
