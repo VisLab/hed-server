@@ -1,19 +1,11 @@
-{% macro create_schema_pulldown(title) %}
-    <div id="schema_pulldown_section">
-        <h3>{{ title }}</h3>
-        <div class="form-group">
-            <label class="secondary-label" for="schema_version">HED schema version:</label>
-            <select name="schema_version" id="schema_version"></select><br>
+{% macro create_schema_pulldown() %}
+    <fieldset class="form-group" id="schema_pulldown_section">
+        <legend>Schema:</legend>
+        <select name="schema_version" id="schema_version" class="form-select" name="schema_version"></select>
+        <div id="schema_other_version" class="form-group">
+        <label for="formFile" class="form-label mt-4">Schema file to upload:</label>
+        <input class="form-control" type="file" id="schema_path" name="schema_path" >
         </div>
-
-        <div class="form-group" id="schema_other_version">
-            <label class="secondary-label" for="schema_path">Upload HED schema:</label>
-            <label class="btn-group file-browse-group">
-                <button for="schema_path">Browse ...</button>
-                <label id="schema_display_name"></label>
-                <input type="file" name="schema_path" id="schema_path"/>
-            </label>
-            <p class="flash" id="schema_select_flash"></p>
-        </div>
-    </div>
+        <p class="flash" id="schema_select_flash"></p>
+    </fieldset>
 {% endmacro %}

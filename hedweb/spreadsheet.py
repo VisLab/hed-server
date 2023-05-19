@@ -4,11 +4,10 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.models.spreadsheet_input import SpreadsheetInput
-from hed.tools.util.io_util import generate_filename
 
 from hedweb.constants import base_constants, file_constants
 from hedweb.columns import get_prefix_dict
-from hedweb.web_util import filter_issues, form_has_option, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import filter_issues, form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
 
 
 app_config = current_app.config
@@ -31,7 +30,7 @@ def get_input_from_form(request):
         base_constants.WORKSHEET_NAME: request.form.get(base_constants.WORKSHEET_SELECTED, None),
         base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
         base_constants.HAS_COLUMN_NAMES: form_has_option(request, base_constants.HAS_COLUMN_NAMES, 'on'),
-        base_constants.CHECK_FOR_WARNINGS: form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
+        base_constants.CHECK_FOR_WARNINGS: True,
     }
 
     tag_columns, prefix_dict = get_prefix_dict(request.form)
@@ -43,7 +42,7 @@ def get_input_from_form(request):
                                    file_type=arguments[base_constants.SPREADSHEET_TYPE],
                                    worksheet_name=arguments.get(base_constants.WORKSHEET_NAME, None),
                                    tag_columns=tag_columns,
-                                   has_column_names=arguments.get(base_constants.HAS_COLUMN_NAMES, None),
+                                   has_column_names=True,
                                    column_prefix_dictionary=prefix_dict,
                                    name=filename)
     arguments[base_constants.SPREADSHEET] = spreadsheet

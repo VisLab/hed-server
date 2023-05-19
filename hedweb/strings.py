@@ -1,7 +1,5 @@
 from flask import current_app
 
-# from hed.models.hed_string import HedString
-
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
 from hed.models.hed_string import HedString
 from hed import schema as hedschema

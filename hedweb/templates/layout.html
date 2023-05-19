@@ -4,16 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-          crossorigin="anonymous">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/hedlogo-01.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/forms.css') }}">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% block head %}
     {% endblock %}
@@ -24,22 +19,67 @@
     </title>
 </head>
 <body>
-<section class="page-header">
-    <h1 class="project-name">Hierarchical Event Descriptor (HED) online tools</h1>
-    <h2 class="project-tagline">Web-based tools for HED schema, HED tags, and event files</h2>
-    <a href="{{ url_for('route_blueprint.render_home_page') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Overview of online HED tools">Home</a>
-    <a href="{{ url_for('route_blueprint.render_events_form') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Tools for BIDS-style event files">Events</a>
-    <a href="{{ url_for('route_blueprint.render_sidecar_form') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Tools for a BIDS-style JSON sidecar">Sidecar</a>
-    <a href="{{ url_for('route_blueprint.render_spreadsheet_form') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Tools for a spreadsheet containing event codes">Spreadsheet</a>
-    <a href="{{ url_for('route_blueprint.render_string_form') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Tools for processing a HED string">String</a>
-    <a href="{{ url_for('route_blueprint.render_schema_form') }}" class="btn"
-    data-toggle="tooltip" data-placement="bottom" title="Tools for processing a HED schema file">Schema</a>
-</section>
+<header class="page-header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a href="{{ url_for('route_blueprint.render_home_page') }}" class="navbar-brand">
+            <img src={{ url_for('static', filename='img/hed-logo-transparent.png') }}
+             class="img-fluid" width="80" height="80" alt="Logo image"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" 
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor01" >
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('route_blueprint.render_events_form') }}" class="btn"
+             data-toggle="tooltip" data-placement="bottom" 
+             title="Tools for BIDS-style event files">Events</a>
+             <span class="visually-hidden">(current)</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('route_blueprint.render_sidecar_form') }}" class="btn"
+          data-toggle="tooltip" data-placement="bottom" title="Tools for a BIDS-style JSON sidecar">Sidecars</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('route_blueprint.render_spreadsheet_form') }}" class="btn"
+             data-toggle="tooltip" data-placement="bottom" 
+             title="Tools for a spreadsheet containing event codes">Spreadsheets</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('route_blueprint.render_string_form') }}" class="btn" 
+             data-toggle="tooltip" data-placement="bottom" 
+             title="Tools for processing a HED string">Strings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('route_blueprint.render_schema_form') }}" class="btn"
+            data-toggle="tooltip" data-placement="bottom" title="Tools for processing a HED schema file">Schemas</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" 
+             aria-haspopup="true" aria-expanded="false">Quick links</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="https://www.hedtags.org/display_hed.html">HED schema browser</a>
+            <a class="dropdown-item" href="https://www.hedtags.org">HED homepage</a>
+            <a class="dropdown-item" href="https://github.com/hed-standard">HED on GitHub</a>
+            <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLeII6cRFsP6L5S6icwRrJp0DHkhOHtbp-">HED on YouTube</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="https://www.hed-resources.org/en/latest/HedOnlineTools.html">Help</a>
+          </div>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" id="searchInput" type="search" placeholder="Search docs">
+        <button class="btn btn-secondary my-2 my-sm-0" type=submit onclick="searchDoc(event)">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+     <div class="text text-center py-2">
+    <p><em>Hierarchical event descriptors (HED): Linking brain, body, behavior and experience in experiments through metadata to enable analysis</em></p>
+    </div>
+    
+</header>
 <section class="main-content">
     {% block content %}
     {% endblock %}
@@ -55,9 +95,9 @@
     {% endblock %}
 </footer>
 <!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
     let csrf_token = "{{ csrf_token() }}";
     $.ajaxSetup({
@@ -67,6 +107,27 @@
             }
         }
     });
+</script>
+
+<script type="text/javascript">
+        function searchDoc(event) {
+            event.preventDefault();
+            let searchQuery = document.getElementById('searchInput').value;
+            let search_endpoint = "https://www.hed-resources.org/en/latest/search.html?q=";
+            let loc = search_endpoint + encodeURIComponent(searchQuery) + "&check_keywords=yes&area=default";
+            window.location.href = loc;
+        }
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".navbar-nav .nav-link.btn").click(function() {
+      // Remove active class from all links
+      $(".navbar-nav .nav-link.btn").removeClass("active");
+      // Add active class to the clicked link
+      $(this).addClass("active");
+    });
+  });
 </script>
 </body>
 </html>

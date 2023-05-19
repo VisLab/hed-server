@@ -28,7 +28,7 @@ function clearRemodelFileLabel() {
  * Resets the flash messages that aren't related to the form submission.
  */
 function clearRemodelFlashMessages() {
-    flashMessageOnScreen('', 'success', 'remodel_file_flash');
+    flashMessageOnScreen('', 'success', 'remodel_flash');
 }
 
 function getRemodelFileLabel() {

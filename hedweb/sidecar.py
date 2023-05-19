@@ -12,10 +12,9 @@ from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.sidecar import Sidecar
 from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
-from hed.tools.util.io_util import generate_filename
 
 from hedweb.constants import base_constants, file_constants
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
 
 app_config = current_app.config
 

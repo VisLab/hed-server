@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 import json
 import os
 import zipfile
@@ -12,6 +13,8 @@ from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config
+
+TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 
 def file_extension_is_valid(filename, accepted_extensions=None):
@@ -151,6 +154,41 @@ def generate_download_spreadsheet(results):
     response.headers['Message'] = results[base_constants.MSG]
     response.mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return response
+
+
+def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False):
+    """ Generate a filename for the attachment.
+
+    Parameters:
+        base_name (str):   Name of the base, usually the name of the file that the issues were generated from.
+        name_prefix (str): Prefix prepended to the front of the base name.
+        name_suffix (str): Suffix appended to the end of the base name.
+        extension (str):   Extension to use.
+        append_datetime (bool): If True, append the current date-time to the base output filename.
+
+    Returns:
+        str:  Name of the attachment other containing the issues.
+
+    Notes:
+        - The form prefix_basename_suffix + extension.
+
+    """
+
+    pieces = []
+    if name_prefix:
+        pieces = pieces + [name_prefix]
+    if base_name:
+        pieces.append(os.path.splitext(base_name)[0])
+    if name_suffix:
+        pieces = pieces + [name_suffix]
+    filename = "".join(pieces)
+    if append_datetime:
+        now = datetime.now()
+        filename = filename + '_' + now.strftime(TIME_FORMAT)[:-3]
+    if filename and extension:
+        filename = filename + extension
+
+    return secure_filename(filename)
 
 
 def generate_text_response(results):

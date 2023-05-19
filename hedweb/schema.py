@@ -7,8 +7,7 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string
 from hed.errors import HedFileError
-from hed.tools.util.io_util import generate_filename
-from hedweb.web_util import form_has_file, form_has_option, form_has_url
+from hedweb.web_util import form_has_file, form_has_option, form_has_url, generate_filename
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config

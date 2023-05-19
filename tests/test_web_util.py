@@ -52,7 +52,7 @@ class Test(TestWebBase):
         from hedweb.web_util import generate_download_file_from_text
         with self.app.test_request_context():
             the_text = 'The quick brown fox\nIs too slow'
-            response = generate_download_file_from_text({'data': the_text, 'msg_category':'success',
+            response = generate_download_file_from_text({'data': the_text, 'msg_category': 'success',
                                                          'msg': 'Successful'})
             self.assertIsInstance(response, Response,
                                   'Generate_response_download_file_from_text returns a response for string')
@@ -132,6 +132,81 @@ class Test(TestWebBase):
                              "generate_download_spreadsheet should return text for tsv files")
             self.assertTrue(headers_dict['Content-Disposition'].startswith('attachment filename='),
                             "generate_download_spreadsheet tsv should be downloaded as an attachment")
+
+    def test_generate_file_name(self):
+        from hedweb.web_util import generate_filename
+        file1 = generate_filename('mybase')
+        self.assertEqual(file1, "mybase", "generate_file_name should return the base when other arguments not set")
+        file2 = generate_filename('mybase', name_prefix="prefix")
+        self.assertEqual(file2, "prefixmybase", "generate_file_name should return correct name when prefix set")
+        file3 = generate_filename('mybase', name_prefix="prefix", extension=".json")
+        self.assertEqual(file3, "prefixmybase.json", "generate_file_name should return correct name for extension")
+        file4 = generate_filename('mybase', name_suffix="suffix")
+        self.assertEqual(file4, "mybasesuffix", "generate_file_name should return correct name when suffix set")
+        file5 = generate_filename('mybase', name_suffix="suffix", extension=".json")
+        self.assertEqual(file5, "mybasesuffix.json", "generate_file_name should return correct name for extension")
+        file6 = generate_filename('mybase', name_prefix="prefix", name_suffix="suffix", extension=".json")
+        self.assertEqual(file6, "prefixmybasesuffix.json",
+                         "generate_file_name should return correct name for all set")
+        filename = generate_filename(None, name_prefix=None, name_suffix=None, extension=None)
+        self.assertEqual('', filename, "Return empty when all arguments are none")
+        filename = generate_filename(None, name_prefix=None, name_suffix=None, extension='.txt')
+        self.assertEqual('', filename,
+                         "Return empty when base_name, prefix, and suffix are None, but extension is not")
+        filename = generate_filename('c:/temp.json', name_prefix=None, name_suffix=None, extension='.txt')
+        self.assertEqual('c_temp.txt', filename,
+                         "Returns stripped base_name + extension when prefix, and suffix are None")
+        filename = generate_filename('temp.json', name_prefix='prefix_', name_suffix='_suffix', extension='.txt')
+        self.assertEqual('prefix_temp_suffix.txt', filename,
+                         "Return stripped base_name + extension when prefix, and suffix are None")
+        filename = generate_filename(None, name_prefix='prefix_', name_suffix='suffix', extension='.txt')
+        self.assertEqual('prefix_suffix.txt', filename,
+                         "Returns correct string when no base_name")
+        filename = generate_filename('event-strategy-v3_task-matchingpennies_events.json',
+                                     name_suffix='_blech', extension='.txt')
+        self.assertEqual('event-strategy-v3_task-matchingpennies_events_blech.txt', filename,
+                         "Returns correct string when base_name with hyphens")
+        filename = generate_filename('HED7.2.0.xml', name_suffix='_blech', extension='.txt')
+        self.assertEqual('HED7.2.0_blech.txt', filename, "Returns correct string when base_name has periods")
+
+    def test_generate_file_name_with_date(self):
+        from hedweb.web_util import generate_filename
+        file1 = generate_filename('mybase')
+        file1t = generate_filename('mybase', append_datetime=True)
+        self.assertGreater(len(file1t), len(file1), "generate_file_name generates a longer file when datetime is used.")
+        # TODO convert more of these tests.
+        # self.assertEqual(file1, "mybase", "generate_file_name should return the base when other arguments not set")
+        # file2 = generate_filename('mybase', name_prefix="prefix")
+        # self.assertEqual(file2, "prefixmybase", "generate_file_name should return correct name when prefix set")
+        # file3 = generate_filename('mybase', name_prefix="prefix", extension=".json")
+        # self.assertEqual(file3, "prefixmybase.json", "generate_file_name should return correct name for extension")
+        # file4 = generate_filename('mybase', name_suffix="suffix")
+        # self.assertEqual(file4, "mybasesuffix", "generate_file_name should return correct name when suffix set")
+        # file5 = generate_filename('mybase', name_suffix="suffix", extension=".json")
+        # self.assertEqual(file5, "mybasesuffix.json", "generate_file_name should return correct name for extension")
+        # file6 = generate_filename('mybase', name_prefix="prefix", name_suffix="suffix", extension=".json")
+        # self.assertEqual(file6, "prefixmybasesuffix.json",
+        #                  "generate_file_name should return correct name for all set")
+        # filename = generate_filename(None, name_prefix=None, name_suffix=None, extension=None)
+        # self.assertEqual('', filename, "Return empty when all arguments are none")
+        # filename = generate_filename(None, name_prefix=None, name_suffix=None, extension='.txt')
+        # self.assertEqual('', filename,
+        #                  "Return empty when base_name, prefix, and suffix are None, but extension is not")
+        # filename = generate_filename('c:/temp.json', name_prefix=None, name_suffix=None, extension='.txt')
+        # self.assertEqual('c_temp.txt', filename,
+        #                  "Returns stripped base_name + extension when prefix, and suffix are None")
+        # filename = generate_filename('temp.json', name_prefix='prefix_', name_suffix='_suffix', extension='.txt')
+        # self.assertEqual('prefix_temp_suffix.txt', filename,
+        #                  "Return stripped base_name + extension when prefix, and suffix are None")
+        # filename = generate_filename(None, name_prefix='prefix_', name_suffix='suffix', extension='.txt')
+        # self.assertEqual('prefix_suffix.txt', filename,
+        #                  "Returns correct string when no base_name")
+        # filename = generate_filename('event-strategy-v3_task-matchingpennies_events.json',
+        #                              name_suffix='_blech', extension='.txt')
+        # self.assertEqual('event-strategy-v3_task-matchingpennies_events_blech.txt', filename,
+        #                  "Returns correct string when base_name with hyphens")
+        # filename = generate_filename('HED7.2.0.xml', name_suffix='_blech', extension='.txt')
+        # self.assertEqual('HED7.2.0_blech.txt', filename, "Returns correct string when base_name has periods")
 
     def test_generate_text_response(self):
         with self.app.test_request_context():

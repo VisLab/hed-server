@@ -7,7 +7,7 @@ $(function () {
 
 $('#process_actions').change(function(){
     setOptions();
-    setEventsTable('#events_file')
+    setEventsTable()
 });
 
 
@@ -22,7 +22,6 @@ $('#events_file').on('change', function () {
         return;
     }
     setEventsTable('#events_file')
-    updateFileLabel(eventsPath, '#events_display_name');
 });
 
 /**
@@ -41,12 +40,12 @@ $('#events_submit').on('click', function () {
  */
 function clearForm() {
     $('#events_form')[0].reset();
-    $('#events_display_name').text('');
-    $("#validate").prop('checked', true);
+    $('#sidecar_file').val('');
+    $('#events_file').val('');
+    $('#remodel_file').val('');
+    $('#process_actions').val('validate');
     setOptions();
     clearFlashMessages();
-    hideColumnInfo("show_columns");
-    hideColumnInfo("show_events");
     hideOtherSchemaVersionFileUpload();
 }
 
@@ -56,10 +55,7 @@ function clearForm() {
 function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
-    clearSidecarFlashMessages();
-    clearRemodelFlashMessages();
     flashMessageOnScreen('', 'success', 'events_flash');
-    flashMessageOnScreen('', 'success', 'events_submit_flash');
 }
 
 
@@ -75,18 +71,18 @@ function prepareForm() {
 
 /**
  * Sets the column table for this event file
- * @param {string} event_tag  - jquery tag pointing to the event file.
  */
-function setEventsTable(event_tag) {
-    clearFlashMessages();
-    removeColumnInfo("show_columns");
+function setEventsTable() {
+    clearColumnInfoFlashMessages();
     removeColumnInfo("show_events")
-    let events = $(event_tag);
+    let action = $('#process_actions').val()
+    let events = $('#events_file');
     let eventsFile = events[0].files[0];
-    if ($("#generate_sidecar").is(":checked")) {
-        setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_events")
-    } else if (!$("#remodel").is(":checked")){
-        setColumnsInfo(eventsFile, 'events_flash', undefined, true,  "show_columns")
+    if (action === 'generate_sidecar' && eventsFile != null) {
+        let info = getColumnsInfo(eventsFile, 'events_flash', undefined, true)
+        let cols = info['column_list']
+        let counts = info['column_counts']
+        showEvents(cols, counts)
     }
 }
 
@@ -94,42 +90,47 @@ function setEventsTable(event_tag) {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         hideOption("expand_defs");
         hideOption("include_summaries")
         hideOption("use_hed");
         showOption("check_for_warnings");
+        $("#options_section").show();
+        $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
-    } else if ($("#assemble").is(":checked")) {
+        $("#show_events_section").hide();
+    } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
         hideOption("include_summaries")
         hideOption("use_hed");
         showOption("expand_defs");
+        $("#options_section").show();
+        $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
-    } else if ($("#generate_sidecar").is(":checked")) {
+        $("#show_events_section").hide();
+    } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_summaries")
         hideOption("use_hed");
+        $("#options_section").hide();
+        $("#schema_pulldown_section").hide();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").hide();
-        $("#schema_pulldown_section").hide();
-        $("#options_section").hide();
-    } else if ($("#remodel").is(":checked")) {
+        $("#show_events_section").show();
+    } else if (selectedElement.value === "remodel") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("use_hed");
         showOption("include_summaries")
         $("#options_section").show();
-        $("#sidecar_input_section").show();
-        $("#remodel_input_section").show();
         $("#schema_pulldown_section").show();
+        $("#remodel_input_section").show();
+        $("#sidecar_input_section").show();
+        $("#show_events_section").hide();
     }
 }
 
@@ -140,13 +141,14 @@ function setOptions() {
 function submitForm() {
     let eventsForm = document.getElementById("events_form");
     let formData = new FormData(eventsForm);
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
     let prefix = 'issues';
     let eventsFile = $('#events_file')[0].files[0].name;
     let includeSummaries = $('#include_summaries').is(':checked')
     let display_name = convertToResultsName(eventsFile, prefix)
     clearFlashMessages();
-    flashMessageOnScreen('Event file is being processed ...', 'success',
-        'events_submit_flash')
+    flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
     let postType = {
         type: 'POST',
         url: "{{url_for('route_blueprint.events_results')}}",
@@ -155,10 +157,10 @@ function submitForm() {
         processData: false,
 
         success: function (download, status, xhr) {
-            getResponseSuccess(download, xhr, display_name, 'events_submit_flash')
+            getResponseSuccess(download, xhr, display_name, 'events_flash')
         },
         error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'events_submit_flash')
+            getResponseFailure(xhr, status, errorThrown, display_name, 'events_flash')
         }
     }
     if (includeSummaries){
