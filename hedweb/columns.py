@@ -160,15 +160,13 @@ def get_prefix_dict(form_dict):
         index_check = key.rfind('_check')
         if index_check == -1 or form_dict[key] != 'on':
             continue
-        column_name = key[0:index_check]
-        tag_columns
-        info = key[0:index_check] + '_input'
-        prefix = form_dict.get(info, '')
-        input_key = pieces[0] + '_' + pieces[1] + '_input'
-        if form_dict[key]:
-            prefix_dict[int(pieces[1]) - 1] = form_dict[key]
+        pos = key.find('_')
+        column_number = int(key[0:pos])
+        info_key = key[0: index_check] + "_input"
+        if form_dict[info_key]:
+            prefix_dict[column_number + 1] = form_dict[info_key]
         else:
-            tag_columns.append(int(pieces[1]) - 1)
+            tag_columns.append(column_number + 1)
     return tag_columns, prefix_dict
 
 

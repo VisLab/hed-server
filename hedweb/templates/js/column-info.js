@@ -196,8 +196,8 @@ function showIndices(columnList) {
     indicesTable.empty();
     for (let i = 0; i < columnList.length; i++) {
         let columnName = columnList[i]
-        let checkName = columnName + "_check";
-        let checkInput = columnName + "_input";
+        let checkName = i + "_" + columnName + "_check";
+        let checkInput = i + "_" + columnName + "_input";
   
         let row = '<tr class="table-active"><td><input type="checkbox" ' + 
                   'class="form-check-input form-check" name="' + checkName + '" id="' + checkName + '"></td>' +
