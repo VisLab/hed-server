@@ -335,9 +335,9 @@ def package_results(results):
 
     if results.get(base_constants.FILE_LIST, None):
         return generate_download_zip_file(results)
-    elif results.get('data', None):
+    elif results.get('data', None) and results.get('command_target', None) != 'spreadsheet':
         return generate_download_file_from_text(results)
-    elif not results.get('spreadsheet', None):
+    elif results.get('data', None) or not results.get('spreadsheet', None):
         return generate_text_response(results)
     else:
         return generate_download_spreadsheet(results)

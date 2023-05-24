@@ -157,7 +157,9 @@ def sidecar_results():
     try:
         input_arguments = sidecar.get_input_from_form(request)
         a = sidecar.process(input_arguments)
-        return package_results(a)
+        b = package_results(a)
+        return b
+        # return package_results(a)
     except Exception as ex:
         return handle_http_error(ex)
 
