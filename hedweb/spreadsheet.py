@@ -34,6 +34,8 @@ def get_input_from_form(request):
     }
 
     tag_columns, prefix_dict = get_prefix_dict(request.form)
+    if arguments[base_constants.COMMAND] != base_constants.COMMAND_VALIDATE:
+        prefix_dict = {}
     filename = request.files[base_constants.SPREADSHEET_FILE].filename
     file_ext = os.path.splitext(filename)[1]
     if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
@@ -151,6 +153,7 @@ def spreadsheet_validate(hed_schema, spreadsheet, options=None):
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': data,
+            base_constants.SPREADSHEET: '',
             base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
             "output_display_name": file_name,
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

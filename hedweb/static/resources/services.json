@@ -34,7 +34,7 @@
                 "query_list",
                 "columns_included"
             ],
-            "Returns": "An error file as text if errors."},
+            "Returns": "An error file as text if errors or a list of row numbers as text if successful."},
         "events_assemble": {
             "Name": "events_assemble",
             "Description": "Assemble annotations for each event. Returns: text of assembled events or error list.",
@@ -73,9 +73,9 @@
                     "schema_url",
                     "schema_version"
                 ],
-                "expand_defs"
+                "include_summaries"
             ],
-            "Returns": "A string containing the text of remodeled events file or a list of errors."
+            "Returns": "A string containing the text of remodeled events file or a list of errors. If include_summaries is true, the results are returned in a zip archive."
         },
         "sidecar_validate": {
             "Description": "Validate a BIDS JSON sidecar (in string form) and return errors.",
@@ -145,8 +145,7 @@
                     "column_x_input",
                     "column_x_check"
                 ],
-                "check_for_warnings",
-                "has_column_names"
+                "check_for_warnings"
             ],
             "Returns": "A list of errors if any."
         },
@@ -162,9 +161,7 @@
                 [
                     "column_x_input",
                     "column_x_check"
-                ],
-                "expand_defs",
-                "has_column_names"
+                ]
             ],
             "Returns": "The spreadsheet converted to short form or a list of errors if any."
         },
@@ -180,9 +177,7 @@
                 [
                     "column_x_input",
                     "column_x_check"
-                ],
-                "expand_defs",
-                "has_column_names"
+                ]
             ],
             "Returns": "The spreadsheet converted to short form or a list of errors if any."
         },
@@ -236,6 +231,7 @@
         "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
+        "include_summaries": "Return any summaries in addition to the events file when remodeling.",
         "query_list": "A list of query strings for searching.",
         "remodel_string": "JSON remodel commands as a string",
         "schema_string": "HED XML schema as a string.",

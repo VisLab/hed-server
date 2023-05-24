@@ -9,11 +9,12 @@ $(function () {
  */
 $('#process_actions').change(function(){
     setOptions();
+    clearSpreadsheet();
 });
 
 
 /**
- * Submits the form if the tag columns textbox is valid.
+ * Submits the form if a file is given and the schema is selected.
  */
 $('#spreadsheet_submit').on('click', function () {
     if (fileIsSpecified('#spreadsheet_file', 'spreadsheet_flash', 'Spreadsheet is not specified.') &&
@@ -23,11 +24,20 @@ $('#spreadsheet_submit').on('click', function () {
 });
 
 /**
+ * Clears the form.
+ */
+$('#spreadsheet_clear').on('click', function () {
+    clearForm();
+});
+
+
+/**
  * Clear the fields in the form.
  */
 function clearForm() {
+    clearFlashMessages();
     $('#spreadsheet_form')[0].reset();
-    clearWorksheet()
+    clearSpreadsheet()
     $("#validate").prop('checked', true);
     setOptions();
     hideOtherSchemaVersionFileUpload()
@@ -101,8 +111,8 @@ function submitForm() {
         xhr: function () {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 2) {
-                    if (xhr.status == 200 && isExcel) {
+                if (xhr.readyState === 2) {
+                    if (xhr.status === 200 && isExcel) {
                         xhr.responseType = "blob";
                     } else {
                         xhr.responseType = "text";

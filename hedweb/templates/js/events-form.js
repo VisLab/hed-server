@@ -15,17 +15,12 @@ $('#process_actions').change(function(){
  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
 $('#events_file').on('change', function () {
-    let eventsPath = $('#events_file').val();
-    if (cancelWasPressedInChromeFileUpload(eventsPath) || !fileHasValidExtension(eventsPath, TEXT_FILE_EXTENSIONS)) {
-        clearForm();
-        flashMessageOnScreen('Please upload a tsv file (.tsv, .txt)', 'error', 'events_flash');
-        return;
-    }
+    clearFlashMessages();
     setEventsTable('#events_file')
 });
 
 /**
- * Submits the form if there is an events file and an available hed schema
+ * Submit the form if there is an events file and an available hed schema
  */
 $('#events_submit').on('click', function () {
     if (fileIsSpecified('#events_file', 'events_flash', 'Events file is not specified.')
@@ -34,18 +29,25 @@ $('#events_submit').on('click', function () {
     }
 });
 
+/**
+ * Clear the form.
+ */
+$('#events_clear').click(function() {
+    clearForm();
+});
+
 
 /**
- * Clears the fields in the form.
+ * Clear the fields in the form.
  */
 function clearForm() {
+    clearFlashMessages();
     $('#events_form')[0].reset();
     $('#sidecar_file').val('');
     $('#events_file').val('');
     $('#remodel_file').val('');
     $('#process_actions').val('validate');
     setOptions();
-    clearFlashMessages();
     hideOtherSchemaVersionFileUpload();
 }
 
