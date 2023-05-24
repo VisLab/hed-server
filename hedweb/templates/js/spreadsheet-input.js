@@ -13,6 +13,7 @@ $('#has_column_names').on('change', function() {
  * Spreadsheet event handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
 $('#spreadsheet_file').on('change', function () {
+    clearFlashMessages();
     let spreadsheet = $('#spreadsheet_file');
     let spreadsheetPath = spreadsheet.val();
     let spreadsheetFile = spreadsheet[0].files[0];

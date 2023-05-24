@@ -6,9 +6,19 @@ $(function () {
 
 
 $('#process_actions').change(function(){
+    clearFlashMessages();
     setOptions();
     setEventsTable()
 });
+
+
+$('#sidecar_file').change(function() {
+    clearFlashMessages();
+})
+
+$('#remodel_file').change(function() {
+    clearFlashMessages();
+})
 
 
 /**

@@ -10,6 +10,7 @@ $(function () {
 $('#process_actions').change(function(){
     setOptions();
     clearSpreadsheet();
+    clearFlashMessages();
 });
 
 

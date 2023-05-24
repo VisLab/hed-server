@@ -15,9 +15,6 @@ $('#sidecar_file').change(function() {
     clearFlashMessages();
 })
 
-$('#remodel_file').change(function() {
-    clearFlashMessages();
-})
 
 /**
  * Submit the form if schema and json file specified.
