@@ -140,16 +140,16 @@ def spreadsheet_validate(hed_schema, spreadsheet, options=None):
     display_name = spreadsheet.name
     issues = filter_issues(issues, check_for_warnings)
     if issues:
-        data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation errors")
-        file_name = generate_filename(display_name, name_suffix='_validation_errors',
+        data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation issues")
+        file_name = generate_filename(display_name, name_suffix='_validation_issues',
                                       extension='.txt', append_datetime=True)
         category = "warning"
-        msg = f"Spreadsheet {file_name} had validation errors"
+        msg = f"Spreadsheet {file_name} had validation issues"
     else:
         data = ''
         file_name = display_name
         category = 'success'
-        msg = f'Spreadsheet {display_name} had no validation errors'
+        msg = f'Spreadsheet {display_name} had no validation issues'
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': data,

@@ -118,10 +118,9 @@ def sidecar_convert(hed_schema, sidecar, options=None):
         tag_form = 'long_tag'
     else:
         tag_form = 'short_tag'
-    error_handler = ErrorHandler(check_for_warnings=False)
     for column_data in sidecar:
         hed_strings = column_data.get_hed_strings()
-        hed_strings = df_util.convert_to_form(hed_strings, hed_schema, "long_tag")
+        hed_strings = df_util.convert_to_form(hed_strings, hed_schema, tag_form)
         column_data.set_hed_strings(hed_strings)
 
     file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
@@ -214,16 +213,16 @@ def sidecar_validate(hed_schema, sidecar, options=None):
     error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
     issues = sidecar.validate(hed_schema, name=sidecar.name, error_handler=error_handler)
     if issues:
-        data = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation errors")
-        file_name = generate_filename(display_name, name_suffix='validation_errors',
+        data = get_printable_issue_string(issues, f"JSON dictionary {sidecar.name} validation issues")
+        file_name = generate_filename(display_name, name_suffix='validation_issues',
                                       extension='.txt', append_datetime=True)
         category = 'warning'
-        msg = f'JSON sidecar {display_name} had validation errors'
+        msg = f'JSON sidecar {display_name} had validation issues'
     else:
         data = ''
         file_name = display_name
         category = 'success'
-        msg = f'JSON file {display_name} had no validation errors'
+        msg = f'JSON file {display_name} had no validation issues'
 
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,

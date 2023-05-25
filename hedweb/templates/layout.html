@@ -32,31 +32,31 @@
     <div class="collapse navbar-collapse" id="navbarColor01" >
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('route_blueprint.render_events_form') }}" class="btn"
+          <a class="nav-link btn special" href="{{ url_for('route_blueprint.render_events_form') }}"
              data-toggle="tooltip" data-placement="bottom" 
              title="Tools for BIDS-style event files">Events</a>
              <span class="visually-hidden">(current)</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('route_blueprint.render_sidecar_form') }}" class="btn"
+          <a class="nav-link btn special" href="{{ url_for('route_blueprint.render_sidecar_form') }}" class="btn"
           data-toggle="tooltip" data-placement="bottom" title="Tools for a BIDS-style JSON sidecar">Sidecars</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('route_blueprint.render_spreadsheet_form') }}" class="btn"
+          <a class="nav-link btn special" href="{{ url_for('route_blueprint.render_spreadsheet_form') }}" class="btn"
              data-toggle="tooltip" data-placement="bottom" 
              title="Tools for a spreadsheet containing event codes">Spreadsheets</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('route_blueprint.render_string_form') }}" class="btn" 
+          <a class="nav-link btn special" href="{{ url_for('route_blueprint.render_string_form') }}" class="btn" 
              data-toggle="tooltip" data-placement="bottom" 
              title="Tools for processing a HED string">Strings</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('route_blueprint.render_schema_form') }}" class="btn"
+          <a class="nav-link btn special" href="{{ url_for('route_blueprint.render_schema_form') }}" class="btn"
             data-toggle="tooltip" data-placement="bottom" title="Tools for processing a HED schema file">Schemas</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" 
+          <a class="nav-link dropdown-toggle btn special" data-bs-toggle="dropdown" href="#" role="button" 
              aria-haspopup="true" aria-expanded="false">Quick links</a>
           <div class="dropdown-menu">
             <a class="dropdown-item" href="https://www.hedtags.org/display_hed.html">HED schema browser</a>
@@ -121,9 +121,9 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $(".navbar-nav .nav-link.btn").click(function() {
+    $(".nav-link.special.btn").click(function() {
       // Remove active class from all links
-      $(".navbar-nav .nav-link.btn").removeClass("active");
+      $(".nav-link.special.btn").removeClass("active");
       // Add active class to the clicked link
       $(this).addClass("active");
     });

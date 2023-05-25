@@ -37,7 +37,7 @@ $('#spreadsheet_clear').on('click', function () {
  */
 function clearForm() {
     clearFlashMessages();
-    $('#spreadsheet_form')[0].reset();
+    
     clearSpreadsheet()
     $("#validate").prop('checked', true);
     setOptions();
@@ -55,12 +55,12 @@ function clearFlashMessages() {
 }
 
 
-
 /**
  * Prepare the spreadsheet form after the page is ready. The form will be reset to handle page refresh and
  * components will be hidden and populated.
  */
 function prepareForm() {
+    $('#spreadsheet_form')[0].reset();
     clearForm();
     getSchemaVersions()
 }

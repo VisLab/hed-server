@@ -33,11 +33,11 @@ $('#string_clear').on('click', function () {
  * Resets the fields in the form.
  */
 function clearForm() {
-    $('#string_form')[0].reset();
     clearFlashMessages();
-    $('#process_actions').val('validate');
     setOptions();
-    hideOtherSchemaVersionFileUpload()
+    hideOtherSchemaVersionFileUpload();
+    $('#string_result').val('');
+    $('#string_input').val('');
 }
 
 /**
@@ -54,6 +54,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
+    $('#string_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload()
 }

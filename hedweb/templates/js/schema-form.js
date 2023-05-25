@@ -58,10 +58,7 @@ $('#schema_url_option').on('change',function () {
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#schema_form')[0].reset();
     clearFlashMessages();
-    $('#process_actions').val('validate');
-    
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
     $('#schema_url').val(DEFAULT_XML_URL);
@@ -126,6 +123,8 @@ function getSchemaFilename() {
  */
 function prepareForm() {
     clearForm();
+    $('#schema_form')[0].reset();
+    $('#process_actions').val('validate');
     $('#schema_url').val(DEFAULT_XML_URL);
 }
 
