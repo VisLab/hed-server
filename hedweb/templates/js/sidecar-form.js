@@ -39,8 +39,6 @@ $('#sidecar_clear').on('click', function () {
  */
 function clearForm() {
     clearFlashMessages();
-    $('#sidecar_form')[0].reset();
-    $('#process_actions').val('validate');
     setOptions();
     $('#sidecar_file').val('');
     clearSpreadsheet();
@@ -61,6 +59,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
+    $('#sidecar_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
 }

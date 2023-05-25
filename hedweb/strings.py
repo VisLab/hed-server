@@ -97,7 +97,7 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
                 'data': conversion_errors, 'additional_info': string_list,
                 base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
                 'msg_category': 'warning',
-                'msg': 'Some strings had conversion errors, results of conversion in additional_info'}
+                'msg': 'Some strings had conversion issues'}
     else:
         return {base_constants.COMMAND: command,
                 base_constants.COMMAND_TARGET: 'strings', 'data': strings,
@@ -107,7 +107,7 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
 
 
 def validate(hed_schema, string_list, check_for_warnings=False):
-    """ Validate a list of strings and returns a dictionary containing the issues or a no errors message.
+    """ Validate a list of strings and returns a dictionary containing the issues or a no issues message.
 
     Args:
         hed_schema (HedSchema or HedSchemas): The HED schema to be used in processing.
@@ -118,18 +118,18 @@ def validate(hed_schema, string_list, check_for_warnings=False):
         dict: The results in standard form.
     """
 
-    validation_errors = []
+    validation_issues = []
     error_handler = ErrorHandler(check_for_warnings=check_for_warnings)
     for pos, h_string in enumerate(string_list, start=1):
         issues = h_string.validate(hed_schema, error_handler=error_handler)
         if issues:
-            validation_errors.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
-    if validation_errors:
+            validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
+    if validation_issues:
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                base_constants.COMMAND_TARGET: 'strings', 'data': validation_errors,
+                base_constants.COMMAND_TARGET: 'strings', 'data': validation_issues,
                 base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
                 'msg_category': 'warning',
-                'msg': 'Strings had validation errors'}
+                'msg': 'Strings had validation issues'}
     else:
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'strings', 'data': '',

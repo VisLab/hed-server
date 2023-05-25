@@ -71,7 +71,7 @@ class Test(TestWebBase):
             self.assertEqual('warning', results['msg_category'],
                              'process validate should give warning when spreadsheet has errors')
             self.assertTrue(results['data'],
-                            'process validate should return validation errors using HED 8.0.0-beta.1')
+                            'process validate should return validation issues using HED 8.0.0-beta.1')
 
     def test_process_validate_valid(self):
         from hedweb.spreadsheet import process
@@ -154,7 +154,7 @@ class Test(TestWebBase):
             results = spreadsheet_validate(hed_schema, spreadsheet)
             print(results['data'])
             self.assertFalse(results['data'],
-                             'spreadsheet_validate results should not have a data key when no validation errors')
+                             'spreadsheet_validate results should not have a data key when no validation issues')
             self.assertEqual('success', results["msg_category"],
                              'spreadsheet_validate msg_category should be success when no errors')
 

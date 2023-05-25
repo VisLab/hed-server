@@ -235,7 +235,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = sidecar_validate(hed_schema, json_sidecar)
             self.assertTrue(results['data'],
-                            'sidecar_validate results should have a data key when validation errors')
+                            'sidecar_validate results should have a data key when validation issues')
             self.assertEqual('warning', results['msg_category'],
                              'sidecar_validate msg_category should be warning when errors')
 
@@ -249,7 +249,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = sidecar_validate(hed_schema, json_sidecar)
             self.assertTrue(results['data'],
-                            'sidecar_validate results should have a data key when validation errors')
+                            'sidecar_validate results should have a data key when validation issues')
             self.assertEqual('warning', results['msg_category'],
                              'sidecar_validate msg_category should be warning when errors')
 
@@ -263,9 +263,9 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = sidecar_validate(hed_schema, json_sidecar)
             self.assertFalse(results['data'],
-                             'sidecar_validate results should not have a data key when no validation errors')
+                             'sidecar_validate results should not have a data key when no validation issus')
             self.assertEqual('success', results["msg_category"],
-                             'sidecar_validate msg_category should be success when no errors')
+                             'sidecar_validate msg_category should be success when no issues')
 
 
 if __name__ == '__main__':

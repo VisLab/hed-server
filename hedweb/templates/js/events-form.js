@@ -52,13 +52,12 @@ $('#events_clear').click(function() {
  */
 function clearForm() {
     clearFlashMessages();
-    $('#events_form')[0].reset();
     $('#sidecar_file').val('');
     $('#events_file').val('');
     $('#remodel_file').val('');
-    $('#process_actions').val('validate');
     setOptions();
     hideOtherSchemaVersionFileUpload();
+    setEventsTable();
 }
 
 /**
@@ -77,6 +76,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
+    $('#events_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
 }

@@ -223,7 +223,7 @@ def remodel(hed_schema, events, sidecar, remodel_operations, options=None):
                 base_constants.COMMAND_TARGET: 'events',
                 'data': issue_str, 'output_display_name': file_name,
                 'msg_category': "warning",
-                'msg': f"Remodeling operation list for {display_name} had validation errors"}
+                'msg': f"Remodeling operation list for {display_name} had validation issues"}
     df = events.dataframe
     dispatch = Dispatcher(operations, data_root=None, hed_versions=hed_schema)
 
@@ -328,15 +328,15 @@ def validate(hed_schema, events, sidecar=None, options=None):
         issues += events.validate(hed_schema, name=events.name, error_handler=error_handler)
     if issues:
         data = get_printable_issue_string(issues, title="Event file errors:")
-        file_name = generate_filename(display_name, name_suffix='_validation_errors',
+        file_name = generate_filename(display_name, name_suffix='_validation_issues',
                                       extension='.txt', append_datetime=True)
         category = 'warning'
-        msg = f"Events file {display_name} had validation errors"
+        msg = f"Events file {display_name} had validation issues"
     else:
         data = ''
         file_name = display_name
         category = 'success'
-        msg = f"Events file {display_name} did not have validation errors"
+        msg = f"Events file {display_name} did not have validation issues"
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
             'data': data, "output_display_name": file_name,
@@ -363,7 +363,7 @@ def validate_query(hed_schema, query):
     else:
         data = ''
         category = 'success'
-        msg = f"Query had no validation errors"
+        msg = f"Query had no validation issues"
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'query',
             'data': data, base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),

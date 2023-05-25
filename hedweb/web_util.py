@@ -145,7 +145,7 @@ def generate_download_spreadsheet(results):
                                                  base_constants.MSG_CATEGORY: results[base_constants.MSG_CATEGORY],
                                                  base_constants.MSG: results[base_constants.MSG]})
     buffer = io.BytesIO()
-    spreadsheet.to_excel(buffer, output_assembled=False)
+    spreadsheet.to_excel(buffer)
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()

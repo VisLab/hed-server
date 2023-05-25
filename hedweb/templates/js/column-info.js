@@ -110,9 +110,9 @@ function showEvents(columnList, columnCounts) {
 function showIndices(columnList, hasPrefixes=true) {
     $('#show_indices_section').show();
     let indicesTable = $('#show_indices_table');
-    let contents = '<thead><tr><th scope="col">Tags?</th><th scope="col">Column names</th>';
+    let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
     if (hasPrefixes) {
-        contents += '<th scope="col">Tag prefix to use (prefixes end in /)</th>';
+        contents += '<th scope="col">Use tag prefix:</th>';
     }
     contents += '</tr></thead>';
     indicesTable.empty();
