@@ -173,7 +173,7 @@ def schema_validate(hed_schema, display_name):
                 'data': '', 'output_display_name': display_name,
                 'schema_version': hed_schema.get_formatted_version(as_string=True),
                 'msg_category': 'success',
-                'msg': 'Schema had validation issues'}
+                'msg': 'Schema had no validation issues'}
 
 
 def get_issue_string(issues, title=None):
