@@ -14,7 +14,7 @@
 
         {{ create_actions(to_long=True,to_short=True,validate=True) }}
         <p> </p>
-        {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
+        {{ create_options(check_for_warnings=True) }}
         <p> </p>
         {{ create_schema_pulldown() }}
         <p> </p>
@@ -25,7 +25,12 @@
         {{ create_column_info('show_indices') }}
         </fieldset>
         <p> </p>
+        <fieldset>
         <button id="spreadsheet_submit" type="button" class="btn btn-primary btn-large">Process</button>
+        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+        <button id="spreadsheet_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
+        </fieldset>
+
         <p> </p>
         <p class="flash" id="spreadsheet_flash"></p>
     </form>

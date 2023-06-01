@@ -8,14 +8,16 @@ $(function () {
  */
 $('#process_actions').change(function(){
     setOptions();
+    clearFlashMessages();
 });
 
 $('#sidecar_file').change(function() {
     clearFlashMessages();
 })
 
+
 /**
- * Submit the form on click if schema and json file specified.
+ * Submit the form if schema and json file specified.
  */
 $('#sidecar_submit').on('click', function () {
     if (fileIsSpecified('#sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.' ) &&
@@ -25,16 +27,21 @@ $('#sidecar_submit').on('click', function () {
 });
 
 /**
+ * Clear the form.
+ */
+$('#sidecar_clear').on('click', function () {
+    clearForm();
+});
+
+
+/**
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#sidecar_form')[0].reset();
-    $('#process_actions').val('validate');
-    clearWorksheet()
+    clearFlashMessages();
     setOptions();
-    clearFlashMessages()
     $('#sidecar_file').val('');
-    $('#spreadsheet_file').val('');
+    clearSpreadsheet();
     hideOtherSchemaVersionFileUpload()
 }
 
@@ -52,6 +59,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
+    $('#sidecar_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
 }

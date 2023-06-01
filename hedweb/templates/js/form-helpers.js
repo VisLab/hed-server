@@ -1,13 +1,4 @@
 
-/**
- * Checks to see if the user pressed cancel in chrome's file upload browser.
- * @param {String} filePath - A path to a file.
- * @returns {boolean} - True if the user selects cancel in chrome's file upload browser.
- */
-function cancelWasPressedInChromeFileUpload(filePath) {
-    return isEmptyStr(filePath) && (window.chrome)
-}
-
 
 /**
  * Converts a path and prefix to a text results name
@@ -29,7 +20,7 @@ function convertToResultsName(filename, prefix) {
  */
 function fileHasValidExtension(filePath, acceptedFileExtensions) {
     let fileExtension = filePath.split('.').pop();
-    return $.inArray(fileExtension.toLowerCase(), acceptedFileExtensions) != -1
+    return $.inArray(fileExtension.toLowerCase(), acceptedFileExtensions) !== -1
 }
 
 
@@ -128,7 +119,7 @@ function getResponseSuccess(download, xhr, display_name, flash_location) {
     let info = xhr.getResponseHeader('Message');
     let category =  xhr.getResponseHeader('Category');
     let contentType = xhr.getResponseHeader('Content-type');
-    if (download) {
+    if (download && download.size !== 0) {
         let filename = getFilenameFromResponseHeader(xhr, display_name)
         triggerDownloadBlob(download, filename, contentType);
     }
@@ -137,16 +128,6 @@ function getResponseSuccess(download, xhr, display_name, flash_location) {
     } else {
         flashMessageOnScreen('', 'success', flash_location);
     }
-}
-
-
-/**
- * Checks to see if a string is empty. Empty meaning null or a length of zero.
- * @param {String} str - A string.
- * @returns {boolean} - True if the string is null or its length is 0.
- */
-function isEmptyStr(str) {
-    return (str === null || str.length === 0)
 }
 
 

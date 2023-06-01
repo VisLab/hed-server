@@ -13,6 +13,7 @@ $('#has_column_names').on('change', function() {
  * Spreadsheet event handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
 $('#spreadsheet_file').on('change', function () {
+    clearFlashMessages();
     let spreadsheet = $('#spreadsheet_file');
     let spreadsheetPath = spreadsheet.val();
     let spreadsheetFile = spreadsheet[0].files[0];
@@ -24,8 +25,10 @@ $('#spreadsheet_file').on('change', function () {
         $('#worksheet_name').empty();
         $('#worksheet_select').hide();
     }
+    
     if ($('#show_indices_section') != null) {
-        setIndicesTable();
+        let selectedElement = document.getElementById("process_actions");
+        setIndicesTable(selectedElement.value === "validate");
     }
 })
 
@@ -36,16 +39,18 @@ $('#spreadsheet_file').on('change', function () {
  */
 $('#worksheet_name').on('change', function () {
     clearFlashMessages();
+    clearWorksheetFlashMessages()
     if ($('#show_indices_section') != null) {
         setIndicesTable();
     }
 });
 
-function clearWorksheet() {
-    $('#spreadsheet_display_name').text('');
+function clearSpreadsheet() {
+    $('#spreadsheet_file').val('');
     $('#worksheet_name').empty();
     $('#worksheet_select').hide();
     hideColumnInfo("show_indices");
+    removeColumnInfo("show_indices")
 }
 
 function clearWorksheetFlashMessages() {
@@ -86,6 +91,7 @@ function setIndicesTable() {
     if (spreadsheetFile != null) {
         let info = getColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheet, true)
         let cols = info['column_list']
-        showIndices(cols)
+        let selectedElement = document.getElementById("process_actions");
+        showIndices(cols, selectedElement.value === "validate")
     }
 }

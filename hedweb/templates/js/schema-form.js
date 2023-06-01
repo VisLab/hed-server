@@ -7,6 +7,7 @@ $(function () {
  * Set the options according to the action specified.
  */
 $('#process_actions').change(function(){
+    clearFlashMessages();
     setOptions();
 });
 
@@ -16,19 +17,17 @@ $('#process_actions').change(function(){
 $('#schema_file').on('change', function () {
     updateFileLabel($('#schema_file').val(), '#schema_file_display_name');
     $('#schema_file_option').prop('checked', true);
-    clearSchemaFlash()
     updateForm();
 });
 
 $('#schema_url').on('change', function () {
     updateFileLabel($('#schema_url').val(), '#schema_url_display_name');
     $('#schema_url_option').prop('checked', true);
-    clearSchemaFlash()
     updateForm();
 });
 
 /**
- * Submits the form for conversion if we have a valid file.
+ * Submit the form if a schema is specified.
  */
 $('#schema_submit').on('click', function () {
     if (getSchemaFilename() === "") {
@@ -37,6 +36,14 @@ $('#schema_submit').on('click', function () {
         submitSchemaForm();
     }
 });
+
+/**
+ * Clear the form.
+ */
+$('#schema_clear').on('click', function () {
+    clearForm();
+});
+
 
 
 $('#schema_file_option').on('change', function () {
@@ -51,17 +58,18 @@ $('#schema_url_option').on('change',function () {
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#schema_form')[0].reset();
-    $('#process_actions').val('validate');
+    clearFlashMessages();
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
+    $('#schema_url').val(DEFAULT_XML_URL);
+    $('#schema_file').val('');
     setOptions();
 }
 
 /**
  * Resets the flash message that aren't related to the form submission.
  */
-function clearSchemaFlash() {
+function clearFlashMessages() {
     flashMessageOnScreen('', 'success', 'schema_flash');
 }
 
@@ -115,6 +123,8 @@ function getSchemaFilename() {
  */
 function prepareForm() {
     clearForm();
+    $('#schema_form')[0].reset();
+    $('#process_actions').val('validate');
     $('#schema_url').val(DEFAULT_XML_URL);
 }
 
@@ -144,7 +154,7 @@ function submitSchemaForm() {
     let schemaURL = document.getElementById("schema_url")
     formData.append("schema_url", schemaURL.value)
     let display_name = convertToOutputName(getSchemaFilename())
-    clearSchemaFlash();
+    clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     $.ajax({
             type: 'POST',
@@ -166,6 +176,7 @@ function submitSchemaForm() {
 
 
 function updateForm() {
+     clearFlashMessages();
      let filename = getSchemaFilename();
      let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
      let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);

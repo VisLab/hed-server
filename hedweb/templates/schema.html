@@ -19,7 +19,8 @@
                  id="schema_url_option" value="schema_url_option" 
                  aria-label="Select this button for HED schema URL" checked="">
           <label class="form-check-label" for="schema_url_option">Enter HED schema URL:</label>
-          <input class="form-control" type="url" id="schema_url"  aria-label="Enter schema URL here">
+          <input class="form-control" type="url" id="schema_url"  name="schema_url"
+                 aria-label="Enter schema URL here">
         </div>
             <p></p>
           <div class="form-check" id="schema_file_group">
@@ -29,7 +30,7 @@
             <label class="form-check-label" for="schema_file_option">
               HED schema file to upload:
             </label>
-              <input class="form-control" type="file" name="schema_file" 
+              <input class="form-control" type="file" id="schema_file" name="schema_file"
                      id="schema_file" aria-label="Enter schema file to upload here">
           </div>
         </fieldset>
@@ -37,6 +38,9 @@
         <p>&nbsp;</p>
         <div class="form-group">
             <button id="schema_submit" type="button" class="btn btn-primary btn-large">Process</button>
+                    <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+            <button id="schema_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
+
         </div>
         <p> </p>
         <p class="flash" id="schema_flash"></p>

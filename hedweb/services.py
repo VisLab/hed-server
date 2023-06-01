@@ -246,7 +246,7 @@ def package_spreadsheet(results):
 
 
     """
-    if results['msg_category'] == 'success' and base_constants.SPREADSHEET in results:
+    if results['msg_category'] == 'success' and results.get(base_constants.SPREADSHEET, ''):
         results[base_constants.SPREADSHEET] = results[base_constants.SPREADSHEET].to_csv(file=None)
     elif base_constants.SPREADSHEET in results:
         del results[base_constants.SPREADSHEET]

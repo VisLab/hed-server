@@ -1,0 +1,7 @@
+.special {
+    font-size: 1.2em;
+}
+
+.special.active {
+    color: darkgreen;
+}

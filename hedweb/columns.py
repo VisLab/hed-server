@@ -161,10 +161,9 @@ def get_prefix_dict(form_dict):
         if index_check == -1 or form_dict[key] != 'on':
             continue
         pieces = key.split("_")
-        pos = key.find('_')
         column_number = int(pieces[1])
         info_key = key[0: index_check] + "_input"
-        if form_dict[info_key]:
+        if form_dict.get(info_key, None):
             prefix_dict[column_number] = form_dict[info_key]
         else:
             tag_columns.append(column_number)

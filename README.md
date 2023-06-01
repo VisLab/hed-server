@@ -20,8 +20,7 @@ To do this you will have to do the following:
        you want the application to use to temporarily store uploads and to cache the
        HED schema.
 2. Use `pip` to install `hedtools` from the 
-[GitHub](https://github.com/hed-standard/hed-python) repository,
-since `hedtools` is not yet available on PyPI:
+[GitHub](https://github.com/hed-standard/hed-python) repository:
 
    ```
        pip install git+https://github.com/hed-standard/hed-python/@master
@@ -98,4 +97,4 @@ It generally refers to a version without the latest features.
 
 API documentation is generated on ReadTheDocs when a new version is
 pushed on any of the three branches. For example, the API documentation for the
-`latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/).
+`latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/).  

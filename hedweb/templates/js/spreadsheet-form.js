@@ -9,11 +9,13 @@ $(function () {
  */
 $('#process_actions').change(function(){
     setOptions();
+    clearSpreadsheet();
+    clearFlashMessages();
 });
 
 
 /**
- * Submits the form if the tag columns textbox is valid.
+ * Submits the form if a file is given and the schema is selected.
  */
 $('#spreadsheet_submit').on('click', function () {
     if (fileIsSpecified('#spreadsheet_file', 'spreadsheet_flash', 'Spreadsheet is not specified.') &&
@@ -23,11 +25,20 @@ $('#spreadsheet_submit').on('click', function () {
 });
 
 /**
+ * Clears the form.
+ */
+$('#spreadsheet_clear').on('click', function () {
+    clearForm();
+});
+
+
+/**
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#spreadsheet_form')[0].reset();
-    clearWorksheet()
+    clearFlashMessages();
+    
+    clearSpreadsheet()
     $("#validate").prop('checked', true);
     setOptions();
     hideOtherSchemaVersionFileUpload()
@@ -44,12 +55,12 @@ function clearFlashMessages() {
 }
 
 
-
 /**
  * Prepare the spreadsheet form after the page is ready. The form will be reset to handle page refresh and
  * components will be hidden and populated.
  */
 function prepareForm() {
+    $('#spreadsheet_form')[0].reset();
     clearForm();
     getSchemaVersions()
 }
@@ -62,14 +73,11 @@ function prepareForm() {
 function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
-        hideOption("expand_defs");
         showOption("check_for_warnings");
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
     }
 }
 
@@ -104,8 +112,8 @@ function submitForm() {
         xhr: function () {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 2) {
-                    if (xhr.status == 200 && isExcel) {
+                if (xhr.readyState === 2) {
+                    if (xhr.status === 200 && isExcel) {
                         xhr.responseType = "blob";
                     } else {
                         xhr.responseType = "text";

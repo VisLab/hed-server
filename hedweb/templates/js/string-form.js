@@ -7,11 +7,12 @@ $(function () {
  * Set the options according to the action specified.
  */
 $('#process_actions').change(function(){
+    clearFlashMessages();
     setOptions();
 });
 
 /**
- * Submits the form for tag comparison if we have a valid file.
+ * Submits the form if a string has been entered.
  */
 $('#string_submit').on('click', function () {
    if (!stringIsSpecified()) {
@@ -22,20 +23,27 @@ $('#string_submit').on('click', function () {
 });
 
 /**
+ * Clears the form.
+ */
+$('#string_clear').on('click', function () {
+    clearForm();
+});
+
+/**
  * Resets the fields in the form.
  */
 function clearForm() {
-    $('#string_form')[0].reset();
-    clearFormFlash();
-    $('#process_actions').val('validate');
+    clearFlashMessages();
     setOptions();
-    hideOtherSchemaVersionFileUpload()
+    hideOtherSchemaVersionFileUpload();
+    $('#string_result').val('');
+    $('#string_input').val('');
 }
 
 /**
  * Clear the flash messages that aren't related to the form submission.
  */
-function clearFormFlash() {
+function clearFlashMessages() {
     clearSchemaSelectFlashMessages();
     flashMessageOnScreen('', 'success', 'string_flash');
 }
@@ -46,6 +54,8 @@ function clearFormFlash() {
  */
 function prepareForm() {
     clearForm();
+    $('#string_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload()
 }
@@ -84,7 +94,7 @@ function submitStringForm() {
     let formData = new FormData(stringForm);
     let selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value)
-    clearFormFlash();
+    clearFlashMessages();
     flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash')
     $.ajax({
             type: 'POST',
@@ -94,7 +104,7 @@ function submitStringForm() {
             processData: false,
             dataType: 'json',
             success: function (hedInfo) {
-                clearFormFlash();
+                clearFlashMessages();
                 if (hedInfo['data']) {
                     $('#string_result').val(hedInfo['data'])
                 } else {

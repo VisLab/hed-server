@@ -92,7 +92,7 @@ class Test(TestWebBase):
 
         with self.app.app_context():
             results = validate(hed_schema, string_list)
-            self.assertEqual('warning', results['msg_category'], "validate has warning if validation errors")
+            self.assertEqual('warning', results['msg_category'], "validate has warning if validation issues")
 
         string_list = [HedString('Red'), HedString('Blue')]
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
