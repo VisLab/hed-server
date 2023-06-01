@@ -18,7 +18,7 @@
                 ],
                 "check_for_warnings"
             ],
-            "Returns": "An error file as text if errors."
+            "Returns": "An error file as text if issues."
         },
         "events_search": {
             "Name": "events_search",
@@ -34,7 +34,7 @@
                 "query_list",
                 "columns_included"
             ],
-            "Returns": "An error file as text if errors."},
+            "Returns": "An error file as text if issues or a list of row numbers as text if successful."},
         "events_assemble": {
             "Name": "events_assemble",
             "Description": "Assemble annotations for each event. Returns: text of assembled events or error list.",
@@ -49,7 +49,7 @@
                 ],
                 "expand_defs"
             ],
-            "Returns": "A string containing the text of assembled events file or a list of errors. The definitions are also returned if any."
+            "Returns": "A string containing the text of assembled events file or a list of issues. The definitions are also returned if any."
         },
         "events_generate_sidecar": {
             "Name": "events_generate_sidecar",
@@ -59,7 +59,7 @@
                 "columns_categorical",
                 "columns_value"
             ],
-            "Returns": "A JSON sidecar (template) in string form or a list of errors."
+            "Returns": "A JSON sidecar (template) in string form or a list of issues."
         },
         "events_remodel": {
             "Name": "events_remodel",
@@ -73,12 +73,12 @@
                     "schema_url",
                     "schema_version"
                 ],
-                "expand_defs"
+                "include_summaries"
             ],
-            "Returns": "A string containing the text of remodeled events file or a list of errors."
+            "Returns": "A string containing the text of remodeled events file or a list of issues. If include_summaries is true, the results are returned in a zip archive."
         },
         "sidecar_validate": {
-            "Description": "Validate a BIDS JSON sidecar (in string form) and return errors.",
+            "Description": "Validate a BIDS JSON sidecar (in string form) and return issues.",
             "Parameters": [
                 "sidecar_string",
                 [
@@ -88,7 +88,7 @@
                 ],
                 "check_for_warnings"
             ],
-            "Returns": "A list of errors if any."
+            "Returns": "A list of issues if any."
         },
         "sidecar_to_long": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in long form.",
@@ -101,7 +101,7 @@
                 ],
                 "expand_defs"
             ],
-            "Returns": "A converted JSON sidecar as text or a list of errors."
+            "Returns": "A converted JSON sidecar as text or a list of issues."
         },
         "sidecar_to_short": {
             "Description": "Convert a JSON sidecar with all of its HED tags expressed in short form.",
@@ -114,7 +114,7 @@
                 ],
                 "expand_defs"
             ],
-            "Returns": "A converted JSON sidecar as text or a list of errors."
+            "Returns": "A converted JSON sidecar as text or a list of issues."
         },
         "sidecar_extract_spreadsheet": {
             "Description": "Convert the HED portion of a JSON sidecar to a 4-column spreadsheet.",
@@ -145,10 +145,9 @@
                     "column_x_input",
                     "column_x_check"
                 ],
-                "check_for_warnings",
-                "has_column_names"
+                "check_for_warnings"
             ],
-            "Returns": "A list of errors if any."
+            "Returns": "A list of issues if any."
         },
         "spreadsheet_to_long": {
             "Description": "Convert the indicated columns of a spreadsheet to long.",
@@ -162,11 +161,9 @@
                 [
                     "column_x_input",
                     "column_x_check"
-                ],
-                "expand_defs",
-                "has_column_names"
+                ]
             ],
-            "Returns": "The spreadsheet converted to short form or a list of errors if any."
+            "Returns": "The converted spreadsheet or a list of issues if any."
         },
         "spreadsheet_to_short": {
             "Description": "Convert the indicated columns of a spreadsheet to short.",
@@ -180,14 +177,12 @@
                 [
                     "column_x_input",
                     "column_x_check"
-                ],
-                "expand_defs",
-                "has_column_names"
+                ]
             ],
-            "Returns": "The spreadsheet converted to short form or a list of errors if any."
+            "Returns": "The converted spreadsheet or a list of issues if any."
         },
         "strings_validate": {
-            "Description": "Validate a list of HED strings and return errors.",
+            "Description": "Validate a list of HED strings and return issues if any.",
             "Parameters": [
                 "string_list",
                 [
@@ -197,10 +192,10 @@
                 ],
                 "check_for_warnings"
             ],
-            "Returns": "A list of errors if any."
+            "Returns": "A list of issues if any."
         },
         "strings_to_long": {
-            "Description": "Convert a list of strings to long form if valid, otherwise return errors.",
+            "Description": "Convert a list of strings to long form if valid, otherwise return issues.",
             "Parameters": [
                 "string_list",
                 [
@@ -209,7 +204,7 @@
                     "schema_version"
                 ]
             ],
-            "Returns": "The string converted to short form or a list of errors if any."
+            "Returns": "The string converted to short form or a list of issues if any."
         },
         "strings_to_short": {
             "Description": "Convert a list of strings to short form.",
@@ -221,7 +216,7 @@
                     "schema_version"
                 ]
             ],
-            "Returns": "The string converted to short form or a list of errors if any."
+            "Returns": "The string converted to short form or a list of issues if any."
         }
     },
     "parameter_meanings": {
@@ -236,6 +231,7 @@
         "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
+        "include_summaries": "Return any summaries in addition to the events file when remodeling.",
         "query_list": "A list of query strings for searching.",
         "remodel_string": "JSON remodel commands as a string",
         "schema_string": "HED XML schema as a string.",
@@ -254,7 +250,7 @@
         "command": "Command executed in response to the service request.",
         "command_target": "Type of data on which the command was executed.",
         "definitions": "A dictionary of definitions used in processing.",
-        "data": "Data returned by the service (either processed result or a list of errors).",
+        "data": "Data returned by the service (either processed result or a list of issues).",
         "msg_category": "Success or warning depending on the result of processing the service.",
         "msg": "Explanation of the output of the service.",
         "output_display_name": "(Optional) File name for saving return data.",

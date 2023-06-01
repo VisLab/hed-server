@@ -65,7 +65,7 @@ cd "${DEPLOY_DIR}" || error_exit "Cannot access $DEPLOY_DIR"
 build_new_container()
 {
 echo "Building new container ${IMAGE_NAME} ..."
-docker build -t $IMAGE_NAME .
+docker build -t $IMAGE_NAME . --build-arg CACHE_BUST=$(date +%s)
 }
 
 delete_old_container()

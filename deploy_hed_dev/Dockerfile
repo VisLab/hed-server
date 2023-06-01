@@ -10,8 +10,9 @@ libxml2-dev \
 apache2 \
 apache2-dev && \
 pip3 install --upgrade pip && \
-pip3 install --no-cache-dir -r requirements.txt && \
-pip3 install git+https://github.com/hed-standard/hed-python/@develop && \
+pip3 install -r requirements.txt
+ARG CACHE_BUST
+RUN pip3 install git+https://github.com/hed-standard/hed-python/@develop && \
 mkdir -p /var/www/localhost/htdocs && \
 cp /etc/mime.types /var/www/mime.types && \
 mkdir -p /var/log/hedtools && \

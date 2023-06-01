@@ -7,38 +7,45 @@ $(function () {
  * Set the options according to the action specified.
  */
 $('#process_actions').change(function(){
+    clearFlashMessages();
     setOptions();
 });
 
 /**
- * Submits the form for tag comparison if we have a valid file.
+ * Submits the form if a string has been entered.
  */
 $('#string_submit').on('click', function () {
    if (!stringIsSpecified()) {
-        flashMessageOnScreen('Must give a non-empty string.  See above.', 'error', 'string_submit_flash')
+        flashMessageOnScreen('Must give a non-empty string.  See above.', 'error', 'string_flash')
     } else {
         submitStringForm();
     }
 });
 
 /**
+ * Clears the form.
+ */
+$('#string_clear').on('click', function () {
+    clearForm();
+});
+
+/**
  * Resets the fields in the form.
  */
 function clearForm() {
-    $('#string_form')[0].reset();
-    clearFormFlashMessages();
-    $("#validate").prop('checked', true);
+    clearFlashMessages();
     setOptions();
-    hideOtherSchemaVersionFileUpload()
+    hideOtherSchemaVersionFileUpload();
+    $('#string_result').val('');
+    $('#string_input').val('');
 }
 
 /**
  * Clear the flash messages that aren't related to the form submission.
  */
-function clearFormFlashMessages() {
+function clearFlashMessages() {
     clearSchemaSelectFlashMessages();
     flashMessageOnScreen('', 'success', 'string_flash');
-    flashMessageOnScreen('', 'success', 'string_submit_flash');
 }
 
 /**
@@ -47,6 +54,8 @@ function clearFormFlashMessages() {
  */
 function prepareForm() {
     clearForm();
+    $('#string_form')[0].reset();
+    $('#process_actions').val('validate');
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload()
 }
@@ -55,15 +64,17 @@ function prepareForm() {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
-        hideOption("expand_defs");
+    // let action_value = $("#process_actions").val;
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
-    } else if ($("#to_long").is(":checked")) {
+        $("#options_section").show();
+    } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
-    } else if ($("#to_short").is(":checked")) {
+        $("#options_section").hide();
+    } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
+        $("#options_section").hide();
     }
 }
 
@@ -81,8 +92,10 @@ function stringIsSpecified() {
 function submitStringForm() {
     let stringForm = document.getElementById("string_form");
     let formData = new FormData(stringForm);
-    clearFormFlashMessages();
-    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_submit_flash')
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
+    clearFlashMessages();
+    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash')
     $.ajax({
             type: 'POST',
             url: "{{url_for('route_blueprint.string_results')}}",
@@ -91,16 +104,16 @@ function submitStringForm() {
             processData: false,
             dataType: 'json',
             success: function (hedInfo) {
-                clearFormFlashMessages();
+                clearFlashMessages();
                 if (hedInfo['data']) {
                     $('#string_result').val(hedInfo['data'])
                 } else {
                     $('#string_result').val('')
                 }
-                flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_submit_flash')
+                flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_flash')
             },
             error: function (jqXHR) {
-                flashMessageOnScreen(jqXHR.responseJSON.message, 'error', 'string_submit_flash')
+                flashMessageOnScreen(jqXHR.responseJSON.message, 'error', 'string_flash')
             }
         }
     )

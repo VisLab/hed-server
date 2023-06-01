@@ -2,11 +2,17 @@ import os
 import io
 import json
 from flask import current_app
-from hed.models import HedString, Sidecar, SpreadsheetInput, TabularInput
+from hed.models.hed_string import HedString
+from hed.models.sidecar import Sidecar
+from hed.models.spreadsheet_input import SpreadsheetInput
+from hed.models.tabular_input import TabularInput
 from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
-from hedweb import events, spreadsheet, sidecar, strings
+from hedweb import events as events
+from hedweb import spreadsheet as spreadsheet
+from hedweb import sidecar as sidecar
+from hedweb import strings as strings
 
 
 app_config = current_app.config
@@ -81,8 +87,7 @@ def get_sidecar(arguments, params):
         file_list = []
         for s_string in sidecar_list:
             file_list.append(io.StringIO(s_string))
-        schema = arguments.get('schema', None)
-        arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar", hed_schema=schema)
+        arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar")
     else:
         arguments[base_constants.SIDECAR] = None
 
@@ -102,14 +107,14 @@ def get_input_objects(arguments, params):
     if base_constants.EVENTS_STRING in params and params[base_constants.EVENTS_STRING]:
         arguments[base_constants.EVENTS] = \
             TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
-                         sidecar=arguments.get(base_constants.SIDECAR, None), name='Events', hed_schema=schema)
+                         sidecar=arguments.get(base_constants.SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
         tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                              tag_columns=tag_columns, has_column_names=has_column_names,
-                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv', hed_schema=schema)
+                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:
@@ -241,7 +246,7 @@ def package_spreadsheet(results):
 
 
     """
-    if results['msg_category'] == 'success' and base_constants.SPREADSHEET in results:
+    if results['msg_category'] == 'success' and results.get(base_constants.SPREADSHEET, ''):
         results[base_constants.SPREADSHEET] = results[base_constants.SPREADSHEET].to_csv(file=None)
     elif base_constants.SPREADSHEET in results:
         del results[base_constants.SPREADSHEET]

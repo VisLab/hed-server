@@ -94,10 +94,10 @@ class Test(TestWebBase):
         sidecar = Sidecar(files=json_path, name='bids_events_bad')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-
+        options = {'columns_included': None, 'expand_defs': True, 'check_for_warnings': False}
         events = TabularInput(file=events_path, sidecar=sidecar, name='bids_events')
         with self.app.app_context():
-            results = assemble(hed_schema, events,  expand_defs=True)
+            results = assemble(hed_schema, events, sidecar, options)
             self.assertTrue('data' in results,
                             'assemble results should have a data key when no errors')
             self.assertEqual('warning', results["msg_category"],
@@ -111,8 +111,9 @@ class Test(TestWebBase):
         hed_schema = hedschema.load_schema(schema_path)
         sidecar = Sidecar(files=json_path, name='bids_json')
         events = TabularInput(file=events_path, sidecar=sidecar, name='bids_events')
+        options = {'columns_included': None, 'expand_defs': True, 'check_for_warnings': False}
         with self.app.app_context():
-            results = assemble(hed_schema, events, expand_defs=True)
+            results = assemble(hed_schema, events, sidecar, options)
             self.assertTrue(results['data'],
                             'assemble results should have a data key when no errors')
             self.assertEqual('success', results['msg_category'],
@@ -120,17 +121,17 @@ class Test(TestWebBase):
 
     def test_generate_sidecar_invalid(self):
         from hedweb.events import generate_sidecar
+        options = {'columns_selected': {'event_type': True}}
         with self.assertRaises(AttributeError):
             with self.app.app_context():
-                generate_sidecar(None, columns_selected={'event_type': True})
+                generate_sidecar(None, options)
 
     def test_generate_sidecar_valid(self):
         from hedweb.events import generate_sidecar
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
         events = TabularInput(file=events_path, name='bids_events')
-        results = generate_sidecar(events,
-                                   columns_selected={'event_type': True, 'bci_prediction': True, 'trial': False})
-
+        options = {'columns_selected': {'event_type': True, 'bci_prediction': True, 'trial': False}}
+        results = generate_sidecar(events, options)
         self.assertTrue(results['data'],
                         'generate_sidecar results should have a data key when no errors')
         self.assertEqual('success', results['msg_category'],
@@ -143,10 +144,10 @@ class Test(TestWebBase):
         sidecar = Sidecar(files=json_path, name='bids_sidecar')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-
+        query = ""
         events = TabularInput(file=events_path, sidecar=sidecar, name='bids_events')
         with self.app.app_context():
-            results = search(hed_schema, events, query="")
+            results = search(hed_schema, events, sidecar, query)
             self.assertTrue('data' in results, 'make_query results should have a data key when errors')
             self.assertEqual('warning', results["msg_category"],
                              'make_query msg_category should be warning when errors')
@@ -159,8 +160,9 @@ class Test(TestWebBase):
         hed_schema = hedschema.load_schema(schema_path)
         sidecar = Sidecar(files=json_path, name='bids_json')
         events = TabularInput(file=events_path, sidecar=sidecar, name='bids_events')
+        query = "Sensory-event"
         with self.app.app_context():
-            results = search(hed_schema, events, query="Sensory-event")
+            results = search(hed_schema, events, sidecar, query)
             self.assertTrue(results['data'],
                             'make_query results should have a data key when no errors')
             self.assertEqual('success', results['msg_category'],
@@ -216,7 +218,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = remodel(hed_schema, events, sidecar, remodeler)
         self.assertTrue(results['data'], 'remodel results should have a data key when successful')
-        self.assertEqual('success', results['msg_category'],'remodel msg_category should be success when no errors')
+        self.assertEqual('success', results['msg_category'], 'remodel msg_category should be success when no errors')
         # TODO: Test the rows and columns of result.
 
     def test_events_remodel_invalid_no_hed(self):
@@ -231,15 +233,18 @@ class Test(TestWebBase):
             remodeler = json.load(fp)
         hed_schema = None
         sidecar = None
-        operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure', 'parameters': {'ignore_missing': True}}
-        operation_1 = {'operation': 'unknown_command', 'description': 'bad command', 'parameters': {'ignore_missing': True}}
-        operation_2 = {'command': 'remove_columns', 'description': 'bad parameters', 'parameters': {'ignore_missing': True}}
+        operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure',
+                       'parameters': {'ignore_missing': True}}
+        operation_1 = {'operation': 'unknown_command', 'description': 'bad command',
+                       'parameters': {'ignore_missing': True}}
+        operation_2 = {'command': 'remove_columns', 'description': 'bad parameters',
+                       'parameters': {'ignore_missing': True}}
         operation_bad = [operation_0, remodeler[0], operation_1, remodeler[1], operation_2]
         remodel_bad = {'name': 'remodel_bad.json', 'operations': operation_bad}
         with self.app.app_context():
             results = remodel(hed_schema, events, sidecar, remodel_bad)
         self.assertTrue(results['data'], 'remodel results should have a data key when unsuccessful')
-        self.assertEqual('warning', results['msg_category'],'remodel msg_category should be success when no errors')
+        self.assertEqual('warning', results['msg_category'], 'remodel msg_category should be success when no errors')
 
 
 if __name__ == '__main__':

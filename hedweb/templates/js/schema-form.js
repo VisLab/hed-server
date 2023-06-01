@@ -7,6 +7,7 @@ $(function () {
  * Set the options according to the action specified.
  */
 $('#process_actions').change(function(){
+    clearFlashMessages();
     setOptions();
 });
 
@@ -16,28 +17,33 @@ $('#process_actions').change(function(){
 $('#schema_file').on('change', function () {
     updateFileLabel($('#schema_file').val(), '#schema_file_display_name');
     $('#schema_file_option').prop('checked', true);
-    clearSchemaSubmitFlash()
     updateForm();
 });
 
 $('#schema_url').on('change', function () {
     updateFileLabel($('#schema_url').val(), '#schema_url_display_name');
     $('#schema_url_option').prop('checked', true);
-    clearSchemaSubmitFlash()
     updateForm();
 });
 
 /**
- * Submits the form for conversion if we have a valid file.
+ * Submit the form if a schema is specified.
  */
 $('#schema_submit').on('click', function () {
     if (getSchemaFilename() === "") {
-        flashMessageOnScreen('No valid source input file.  See above.', 'error',
-            'schema_submit_flash')
+        flashMessageOnScreen('No valid source input file.  See above.', 'error', 'schema_flash')
     } else {
         submitSchemaForm();
     }
 });
+
+/**
+ * Clear the form.
+ */
+$('#schema_clear').on('click', function () {
+    clearForm();
+});
+
 
 
 $('#schema_file_option').on('change', function () {
@@ -52,27 +58,19 @@ $('#schema_url_option').on('change',function () {
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#schema_form')[0].reset();
-    $("#validate").prop('checked', true);
+    clearFlashMessages();
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
+    $('#schema_url').val(DEFAULT_XML_URL);
+    $('#schema_file').val('');
     setOptions();
 }
 
 /**
- * Resets the flash messages that aren't related to the form submission.
- A * @param {String} message - If true, reset the flash message related to the submit button.
+ * Resets the flash message that aren't related to the form submission.
  */
-function clearFormFlashMessages(resetSubmitFlash) {
-    flashMessageOnScreen('', 'success', 'schema_file_flash');
-    flashMessageOnScreen('', 'success', 'schema_url_flash');
-    if (resetSubmitFlash) {
-        flashMessageOnScreen('', 'success', 'schema_submit_flash');
-    }
-}
-
-function clearSchemaSubmitFlash() {
-    flashMessageOnScreen('', 'success', 'schema_submit_flash')
+function clearFlashMessages() {
+    flashMessageOnScreen('', 'success', 'schema_flash');
 }
 
 function convertToOutputName(original_filename) {
@@ -92,7 +90,7 @@ function convertToOutputName(original_filename) {
 function getSchemaFilename() {
     let checkRadio = document.querySelector('input[name="schema_upload_options"]:checked');
     if (checkRadio == null) {
-        flashMessageOnScreen('No source file specified.', 'error', 'schema_url_flash');
+        flashMessageOnScreen('No schema source specified.', 'error', 'schema_flash');
         return "";
     }
     let checkRadioVal = checkRadio.id
@@ -100,7 +98,7 @@ function getSchemaFilename() {
     let schemaFileIsEmpty = schemaFile[0].files.length === 0;
     if (checkRadioVal === "schema_file_option") {
         if (schemaFileIsEmpty) {
-            flashMessageOnScreen('Schema file not specified.', 'error', 'schema_file_flash');
+            flashMessageOnScreen('Schema file not specified.', 'error', 'schema_flash');
             return '';
         }
 
@@ -111,7 +109,7 @@ function getSchemaFilename() {
     let schemaUrlIsEmpty = schemaUrl === "";
     if (checkRadioVal === "schema_url_option") {
         if (schemaUrlIsEmpty) {
-            flashMessageOnScreen('URL not specified.', 'error', 'schema_url_flash');
+            flashMessageOnScreen('URL not specified.', 'error', 'schema_flash');
             return '';
         }
         return urlFileBasename(schemaUrl);
@@ -125,6 +123,8 @@ function getSchemaFilename() {
  */
 function prepareForm() {
     clearForm();
+    $('#schema_form')[0].reset();
+    $('#process_actions').val('validate');
     $('#schema_url').val(DEFAULT_XML_URL);
 }
 
@@ -133,7 +133,8 @@ function prepareForm() {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
         $("#options_section").show();
     } else {
@@ -148,10 +149,13 @@ function setOptions() {
 function submitSchemaForm() {
     let schemaForm = document.getElementById("schema_form");
     let formData = new FormData(schemaForm);
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
+    let schemaURL = document.getElementById("schema_url")
+    formData.append("schema_url", schemaURL.value)
     let display_name = convertToOutputName(getSchemaFilename())
-    clearFormFlashMessages(false);
-    flashMessageOnScreen('Schema is being processed...', 'success',
-        'schema_submit_flash')
+    clearFlashMessages();
+    flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     $.ajax({
             type: 'POST',
             url: "{{url_for('route_blueprint.schema_results')}}",
@@ -160,10 +164,10 @@ function submitSchemaForm() {
             processData: false,
             dataType: "text",
             success: function (download, status, xhr) {
-                getResponseSuccess(download, xhr, display_name, 'schema_submit_flash')
+                getResponseSuccess(download, xhr, display_name, 'schema_flash')
             },
             error: function (xhr, status, errorThrown) {
-                getResponseFailure(xhr, status, errorThrown, display_name, 'schema_submit_flash')
+                getResponseFailure(xhr, status, errorThrown, display_name, 'schema_flash')
             }
         }
     )
@@ -172,6 +176,7 @@ function submitSchemaForm() {
 
 
 function updateForm() {
+     clearFlashMessages();
      let filename = getSchemaFilename();
      let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
      let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);
@@ -189,28 +194,28 @@ function updateForm() {
 
      let urlChecked = document.getElementById("schema_url_option").checked;
      if (!urlChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_url_flash')
+        flashMessageOnScreen("", 'success', 'schema_flash')
      }
      let uploadChecked = document.getElementById("schema_file_option").checked;
      if (!uploadChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_file_flash')
+        flashMessageOnScreen("", 'success', 'schema_flash')
      }
 
      if (filename && urlChecked && !hasValidFilename) {
         flashMessageOnScreen('Please choose a valid schema url (.xml, .mediawiki)', 'error',
-        'schema_url_flash');
+        'schema_flash');
      }
 
      if (filename && uploadChecked && !hasValidFilename) {
          flashMessageOnScreen('Please upload a valid schema file (.xml, .mediawiki)', 'error',
-        'schema_file_flash');
+        'schema_flash');
      }
 
      if (!uploadChecked && !urlChecked) {
-        flashMessageOnScreen('No source file specified.', 'error', 'schema_file_flash');
+        flashMessageOnScreen('No source file specified.', 'error', 'schema_flash');
      }
 
-     flashMessageOnScreen('', 'success', 'schema_submit_flash')
+     flashMessageOnScreen('', 'success', 'schema_flash')
 }
 
 
@@ -219,13 +224,7 @@ function urlFileBasename(url) {
     try {
         urlObj = new URL(url)
     } catch (err) {
-        if (err instanceof TypeError) {
-            flashMessageOnScreen(err.message, 'error', 'schema_url_flash');
-            return ""
-        } else {
-            flashMessageOnScreen(err.message, 'error', 'schema_file_flash');
-            return ""
-        }
+       flashMessageOnScreen(err.message, 'error', 'schema_flash');
     }
     let pathname = urlObj.pathname;
     let index = pathname.lastIndexOf('/');

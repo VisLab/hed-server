@@ -7,8 +7,7 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string
 from hed.errors import HedFileError
-from hed.tools.util.io_util import generate_filename
-from hedweb.web_util import form_has_file, form_has_option, form_has_url
+from hedweb.web_util import form_has_file, form_has_option, form_has_url, generate_filename
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config
@@ -38,7 +37,8 @@ def get_schema(arguments):
         else:
             file_found = False
     except HedFileError as e:
-        issues.append({'code': e.args[0], 'message': e.args[1]})
+        # issues.append({'code': e.args[0], 'message': e.args[1]})
+        issues = issues + e.issues
     if not file_found:
         raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
     return hed_schema, issues
@@ -96,9 +96,9 @@ def process(arguments):
     display_name = arguments.get('schema_display_name', 'unknown_source')
     hed_schema, issues = get_schema(arguments)
     if issues:
-        issue_str = get_issue_string(issues, f"Schema for {display_name} had these errors")
+        issue_str = get_issue_string(issues, f"Schema for {display_name} had these issues")
         file_name = generate_filename(arguments[base_constants.SCHEMA_DISPLAY_NAME],
-                                      name_suffix='schema__errors', extension='.txt')
+                                      name_suffix='schema_issues', extension='.txt')
         return {'command': arguments[base_constants.COMMAND],
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': issue_str, 'output_display_name': file_name,
@@ -159,21 +159,21 @@ def schema_validate(hed_schema, display_name):
 
     issues = hed_schema.check_compliance()
     if issues:
-        issue_str = get_printable_issue_string(issues, f"Schema HED 3G compliance errors for {display_name}:")
-        file_name = generate_filename(display_name, name_suffix='schema_3G_compliance_errors', extension='.txt')
+        issue_str = get_printable_issue_string(issues, f"Schema issues for {display_name}:")
+        file_name = generate_filename(display_name, name_suffix='schema_issues', extension='.txt')
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': issue_str, 'output_display_name': file_name,
                 'schema_version': hed_schema.get_formatted_version(as_string=True),
                 'msg_category': 'warning',
-                'msg': 'Schema is not HED 3G compliant'}
+                'msg': 'Schema has validation issues'}
     else:
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': '', 'output_display_name': display_name,
                 'schema_version': hed_schema.get_formatted_version(as_string=True),
                 'msg_category': 'success',
-                'msg': 'Schema had no HED-3G validation errors'}
+                'msg': 'Schema had no validation issues'}
 
 
 def get_issue_string(issues, title=None):

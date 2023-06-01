@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>What is HED?</h2>
+    <h3>HED Tools Online</h3>
+    <p> </p>
+    <h4>What is HED?</h4>
     <p>HED (Hierarchical Event Descriptors) is a framework for systematically describing both laboratory and real-world
         events. HED tags are comma-separated path strings. The goal of HED is to describe precisely the nature of the
         events of interest occurring in an experiment using a common structured vocabulary and standardized tools.
@@ -9,45 +11,115 @@
         HED has been adopted as part of the BIDS (<a href="http://bids.neuroimaging.io"><b>http://bids.neuroimaging.io</b></a>)
         standard for brain imaging.</p>
 
-    <p>The HED standards organization maintains the HED schema and tools at HED organization repository
-        <a href="https://github.com/hed-standard"><b>https://github.com/hed-standard</b></a>. The HED schema can be viewed
-        using the <a href="https://www.hedtags.org/display_hed.html"><b>HED viewer</b></a>.
+
+
+    <h4>HED online tools summary</h4>
+    <p> 
+    The following table summarizes the available online tools. The tools are organized around the
+        types of data that the tools handle. The Actions refer to the types of actions that can be performed on the
+    data through the online tools. Each action is linked to its corresponding documentation to provide additional
+        information.</p>
+    
+    <table class="table table-striped table-hover">
+    <thead>
+       <tr><th scope="col">Data type<br/>(linked to form></th><th scope="col">Action<br/>(linked to docs)</th><th scope="col">Description</th>
+    </thead>
+        <tr class="table-active">
+            <td><a href="{{ url_for('route_blueprint.render_events_form') }}"><strong>Events</strong></a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-an-events-file">Validate</a></td>
+            <td>Validate HED in an events file and its sidecar.</td></tr>
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#assemble-annotations">Assemble annotations</a></td>
+            <td>Append a <code>HED_assembled</code> column to an events file.</td></tr> 
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#generate-sidecar-template">Generate sidecar template</a></td>
+            <td>Create a sidecar template from an events file.</td></tr>    
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#execute-remodel-script">Executes remodel script</a></td>
+            <td>Execute JSON script of <a href="https://www.hed-resources.org/en/latest/FileRemodelingTools.html">HED remodeling commands</a>.</td></tr>
+        <tr class="table-active">
+            <td><a href="{{ url_for('route_blueprint.render_sidecar_form') }}"><strong>Sidecars</strong></a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-sidecar">Validate</a></td>
+            <td>Validate HED in a BIDS JSON sidecar.</td></tr>
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-sidecar-to-long">Convert to long</a></td>
+            <td>Convert HED tags in a sidecar to full paths.</td></tr> 
+                <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-sidecar-to-short">Convert to short</a></td>
+            <td>Convert HED tags in a sidecar to single tags.</td></tr> 
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#extract-spreadsheet-from-sidecar">Extract HED spreadsheet</a></td>
+            <td>Create a 4-column spreadsheet from HED in a sidecar.</td></tr>    
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#merge-a-spreadsheet-with-a-sidecar">Merge HED spreadsheet</a></td>
+            <td>Merge HED from spreadsheet into a JSON sidecar.</td></tr>
+         <tr class="table-active">
+             <td><a href="{{ url_for('route_blueprint.render_spreadsheet_form') }}"><strong>Spreadsheets</strong></a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-spreadsheet">Validate</a></td>
+            <td>Validate HED in a spreadsheet (.xlsx or .tsv).</td></tr>
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-spreadsheet-to-long">Convert to long</a></td>
+            <td>Convert HED tags in a spreadsheet to full paths.</td></tr> 
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-spreadsheet-to-short">Convert to short</a></td>
+            <td>Convert HED tags in a spreadsheet to single tags.</td></tr> 
+        <tr class="table-active">
+            <td><a href="{{ url_for('route_blueprint.render_string_form') }}"><strong>Strings<strong/></a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-string">Validate</a></td>
+            <td>Validate a HED string.</td></tr>
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-string-to-long">Convert to long</a></td>
+            <td>Convert a HED string to full paths.</td></tr> 
+         <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-string-to-short">Convert to short</a></td>
+            <td>Convert a HED string to single tags.</td></tr> 
+        <tr class="table-active">
+            <td><a href="{{ url_for('route_blueprint.render_schema_form') }}"><strong>Schemas</strong></a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-schema">Validate</a></td>
+            <td>Validate a HED schema.</td></tr>
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-schema">Convert schema</a></td>
+            <td>Convert a HED schema to other format.</td></tr> 
+    </table>
+        <p><strong>Events files</strong> are tabular (tab-separated) files.
+        The first row of an events file contains column names. Each subsequent row corresponds to an event marker
+            at a specified time in the corresponding data file.</p>
+    
+        <p><strong>Sidecars</strong> are JSON text files containing metadata.
+            Sidecars follow the requirements of the 
+            <a href="https://bids-specification.readthedocs.io/en/stable/">BIDS (Brain Imaging Data Structure)</a> standard.</p>
+    
+        <p><strong>Spreadsheets</strong> contain tabular data in either as an Excel .xslx or as a tab-separated text file.
+            They are used for convenience in assigning HED tags to event codes.</p>
+    
+    <p><strong>Strings</strong> refer to HED annotations, which are entered as strings for quick checks for validity or conversion.</p>
+    
+    <p><strong>Schemes</strong> refer to HED schema vocabularies, which may be either in .mediawiki or .xml format. These tools
+        are used by schema developers creating the HED vocabularies and are not of interest to annotators or analysts.</p>
+    
+        
+    More detailed help on using these online tools is available at:
+        <a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#"><b>HED online tools</b></a>
     </p>
 
-    <h3>HED schema generations (3G versus 2G)</h3>
-    <p>
-        HED (starting with HED schema version 8.0.0) uses a new more powerful framework for annotation,
-        known as colloquially as HED-3G or HED third generation. Schema versions earlier than 8.0.0 will be
-        deprecated in 2022. You should always use HED schema versions HED 8.0.0 or greater for annotation.
-    </p>
-
-    <h3>HED online tools help</h3>
-    <p>
-        More detailed help on using these online tools is available at:
-        <a href="https://hed-examples.readthedocs.io/en/latest/HedToolsOnline.html"><b>HED online tools</b></a>
-    </p>
-
-   <h3>HED services help</h3>
+   <h4>HED REST services</h4>
     <p>
         The HED online tools are also available as callable web services. More detailed help on calling these
         services is available at:
-        <a href="https://hed-examples.readthedocs.io/en/latest/HedToolsOnline.html#hed-restful-services-anchor"><b>HED REST services</b></a>
-    </p>
-    <p>
+        <a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#hed-restful-services"><b>HED RESTful services</b></a>
         Downloadable examples of calling these services from a MATLAB program can be found at:
-        <a href="https://github.com/hed-standard/hed-examples/tree/main/hedcode/matlab_scripts/hed_services"><b>Github MATLAB examples</b></a>
+        <a href="https://github.com/hed-standard/hed-examples/tree/main/hedcode/matlab_scripts/web_services">
+            Github MATLAB examples</a>
      </p>
-    <h3>Additional information</h3>
-    <p>
-        Additional tools are under development. All code is open-source and available in the
-        <a href="https://github.com/hed-standard/hed-python"><b>hed-python</b></a> repository on Github.
-    </p>
-    <p>
-        The source code for the web interface and docker deployment is available in the
-        <a href="https://github.com/hed-standard/hed-web"><b>hed-web</b></a> repository on Github.
-    </p>
-    <p>
-        For more information on HED, visit <a href="https://www.hedtags.org"><b>https://www.hedtags.org</b></a>
-        or the <a href="https://hed-specification.readthedocs.io/en/latest/index.html"><b>HED documentation</b></a>
-    </p>
+    
+        <h4>Where to find out more?</h4>
+    <ul>
+        <li>The <a href="https://www.hedtags.org">HED standards home page</a> has links to all things HED.</li>
+        <li> The<a href="https://github.com/hed-standard">HED standards GitHub organization</a> 
+            contains all of the source for code and docs for HED</li>
+        <li> The <a href="https://www.hedtags.org/display_hed.html">HED schema viewer</a> allows you to browse 
+            HED vocabularies, both released and under development.</li>
+        <li> The <a href="https://www.hed-resources.org">HED resources page</a> has links to all HED documentation.</li>
+    </ul>
+    
 {% endblock %}

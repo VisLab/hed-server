@@ -9,11 +9,13 @@ $(function () {
  */
 $('#process_actions').change(function(){
     setOptions();
+    clearSpreadsheet();
+    clearFlashMessages();
 });
 
 
 /**
- * Submits the form if the tag columns textbox is valid.
+ * Submits the form if a file is given and the schema is selected.
  */
 $('#spreadsheet_submit').on('click', function () {
     if (fileIsSpecified('#spreadsheet_file', 'spreadsheet_flash', 'Spreadsheet is not specified.') &&
@@ -23,11 +25,20 @@ $('#spreadsheet_submit').on('click', function () {
 });
 
 /**
+ * Clears the form.
+ */
+$('#spreadsheet_clear').on('click', function () {
+    clearForm();
+});
+
+
+/**
  * Clear the fields in the form.
  */
 function clearForm() {
-    $('#spreadsheet_form')[0].reset();
-    clearWorksheet()
+    clearFlashMessages();
+    
+    clearSpreadsheet()
     $("#validate").prop('checked', true);
     setOptions();
     hideOtherSchemaVersionFileUpload()
@@ -40,9 +51,8 @@ function clearFlashMessages() {
     clearColumnInfoFlashMessages();
     clearSchemaSelectFlashMessages();
     clearWorksheetFlashMessages();
-    flashMessageOnScreen('', 'success', 'spreadsheet_submit_flash');
+    flashMessageOnScreen('', 'success', 'spreadsheet_flash');
 }
-
 
 
 /**
@@ -50,23 +60,24 @@ function clearFlashMessages() {
  * components will be hidden and populated.
  */
 function prepareForm() {
+    $('#spreadsheet_form')[0].reset();
     clearForm();
     getSchemaVersions()
 }
+
+
 
 /**
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    if ($("#validate").is(":checked")) {
-        hideOption("expand_defs");
+    let selectedElement = document.getElementById("process_actions");
+    if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
-    } else if ($("#to_long").is(":checked")) {
+    } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
-    } else if ($("#to_short").is(":checked")) {
+    } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
     }
 }
 
@@ -79,6 +90,8 @@ function submitForm() {
     let formData = new FormData(spreadsheetForm);
     let worksheetName = getWorksheetName();
     formData.append('worksheet_selected', worksheetName)
+    let selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value)
     let prefix = 'issues';
     if(worksheetName) {
         prefix = prefix + '_worksheet_' + worksheetName;
@@ -87,7 +100,7 @@ function submitForm() {
     let display_name = convertToResultsName(spreadsheetFile, prefix)
     clearFlashMessages();
     flashMessageOnScreen('Spreadsheet is being processed ...', 'success',
-        'spreadsheet_submit_flash')
+        'spreadsheet_flash')
     let isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
             !$("#validate").prop("checked");
     $.ajax({
@@ -99,8 +112,8 @@ function submitForm() {
         xhr: function () {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 2) {
-                    if (xhr.status == 200 && isExcel) {
+                if (xhr.readyState === 2) {
+                    if (xhr.status === 200 && isExcel) {
                         xhr.responseType = "blob";
                     } else {
                         xhr.responseType = "text";
@@ -110,10 +123,10 @@ function submitForm() {
             return xhr;
         },
         success: function (data, status, xqXHR) {
-            getResponseSuccess(data, xqXHR, display_name, 'spreadsheet_submit_flash')
+            getResponseSuccess(data, xqXHR, display_name, 'spreadsheet_flash')
         },
         error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'spreadsheet_submit_flash')
+            getResponseFailure(xhr, status, errorThrown, display_name, 'spreadsheet_flash')
         }
     })
 }

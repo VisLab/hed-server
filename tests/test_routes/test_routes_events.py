@@ -7,6 +7,7 @@ from hedweb.constants import base_constants
 
 
 class Test(TestWebBase):
+
     def test_events_results_empty_data(self):
         response = self.app.test.post('/events_submit')
         self.assertEqual(200, response.status_code, 'HED events request succeeds even when no data')
