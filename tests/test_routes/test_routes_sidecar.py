@@ -134,12 +134,12 @@ class Test(TestWebBase):
 
     def test_sidecar_results_to_short_invalid(self):
         with self.app.app_context():
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
             with open(json_path, 'r') as sc:
                 x = sc.read()
             json_buffer = io.BytesIO(bytes(x, 'utf-8'))
 
-            input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_SHORT,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
@@ -156,11 +156,11 @@ class Test(TestWebBase):
 
     def test_sidecar_results_validate_invalid(self):
         with self.app.app_context():
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
             with open(json_path, 'r') as sc:
                 x = sc.read()
             json_buffer = io.BytesIO(bytes(x, 'utf-8'))
-            input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
