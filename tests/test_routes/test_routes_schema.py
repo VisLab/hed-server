@@ -93,7 +93,7 @@ class Test(TestWebBase):
 
     def test_schema_results_convert_xml_url_valid(self):
         schema_url = \
-            'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.0.xml'
+            'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.0.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
                           'command_option': 'convert_schema',
@@ -110,7 +110,7 @@ class Test(TestWebBase):
 
     def test_schema_results_convert_xml_url_valid2(self):
         schema_url = \
-            'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.0.0.xml'
+            'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.0.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
                           'command_option': 'convert_schema',
@@ -192,7 +192,7 @@ class Test(TestWebBase):
 
     def test_schema_results_validate_xml_url_invalid(self):
         schema_url = \
-            'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED7.2.0.xml'
+            'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/deprecated/HED7.2.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
                           'command_option': 'validate',
@@ -209,7 +209,7 @@ class Test(TestWebBase):
 
     def test_schema_results_validate_xml_url_valid(self):
         schema_url = \
-            'https://raw.githubusercontent.com/hed-standard/hed-specification/master/hedxml/HED8.1.0.xml'
+            'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.1.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
                           'command_option': 'validate',

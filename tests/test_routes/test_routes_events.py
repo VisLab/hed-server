@@ -46,7 +46,7 @@ class Test(TestWebBase):
             events_buffer.close()
 
     def test_events_results_assemble_invalid(self):
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.tsv')
 
         with open(json_path, 'r') as sc:
@@ -58,9 +58,9 @@ class Test(TestWebBase):
         events_buffer = io.BytesIO(bytes(y, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
+                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events_bad.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'bids_events.tsv'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
@@ -162,7 +162,7 @@ class Test(TestWebBase):
             events_buffer.close()
 
     def test_events_results_validate_invalid(self):
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.tsv')
 
         with open(json_path, 'r') as sc:
@@ -174,9 +174,9 @@ class Test(TestWebBase):
         events_buffer = io.BytesIO(bytes(y, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
+                          base_constants.SIDECAR_FILE: (json_buffer, 'bids_events_bad.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'events_file'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
