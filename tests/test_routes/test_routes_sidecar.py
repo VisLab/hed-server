@@ -37,14 +37,14 @@ class Test(TestWebBase):
             sidecar_buffer.close()
 
     def test_sidecar_results_to_long_invalid(self):
-        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
         with open(sidecar_path, 'r') as sc:
             x = sc.read()
         sidecar_buffer = io.BytesIO(bytes(x, 'utf-8'))
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '7.2.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG,
-                          base_constants.SIDECAR_FILE: (sidecar_buffer, 'HED7.2.0.xml'),
+                          base_constants.SIDECAR_FILE: (sidecar_buffer, 'bids_events_bad.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
 
             response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)

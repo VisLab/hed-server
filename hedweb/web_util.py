@@ -17,6 +17,16 @@ app_config = current_app.config
 TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 
+def convert_hed_versions(hed_info):
+    hed_list = []
+    for key, key_list in hed_info['schema_version_list'].items():
+        if key is None:
+            hed_list = hed_list + key_list
+        else:
+            hed_list = hed_list + [key+ '_' + element for element in key_list ]
+    return {'schema_version_list': hed_list}
+
+
 def file_extension_is_valid(filename, accepted_extensions=None):
     """ Return True if the file extension is an accepted one.
 
@@ -248,7 +258,11 @@ def get_hed_schema_from_pull_down(request):
     if base_constants.SCHEMA_VERSION not in request.form:
         raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
     elif request.form[base_constants.SCHEMA_VERSION] != base_constants.OTHER_VERSION_OPTION:
-        hed_file_path = hedschema.get_path_from_hed_version(request.form[base_constants.SCHEMA_VERSION])
+        version = request.form[base_constants.SCHEMA_VERSION].split('_')
+        if len(version) == 1:
+            hed_file_path = hedschema.get_path_from_hed_version(version[0])
+        else:
+            hed_file_path = hedschema.get_path_from_hed_version(version[1], library_name=version[0])
         hed_schema = hedschema.load_schema(hed_file_path)
     elif request.form[base_constants.SCHEMA_VERSION] == \
             base_constants.OTHER_VERSION_OPTION and base_constants.SCHEMA_PATH in request.files:

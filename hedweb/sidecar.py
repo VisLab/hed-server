@@ -42,8 +42,13 @@ def get_input_from_form(request):
                  }
     if base_constants.SIDECAR_FILE in request.files:
         f = request.files[base_constants.SIDECAR_FILE]
-        fb = io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))
-        arguments[base_constants.SIDECAR] = Sidecar(files=fb, name=secure_filename(f.filename))
+        if not f.filename:
+            fb = [io.StringIO('{}')]
+            filename = 'empty.json'
+        else:
+            fb = [io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))]
+            filename = secure_filename(f.filename)
+        arguments[base_constants.SIDECAR] = Sidecar(files=fb, name=filename)
     if base_constants.SPREADSHEET_FILE in request.files and \
             request.files[base_constants.SPREADSHEET_FILE].filename:
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
