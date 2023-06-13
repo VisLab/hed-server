@@ -20,8 +20,12 @@ $('#sidecar_file').change(function() {
  * Submit the form if schema and json file specified.
  */
 $('#sidecar_submit').on('click', function () {
-    if (fileIsSpecified('#sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.' ) &&
-        schemaSpecifiedWhenOtherIsSelected()) {
+    if (!schemaSpecifiedWhenOtherIsSelected()) {
+        return;
+    } 
+    // let selectedElement = document.getElementById("process_actions");
+    if ($('#process_actions').val() === "merge_spreadsheet" ||
+        fileIsSpecified('#sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.' )) {
         submitForm();
     }
 });
