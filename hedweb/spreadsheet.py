@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.models.spreadsheet_input import SpreadsheetInput
+from hedweb.web_util import get_schema_versions
 
 from hedweb.constants import base_constants, file_constants
 from hedweb.columns import get_prefix_dict
@@ -114,7 +115,7 @@ def spreadsheet_convert(hed_schema, spreadsheet, options=None):
     return {base_constants.COMMAND: command,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': '',
             base_constants.SPREADSHEET: spreadsheet, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             base_constants.MSG_CATEGORY: 'success',
             base_constants.MSG: f'Spreadsheet {display_name} converted_successfully'}
 
@@ -154,6 +155,6 @@ def spreadsheet_validate(hed_schema, spreadsheet, options=None):
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
             base_constants.COMMAND_TARGET: 'spreadsheet', 'data': data,
             base_constants.SPREADSHEET: '',
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             "output_display_name": file_name,
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

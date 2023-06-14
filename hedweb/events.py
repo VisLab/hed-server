@@ -17,7 +17,8 @@ from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
 from hedweb.constants import base_constants
 from hedweb.columns import create_column_selections, create_columns_included
-from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option, \
+    get_schema_versions
 
 app_config = current_app.config
 
@@ -237,7 +238,7 @@ def remodel(hed_schema, events, sidecar, remodel_operations, options=None):
     output_name = file_name
     response = {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
                 base_constants.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
-                base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+                base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
                 base_constants.MSG_CATEGORY: 'success',
                 base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
     if dispatch.summary_dicts and include_summaries:
@@ -340,7 +341,7 @@ def validate(hed_schema, events, sidecar=None, options=None):
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
             'data': data, "output_display_name": file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
 
 
@@ -366,5 +367,5 @@ def validate_query(hed_schema, query):
         msg = f"Query had no validation issues"
 
     return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'query',
-            'data': data, base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            'data': data, base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

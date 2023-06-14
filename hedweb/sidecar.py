@@ -14,7 +14,8 @@ from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 
 from hedweb.constants import base_constants, file_constants
-from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option, \
+    get_schema_versions
 
 app_config = current_app.config
 
@@ -134,7 +135,7 @@ def sidecar_convert(hed_schema, sidecar, options=None):
     msg = f'Sidecar file {display_name} was successfully converted'
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             'msg_category': category, 'msg': msg}
 
 
@@ -231,5 +232,5 @@ def sidecar_validate(hed_schema, sidecar, options=None):
 
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

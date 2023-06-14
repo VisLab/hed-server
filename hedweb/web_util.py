@@ -8,6 +8,7 @@ from flask import current_app, Response, make_response, send_file
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
+from hed import HedSchema, HedSchemaGroup
 
 from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
 from hedweb.constants import base_constants, file_constants
@@ -23,7 +24,7 @@ def convert_hed_versions(hed_info):
         if key is None:
             hed_list = hed_list + key_list
         else:
-            hed_list = hed_list + [key+ '_' + element for element in key_list ]
+            hed_list = hed_list + [key + '_' + element for element in key_list]
     return {'schema_version_list': hed_list}
 
 
@@ -279,6 +280,15 @@ def get_option(options, option_name, default_value):
     if options and option_name in options:
         option_value = options[option_name]
     return option_value
+
+
+def get_schema_versions(hed_schema):
+    if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
+        return hed_schema.get_formatted_version()
+    if not hed_schema:
+        return ''
+    else:
+        raise ValueError("InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group")
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):

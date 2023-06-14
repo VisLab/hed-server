@@ -203,7 +203,6 @@ class Test(TestWebBase):
     def test_bad_sidecar(self):
         from hed import models
         from hed.schema import load_schema_version
-        from hedweb.sidecar import sidecar_convert
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events.json')
         json_sidecar = models.Sidecar(files=json_path, name='bids_events_bad')
         hed_schema = load_schema_version('8.1.0')
