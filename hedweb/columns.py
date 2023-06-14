@@ -149,7 +149,7 @@ def get_prefix_dict(form_dict):
 
     Returns:
         list: List of selected columns
-        dict: 
+        dict: Prefix dictionary
 
     Note: The form counts columns starting from 1 but prefix dictionary starts with index 0.
     """
