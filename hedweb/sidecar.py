@@ -120,13 +120,24 @@ def sidecar_convert(hed_schema, sidecar, options=None):
         return results
     display_name = sidecar.name
     command = get_option(options, base_constants.COMMAND, None)
+    expand_defs = get_option(options, base_constants.EXPAND_DEFS, False)
+    if expand_defs:
+        def_dicts = sidecar.extract_definitions(hed_schema=hed_schema)
+    else:
+        def_dicts = None
     if command == base_constants.COMMAND_TO_LONG:
         tag_form = 'long_tag'
     else:
         tag_form = 'short_tag'
     for column_data in sidecar:
         hed_strings = column_data.get_hed_strings()
-        hed_strings = df_util.convert_to_form(hed_strings, hed_schema, tag_form)
+        if hed_strings.empty:
+            continue
+        if expand_defs:
+            df_util.expand_defs(hed_strings, hed_schema, def_dicts, columns=None)
+        else:
+            df_util.shrink_defs(hed_strings, hed_schema)
+        df_util.convert_to_form(hed_strings, hed_schema, tag_form)
         column_data.set_hed_strings(hed_strings)
 
     file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
