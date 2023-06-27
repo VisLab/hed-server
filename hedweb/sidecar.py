@@ -14,7 +14,8 @@ from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 
 from hedweb.constants import base_constants, file_constants
-from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option
+from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_option, \
+    get_schema_versions
 
 app_config = current_app.config
 
@@ -119,13 +120,24 @@ def sidecar_convert(hed_schema, sidecar, options=None):
         return results
     display_name = sidecar.name
     command = get_option(options, base_constants.COMMAND, None)
+    expand_defs = get_option(options, base_constants.EXPAND_DEFS, False)
+    if expand_defs:
+        def_dicts = sidecar.extract_definitions(hed_schema=hed_schema)
+    else:
+        def_dicts = None
     if command == base_constants.COMMAND_TO_LONG:
         tag_form = 'long_tag'
     else:
         tag_form = 'short_tag'
     for column_data in sidecar:
         hed_strings = column_data.get_hed_strings()
-        hed_strings = df_util.convert_to_form(hed_strings, hed_schema, tag_form)
+        if hed_strings.empty:
+            continue
+        if expand_defs:
+            df_util.expand_defs(hed_strings, hed_schema, def_dicts, columns=None)
+        else:
+            df_util.shrink_defs(hed_strings, hed_schema)
+        df_util.convert_to_form(hed_strings, hed_schema, tag_form)
         column_data.set_hed_strings(hed_strings)
 
     file_name = generate_filename(display_name, name_suffix=f"_{tag_form}", extension='.json', append_datetime=True)
@@ -134,7 +146,7 @@ def sidecar_convert(hed_schema, sidecar, options=None):
     msg = f'Sidecar file {display_name} was successfully converted'
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             'msg_category': category, 'msg': msg}
 
 
@@ -231,5 +243,5 @@ def sidecar_validate(hed_schema, sidecar, options=None):
 
     return {base_constants.COMMAND: command, base_constants.COMMAND_TARGET: 'sidecar',
             'data': data, 'output_display_name': file_name,
-            base_constants.SCHEMA_VERSION: hedschema.get_schema_versions(hed_schema, as_string=True),
+            base_constants.SCHEMA_VERSION: get_schema_versions(hed_schema),
             base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}

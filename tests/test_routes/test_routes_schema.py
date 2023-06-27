@@ -38,13 +38,13 @@ class Test(TestWebBase):
         from hed.errors import HedFileError
         from hed import schema as hedschema
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                       '../data/HEDBad8.2.0.mediawiki')
+                                   '../data/HEDBad8.2.0.mediawiki')
         with open(schema_path, 'r') as sc:
             x = sc.read()
         schema_buffer = io.BytesIO(bytes(x, 'utf-8'))
         schema_string = schema_buffer.read(-1).decode('ascii')
         try:
-            hed_schema = hedschema.from_string(schema_string, file_type=schema_path)
+            hedschema.from_string(schema_string, file_type=schema_path)
         except HedFileError as e:
             self.assertIsInstance(e.issues, list)
 
@@ -191,8 +191,8 @@ class Test(TestWebBase):
             schema_buffer.close()
 
     def test_schema_results_validate_xml_url_invalid(self):
-        schema_url = \
-            'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/deprecated/HED7.2.0.xml'
+        schema_url = 'https://raw.githubusercontent.com/hed-standard/hed-schemas/' + \
+                     'main/standard_schema/hedxml/deprecated/HED7.2.0.xml'
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_url_option',
                           'command_option': 'validate',
