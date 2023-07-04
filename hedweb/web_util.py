@@ -339,13 +339,20 @@ def handle_http_error(ex):
     """
     if hasattr(ex, 'error_type'):
         error_code = ex.error_type
+    elif hasattr(ex, 'code'):
+        error_code = ex.code
     else:
         error_code = type(ex).__name__
     if hasattr(ex, 'message'):
         message = ex.message
     else:
         message = str(ex)
-    error_message = f"{error_code}: [{message}]"
+    message = message.replace('\n', ' ')
+    if hasattr(ex, 'filename'):
+        filename = str(ex.filename)
+    else:
+        filename = ''
+    error_message = f"{error_code}: {filename} [{message}]"
     return generate_text_response({'data': '', base_constants.MSG_CATEGORY: 'error', base_constants.MSG: error_message})
 
 
