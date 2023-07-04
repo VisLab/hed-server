@@ -208,7 +208,7 @@ class Test(TestWebBase):
             self.assertEqual(200, response.status_code, 'Invalid events file has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("error", headers_dict["Category"], "The invalid events file not validate")
-            self.assertTrue(headers_dict["Message"].startswith("HedFileError"))
+            self.assertTrue(headers_dict["Message"].startswith("INVALID_FILE_FORMAT"))
             self.assertFalse(response.data, "The assembled events file should be empty")
             sidecar_buffer.close()
 
