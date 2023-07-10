@@ -139,7 +139,7 @@ def assemble(hed_schema, events, sidecar, options=None):
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
             'definitions': DefinitionDict.get_as_strings(definitions),
-            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            'schema_version': hed_schema.get_formatted_version(),
             'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
 
@@ -298,7 +298,7 @@ def search(hed_schema, events, sidecar, query, options=None):
     return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
             base_constants.COMMAND_TARGET: 'events',
             'data': csv_string, 'output_display_name': file_name,
-            'schema_version': hed_schema.get_formatted_version(as_string=True),
+            'schema_version': hed_schema.get_formatted_version(),
             base_constants.MSG_CATEGORY: 'success', base_constants.MSG: msg}
 
 

@@ -93,7 +93,7 @@ def schema_version_results():
             f = request.files[base_constants.SCHEMA_PATH]
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
                                                file_type=secure_filename(f.filename))
-            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version(as_string=True)
+            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)
     except Exception as ex:
         return handle_error(ex)
