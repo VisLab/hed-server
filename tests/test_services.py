@@ -96,7 +96,7 @@ class Test(TestWebBase):
             results = response['results']
             self.assertEqual('warning', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual('8.1.0', results[base_constants.SCHEMA_VERSION], 'Version 8.1.0 was used')
+            self.assertEqual(json.dumps('8.1.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.1.0 was used')
 
     def test_process_services_sidecar_a(self):
         from hedweb.services import process
@@ -119,7 +119,7 @@ class Test(TestWebBase):
             results = response['results']
             self.assertEqual('success', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual('8.2.0', results[base_constants.SCHEMA_VERSION], 'Version 8.2.0 was used')
+            self.assertEqual(json.dumps('8.2.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.2.0 was used')
 
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with open(json_path) as f:
@@ -134,7 +134,7 @@ class Test(TestWebBase):
             results = response['results']
             self.assertTrue(results['data'], 'sidecar_validation produces errors when file not valid')
             self.assertEqual('warning', results['msg_category'], "sidecar_validation did not valid with 7.2.0")
-            self.assertEqual('8.2.0', results['schema_version'], 'Version 7.2.0 was used')
+            self.assertEqual(json.dumps('8.2.0'), results['schema_version'], 'Version 7.2.0 was used')
 
     def test_services_get_sidecar(self):
         from hedweb.services import get_sidecar
