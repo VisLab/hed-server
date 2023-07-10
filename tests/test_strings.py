@@ -51,7 +51,7 @@ class Test(TestWebBase):
         from hedweb.strings import convert
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        string_list = [HedString('Red, Blech')]
+        string_list = [HedString('Red, Blech', hed_schema)]
 
         with self.app.app_context():
             results = convert(hed_schema, string_list)
@@ -61,7 +61,7 @@ class Test(TestWebBase):
         from hedweb.strings import convert
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        string_list = [HedString('Property/Informational-property/Description/Blech, Blue')]
+        string_list = [HedString('Property/Informational-property/Description/Blech, Blue', hed_schema)]
         with self.app.app_context():
             results = convert(hed_schema, string_list, base_constants.COMMAND_TO_SHORT)
             data = results['data']
@@ -74,11 +74,10 @@ class Test(TestWebBase):
 
     def test_string_convert_to_long(self):
         from hedweb.strings import convert
-        string_list = [HedString('Red'), HedString('Blue')]
 
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-
+        string_list = [HedString('Red', hed_schema), HedString('Blue', hed_schema)]
         with self.app.app_context():
             results = convert(hed_schema, string_list, command=base_constants.COMMAND_TO_LONG)
             self.assertEqual('success', results['msg_category'],
@@ -88,13 +87,13 @@ class Test(TestWebBase):
         from hedweb.strings import validate
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
-        string_list = [HedString('Red'), HedString('Blech')]
+        string_list = [HedString('Red', hed_schema), HedString('Blech', hed_schema)]
 
         with self.app.app_context():
             results = validate(hed_schema, string_list)
             self.assertEqual('warning', results['msg_category'], "validate has warning if validation issues")
 
-        string_list = [HedString('Red'), HedString('Blue')]
+        string_list = [HedString('Red', hed_schema), HedString('Blue', hed_schema)]
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         with self.app.app_context():

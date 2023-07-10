@@ -29,7 +29,7 @@ class Test(TestWebBase):
             response = self.app.test.post('/schema_version', content_type='multipart/form-data', data=data)
             self.assertEqual(200, response.status_code, 'The HED version list does not require data')
             response_dict = json.loads(response.data.decode('utf-8'))
-            self.assertEqual("8.0.0", response_dict["schema_version"], "The HED version should be returned")
+            self.assertEqual(json.dumps("8.0.0"), response_dict["schema_version"], "The HED version should be returned")
             y.close()
 
 

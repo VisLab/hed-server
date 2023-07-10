@@ -23,7 +23,7 @@ def get_input_from_form(request):
     hed_schema = get_hed_schema_from_pull_down(request)
     hed_string = request.form.get(base_constants.STRING_INPUT, None)
     if hed_string:
-        string_list = [HedString(hed_string)]
+        string_list = [HedString(hed_string, hed_schema)]
     else:
         raise HedFileError('EmptyHedString', 'Must enter a HED string', '')
     arguments = {base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
@@ -84,24 +84,14 @@ def convert(hed_schema, string_list, command=base_constants.COMMAND_TO_SHORT, ch
     conversion_errors = []
     for pos, hed_string_obj in enumerate(string_list, start=1):
         if command == base_constants.COMMAND_TO_LONG:
-            converted_string, issues = hed_string_obj.convert_to_long(hed_schema)
+            converted_string = hed_string_obj.get_as_form('long_tag')
         else:
-            converted_string, issues = hed_string_obj.convert_to_short(hed_schema)
-        if issues:
-            conversion_errors.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
+            converted_string = hed_string_obj.get_as_form('short_tag')
         strings.append(converted_string)
 
-    if conversion_errors:
-        return {base_constants.COMMAND: command,
-                base_constants.COMMAND_TARGET: 'strings',
-                'data': conversion_errors, 'additional_info': string_list,
-                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
-                'msg_category': 'warning',
-                'msg': 'Some strings had conversion issues'}
-    else:
         return {base_constants.COMMAND: command,
                 base_constants.COMMAND_TARGET: 'strings', 'data': strings,
-                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
+                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(),
                 'msg_category': 'success',
                 'msg': 'Strings converted successfully'}
 
@@ -127,12 +117,12 @@ def validate(hed_schema, string_list, check_for_warnings=False):
     if validation_issues:
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'strings', 'data': validation_issues,
-                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
+                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(),
                 'msg_category': 'warning',
                 'msg': 'Strings had validation issues'}
     else:
         return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'strings', 'data': '',
-                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(as_string=True),
+                base_constants.SCHEMA_VERSION: hed_schema.get_formatted_version(),
                 'msg_category': 'success',
                 'msg': 'Strings validated successfully...'}
