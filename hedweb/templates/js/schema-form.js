@@ -17,20 +17,32 @@ $('#process_actions').change(function(){
 $('#schema_file').on('change', function () {
     updateFileLabel($('#schema_file').val(), '#schema_file_display_name');
     $('#schema_file_option').prop('checked', true);
-    updateForm();
+    updateFlash("schema");
+});
+
+$('#second_schema_file').on('change', function () {
+    updateFileLabel($('#second_schema_file').val(), '#second_schema_file_display_name');
+    $('#second_schema_file_option').prop('checked', true);
+    updateFlash("second_schema");
 });
 
 $('#schema_url').on('change', function () {
     updateFileLabel($('#schema_url').val(), '#schema_url_display_name');
     $('#schema_url_option').prop('checked', true);
-    updateForm();
+    updateFlash("schema");
+});
+
+$('#second_schema_url').on('change', function () {
+    updateFileLabel($('#second_schema_url').val(), '#second_schema_url_display_name');
+    $('#second_schema_url_option').prop('checked', true);
+    updateFlash("second_schema");
 });
 
 /**
  * Submit the form if a schema is specified.
  */
 $('#schema_submit').on('click', function () {
-    if (getSchemaFilename() === "") {
+    if (getSchemaFilename("schema") === "") {
         flashMessageOnScreen('No valid source input file.  See above.', 'error', 'schema_flash')
     } else {
         submitSchemaForm();
@@ -54,6 +66,14 @@ $('#schema_url_option').on('change',function () {
     updateForm();
 });
 
+$('#second_schema_file_option').on('change', function () {
+    updateForm();
+});
+
+$('#second_schema_url_option').on('change',function () {
+    updateForm();
+});
+
 /**
  * Clear the fields in the form.
  */
@@ -62,7 +82,9 @@ function clearForm() {
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
     $('#schema_url').val(DEFAULT_XML_URL);
+    $('#second_schema_url').val(DEFAULT_XML_URL);
     $('#schema_file').val('');
+    $('#second_schema_file').val('');
     setOptions();
 }
 
@@ -87,16 +109,26 @@ function convertToOutputName(original_filename) {
     return basename + "." + new_extension
 }
 
-function getSchemaFilename() {
-    let checkRadio = document.querySelector('input[name="schema_upload_options"]:checked');
+/**
+ * Return the file name extracted from the schema selector.
+ * 
+ * @param {string} type - prefix on the html selectors (either "schema" or "second_schema")
+ * @param {boolean} required - if true will output a flash error message if result is empty
+ * 
+ * @returns {string} file name extracted from the selector
+ */
+function getSchemaFilename(type, required=true) {
+    let options_name = type + "_upload_options"
+    let checkRadio = document.querySelector('input[name="' + options_name+ '"]:checked');
     if (checkRadio == null) {
-        flashMessageOnScreen('No schema source specified.', 'error', 'schema_flash');
+        flashMessageOnScreen('Required ' + type + ' source not specified.', 'error', 'schema_flash');
         return "";
     }
     let checkRadioVal = checkRadio.id
-    let schemaFile = $('#schema_file');
-    let schemaFileIsEmpty = schemaFile[0].files.length === 0;
-    if (checkRadioVal === "schema_file_option") {
+    
+    if (checkRadioVal === type + "_file_option") {
+        let schemaFile = $('#' + type + '_file');
+        let schemaFileIsEmpty = schemaFile[0].files.length === 0;
         if (schemaFileIsEmpty) {
             flashMessageOnScreen('Schema file not specified.', 'error', 'schema_flash');
             return '';
@@ -105,9 +137,10 @@ function getSchemaFilename() {
         return schemaFile[0].files[0].name;
     }
 
-    let schemaUrl = $('#schema_url').val();
-    let schemaUrlIsEmpty = schemaUrl === "";
-    if (checkRadioVal === "schema_url_option") {
+ 
+    if (checkRadioVal === type + "_url_option") {
+        let schemaUrl = $('#' + type + '_url').val();
+        let schemaUrlIsEmpty = schemaUrl === "";
         if (schemaUrlIsEmpty) {
             flashMessageOnScreen('URL not specified.', 'error', 'schema_flash');
             return '';
@@ -126,6 +159,7 @@ function prepareForm() {
     $('#schema_form')[0].reset();
     $('#process_actions').val('validate');
     $('#schema_url').val(DEFAULT_XML_URL);
+    $('#second_schema_url').val(DEFAULT_XML_URL);
 }
 
 
@@ -137,9 +171,15 @@ function setOptions() {
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
         $("#options_section").show();
+        $("#second_schema").hide()
+    } else if (selectedElement.value === "compare_schemas") {
+        hideOption("check_for_warnings");
+        $("#options_section").hide();
+        $("#second_schema").show()
     } else {
         hideOption("check_for_warnings");
         $("#options_section").hide();
+        $("#second_schema").hide()
     }
 }
 
@@ -153,7 +193,7 @@ function submitSchemaForm() {
     formData.append("command_option", selectedElement.value)
     let schemaURL = document.getElementById("schema_url")
     formData.append("schema_url", schemaURL.value)
-    let display_name = convertToOutputName(getSchemaFilename())
+    let display_name = convertToOutputName(getSchemaFilename("schema"))
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     $.ajax({
@@ -175,21 +215,21 @@ function submitSchemaForm() {
 }
 
 
-function updateForm() {
+/*function updateForm() {
      clearFlashMessages();
-     let filename = getSchemaFilename();
+     let filename = getSchemaFilename("schema");
      let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
      let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);
 
      let hasValidFilename = false;
      if (isXMLFilename) {
-        $('#schema-conversion-submit').html("Convert to mediawiki")
+       // $('#schema-conversion-submit').html("Convert to mediawiki")
         hasValidFilename = true;
      } else if (isMediawikiFilename) {
-        $('#schema-conversion-submit').html("Convert to XML");
+        //$('#schema-conversion-submit').html("Convert to XML");
         hasValidFilename = true;
      } else {
-        $('#schema-conversion-submit').html("Convert Format");
+        // $('#schema-conversion-submit').html("Convert Format");
      }
 
      let urlChecked = document.getElementById("schema_url_option").checked;
@@ -216,6 +256,20 @@ function updateForm() {
      }
 
      flashMessageOnScreen('', 'success', 'schema_flash')
+}*/
+
+
+function updateFlash(type, message) {
+     clearFlashMessages();
+     let filename = getSchemaFilename(type);
+     if (!filename) {
+         return
+     }
+     let hasValidExtension = fileHasValidExtension(filename, SCHEMA_EXTENSIONS);
+     if (!hasValidExtension) {
+         flashMessageOnScreen('Please choose a valid schema file or url (.xml, .mediawiki)', 'error',
+        'schema_flash');
+     }
 }
 
 

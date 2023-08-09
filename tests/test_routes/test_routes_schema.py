@@ -28,7 +28,7 @@ class Test(TestWebBase):
             self.assertEqual(200, response.status_code, 'Convert of a invalid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
-                             "An mediawiki schema that does not load cannot be converted.")
+                             "The mediawiki schema does not load -- validate and correct errors before converting.")
             self.assertTrue(response.data, "The response data for invalid mediawiki conversion should not be empty")
             self.assertTrue(headers_dict['Message'],
                             "The error message for invalid mediawiki conversion should not be empty")
@@ -44,7 +44,7 @@ class Test(TestWebBase):
         schema_buffer = io.BytesIO(bytes(x, 'utf-8'))
         schema_string = schema_buffer.read(-1).decode('ascii')
         try:
-            hedschema.from_string(schema_string, file_type=schema_path)
+            hedschema.from_string(schema_string, schema_format='.mediawiki')
         except HedFileError as e:
             self.assertIsInstance(e.issues, list)
 
