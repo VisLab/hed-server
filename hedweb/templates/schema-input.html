@@ -1,0 +1,48 @@
+{% macro create_schema_input(title1, title2) %}
+        <fieldset class="form-group">
+          <legend class="mt-4">{{ title1 }}</legend>
+          <div class="form-check" id="schema_url_group">
+          <input class="form-check-input" type="radio" name="schema_upload_options"
+                 id="schema_url_option" value="schema_url_option" 
+                 aria-label="Select this button for HED schema URL" checked="">
+          <label class="form-check-label" for="schema_url_option">Enter HED schema URL:</label>
+          <input class="form-control" type="url" id="schema_url"  name="schema_url"
+                 aria-label="Enter schema URL here">
+        </div>
+            <p></p>
+          <div class="form-check" id="schema_file_group">
+            <input class="form-check-input" type="radio" name="schema_upload_options" 
+                   id="schema_file_option" value="schema_file_option"
+                   aria-label="Select this button for HED schema file">
+            <label class="form-check-label" for="schema_file_option">
+              HED schema file to upload:
+            </label>
+              <input class="form-control" type="file" id="schema_file" name="schema_file"
+                     id="schema_file" aria-label="Enter schema file to upload here">
+          </div>
+        </fieldset>
+    <div id="second_schema">
+    <fieldset class="form-group">
+        <legend class="mt-4">{{ title2 }}</legend>
+        <div class="form-check" id="second_schema_url_group">
+            <input class="form-check-input" type="radio" name="second_schema_upload_options"
+                   id="second_schema_url_option" value="second_schema_url_option"
+                   aria-label="Select this button for HED schema URL" checked="">
+            <label class="form-check-label" for="second_schema_url_option">Enter HED schema URL:</label>
+            <input class="form-control" type="url" id="second_schema_url" name="second_schema_url"
+                   aria-label="Enter schema URL here">
+        </div>
+        <p></p>
+        <div class="form-check" id="second_schema_file_group">
+            <input class="form-check-input" type="radio" name="second_schema_upload_options"
+                   id="second_schema_file_option" value="second_schema_file_option"
+                   aria-label="Select this button for HED schema file">
+            <label class="form-check-label" for="second_schema_file_option">
+                HED schema file to upload:
+            </label>
+            <input class="form-control" type="file" id="second_schema_file" name="second_schema_file"
+                   id="second_schema_file" aria-label="Enter schema file to upload here">
+        </div>
+    </fieldset>
+    </div>
+{% endmacro %}

@@ -6,7 +6,7 @@ from hed import schema as hedschema
 
 from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
-from hedweb.web_util import convert_hed_versions, handle_http_error, handle_error, package_results
+from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
 from hedweb import sidecar as sidecar
 from hedweb import events as events
 from hedweb import spreadsheet as spreadsheet
@@ -91,8 +91,9 @@ def schema_version_results():
         hed_info = {}
         if base_constants.SCHEMA_PATH in request.files:
             f = request.files[base_constants.SCHEMA_PATH]
+            name, extension = get_parsed_name(secure_filename(f.filename))
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
-                                               file_type=secure_filename(f.filename))
+                                               schema_format=extension)
             hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)
     except Exception as ex:

@@ -1,5 +1,6 @@
 {% macro create_actions(title,assemble=False,convert_schema=False,generate_sidecar=False,
-extract_spreadsheet=False,merge_spreadsheet=False,remodel=False,to_long=False,to_short=False,validate=False) %}
+extract_spreadsheet=False,merge_spreadsheet=False,remodel=False,to_long=False,to_short=False,validate=False,
+compare_schemas=False) %}
     
 
   <fieldset class="form-group">
@@ -24,12 +25,17 @@ extract_spreadsheet=False,merge_spreadsheet=False,remodel=False,to_long=False,to
             <option value="assemble" aria-label="Assemble the HED annotations for an events file." 
                     aria-checked="true">Assemble annotations</option>
         {% endif %}
-
+      
         {% if convert_schema %}
              <option value="convert_schema" aria-label="Convert a schema to a different format." 
                     aria-checked="true">Convert schema</option>
         {% endif %}
-
+      
+        {% if compare_schemas %}
+            <option value="compare_schemas" aria-label="Compare to find similarities and differences." 
+                    aria-checked="true">Compare schemas</option>
+        {% endif %}
+      
         {% if generate_sidecar %}
            <option value="generate_sidecar" aria-label="Generate a template sidecar from an events file." 
                     aria-checked="true">Generate sidecar template</option>

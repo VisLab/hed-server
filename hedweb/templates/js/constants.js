@@ -6,5 +6,6 @@ const SCHEMA_XML_EXTENSION = 'xml';
 const SCHEMA_MEDIAWIKI_EXTENSION = 'mediawiki';
 const TEXT_FILE_EXTENSIONS = ['tsv', 'txt'];
 const XML_FILE_EXTENSIONS = ['xml'];
+const SCHEMA_EXTENSIONS = ['mediawiki', 'xml']
 
 
