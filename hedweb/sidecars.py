@@ -177,7 +177,7 @@ def sidecar_merge(sidecar, spreadsheet, options=None):
     """ Merge an edited 4-column spreadsheet with JSON sidecar.
 
     Args:
-        sidecar (Sidecar): The Sidecar from which to generate_sidecar the HED spreadsheet
+        sidecar (Sidecar): The Sidecar from which to generate the HED spreadsheet
         spreadsheet (HedInput): The Sidecar from which to generate_sidecar the HED spreadsheet
         options (dict or None): The options allowed for this operation.
 

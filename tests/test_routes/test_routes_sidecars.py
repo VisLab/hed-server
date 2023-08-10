@@ -7,16 +7,16 @@ from hedweb.constants import base_constants
 
 
 class Test(TestWebBase):
-    def test_sidecar_results_empty_data(self):
-        response = self.app.test.post('/sidecar_submit')
+    def test_sidecars_results_empty_data(self):
+        response = self.app.test.post('/sidecars_submit')
         self.assertEqual(200, response.status_code, 'HED sidecar request succeeds even when no data')
         self.assertTrue(isinstance(response, Response),
-                        'sidecar_submit to short should return a Response when no data')
+                        'sidecars_submit to short should return a Response when no data')
         header_dict = dict(response.headers)
         self.assertEqual("error", header_dict["Category"], "The header msg_category when no sidecar is error ")
         self.assertFalse(response.data, "The response data for empty sidecar request is empty")
 
-    def test_sidecar_results_to_long_valid(self):
+    def test_sidecars_results_to_long_valid(self):
         with self.app.app_context():
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
             with open(sidecar_path, 'r') as sc:
@@ -26,9 +26,9 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG,
                           base_constants.SIDECAR_FILE: (sidecar_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit should return a Response when valid to long sidecar')
+                            'sidecars_submit should return a Response when valid to long sidecar')
             self.assertEqual(200, response.status_code, 'To long of a valid sidecar has a valid status code')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -36,7 +36,7 @@ class Test(TestWebBase):
             self.assertTrue(response.data, "The converted to long sidecar should not be empty")
             sidecar_buffer.close()
 
-    def test_sidecar_results_to_long_invalid(self):
+    def test_sidecars_results_to_long_invalid(self):
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
         with open(sidecar_path, 'r') as sc:
             x = sc.read()
@@ -47,9 +47,9 @@ class Test(TestWebBase):
                           base_constants.SIDECAR_FILE: (sidecar_buffer, 'bids_events_bad.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
 
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit should return a Response when invalid to long sidecar')
+                            'sidecars_submit should return a Response when invalid to long sidecar')
             self.assertEqual(200, response.status_code, 'Conversion of an invalid sidecar to long has valid status')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
@@ -58,7 +58,7 @@ class Test(TestWebBase):
                             "The response data for invalid conversion to long should have error messages")
             sidecar_buffer.close()
 
-    def test_sidecar_results_to_short_valid(self):
+    def test_sidecars_results_to_short_valid(self):
         with self.app.app_context():
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
             with open(json_path, 'r') as sc:
@@ -74,7 +74,7 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_SHORT,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'sidecar_submit should return a Response when valid to short sidecar')
             self.assertEqual(200, response.status_code, 'To short of a valid sidecar has a valid status code')
@@ -84,7 +84,7 @@ class Test(TestWebBase):
             self.assertTrue(response.data, "The converted to short sidecar should not be empty")
             json_buffer.close()
 
-    def test_sidecar_results_validate_valid(self):
+    def test_sidecars_results_validate_valid(self):
         with self.app.app_context():
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
             with open(json_path, 'r') as sc:
@@ -95,9 +95,9 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit should return a Response when valid sidecar')
+                            'sidecars_submit should return a Response when valid sidecar')
             self.assertEqual(200, response.status_code, 'Validation of a valid sidecar has a valid status code')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -105,7 +105,7 @@ class Test(TestWebBase):
             self.assertFalse(response.data, "The response for validated sidecar should be empty")
             json_buffer.close()
 
-    def test_sidecar_results_validate_valid_other(self):
+    def test_sidecars_results_validate_valid_other(self):
         with self.app.app_context():
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events.json')
             with open(json_path, 'r') as sc:
@@ -122,9 +122,9 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit should return a Response when valid sidecar')
+                            'sidecars_submit should return a Response when valid sidecar')
             self.assertEqual(200, response.status_code, 'Validation of a valid sidecar has a valid status code')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -132,7 +132,7 @@ class Test(TestWebBase):
             self.assertFalse(response.data, "The response for validated sidecar should be empty")
             json_buffer.close()
 
-    def test_sidecar_results_to_short_invalid(self):
+    def test_sidecars_results_to_short_invalid(self):
         with self.app.app_context():
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
             with open(json_path, 'r') as sc:
@@ -143,9 +143,9 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_SHORT,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit should return a response object when invalid to short sidecar')
+                            'sidecars_submit should return a response object when invalid to short sidecar')
             self.assertEqual(200, response.status_code, 'Conversion of invalid sidecar to short has valid status')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
@@ -154,7 +154,7 @@ class Test(TestWebBase):
                             "The response data for invalid conversion to short should have error messages")
             json_buffer.close()
 
-    def test_sidecar_results_validate_invalid(self):
+    def test_sidecars_results_validate_invalid(self):
         with self.app.app_context():
             json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/bids_events_bad.json')
             with open(json_path, 'r') as sc:
@@ -164,10 +164,10 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
-            response = self.app.test.post('/sidecar_submit', content_type='multipart/form-data',
+            response = self.app.test.post('/sidecars_submit', content_type='multipart/form-data',
                                           data=input_data)
             self.assertTrue(isinstance(response, Response),
-                            'sidecar_submit validate should return a response object when invalid sidecar')
+                            'sidecars_submit validate should return a response object when invalid sidecar')
             self.assertEqual(200, response.status_code,
                              'Validation of an invalid sidecar to short has a valid status code')
             headers_dict = dict(response.headers)

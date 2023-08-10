@@ -5,15 +5,15 @@ from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):
-    def test_schema_results_empty_data(self):
-        response = self.app.test.post('/schema_submit')
-        self.assertEqual(200, response.status_code, 'HED schema request succeeds even when no data')
+    def test_schemas_results_empty_data(self):
+        response = self.app.test.post('/schemas_submit')
+        self.assertEqual(200, response.status_code, 'HED schemas request succeeds even when no data')
         header_dict = dict(response.headers)
         self.assertEqual("error", header_dict["Category"],
                          "The header msg_category when no schema request data is error ")
         self.assertFalse(response.data, "The response data for empty schema request is empty")
 
-    def test_schema_results_convert_mediawiki_invalid(self):
+    def test_schemas_results_convert_mediawiki_invalid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.0.0Bad.mediawiki')
         with open(schema_path, 'r') as sc:
@@ -24,7 +24,7 @@ class Test(TestWebBase):
                           'command_option': 'convert',
                           'schema_file': (schema_buffer, 'HED8.0.0Bad.mediawiki'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a invalid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
@@ -48,7 +48,7 @@ class Test(TestWebBase):
         except HedFileError as e:
             self.assertIsInstance(e.issues, list)
 
-    def test_schema_results_convert_mediawiki_valid(self):
+    def test_schemas_results_convert_mediawiki_valid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.0.0.mediawiki')
         with open(schema_path, 'r') as sc:
@@ -59,7 +59,7 @@ class Test(TestWebBase):
                           'command_option': 'convert_schema',
                           'schema_file': (schema_buffer, 'HED8.0.0.mediawiki'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a valid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -69,7 +69,7 @@ class Test(TestWebBase):
                              headers_dict['Content-Disposition'], "Convert of valid mediawiki should return xml")
             schema_buffer.close()
 
-    def test_schema_results_convert_xml_valid(self):
+    def test_schemas_results_convert_xml_valid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.0.0.xml')
         with open(schema_path, 'r') as sc:
@@ -80,7 +80,7 @@ class Test(TestWebBase):
                           'command_option': 'convert_schema',
                           'schema_file': (schema_buffer, 'HED8.0.0.xml'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a valid xml has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -91,7 +91,7 @@ class Test(TestWebBase):
                              "Validation of valid xml should not return a file")
             schema_buffer.close()
 
-    def test_schema_results_convert_xml_url_valid(self):
+    def test_schemas_results_convert_xml_url_valid(self):
         schema_url = \
             'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.0.0.xml'
         with self.app.app_context():
@@ -99,7 +99,7 @@ class Test(TestWebBase):
                           'command_option': 'convert_schema',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Conversion of a valid xml url has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -108,7 +108,7 @@ class Test(TestWebBase):
             self.assertEqual('attachment filename=HED8.0.0.mediawiki',
                              headers_dict['Content-Disposition'], "Conversion of valid xml url should return mediawiki")
 
-    def test_schema_results_convert_xml_url_valid2(self):
+    def test_schemas_results_convert_xml_url_valid2(self):
         schema_url = \
             'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.0.0.xml'
         with self.app.app_context():
@@ -116,7 +116,7 @@ class Test(TestWebBase):
                           'command_option': 'convert_schema',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Conversion of a valid xml url has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -125,7 +125,7 @@ class Test(TestWebBase):
             self.assertEqual('attachment filename=HED8.0.0.mediawiki',
                              headers_dict['Content-Disposition'], "Conversion of valid xml url should return mediawiki")
 
-    def test_schema_results_validate_mediawiki_invalid(self):
+    def test_schemas_results_validate_mediawiki_invalid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.0.0Bad.mediawiki')
         with open(schema_path, 'r') as sc:
@@ -136,7 +136,7 @@ class Test(TestWebBase):
                           'command_option': 'validate',
                           'schema_file': (schema_buffer, 'HED8.0.0Bad.mediawiki'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a invalid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
@@ -148,7 +148,7 @@ class Test(TestWebBase):
                                "An error file should be returned if the mediawiki cannot load.")
             schema_buffer.close()
 
-    def test_schema_results_validate_mediawiki_valid(self):
+    def test_schemas_results_validate_mediawiki_valid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.1.0.mediawiki')
         with open(schema_path, 'r') as sc:
@@ -159,7 +159,7 @@ class Test(TestWebBase):
                           'command_option': 'validate',
                           'schema_file': (schema_buffer, 'HED8.0.1.mediawiki'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid mediawiki has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -169,7 +169,7 @@ class Test(TestWebBase):
                              "Validation of valid mediawiki should not return a file")
             schema_buffer.close()
 
-    def test_schema_results_validate_xml_valid(self):
+    def test_schemas_results_validate_xml_valid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    '../data/HED8.1.0.xml')
         with open(schema_path, 'r') as sc:
@@ -180,7 +180,7 @@ class Test(TestWebBase):
                           'command_option': 'validate',
                           'schema_file': (schema_buffer, 'HED8.1.0.xml'),
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid xml has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],
@@ -190,7 +190,7 @@ class Test(TestWebBase):
                              "Validation of valid xml should return any response data")
             schema_buffer.close()
 
-    def test_schema_results_validate_xml_url_invalid(self):
+    def test_schemas_results_validate_xml_url_invalid(self):
         schema_url = 'https://raw.githubusercontent.com/hed-standard/hed-schemas/' + \
                      'main/standard_schema/hedxml/deprecated/HED7.2.0.xml'
         with self.app.app_context():
@@ -198,7 +198,7 @@ class Test(TestWebBase):
                           'command_option': 'validate',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid xml url has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("warning", headers_dict["Category"],
@@ -207,7 +207,7 @@ class Test(TestWebBase):
             self.assertTrue(headers_dict['Content-Disposition'],
                             "Validation of valid gen2 xml should return validation error file")
 
-    def test_schema_results_validate_xml_url_valid(self):
+    def test_schemas_results_validate_xml_url_valid(self):
         schema_url = \
             'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.1.0.xml'
         with self.app.app_context():
@@ -215,7 +215,7 @@ class Test(TestWebBase):
                           'command_option': 'validate',
                           'schema_url': schema_url,
                           'check_for_warnings': 'on'}
-            response = self.app.test.post('/schema_submit', content_type='multipart/form-data', data=input_data)
+            response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid xml url has a response')
             headers_dict = dict(response.headers)
             self.assertEqual("success", headers_dict["Category"],

@@ -198,7 +198,7 @@ function submitSchemaForm() {
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     $.ajax({
             type: 'POST',
-            url: "{{url_for('route_blueprint.schema_results')}}",
+            url: "{{url_for('route_blueprint.schemas_results')}}",
             data: formData,
             contentType: false,
             processData: false,

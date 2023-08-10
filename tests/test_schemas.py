@@ -6,15 +6,15 @@ from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):
-    def test_generate_input_from_schema_form_empty(self):
-        from hedweb.schema import get_input_from_form
+    def test_generate_input_from_schemas_form_empty(self):
+        from hedweb.schemas import get_input_from_form
         self.assertRaises(TypeError, get_input_from_form, {},
                           "An exception is raised if an empty request is passed to generate_input_from_schema")
 
-    def test_get_input_from_schema_form_valid(self):
+    def test_get_input_from_schemas_form_valid(self):
         from hed import HedSchema
         from hedweb.constants import base_constants
-        from hedweb.schema import get_input_from_form
+        from hedweb.schemas import get_input_from_form
         with self.app.test:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
             with open(schema_path, 'rb') as fp:
@@ -33,16 +33,16 @@ class Test(TestWebBase):
             self.assertFalse(arguments[base_constants.CHECK_FOR_WARNINGS],
                              "get_input_from_form should have check_warnings false when not given")
 
-    def test_schema_process(self):
+    def test_schemas_process(self):
         from hed.errors.exceptions import HedFileError
-        from hedweb.schema import process
+        from hedweb.schemas import process
         arguments = {'schema_path': ''}
         with self.assertRaises(HedFileError):
             process(arguments)
 
-    def test_schema_check(self):
+    def test_schemas_check(self):
         from hed import schema as hedschema
-        from hedweb.schema import schema_validate
+        from hedweb.schemas import schema_validate
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
         display_name = 'HED8.0.0.xml'
@@ -57,8 +57,8 @@ class Test(TestWebBase):
             results = schema_validate(hed_schema, display_name)
             self.assertFalse(results['data'], "HED8.0.0 is HED-3G compliant")
 
-    def test_schema_convert_valid(self):
-        from hedweb.schema import schema_convert
+    def test_schemas_convert_valid(self):
+        from hedweb.schemas import schema_convert
         from hed import schema as hedschema
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.mediawiki')
         hed_schema = hedschema.load_schema(schema_path)
@@ -67,8 +67,8 @@ class Test(TestWebBase):
             results = schema_convert(hed_schema, display_name, '.mediawiki')
             self.assertTrue(results['data'], "HED 8.0.0.mediawiki can be converted to xml")
 
-    def test_schema_convert_invalid(self):
-        from hedweb.schema import schema_convert
+    def test_schemas_convert_invalid(self):
+        from hedweb.schemas import schema_convert
         from hed import schema as hedschema
         from hed.errors.exceptions import HedFileError
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HEDbad.xml')
