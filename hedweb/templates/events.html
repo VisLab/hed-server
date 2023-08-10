@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "schema-pulldown.html" import create_schema_pulldown %}
+{% from "schemas-pulldown.html" import create_schemas_pulldown %}
 {% from "file-input.html" import create_file_input %}
 {% from "column-info.html" import create_column_info %}
 {% from "actions.html" import create_actions %}
@@ -17,7 +17,7 @@
         <p> </p>
         {{ create_options(check_for_warnings=True,expand_defs=True,include_summaries=True) }}
          <p> </p>
-        {{ create_schema_pulldown() }}
+        {{ create_schemas_pulldown() }}
          <p> </p>
         <fieldset class="form-group">
             <legend>Upload:</legend>
@@ -45,7 +45,7 @@
         {%  include 'js/constants.js' %}
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
-        {%  include 'js/schema-pulldown.js' %}
+        {%  include 'js/schemas-pulldown.js' %}
         {%  include 'js/remodel-input.js' %}
         {%  include 'js/options.js' %}
         {%  include 'js/events-form.js' %}

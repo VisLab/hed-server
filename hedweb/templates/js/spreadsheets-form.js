@@ -105,7 +105,7 @@ function submitForm() {
             !$("#validate").prop("checked");
     $.ajax({
         type: 'POST',
-        url: "{{url_for('route_blueprint.spreadsheet_results')}}",
+        url: "{{url_for('route_blueprint.spreadsheets_results')}}",
         data: formData,
         contentType: false,
         processData: false,

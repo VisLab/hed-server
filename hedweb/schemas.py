@@ -96,12 +96,15 @@ def process(arguments):
 def schema_compare(hed_schema1, display_name1, hed_schema2, display_name2):
     data = compare_differences(hed_schema1, hed_schema2, output='string', sections=None)
     output_name = display_name1 + '_' + display_name2 + '_' + "differences.txt"
+    msg_results = ''
+    if not data:
+        msg_results = ': no differences found'
     return {'command': base_constants.COMMAND_COMPARE_SCHEMAS,
             base_constants.COMMAND_TARGET: 'schema',
             'data': data, 'output_display_name': output_name,
             'schema_version': hed_schema1.get_formatted_version(),
             'msg_category': 'success',
-            'msg': 'Schemas were successfully compared'}
+            'msg': 'Schemas were successfully compared' + msg_results}
 
 
 def schema_convert(hed_schema, display_name, schema_format):

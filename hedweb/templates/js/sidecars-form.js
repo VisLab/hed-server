@@ -135,7 +135,7 @@ function submitForm() {
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
     $.ajax({
             type: 'POST',
-            url: "{{url_for('route_blueprint.sidecar_results')}}",
+            url: "{{url_for('route_blueprint.sidecars_results')}}",
             data: formData,
             contentType: false,
             processData: false,

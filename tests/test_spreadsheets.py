@@ -9,15 +9,15 @@ from hedweb.constants import base_constants
 
 
 class Test(TestWebBase):
-    def test_get_input_from_spreadsheet_form_empty(self):
-        from hedweb.spreadsheet import get_input_from_form
+    def test_get_input_from_spreadsheets_form_empty(self):
+        from hedweb.spreadsheets import get_input_from_form
         self.assertRaises(TypeError, get_input_from_form, {},
                           "An exception is raised if an empty request is passed to generate_input_from_spreadsheet")
 
-    def test_get_input_from_spreadsheet_form(self):
+    def test_get_input_from_spreadsheets_form(self):
         from hed.models import SpreadsheetInput
         from hed.schema import HedSchema
-        from hedweb.spreadsheet import get_input_from_form
+        from hedweb.spreadsheets import get_input_from_form
         with self.app.test:
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
@@ -44,16 +44,16 @@ class Test(TestWebBase):
             self.assertTrue(arguments[base_constants.HAS_COLUMN_NAMES],
                             "generate_input_from_spreadsheet_form should have column names")
 
-    def test_process_empty_file(self):
+    def test_spreadsheets_empty_file(self):
         from hedweb.constants import base_constants
-        from hedweb.spreadsheet import process
+        from hedweb.spreadsheets import process
         from hed.errors.exceptions import HedFileError
         arguments = {base_constants.SPREADSHEET: None}
         with self.assertRaises(HedFileError):
             process(arguments)
 
-    def test_spreadsheet_process_validate_invalid(self):
-        from hedweb.spreadsheet import process
+    def test_spreadsheets_process_validate_invalid(self):
+        from hedweb.spreadsheets import process
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
@@ -73,8 +73,8 @@ class Test(TestWebBase):
             self.assertTrue(results['data'],
                             'process validate should return validation issues using HED 8.0.0-beta.1')
 
-    def test_process_validate_valid(self):
-        from hedweb.spreadsheet import process
+    def test_spreadsheets_validate_valid(self):
+        from hedweb.spreadsheets import process
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
@@ -94,8 +94,8 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'],
                              'process should return success if validated')
 
-    def test_convert_to_long_excel(self):
-        from hedweb.spreadsheet import spreadsheet_convert
+    def test_spreadsheets_convert_to_long_excel(self):
+        from hedweb.spreadsheets import spreadsheet_convert
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         prefix_dict = {1: "Label/", 3: "Description/"}
@@ -118,8 +118,8 @@ class Test(TestWebBase):
             self.assertEqual('success', results["msg_category"],
                              'spreadsheet_validate msg_category should be success when no errors')
 
-    def test_process_convert_to_long(self):
-        from hedweb.spreadsheet import process
+    def test_spreadsheets_convert_to_long(self):
+        from hedweb.spreadsheets import process
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
@@ -141,8 +141,8 @@ class Test(TestWebBase):
             tags2 = results['spreadsheet'].dataframe.iloc[0, 4]
             self.assertGreater(len(tags2), len(tags1))
 
-    def test_validate_valid_excel(self):
-        from hedweb.spreadsheet import spreadsheet_validate
+    def test_spreadsheets_validate_valid_excel(self):
+        from hedweb.spreadsheets import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
@@ -158,8 +158,8 @@ class Test(TestWebBase):
             self.assertEqual('success', results["msg_category"],
                              'spreadsheet_validate msg_category should be success when no errors')
 
-    def test_validate_valid_excel1(self):
-        from hedweb.spreadsheet import spreadsheet_validate
+    def test_spreadsheets_validate_valid_excel1(self):
+        from hedweb.spreadsheets import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.1.0.xml')
         hed_schema = hedschema.load_schema(schema_path)
@@ -176,8 +176,8 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'],
                              'spreadsheet_validate msg_category should be success when no errors')
 
-    def test_spreadsheet_validate_invalid_excel(self):
-        from hedweb.spreadsheet import spreadsheet_validate
+    def test_spreadsheets_validate_invalid_excel(self):
+        from hedweb.spreadsheets import spreadsheet_validate
         spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
         hed_schema = hedschema.load_schema(schema_path)

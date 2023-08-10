@@ -10,8 +10,8 @@ from hed.errors import HedFileError
 from hed import schema as hedschema
 from hedweb.constants import base_constants
 from hedweb import events as events
-from hedweb import spreadsheet as spreadsheet
-from hedweb import sidecar as sidecar
+from hedweb import spreadsheets as spreadsheets
+from hedweb import sidecars as sidecars
 from hedweb import strings as strings
 
 
@@ -109,12 +109,12 @@ def get_input_objects(arguments, params):
             TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
                          sidecar=arguments.get(base_constants.SIDECAR, None), name='Events')
     if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
-        tag_columns, prefix_dict = spreadsheet.get_prefix_dict(params)
+        tag_columns, prefix_dict = spreadsheets.get_prefix_dict(params)
         has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
         arguments[base_constants.SPREADSHEET] = \
             SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
                              tag_columns=tag_columns, has_column_names=has_column_names,
-                             column_prefix_dictionary=prefix_dict, name='spreadsheet.tsv')
+                             column_prefix_dictionary=prefix_dict, name='spreadsheets.tsv')
     if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
         s_list = []
         for s in params[base_constants.STRING_LIST]:
@@ -139,7 +139,7 @@ def get_remodel_parameters(arguments, params):
 
 
 def get_service_info(params):
-    """ Get a dictionary with the service request command information filled in..
+    """ Get a dictionary with the service request command information filled in.
 
     Args:
         params (dict): A dictionary of the service request values.
@@ -220,11 +220,11 @@ def process(arguments):
     elif target == "events":
         response["results"] = events.process(arguments)
     elif target == "sidecar":
-        response["results"] = sidecar.process(arguments)
+        response["results"] = sidecars.process(arguments)
     elif target == "spreadsheet":
-        results = spreadsheet.process(arguments)
+        results = spreadsheets.process(arguments)
         response["results"] = package_spreadsheet(results)
-    elif target == "strings":
+    elif target == "string":
         response["results"] = strings.process(arguments)
     else:
         response["error_type"] = 'HEDServiceNotSupported'

@@ -99,7 +99,7 @@ SCHEMA_VERSION_STRING = 'schema_version_string'
 
 SECOND_SCHEMA_DISPLAY_NAME = 'second_schema_display_name'
 SECOND_SCHEMA_FILE = 'second_schema_file'
-SECOND_SCHEMA_FILE_OPTION = 'second_schema_file_options'
+SECOND_SCHEMA_FILE_OPTION = 'second_schema_file_option'
 SECOND_SCHEMA_FORMAT = 'second_schema_format'
 SECOND_SCHEMA_UPLOAD_OPTIONS = 'second_schema_upload_options'
 SECOND_SCHEMA_URL = 'second_schema_url'
