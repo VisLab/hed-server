@@ -224,7 +224,7 @@ def process(arguments):
     elif target == "spreadsheet":
         results = spreadsheets.process(arguments)
         response["results"] = package_spreadsheet(results)
-    elif target == "string":
+    elif target == "strings":
         response["results"] = strings.process(arguments)
     else:
         response["error_type"] = 'HEDServiceNotSupported'
