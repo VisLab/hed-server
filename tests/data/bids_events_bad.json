@@ -47,8 +47,7 @@
 		}
     },
 	"trial": {
-		"Description": "The number of the trial in the experiment.",
-		"HED": "Description/The number of the trial in the experiment, Experimental-trial, Item-count/#"
+		"Description": "The number of the trial in the experiment."
 	},
     "latency": {
         "Description": "Estimated beginning of the data chunk used for the BCI prediction with respect to the true event as measured by parallel port trigger in this trial.",
