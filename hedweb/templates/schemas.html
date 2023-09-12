@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% from "actions.html" import create_actions %}
+{% from "options.html" import create_options %}
+{% from "schemas-input.html" import create_schemas_input %}
+{% block content %}
+    <h3>HED Schemas:</h3>
+
+    <form id="schema_form" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        {{ create_actions(convert_schema=True, validate=True, compare_schemas=True) }}
+        <p></p>
+        {{ create_options(check_for_warnings=True) }}
+        <p></p>
+        
+        {{ create_schemas_input("Source schema:", "Schema to compare:") }}
+        
+        <p>&nbsp;</p>
+        <div class="form-group">
+            <button id="schema_submit" type="button" class="btn btn-primary btn-large">Process</button>
+                    <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+            <button id="schema_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
+
+        </div>
+        <p> </p>
+        <p class="flash" id="schema_flash"></p>
+    </form>
+    <script type="module">
+        {%  include 'js/constants.js' %}
+        {%  include 'js/form-helpers.js' %}
+        {%  include 'js/options.js' %}
+        {%  include 'js/schemas-form.js' %}
+    </script>
+
+{% endblock %}

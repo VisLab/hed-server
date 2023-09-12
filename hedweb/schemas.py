@@ -1,47 +1,21 @@
-import os
-from os.path import basename
-from urllib.parse import urlparse
 from flask import current_app
-from werkzeug.utils import secure_filename
-
-from hed import schema as hedschema
-from hed.errors import get_printable_issue_string
-from hed.errors import HedFileError
-from hedweb.web_util import form_has_file, form_has_option, form_has_url, generate_filename
+from hed.errors import get_printable_issue_string, HedFileError
+from hed.schema.schema_compare import compare_differences
+from hedweb.web_util import form_has_file, form_has_option, form_has_url, generate_filename, get_schema
 from hedweb.constants import base_constants, file_constants
 
 app_config = current_app.config
 
 
-def get_schema(arguments):
-    """ Return a HedSchema object from the given parameters.
-
-    Args:
-        arguments (dict): A dictionary with the input arguments extracted from the schema form or service request.
-
-    Returns:
-        HedSchema: The extracted HedSchema object if successful
-        list: A list of issues if problems or an empty list if successful.
-    """
-    hed_schema = None
-    issues = []
-    file_found = True
-    try:
-        if base_constants.SCHEMA_FILE in arguments:
-            hed_schema = hedschema.load_schema(arguments[base_constants.SCHEMA_FILE])
-        elif base_constants.SCHEMA_URL in arguments:
-            hed_schema = hedschema.load_schema(arguments[base_constants.SCHEMA_URL])
-        elif base_constants.SCHEMA_STRING in arguments:
-            hed_schema = hedschema.from_string(arguments[base_constants.SCHEMA_STRING],
-                                               file_type=arguments[base_constants.SCHEMA_FILE_TYPE])
-        else:
-            file_found = False
-    except HedFileError as e:
-        # issues.append({'code': e.args[0], 'message': e.args[1]})
-        issues = issues + e.issues
-    if not file_found:
-        raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
-    return hed_schema, issues
+def format_error(command, issues, display_name):
+    issue_str = get_printable_issue_string(issues, f"Schema issues for {display_name}:")
+    file_name = generate_filename(display_name, name_suffix='schema_issues', extension='.txt')
+    return {'command': command,
+            base_constants.COMMAND_TARGET: 'schema',
+            'data': issue_str, 'output_display_name': file_name,
+            'msg_category': 'warning',
+            'msg': 'Schema had issues'
+            }
 
 
 def get_input_from_form(request):
@@ -65,18 +39,21 @@ def get_input_from_form(request):
                 }
     if form_has_option(request, base_constants.SCHEMA_UPLOAD_OPTIONS, base_constants.SCHEMA_FILE_OPTION) and \
             form_has_file(request, base_constants.SCHEMA_FILE, file_constants.SCHEMA_EXTENSIONS):
-        f = request.files[base_constants.SCHEMA_FILE]
-        arguments[base_constants.SCHEMA_STRING] = f.read(file_constants.BYTE_LIMIT).decode('ascii')
-        arguments[base_constants.SCHEMA_FILE_TYPE] = secure_filename(f.filename)
-        arguments[base_constants.SCHEMA_DISPLAY_NAME] = secure_filename(f.filename)
+        arguments["schema1"] = get_schema(request.files[base_constants.SCHEMA_FILE], input_type='file')
     elif form_has_option(request, base_constants.SCHEMA_UPLOAD_OPTIONS, base_constants.SCHEMA_URL_OPTION) and \
             form_has_url(request, base_constants.SCHEMA_URL, file_constants.SCHEMA_EXTENSIONS):
-        arguments[base_constants.SCHEMA_URL] = request.values[base_constants.SCHEMA_URL]
-        url_parsed = urlparse(arguments[base_constants.SCHEMA_URL])
-        arguments[base_constants.SCHEMA_FILE_TYPE] = basename(url_parsed.path)
-        arguments[base_constants.SCHEMA_DISPLAY_NAME] = basename(url_parsed.path)
+        arguments["schema1"] = get_schema(request.values[base_constants.SCHEMA_URL], input_type='url')
     else:
         raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
+
+    if form_has_option(request, base_constants.SECOND_SCHEMA_UPLOAD_OPTIONS,
+                       base_constants.SECOND_SCHEMA_FILE_OPTION) and \
+            form_has_file(request, base_constants.SECOND_SCHEMA_FILE, file_constants.SCHEMA_EXTENSIONS):
+        arguments["schema2"] = get_schema(request.files[base_constants.SECOND_SCHEMA_FILE], input_type='file')
+    elif form_has_option(request, base_constants.SECOND_SCHEMA_UPLOAD_OPTIONS,
+                         base_constants.SECOND_SCHEMA_URL_OPTION) and \
+            form_has_url(request, base_constants.SECOND_SCHEMA_URL, file_constants.SCHEMA_EXTENSIONS):
+        arguments["schema2"] = get_schema(request.values[base_constants.SECOND_SCHEMA_URL], input_type='url')
     return arguments
 
 
@@ -93,49 +70,63 @@ def process(arguments):
         HedFileError:  If the command was not found or the input arguments were not valid.
 
     """
-    display_name = arguments.get('schema_display_name', 'unknown_source')
-    hed_schema, issues = get_schema(arguments)
-    if issues:
-        issue_str = get_issue_string(issues, f"Schema for {display_name} had these issues")
-        file_name = generate_filename(arguments[base_constants.SCHEMA_DISPLAY_NAME],
-                                      name_suffix='schema_issues', extension='.txt')
-        return {'command': arguments[base_constants.COMMAND],
-                base_constants.COMMAND_TARGET: 'schema',
-                'data': issue_str, 'output_display_name': file_name,
-                'schema_version': 'unknown', 'msg_category': 'warning',
-                'msg': f'Schema {display_name} invalid and could not be loaded'}
 
     if base_constants.COMMAND not in arguments or arguments[base_constants.COMMAND] == '':
         raise HedFileError('MissingCommand', 'Command is missing', '')
+    schema1_dict = arguments["schema1"]
+    if schema1_dict["issues"]:
+        return format_error(arguments[base_constants.COMMAND], schema1_dict["issues"],
+                            schema1_dict["name"]+"_schema_errors")
     elif arguments[base_constants.COMMAND] == base_constants.COMMAND_VALIDATE:
-        results = schema_validate(hed_schema, display_name)
+        results = schema_validate(schema1_dict["schema"], schema1_dict["name"])
+    elif arguments[base_constants.COMMAND] == base_constants.COMMAND_COMPARE_SCHEMAS:
+        schema2_dict = arguments["schema2"]
+        if not schema2_dict or schema2_dict["issues"]:
+            return format_error(arguments[base_constants.COMMAND], schema2_dict["issues"],
+                                schema2_dict["name"] + "_schema2_errors")
+        results = schema_compare(schema1_dict["schema"], schema1_dict["name"],
+                                 schema2_dict["schema"], schema2_dict["name"])
     elif arguments[base_constants.COMMAND] == base_constants.COMMAND_CONVERT_SCHEMA:
-        results = schema_convert(hed_schema, display_name)
+        results = schema_convert(schema1_dict["schema"], schema1_dict["name"], schema1_dict["type"])
     else:
         raise HedFileError('UnknownProcessingMethod', "Select a schema processing method", "")
     return results
 
 
-def schema_convert(hed_schema, display_name):
+def schema_compare(hed_schema1, display_name1, hed_schema2, display_name2):
+    data = compare_differences(hed_schema1, hed_schema2, output='string', sections=None)
+    output_name = display_name1 + '_' + display_name2 + '_' + "differences.txt"
+    msg_results = ''
+    if not data:
+        msg_results = ': no differences found'
+    return {'command': base_constants.COMMAND_COMPARE_SCHEMAS,
+            base_constants.COMMAND_TARGET: 'schema',
+            'data': data, 'output_display_name': output_name,
+            'schema_version': hed_schema1.get_formatted_version(),
+            'msg_category': 'success',
+            'msg': 'Schemas were successfully compared' + msg_results}
+
+
+def schema_convert(hed_schema, display_name, schema_format):
     """ Return a string representation of hed_schema in the desired format as determined by the display name extension.
 
     Args:
         hed_schema (HedSchema): A HedSchema object containing the schema to be processed.
         display_name (str): The schema display name whose extension determines the conversion format.
+        schema_format (str): The format of the incoming HedSchema object
 
     Returns:
         dict: A dictionary of results in the standard results format.
 
     """
 
-    schema_format = os.path.splitext(display_name)[1]
     if schema_format == file_constants.SCHEMA_XML_EXTENSION:
         data = hed_schema.get_as_mediawiki_string()
         extension = '.mediawiki'
     else:
         data = hed_schema.get_as_xml_string()
         extension = '.xml'
-    file_name = generate_filename(display_name,  extension=extension)
+    file_name = display_name + extension
 
     return {'command': base_constants.COMMAND_CONVERT_SCHEMA,
             base_constants.COMMAND_TARGET: 'schema',
@@ -160,7 +151,7 @@ def schema_validate(hed_schema, display_name):
     issues = hed_schema.check_compliance()
     if issues:
         issue_str = get_printable_issue_string(issues, f"Schema issues for {display_name}:")
-        file_name = generate_filename(display_name, name_suffix='schema_issues', extension='.txt')
+        file_name = display_name + 'schema_issues.txt'
         return {'command': base_constants.COMMAND_VALIDATE,
                 base_constants.COMMAND_TARGET: 'schema',
                 'data': issue_str, 'output_display_name': file_name,

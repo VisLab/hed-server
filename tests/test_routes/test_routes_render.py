@@ -9,8 +9,8 @@ class Test(TestWebBase):
         self.assertEqual(response.status_code, 200, "The events content page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 
-    def test_render_schema_form(self):
-        response = self.app.test.get('/schema')
+    def test_render_schemas_form(self):
+        response = self.app.test.get('/schemas')
         self.assertEqual(response.status_code, 200, "The schema page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 
@@ -19,18 +19,18 @@ class Test(TestWebBase):
         self.assertEqual(response.status_code, 200, "The hed-services content page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 
-    def test_render_sidecar_form(self):
-        response = self.app.test.get('/sidecar')
+    def test_render_sidecars_form(self):
+        response = self.app.test.get('/sidecars')
         self.assertEqual(response.status_code, 200, "The sidecar content page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 
-    def test_render_spreadsheet_form(self):
-        response = self.app.test.get('/spreadsheet')
+    def test_render_spreadsheets_form(self):
+        response = self.app.test.get('/spreadsheets')
         self.assertEqual(response.status_code, 200, "The spreadsheet page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 
-    def test_render_string_form(self):
-        response = self.app.test.get('/string')
+    def test_render_strings_form(self):
+        response = self.app.test.get('/strings')
         self.assertEqual(response.status_code, 200, "The hedstring content page should exist")
         self.assertTrue(response.data, "The returned page should not be empty")
 

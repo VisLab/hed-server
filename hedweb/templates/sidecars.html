@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
-{% from "schema-pulldown.html" import create_schema_pulldown %}
+{% from "schemas-pulldown.html" import create_schemas_pulldown %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
 {% from "file-input.html" import create_file_input %}
-{% from "spreadsheet-input.html" import create_spreadsheet_input %}
+{% from "spreadsheets-input.html" import create_spreadsheets_input %}
 
 {% block content %}
     <h3>BIDS-style JSON sidecar:</h3>
@@ -16,13 +16,13 @@
         <p> </p>
         {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
         <p> </p>
-        {{ create_schema_pulldown() }}
+        {{ create_schemas_pulldown() }}
         <p> </p>
         <fieldset  class="form-group">
             <legend>Upload:</legend>
             {{ create_file_input('JSON sidecar', 'sidecar_file') }}
             <div id="spreadsheet_input_section">
-             {{ create_spreadsheet_input(has_column_names_option=False) }}
+             {{ create_spreadsheets_input(has_column_names_option=False) }}
              </div>
         </fieldset>
         <p> </p>
@@ -39,8 +39,8 @@
         {%  include 'js/column-info.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/options.js' %}
-        {%  include 'js/spreadsheet-input.js' %}
-        {%  include 'js/schema-pulldown.js' %}
-        {%  include 'js/sidecar-form.js' %}
+        {%  include 'js/spreadsheets-input.js' %}
+        {%  include 'js/schemas-pulldown.js' %}
+        {%  include 'js/sidecars-form.js' %}
     </script>
 {% endblock %}

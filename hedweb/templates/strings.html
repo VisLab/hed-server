@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "schema-pulldown.html" import create_schema_pulldown %}
+{% from "schemas-pulldown.html" import create_schemas_pulldown %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
 
@@ -13,7 +13,7 @@
         <p></p>
         {{ create_options(check_for_warnings=True) }}
         <p></p>
-        {{ create_schema_pulldown() }}
+        {{ create_schemas_pulldown() }}
         <p></p>
         <fieldset class="form-group">
          <legend>Process string:</legend>
@@ -38,7 +38,7 @@
         {%  include 'js/constants.js' %}
         {%  include 'js/form-helpers.js' %}
         {%  include 'js/options.js' %}
-        {%  include 'js/schema-pulldown.js' %}
-        {%  include 'js/string-form.js' %}
+        {%  include 'js/schemas-pulldown.js' %}
+        {%  include 'js/strings-form.js' %}
     </script>
 {% endblock %}

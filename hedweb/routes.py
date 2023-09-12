@@ -6,13 +6,13 @@ from hed import schema as hedschema
 
 from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
-from hedweb.web_util import convert_hed_versions, handle_http_error, handle_error, package_results
-from hedweb import sidecar as sidecar
+from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
+from hedweb import sidecars as sidecar
 from hedweb import events as events
-from hedweb import spreadsheet as spreadsheet
+from hedweb import spreadsheets as spreadsheets
 from hedweb import services as services
 from hedweb import strings as strings
-from hedweb import schema as schema
+from hedweb import schemas as schema
 from hedweb.columns import get_columns_request
 
 app_config = current_app.config
@@ -21,7 +21,7 @@ route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 @route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
 def columns_info_results():
-    """ Return spreadsheet column and sheet names.
+    """ Return spreadsheets column and sheet names.
 
     Returns:
         str: A serialized JSON string with column and sheet_name information.
@@ -57,8 +57,8 @@ def events_results():
         return handle_http_error(ex)
 
 
-@route_blueprint.route(route_constants.SCHEMA_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def schema_results():
+@route_blueprint.route(route_constants.SCHEMAS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
+def schemas_results():
     """ Process schema form submission and return results.
 
     Returns:
@@ -91,8 +91,9 @@ def schema_version_results():
         hed_info = {}
         if base_constants.SCHEMA_PATH in request.files:
             f = request.files[base_constants.SCHEMA_PATH]
+            name, extension = get_parsed_name(secure_filename(f.filename))
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
-                                               file_type=secure_filename(f.filename))
+                                               schema_format=extension)
             hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)
     except Exception as ex:
@@ -110,7 +111,7 @@ def schema_versions_results():
 
     try:
         hedschema.cache_xml_versions()
-        hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(get_libraries=True)}
+        hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
         hed_list = convert_hed_versions(hed_info)
         return json.dumps(hed_list)
     except Exception as ex:
@@ -139,8 +140,8 @@ def services_results():
         return json.dumps(response)
 
 
-@route_blueprint.route(route_constants.SIDECAR_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def sidecar_results():
+@route_blueprint.route(route_constants.SIDECARS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
+def sidecars_results():
     """ Process sidecar form submission and return results.
 
     Returns:
@@ -150,7 +151,7 @@ def sidecar_results():
         The response depends on the request:
         - validation: text file with validation errors
         - convert:  converted sidecar.
-        - extract:  4-column spreadsheet.
+        - extract:  4-column spreadsheets.
         - merge:  a merged sidecar.
 
     """
@@ -165,9 +166,9 @@ def sidecar_results():
         return handle_http_error(ex)
 
 
-@route_blueprint.route(route_constants.SPREADSHEET_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def spreadsheet_results():
-    """ Process the spreadsheet in the form and return results.
+@route_blueprint.route(route_constants.SPREADSHEETS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
+def spreadsheets_results():
+    """ Process the spreadsheets in the form and return results.
 
     Returns:
         Response: The response appropriate to the request.
@@ -175,21 +176,21 @@ def spreadsheet_results():
     Notes:
         The response depends on the request:
         - validation: text file with validation errors
-        - convert:  converted spreadsheet.
+        - convert:  converted spreadsheets.
 
     """
 
     try:
-        arguments = spreadsheet.get_input_from_form(request)
-        a = spreadsheet.process(arguments)
+        arguments = spreadsheets.get_input_from_form(request)
+        a = spreadsheets.process(arguments)
         response = package_results(a)
         return response
     except Exception as ex:
         return handle_http_error(ex)
 
 
-@route_blueprint.route(route_constants.STRING_SUBMIT_ROUTE, strict_slashes=False, methods=['GET', 'POST'])
-def string_results():
+@route_blueprint.route(route_constants.STRINGS_SUBMIT_ROUTE, strict_slashes=False, methods=['GET', 'POST'])
+def strings_results():
     """ Process string entered in a form text box.
 
     Returns:
@@ -237,8 +238,8 @@ def render_home_page():
                            web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
-@route_blueprint.route(route_constants.SCHEMA_ROUTE, strict_slashes=False, methods=['GET'])
-def render_schema_form():
+@route_blueprint.route(route_constants.SCHEMAS_ROUTE, strict_slashes=False, methods=['GET'])
+def render_schemas_form():
     """ The schema processing form.
 
     Returns:
@@ -246,7 +247,7 @@ def render_schema_form():
 
     """
     ver = app_config['VERSIONS']
-    return render_template(page_constants.SCHEMA_PAGE,
+    return render_template(page_constants.SCHEMAS_PAGE,
                            tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
                            web_ver=ver["web_ver"], web_date=ver["web_date"])
 
@@ -265,8 +266,8 @@ def render_services_form():
                            web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
-@route_blueprint.route(route_constants.SIDECAR_ROUTE, strict_slashes=False, methods=['GET'])
-def render_sidecar_form():
+@route_blueprint.route(route_constants.SIDECARS_ROUTE, strict_slashes=False, methods=['GET'])
+def render_sidecars_form():
     """ The sidecar form.
 
     Returns:
@@ -274,27 +275,27 @@ def render_sidecar_form():
 
     """
     ver = app_config['VERSIONS']
-    return render_template(page_constants.SIDECAR_PAGE,
+    return render_template(page_constants.SIDECARS_PAGE,
                            tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
                            web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
-@route_blueprint.route(route_constants.SPREADSHEET_ROUTE, strict_slashes=False, methods=['GET'])
-def render_spreadsheet_form():
-    """ The spreadsheet form.
+@route_blueprint.route(route_constants.SPREADSHEETS_ROUTE, strict_slashes=False, methods=['GET'])
+def render_spreadsheets_form():
+    """ The spreadsheets form.
 
     Returns:
-        template: A rendered template for the spreadsheet form.
+        template: A rendered template for the spreadsheets form.
 
     """
     ver = app_config['VERSIONS']
-    return render_template(page_constants.SPREADSHEET_PAGE,
+    return render_template(page_constants.SPREADSHEETS_PAGE,
                            tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
                            web_ver=ver["web_ver"], web_date=ver["web_date"])
 
 
-@route_blueprint.route(route_constants.STRING_ROUTE, strict_slashes=False, methods=['GET'])
-def render_string_form():
+@route_blueprint.route(route_constants.STRINGS_ROUTE, strict_slashes=False, methods=['GET'])
+def render_strings_form():
     """ The HED string form.
 
     Returns:
@@ -302,6 +303,6 @@ def render_string_form():
 
     """
     ver = app_config['VERSIONS']
-    return render_template(page_constants.STRING_PAGE,
+    return render_template(page_constants.STRINGS_PAGE,
                            tool_ver=ver["tool_ver"], tool_date=ver["tool_date"],
                            web_ver=ver["web_ver"], web_date=ver["web_date"])

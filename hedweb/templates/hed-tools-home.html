@@ -8,7 +8,7 @@
         events of interest occurring in an experiment using a common structured vocabulary and standardized tools.
         The HED framework has been developed for neurological imaging data (e.g., EEG, MEG, iEEG,
         fMRI), physiological (e.g., ECG, EMG, GSR) as well as multimodal experiment (e.g., mobile brain/body imaging).
-        HED has been adopted as part of the BIDS (<a href="http://bids.neuroimaging.io"><b>http://bids.neuroimaging.io</b></a>)
+        HED has been adopted as part of the BIDS (<a href="https://bids.neuroimaging.io"><b>https://bids.neuroimaging.io</b></a>)
         standard for brain imaging.</p>
 
 
@@ -35,10 +35,10 @@
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#generate-sidecar-template">Generate sidecar template</a></td>
             <td>Create a sidecar template from an events file.</td></tr>    
         <tr class="table-active"><td> </td>
-            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#execute-remodel-script">Executes remodel script</a></td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#execute-remodel-script">Execute remodel script</a></td>
             <td>Execute JSON script of <a href="https://www.hed-resources.org/en/latest/FileRemodelingTools.html">HED remodeling commands</a>.</td></tr>
         <tr class="table-active">
-            <td><a href="{{ url_for('route_blueprint.render_sidecar_form') }}"><strong>Sidecars</strong></a></td>
+            <td><a href="{{ url_for('route_blueprint.render_sidecars_form') }}"><strong>Sidecars</strong></a></td>
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-sidecar">Validate</a></td>
             <td>Validate HED in a BIDS JSON sidecar.</td></tr>
         <tr class="table-active"><td> </td>
@@ -54,7 +54,7 @@
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#merge-a-spreadsheet-with-a-sidecar">Merge HED spreadsheet</a></td>
             <td>Merge HED from spreadsheet into a JSON sidecar.</td></tr>
          <tr class="table-active">
-             <td><a href="{{ url_for('route_blueprint.render_spreadsheet_form') }}"><strong>Spreadsheets</strong></a></td>
+             <td><a href="{{ url_for('route_blueprint.render_spreadsheets_form') }}"><strong>Spreadsheets</strong></a></td>
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-spreadsheet">Validate</a></td>
             <td>Validate HED in a spreadsheet (.xlsx or .tsv).</td></tr>
         <tr class="table-active"><td> </td>
@@ -64,7 +64,7 @@
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-spreadsheet-to-short">Convert to short</a></td>
             <td>Convert HED tags in a spreadsheet to single tags.</td></tr> 
         <tr class="table-active">
-            <td><a href="{{ url_for('route_blueprint.render_string_form') }}"><strong>Strings<strong/></a></td>
+            <td><a href="{{ url_for('route_blueprint.render_strings_form') }}"><strong>Strings</strong></a></td>
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-string">Validate</a></td>
             <td>Validate a HED string.</td></tr>
         <tr class="table-active"><td> </td>
@@ -74,12 +74,15 @@
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-string-to-short">Convert to short</a></td>
             <td>Convert a HED string to single tags.</td></tr> 
         <tr class="table-active">
-            <td><a href="{{ url_for('route_blueprint.render_schema_form') }}"><strong>Schemas</strong></a></td>
+            <td><a href="{{ url_for('route_blueprint.render_schemas_form') }}"><strong>Schemas</strong></a></td>
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-schema">Validate</a></td>
             <td>Validate a HED schema.</td></tr>
         <tr class="table-active"><td> </td>
             <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-schema">Convert schema</a></td>
             <td>Convert a HED schema to other format.</td></tr> 
+        <tr class="table-active"><td> </td>
+            <td><a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#compare-hed-schemas">Compare HED schemas</a></td>
+            <td>Show differences between two HED schemas.</td></tr> 
     </table>
         <p><strong>Events files</strong> are tabular (tab-separated) files.
         The first row of an events file contains column names. Each subsequent row corresponds to an event marker
@@ -97,7 +100,7 @@
     <p><strong>Schemes</strong> refer to HED schema vocabularies, which may be either in .mediawiki or .xml format. These tools
         are used by schema developers creating the HED vocabularies and are not of interest to annotators or analysts.</p>
     
-        
+    <p>    
     More detailed help on using these online tools is available at:
         <a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#"><b>HED online tools</b></a>
     </p>
@@ -109,14 +112,14 @@
         <a href="https://www.hed-resources.org/en/latest/HedOnlineTools.html#hed-restful-services"><b>HED RESTful services</b></a>
         Downloadable examples of calling these services from a MATLAB program can be found at:
         <a href="https://github.com/hed-standard/hed-examples/tree/main/hedcode/matlab_scripts/web_services">
-            Github MATLAB examples</a>
+            GitHub MATLAB examples</a>
      </p>
     
         <h4>Where to find out more?</h4>
     <ul>
         <li>The <a href="https://www.hedtags.org">HED standards home page</a> has links to all things HED.</li>
         <li> The<a href="https://github.com/hed-standard">HED standards GitHub organization</a> 
-            contains all of the source for code and docs for HED</li>
+            contains the source for code and docs for HED.</li>
         <li> The <a href="https://www.hedtags.org/display_hed.html">HED schema viewer</a> allows you to browse 
             HED vocabularies, both released and under development.</li>
         <li> The <a href="https://www.hed-resources.org">HED resources page</a> has links to all HED documentation.</li>

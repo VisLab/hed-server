@@ -18,7 +18,7 @@ class Test(TestWebBase):
             v_list = v_dict["schema_version_list"]
             self.assertIsInstance(v_list, list, "The versions are in a list")
 
-    def test_schema_version_results1(self):
+    def test_schemas_version_results1(self):
         with self.app.app_context():
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/HED8.0.0.xml')
             with open(schema_path, 'r') as sc:

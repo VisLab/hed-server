@@ -269,7 +269,7 @@ def get_hed_schema_from_pull_down(request):
             base_constants.OTHER_VERSION_OPTION and base_constants.SCHEMA_PATH in request.files:
         f = request.files[base_constants.SCHEMA_PATH]
         hed_schema = hedschema.from_string(f.read(file_constants.BYTE_LIMIT).decode('ascii'),
-                                           file_type=secure_filename(f.filename))
+                                           schema_format=secure_filename(f.filename))
     else:
         raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")
     return hed_schema
@@ -280,6 +280,58 @@ def get_option(options, option_name, default_value):
     if options and option_name in options:
         option_value = options[option_name]
     return option_value
+
+
+def get_parsed_name(filename, is_url=False):
+    if is_url:
+        filename = urlparse(filename).path
+    display_name, file_type = os.path.splitext(os.path.basename(filename))
+    return display_name, file_type
+
+
+def get_schema(schema_input, input_type="version", schema_format='.xml', display_name=''):
+    """ Return a HedSchema object from the given parameters.
+
+    Args:
+        schema_input (str, file): A string indicating the schema based on the input_type
+        input_type (str): 'filename', 'url', 'version', or 'string' indicating how to interpret schema_input.
+        schema_format (str): file extension of the schema format.
+        display_name (str): Display name of the schema if known.
+
+    Returns:
+        HedSchema: The extracted HedSchema object if successful.
+        dict: A dictionary that can be returned as a response if errors.
+
+    """
+    hed_schema = None
+    file_found = True
+    issues_dict = {}
+    name = display_name
+    extension = schema_format
+    try:
+        if input_type == 'file':
+            name, extension = get_parsed_name(secure_filename(schema_input.filename))
+            hed_schema = hedschema.from_string(schema_input.read(file_constants.BYTE_LIMIT).decode('ascii'),
+                                               schema_format=extension)
+        elif input_type == 'url':
+            name, extension = get_parsed_name(schema_input, is_url=True)
+            hed_schema = hedschema.load_schema(schema_input)
+        elif input_type == 'string':
+            hed_schema = hedschema.from_string(schema_input, schema_format=schema_format)
+        elif input_type == 'version':
+            name = schema_input
+            extension = '.xml'
+            hed_schema = hedschema.load_schema_version(schema_input)
+        else:
+            file_found = False
+        if not file_found:
+            raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
+    except HedFileError as e:
+        if e.issues:
+            issues_dict = e.issues
+    except Exception as ex:   # TODO: remove after schema load is updated
+        issues_dict = [{"code":"BAD_FILE", "message": ex.args[0]}]
+    return {"schema": hed_schema, "name": name, "type": extension, "issues": issues_dict}
 
 
 def get_schema_versions(hed_schema):
@@ -328,7 +380,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
 
 
 def handle_http_error(ex):
-    """ Handle an http error.
+    """ Handle a http error.
 
     Args:
         ex (Exception): A class that extends python Exception class.
