@@ -267,7 +267,7 @@ def search(hed_schema, events, sidecar, query, options=None):
 
     Notes:  The options for this are
         columns_included (list):  A list of column names of columns to include.
-        expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise shrink definitions.
+        expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise, shrink definitions.
 
     """
     columns_included = get_option(options, base_constants.COLUMNS_INCLUDED, None)
