@@ -11,8 +11,11 @@ $('#process_actions').change(function(){
     setOptions();
 });
 
+$('#definition_file').change(function() {
+    clearFlashMessages();
+})
 /**
- * Submits the form if a string has been entered.
+ * Submit the form if a string has been entered.
  */
 $('#string_submit').on('click', function () {
    if (!stringIsSpecified()) {
@@ -36,6 +39,7 @@ function clearForm() {
     clearFlashMessages();
     setOptions();
     hideOtherSchemaVersionFileUpload();
+    $('#definition_file').val('');
     $('#string_result').val('');
     $('#string_input').val('');
 }

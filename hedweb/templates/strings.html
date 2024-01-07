@@ -2,6 +2,7 @@
 {% from "schemas-pulldown.html" import create_schemas_pulldown %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
+{% from "file-input.html" import create_file_input %}
 
 {% block content %}
     <h3>HED string quick checks</h3>
@@ -15,8 +16,9 @@
         <p></p>
         {{ create_schemas_pulldown() }}
         <p></p>
-        <fieldset class="form-group">
-         <legend>Process string:</legend>
+        <fieldset  class="form-group">
+            <legend>Process:</legend>
+            {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
             <label for=string_input" class="form-label mt-4">Enter a HED string:</label>
             <textarea class="form-control" rows="5" cols="60" wrap="soft" maxlength="25000"
                       name="string_input" id="string_input"></textarea>
@@ -24,14 +26,12 @@
             <textarea class="form-control" rows="5" cols="60" wrap="soft" maxlength="25000"
                           name="string_result" id="string_result"></textarea>
             <p> </p>
-            <fieldset>
+        
             <button id="string_submit" type="button" class="btn btn-primary btn-large">Process</button>
             <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
             <button id="string_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
-            </fieldset>
             <p> </p>
             <p class="flash" id="string_flash"></p>
-
         </fieldset>
     </form>
     <script type="module">

@@ -34,7 +34,7 @@ COMMAND_TO_LONG = 'to_long'
 COMMAND_TO_SHORT = 'to_short'
 COMMAND_VALIDATE = 'validate'
 
-
+DEFINITION_FILE = 'definition_file'
 DOWNLOAD_FILE = 'download_file'
 
 EVENTS = 'events'

@@ -1,6 +1,7 @@
 from flask import current_app
-
+from werkzeug.utils import secure_filename
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
+from hed.models.sidecar import Sidecar
 from hed.models.hed_string import HedString
 from hed import schema as hedschema
 
@@ -26,9 +27,15 @@ def get_input_from_form(request):
         string_list = [HedString(hed_string, hed_schema)]
     else:
         raise HedFileError('EmptyHedString', 'Must enter a HED string', '')
+    sidecar = None
+    if base_constants.DEFINITION_FILE in request.files:
+        f = request.files[base_constants.DEFINITION_FILE]
+        sidecar = Sidecar(files=f, name=secure_filename(f.filename))
+        definitions = sidecar.get_def_dict(hed_schema, extra_def_dicts=None)
     arguments = {base_constants.COMMAND: request.form.get(base_constants.COMMAND_OPTION, ''),
                  base_constants.SCHEMA: hed_schema,
                  base_constants.STRING_LIST: string_list,
+                 base_constants.DEFINITION_SIDECAR: sidecar,
                  base_constants.CHECK_FOR_WARNINGS:
                      form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')}
     return arguments
