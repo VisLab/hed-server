@@ -7,12 +7,13 @@ from hed import schema as hedschema
 from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
 from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
-from hedweb import sidecars as sidecar
-from hedweb import events as events
-from hedweb import spreadsheets as spreadsheets
-from hedweb import services as services
-from hedweb import strings as strings
-from hedweb import schemas as schema
+
+from hedweb.process_events import ProcessEvents
+from hedweb.process_schemas import ProcessSchemas
+from hedweb.process_services import ProcessServices
+from hedweb.process_sidecars import ProcessSidecars
+from hedweb.process_spreadsheets import ProcessSpreadsheets 
+from hedweb.process_strings import ProcessStrings
 from hedweb.columns import get_columns_request
 
 app_config = current_app.config
@@ -50,8 +51,9 @@ def events_results():
     """
 
     try:
-        input_arguments = events.get_events_form_input(request)
-        a = events.process(input_arguments)
+        proc_events = ProcessEvents()
+        proc_events.set_input_from_form(request)
+        a = proc_events.process()
         return package_results(a)
     except Exception as ex:
         return handle_http_error(ex)
@@ -71,8 +73,9 @@ def schemas_results():
 
     """
     try:
-        arguments = schema.get_input_from_form(request)
-        a = schema.process(arguments)
+        proc_schemas = ProcessSchemas()
+        proc_schemas.set_input_from_form(request)
+        a = proc_schemas.process()
         return package_results(a)
     except Exception as ex:
         return handle_http_error(ex)
@@ -130,8 +133,8 @@ def services_results():
     try:
         hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
         hedschema.cache_xml_versions()
-        arguments = services.get_input_from_request(request)
-        response = services.process(arguments)
+        arguments = ProcessServices.get_input_from_request(request)
+        response = ProcessServices.process(arguments)
         return json.dumps(response)
     except Exception as ex:
         errors = handle_error(ex, return_as_str=False)
@@ -157,8 +160,9 @@ def sidecars_results():
     """
 
     try:
-        input_arguments = sidecar.get_input_from_form(request)
-        a = sidecar.process(input_arguments)
+        proc_sidecars = ProcessSidecars()
+        proc_sidecars.set_input_from_form(request)
+        a = proc_sidecars.process()
         b = package_results(a)
         return b
         # return package_results(a)
@@ -181,8 +185,9 @@ def spreadsheets_results():
     """
 
     try:
-        arguments = spreadsheets.get_input_from_form(request)
-        a = spreadsheets.process(arguments)
+        proc_spreadsheets = ProcessSpreadsheets()
+        proc_spreadsheets.set_input_from_form(request)
+        a = proc_spreadsheets.process()
         response = package_results(a)
         return response
     except Exception as ex:
@@ -203,8 +208,9 @@ def strings_results():
 
     """
     try:
-        input_arguments = strings.get_input_from_form(request)
-        a = strings.process(input_arguments)
+        proc_strings = ProcessStrings()
+        proc_strings.set_input_from_form(request)
+        a = proc_strings.process()
         return json.dumps(a)
     except Exception as ex:
         return handle_error(ex)
