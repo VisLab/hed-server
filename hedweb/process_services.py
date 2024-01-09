@@ -40,16 +40,16 @@ class ProcessServices:
         form_string = form_data.decode()
         service_request = json.loads(form_string)
         arguments = ProcessServices.get_service_info(service_request)
-        arguments[base_constants.SCHEMA] = ProcessServices.get_input_schema(service_request)
-        ProcessServices.get_column_parameters(arguments, service_request)
-        ProcessServices.get_remodel_parameters(arguments, service_request)
-        ProcessServices.get_sidecar(arguments, service_request)
-        ProcessServices.get_input_objects(arguments, service_request)
+        arguments[base_constants.SCHEMA] = ProcessServices.set_input_schema(service_request)
+        ProcessServices.set_column_parameters(arguments, service_request)
+        ProcessServices.set_remodel_parameters(arguments, service_request)
+        ProcessServices.set_sidecar(arguments, service_request)
+        ProcessServices.set_input_objects(arguments, service_request)
         arguments[base_constants.QUERY] = service_request.get('query', None)
         return arguments
 
     @staticmethod
-    def get_column_parameters(arguments, params):
+    def set_column_parameters(arguments, params):
         """ Update arguments with the columns that requested for the service.
 
         Args:
@@ -75,7 +75,7 @@ class ProcessServices:
         arguments[base_constants.COLUMNS_INCLUDED] = columns_included
 
     @staticmethod
-    def get_sidecar(arguments, params):
+    def set_sidecar(arguments, params):
         """ Update arguments with the sidecars if there are any.
 
          Args:
@@ -99,7 +99,7 @@ class ProcessServices:
             arguments[base_constants.SIDECAR] = None
 
     @staticmethod
-    def get_input_objects(arguments, params):
+    def set_input_objects(arguments, params):
         """ Update arguments with the information in the params dictionary.
 
         Args:
@@ -179,7 +179,7 @@ class ProcessServices:
                 }
 
     @staticmethod
-    def get_input_schema(parameters):
+    def set_input_schema(parameters):
         """ Get a HedSchema or HedSchemaGroup object from the parameters.
 
         Args:

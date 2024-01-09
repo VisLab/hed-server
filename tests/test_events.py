@@ -5,7 +5,7 @@ from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
 from tests.test_web_base import TestWebBase
-from hed import schema as hedschema
+from hed.schema import HedSchema, load_schema
 from hed.models import Sidecar, TabularInput
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
@@ -18,7 +18,7 @@ class Test(TestWebBase):
         from hedweb.process_events import ProcessEvents
         events_proc = ProcessEvents()
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), events_file)
-        events_proc.schema = hedschema.load_schema(schema_path)
+        events_proc.schema = load_schema(schema_path)
         if sidecar_file:
             events_proc.sidecar = Sidecar(files=os.path.join(os.path.dirname(os.path.abspath(__file__)), sidecar_file))
         if events_path:

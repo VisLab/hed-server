@@ -38,7 +38,7 @@ class ProcessSchemas(ProcessBase):
     
         """
 
-        self.command = request.form.get(base_constants.COMMAND_OPTION, None),
+        self.command = request.form.get(base_constants.COMMAND_OPTION, None)
         self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
         if form_has_option(request, base_constants.SCHEMA_UPLOAD_OPTIONS, base_constants.SCHEMA_FILE_OPTION) and \
                 form_has_file(request, base_constants.SCHEMA_FILE, file_constants.SCHEMA_EXTENSIONS):
