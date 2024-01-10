@@ -1,4 +1,3 @@
-from flask import current_app
 import openpyxl
 import os
 
@@ -8,9 +7,6 @@ from hed.errors import HedFileError
 from hed.tools.analysis.tabular_summary import TabularSummary
 from hedweb.constants import base_constants, file_constants
 from hedweb.web_util import form_has_file, form_has_option
-
-
-app_config = current_app.config
 
 
 def create_column_selections(form_dict):
@@ -62,7 +58,7 @@ def _create_columns_info(columns_file, has_column_names: True, sheet_name: None)
     Args:
         columns_file (File-like): File to create the dictionary for.
         has_column_names (bool):  If True, first row is interpreted as the column names.
-        sheet_name (str): The name of the worksheet if this is an excel file.
+        sheet_name (str): The name of the worksheet if this is an Excel file.
 
     Returns:
         dict: Dictionary containing information include column names and number of unique values in each column.
@@ -141,20 +137,18 @@ def get_columns_request(request):
     return _create_columns_info(columns_file, has_column_names, sheet_name)
 
 
-def get_prefix_dict(form_dict):
+def get_column_names(form_dict):
     """ Return a tag prefix dictionary from a form dictionary.
 
-    Args:
-        form_dict (dict): The dictionary returned from a form that contains a column prefix table.
+    Parameters:
+        form_dict (dict): The dictionary returned from a form that contains a column table.
 
     Returns:
         list: List of selected columns
-        dict: Prefix dictionary
-
-    Note: The form counts columns starting from 1 but prefix dictionary starts with index 0.
+        
+    Note: The form counts columns starting from 1.
     """
     tag_columns = []
-    prefix_dict = {}
     keys = form_dict.keys()
     for key in keys:
         index_check = key.rfind('_check')
@@ -162,12 +156,8 @@ def get_prefix_dict(form_dict):
             continue
         pieces = key.split("_")
         column_number = int(pieces[1])
-        info_key = key[0: index_check] + "_input"
-        if form_dict.get(info_key, None):
-            prefix_dict[column_number] = form_dict[info_key]
-        else:
-            tag_columns.append(column_number)
-    return tag_columns, prefix_dict
+        tag_columns.append(column_number)
+    return tag_columns
 
 
 def _get_worksheet(excel_file, sheet_name):

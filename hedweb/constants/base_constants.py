@@ -34,7 +34,8 @@ COMMAND_TO_LONG = 'to_long'
 COMMAND_TO_SHORT = 'to_short'
 COMMAND_VALIDATE = 'validate'
 
-
+DEFINITION_FILE = 'definition_file'
+DEFINITIONS = 'definitions'
 DOWNLOAD_FILE = 'download_file'
 
 EVENTS = 'events'
@@ -97,6 +98,8 @@ SCHEMA_VERSION = 'schema_version'
 SCHEMA_VERSION_LIST = 'schema_version_list'
 SCHEMA_VERSION_STRING = 'schema_version_string'
 
+SCHEMA1 = 'schema1'
+SCHEMA2 = 'schema2'
 SECOND_SCHEMA_DISPLAY_NAME = 'second_schema_display_name'
 SECOND_SCHEMA_FILE = 'second_schema_file'
 SECOND_SCHEMA_FILE_OPTION = 'second_schema_file_option'
@@ -129,6 +132,7 @@ STRING_LIST = 'string_list'
 STRING_RESULT = 'string_result'
 
 TAG_COLUMNS = 'tag_columns'
+WORKSHEET = 'worksheet'
 WORKSHEET_NAME = 'worksheet_name'
 WORKSHEET_NAMES = 'worksheet_names'
 WORKSHEET_SELECT = 'worksheet_select'

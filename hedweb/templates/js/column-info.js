@@ -107,7 +107,7 @@ function showEvents(columnList, columnCounts) {
  * @param {boolean} hasPrefixes - if true then the prefix inputs are displayed.
  * 
  */
-function showIndices(columnList, hasPrefixes=true) {
+function showIndices(columnList, hasPrefixes=false) {
     $('#show_indices_section').show();
     let indicesTable = $('#show_indices_table');
     let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
