@@ -29,14 +29,7 @@ class Test(TestWebBase):
                           base_constants.WORKSHEET_NAME: 'LKT 8HED3',
                           base_constants.WORKSHEET_SELECTED: 'LKT 8HED3',
                           base_constants.HAS_COLUMN_NAMES: 'on',
-                          'column_0_input': '',
-                          'column_1_check': 'on',
-                          'column_1_input': 'Label/',
-                          'column_2_input': '',
-                          'column_3_check': 'on',
-                          'column_3_input': 'Description/',
                           'column_4_check': 'on',
-                          'column_4_input': '',
                           base_constants.SPREADSHEET_FILE: (spreadsheet_buffer, 'ExcelMultipleSheets.xlsx'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/spreadsheets_submit', content_type='multipart/form-data', data=input_data)
@@ -61,15 +54,7 @@ class Test(TestWebBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.WORKSHEET_NAME: 'LKT Events',
                           base_constants.WORKSHEET_SELECTED: 'LKT Events',
-                          base_constants.HAS_COLUMN_NAMES: 'on',
-                          'column_0_input': '',
-                          'column_1_check': 'on',
-                          'column_1_input': 'Label/',
-                          'column_2_input': '',
-                          'column_3_check': 'on',
-                          'column_3_input': 'Description/',
                           'column_4_check': 'on',
-                          'column_4_input': '',
                           base_constants.SPREADSHEET_FILE: (spreadsheet_buffer, 'ExcelMultipleSheets.xlsx'),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/spreadsheets_submit', content_type='multipart/form-data', data=input_data)

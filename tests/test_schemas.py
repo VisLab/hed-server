@@ -10,7 +10,7 @@ from hed import HedSchema, load_schema
 class Test(TestWebBase):
 
 
-    def test_get_input_from_schemas_form_valid(self):
+    def test_set_input_from_schemas_form_valid(self):
         from hedweb.process_schemas import ProcessSchemas
 
         with self.app.test:
@@ -50,22 +50,22 @@ class Test(TestWebBase):
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.1.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_schemas = ProcessSchemas()
             proc_schemas.command = base_constants.COMMAND_VALIDATE
-            proc_schemas.schema = {"schema": load_schema(schema_path), "name": 'HED8.1.0',
+            proc_schemas.schema = {"schema": load_schema(schema_path), "name": 'HED8.2.0',
                                    "type": '.xml', "issues": {}}
             results = proc_schemas.process()
             self.assertFalse(results['data'], "HED8.0.0 is HED-3G compliant")
 
     def test_schemas_convert_valid(self):
         from hedweb.process_schemas import ProcessSchemas
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.mediawiki')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.mediawiki')
         with self.app.app_context():
             proc_schemas = ProcessSchemas()
             proc_schemas.command = base_constants.COMMAND_CONVERT_SCHEMA
-            proc_schemas.schema = {"schema": load_schema(schema_path), "name": 'HED8.0.0',
+            proc_schemas.schema = {"schema": load_schema(schema_path), "name": 'HED8.2.0',
                                    "type": '.mediawiki', "issues": {}}
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.0.0.mediawiki can be converted to xml")

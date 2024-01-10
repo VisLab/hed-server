@@ -14,10 +14,11 @@ from hedweb.constants import base_constants
 class Test(TestWebBase):
     cache_schemas = True
     
-    def get_event_proc(self, events_file, sidecar_file, schema_path):
+    def get_event_proc(self, events_file, sidecar_file, schema_file):
         from hedweb.process_events import ProcessEvents
         events_proc = ProcessEvents()
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), events_file)
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
         events_proc.schema = load_schema(schema_path)
         if sidecar_file:
             events_proc.sidecar = Sidecar(files=os.path.join(os.path.dirname(os.path.abspath(__file__)), sidecar_file))
@@ -29,14 +30,14 @@ class Test(TestWebBase):
         events_proc.check_for_warnings = True
         return events_proc
 
-    def test_get_input_from_events_form_empty(self):
+    def test_set_input_from_events_form_empty(self):
         from hedweb.process_events import ProcessEvents
         with self.assertRaises(HedFileError):
             with self.app.app_context():
                 proc_events = ProcessEvents()
                 proc_events.process()
 
-    def test_get_input_from_events_form(self):
+    def test_set_input_from_events_form(self):
         from hedweb.process_events import ProcessEvents
         from hed.schema import HedSchema
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
@@ -46,7 +47,7 @@ class Test(TestWebBase):
             with open(sidecar_path, 'rb') as fp:
                 with open(events_path, 'rb') as fpe:
                     environ = create_environ(data={base_constants.SIDECAR_FILE: fp,
-                                                   base_constants.SCHEMA_VERSION: '8.0.0',
+                                                   base_constants.SCHEMA_VERSION: '8.2.0',
                                                    base_constants.EVENTS_FILE: fpe, base_constants.EXPAND_DEFS: 'on',
                                                    base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE})
             request = Request(environ)
@@ -65,7 +66,7 @@ class Test(TestWebBase):
 
     def test_events_process_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
             events_proc.command = base_constants.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(isinstance(results, dict),
@@ -75,7 +76,7 @@ class Test(TestWebBase):
 
     def test_events_process_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.command = base_constants.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(isinstance(results, dict), "should return a dictionary when validation errors")
@@ -84,7 +85,7 @@ class Test(TestWebBase):
 
     def test_events_assemble_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
             events_proc.check_for_warnings = False
             events_proc.command = base_constants.COMMAND_ASSEMBLE
             results = events_proc.process()
@@ -93,7 +94,7 @@ class Test(TestWebBase):
 
     def test_events_assemble_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.check_for_warnings = False
             events_proc.command = base_constants.COMMAND_ASSEMBLE
             results = events_proc.process()
@@ -105,13 +106,13 @@ class Test(TestWebBase):
         options = {'columns_selected': {'event_type': True}}
         with self.assertRaises(AttributeError):
             with self.app.app_context():
-                events_proc = self.get_event_proc('data/bids_events.tsv', '', 'data/HED8.0.0.xml')
+                events_proc = self.get_event_proc('data/bids_events.tsv', '', 'data/HED8.2.0.xml')
                 events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
                 results = events_proc.process()
 
     def test_generate_sidecar_valid(self):
         from hedweb.process_events import ProcessEvents
-        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
         events_proc.columns_selected = {'event_type': True, 'bci_prediction': True, 'trial': False}
         events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
         events_proc.expand_defs = True
@@ -125,7 +126,7 @@ class Test(TestWebBase):
 
     def test_search_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.query = ""
             events_proc.command = base_constants.COMMAND_SEARCH
             results = events_proc.process()
@@ -135,7 +136,7 @@ class Test(TestWebBase):
 
     def test_events_search_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.command = base_constants.COMMAND_SEARCH
             events_proc.query = "Sensory-event"
             results = events_proc.process()
@@ -144,7 +145,7 @@ class Test(TestWebBase):
 
     def test_events_validate_invalid(self):
         from hedweb.process_events import ProcessEvents
-        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.0.0.xml')
+        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
         events_proc.command = base_constants.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()
@@ -153,7 +154,7 @@ class Test(TestWebBase):
 
     def test_events_validate_valid(self):
         from hedweb.process_events import ProcessEvents
-        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.0.0.xml')
+        events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
         events_proc.command = base_constants.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()

@@ -5,14 +5,11 @@ from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hedweb.web_util import get_schema_versions
-
 from hedweb.constants import base_constants, file_constants
-from hedweb.columns import get_prefix_dict
 from hedweb.process_base import ProcessBase
+from hedweb.columns import get_column_names
 from hedweb.web_util import filter_issues, form_has_option, generate_filename, get_hed_schema_from_pull_down
 
-
-app_config = current_app.config
 
 class ProcessSpreadsheets(ProcessBase):
 
@@ -43,9 +40,8 @@ class ProcessSpreadsheets(ProcessBase):
         self.spreadsheet = input_dict.get(base_constants.SPREADSHEET, None)
         self.worksheet = input_dict.get(base_constants.WORKSHEET, None)
         self.spreadsheet_type = input_dict.get(base_constants.SPREADSHEET_TYPE, file_constants.TSV_EXTENSION)
-        self.prefix_dict = input_dict.get(base_constants.COLUMN_PREFIX_DICTIONARY, {})
         self.tag_columns = input_dict.get(base_constants.TAG_COLUMNS, [])
-        self.has_column_names = input_dict.get(base_constants.HAS_COLUMN_NAMES, True)
+        self.has_column_names = True
         self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
         self.expand_defs = input_dict.get(base_constants.EXPAND_DEFS, False)
         
@@ -59,11 +55,9 @@ class ProcessSpreadsheets(ProcessBase):
         self.schema = get_hed_schema_from_pull_down(request)
         self.worksheet = request.form.get(base_constants.WORKSHEET_NAME, None)
         self.command = request.form.get(base_constants.COMMAND_OPTION, '')
-        self.has_column_names =  form_has_option(request, base_constants.HAS_COLUMN_NAMES, 'on')
+        self.has_column_names =  True
         self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
-        self.tag_columns, self.prefix_dict = get_prefix_dict(request.form)
-        if self.command != base_constants.COMMAND_VALIDATE:
-            self.prefix_dict = {}
+        self.tag_columns = get_column_names(request.form)
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
         file_ext = os.path.splitext(filename)[1]
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
@@ -73,7 +67,7 @@ class ProcessSpreadsheets(ProcessBase):
                                             worksheet_name=self.worksheet,
                                             tag_columns=self.tag_columns,
                                             has_column_names=self.has_column_names,
-                                            column_prefix_dictionary=self.prefix_dict,
+                                            column_prefix_dictionary=None,
                                             name=filename)
     
     def process(self):

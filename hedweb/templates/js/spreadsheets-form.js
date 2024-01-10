@@ -37,7 +37,6 @@ $('#spreadsheet_clear').on('click', function () {
  */
 function clearForm() {
     clearFlashMessages();
-    
     clearSpreadsheet()
     $("#validate").prop('checked', true);
     setOptions();

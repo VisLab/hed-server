@@ -12,28 +12,26 @@ from hedweb.constants import base_constants
 
 
 class Test(TestWebBase):
-    def test_get_input_from_service_request_empty(self):
+    def test_set_input_from_service_request_empty(self):
         from hedweb.process_services import ProcessServices
         with self.assertRaises(HedFileError):
             with self.app.app_context():
                 ProcessServices.process({})
 
-    def test_get_input_from_service_request(self):
+    def test_set_input_from_service_request(self):
         from hedweb.process_services import ProcessServices
         with self.app.test:
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(sidecar_path, 'rb') as fp:
                 sidecar_string = fp.read().decode('ascii')
             json_data = {base_constants.SIDECAR_STRING: sidecar_string, base_constants.CHECK_FOR_WARNINGS: 'on',
-                         base_constants.SCHEMA_VERSION: '8.0.0', base_constants.SERVICE: 'sidecar_validate'}
+                         base_constants.SCHEMA_VERSION: '8.2.0', base_constants.SERVICE: 'sidecar_validate'}
             environ = create_environ(json=json_data)
             request = Request(environ)
             arguments = ProcessServices.set_input_from_request(request)
-            self.assertIn(base_constants.SIDECAR, arguments, "get_input_from_request should have a json sidecar")
-            self.assertIsInstance(arguments[base_constants.SIDECAR], Sidecar,
-                                  "get_input_from_request should contain a sidecar")
-            self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema,
-                                  "get_input_from_request should have a HED schema")
+            self.assertIn(base_constants.SIDECAR, arguments, "should have a json sidecar")
+            self.assertIsInstance(arguments[base_constants.SIDECAR], Sidecar, "should contain a sidecar")
+            self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema, "should have a HED schema")
             self.assertEqual('sidecar_validate', arguments[base_constants.SERVICE],"should have a service request")
             self.assertTrue(arguments[base_constants.CHECK_FOR_WARNINGS], "should have check_warnings true when on")
 
@@ -73,7 +71,7 @@ class Test(TestWebBase):
         json_text = json.dumps(data)
         fb = io.StringIO(json_text)
         arguments = {base_constants.SERVICE: 'sidecar_validate', 
-                     base_constants.SCHEMA: load_schema_version('8.1.0'),
+                     base_constants.SCHEMA: load_schema_version('8.2.0'),
                      base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
                      base_constants.SIDECAR: Sidecar(files=fb, name='JSON_Sidecar')}
         with self.app.app_context():
@@ -83,7 +81,7 @@ class Test(TestWebBase):
             results = response['results']
             self.assertEqual('warning', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual(json.dumps('8.1.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.1.0 was used')
+            self.assertEqual(json.dumps('8.2.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.2.0 was used')
 
     def test_process_services_sidecar_a(self):
         from hedweb.process_services import ProcessServices 
@@ -120,8 +118,8 @@ class Test(TestWebBase):
                              'sidecar_validation services should not have a error when file is valid')
             results = response['results']
             self.assertTrue(results['data'], 'sidecar_validation produces errors when file not valid')
-            self.assertEqual('warning', results['msg_category'], "sidecar_validation did not valid with 7.2.0")
-            self.assertEqual(json.dumps('8.2.0'), results['schema_version'], 'Version 7.2.0 was used')
+            self.assertEqual('warning', results['msg_category'], "sidecar_validation did not valid with 8.2.0")
+            self.assertEqual(json.dumps('8.2.0'), results['schema_version'], 'Version 8.2.0 was used')
 
     def test_services_get_sidecar(self):
         from hedweb.process_services import ProcessServices

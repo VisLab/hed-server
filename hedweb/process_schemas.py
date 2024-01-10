@@ -27,7 +27,7 @@ class ProcessSchemas(ProcessBase):
         """
         self.schema = input_dict.get(base_constants.SCHEMA, None)
         self.schema2 = input_dict.get(base_constants.SCHEMA2, None)
-        self.command = input_dict.get(base_constants.COMMAND_OPTION, '')
+        self.command = input_dict.get(base_constants.COMMAND, '')
         self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
 
     def set_input_from_form(self, request):

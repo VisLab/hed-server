@@ -142,8 +142,7 @@
                     "schema_version"
                 ],
                 [
-                    "column_x_input",
-                    "column_x_check"
+                    "column_x_input"
                 ],
                 "check_for_warnings"
             ],
@@ -159,8 +158,7 @@
                     "schema_version"
                 ],
                 [
-                    "column_x_input",
-                    "column_x_check"
+                    "column_x_input"
                 ]
             ],
             "Returns": "The converted spreadsheet or a list of issues if any."
@@ -175,8 +173,7 @@
                     "schema_version"
                 ],
                 [
-                    "column_x_input",
-                    "column_x_check"
+                    "column_x_input"
                 ]
             ],
             "Returns": "The converted spreadsheet or a list of issues if any."
@@ -222,7 +219,6 @@
     "parameter_meanings": {
         "check_for_warnings": "If true, check for warnings when processing HED strings.",
         "column_x_check": "If present with value 'on' column x has HED tags. (x is column position starting at 0.)",
-        "column_x_input": "The prefix prepended to column number x (starting at 0) if column x has HED tags.",
         "columns_categorical": "A list of names of categorical event file columns",
         "columns_included": "A list of names of columns to be included for assembly or query.",
         "columns_value": "A list of names of value event file columns",

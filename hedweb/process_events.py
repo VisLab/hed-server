@@ -11,12 +11,13 @@ from hed.models.tabular_input import TabularInput
 from hed.models.df_util import get_assembled, shrink_defs
 from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
+from hed.tools.remodeling.validator import RemodelerValidator
 from hed.tools.analysis import analysis_util
 from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
 from hedweb.constants import base_constants
 from hedweb.process_base import ProcessBase
-from hedweb.columns import create_column_selections, create_columns_included
+from hedweb.columns import create_column_selections
 from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_schema_versions
 
 class ProcessEvents(ProcessBase):
@@ -68,7 +69,6 @@ class ProcessEvents(ProcessBase):
         self.expand_defs = form_has_option(request, base_constants.EXPAND_DEFS, 'on')
         self.include_summaries = form_has_option(request, base_constants.INCLUDE_SUMMARIES, 'on')
         self.columns_selected = create_column_selections(request.form)
-        self.columns_included = create_columns_included(request.form)
         if self.command == base_constants.COMMAND_ASSEMBLE:
             self.columns_included = ['onset']   # TODO  add user interface option to choose columns.
         if self.command != base_constants.COMMAND_GENERATE_SIDECAR:
@@ -206,9 +206,10 @@ class ProcessEvents(ProcessBase):
         display_name = self.events.name
         remodel_name = self.remodel_operations['name']
         operations = self.remodel_operations['operations']
-        operations_list, errors = Dispatcher.parse_operations(operations)
+        validator = RemodelerValidator()
+        errors = validator.validate(operations)
         if errors:
-            issue_str = Dispatcher.errors_to_str(errors)
+            issue_str = "\n".join(errors)
             file_name = generate_filename(remodel_name, name_suffix='_operation_parse_errors',
                                           extension='.txt', append_datetime=True)
             return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,

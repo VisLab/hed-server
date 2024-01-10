@@ -10,19 +10,18 @@ from hedweb.constants import base_constants
 
 class Test(TestWebBase):
     
-    def get_spread_proc(self, spread_file, schema_file, worksheet=None, tag_columns=None, 
-                              has_column_names=True, prefix_dict=None ):
+    @staticmethod
+    def get_spread_proc(spread_file, schema_file, worksheet=None, tag_columns=None):
         from hedweb.process_spreadsheets import ProcessSpreadsheets
         spread_proc = ProcessSpreadsheets()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
-        spread_proc.has_column_names = has_column_names
-        spread_proc.prefix_dict = dict
+        spread_proc.has_column_names = True
         if spread_file:
             spread_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), spread_file)
             spread_proc.spreadsheet = SpreadsheetInput(spread_path, worksheet_name=worksheet,
-                                                       tag_columns=tag_columns, has_column_names=has_column_names,
-                                                       column_prefix_dictionary=prefix_dict, name=spread_file)
+                                                       tag_columns=tag_columns, has_column_names=True,
+                                                       column_prefix_dictionary=None, name=spread_file)
         if schema_file:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
             spread_proc.schema = load_schema(schema_path)
@@ -34,17 +33,17 @@ class Test(TestWebBase):
                 spread_proc = self.get_spread_proc(None, None)
                 spread_proc.process()
         
-    def test_get_input_from_spreadsheets_form(self):
+    def test_set_input_from_spreadsheets_form(self):
         from hedweb.process_spreadsheets import ProcessSpreadsheets
         with self.app.test:
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
-            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
             with open(spreadsheet_path, 'rb') as fp:
                 with open(schema_path, 'rb') as sp:
                     environ = create_environ(data={base_constants.SPREADSHEET_FILE: fp,
                                                    base_constants.SCHEMA_VERSION: base_constants.OTHER_VERSION_OPTION,
                                                    base_constants.SCHEMA_PATH: sp,
-                                                   'column_4_check': 'on', 'column_4_input': '',
+                                                   'column_4_check': 'on',
                                                    base_constants.WORKSHEET_NAME: 'LKT 8HED3',
                                                    base_constants.HAS_COLUMN_NAMES: 'on',
                                                    base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE})
@@ -58,25 +57,21 @@ class Test(TestWebBase):
             self.assertEqual(spread_proc.worksheet,'LKT 8HED3', "should have a sheet_name name")
             self.assertTrue(spread_proc.has_column_names, "should have column names")
 
-    def test_spreadsheets_process_validate_invalid(self):
-        prefix_dict = {2: "Event/Long name/", 1: "Event/Label/", 3: "Event/Description/"}     
+    def test_spreadsheets_process_validate_invalid(self):  
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml', 
-                                               worksheet='LKT Events', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml', 
+                                               worksheet='LKT Events', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             results = spread_proc.process()
             self.assertTrue(isinstance(results, dict),
                             'process validate should return a dictionary when errors')
             self.assertEqual('warning', results['msg_category'], 'should give warning when spreadsheet has errors')
-            self.assertTrue(results['data'], 'should return validation issues using HED 8.0.0-beta.1')
+            self.assertTrue(results['data'], 'should return validation issues using HED 8.2.0')
 
     def test_spreadsheets_validate_valid(self):
-        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT 8HED3A', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = True
             results = spread_proc.process()
@@ -84,11 +79,9 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], "should return success if validated")
 
     def test_spreadsheets_convert_to_long_excel(self):
-        prefix_dict = {1: "Label/", 3: "Description/"}
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT 8HED3A', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_TO_LONG
             spread_proc.check_for_warnings = True
             tags1 = spread_proc.spreadsheet.dataframe.iloc[0, 4]
@@ -100,9 +93,8 @@ class Test(TestWebBase):
 
     def test_spreadsheets_convert_to_long_no_prefixes(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT 8HED3A', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=None)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_TO_LONG
             spread_proc.check_for_warnings = False
             tags1 = spread_proc.spreadsheet.dataframe.iloc[0, 4]
@@ -114,11 +106,9 @@ class Test(TestWebBase):
             self.assertGreater(len(tags2), len(tags1))
 
     def test_spreadsheets_validate_valid_excel(self):
-        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT 8HED3A', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
@@ -127,11 +117,9 @@ class Test(TestWebBase):
             self.assertEqual('success', results["msg_category"], 'should be success when no errors')
 
     def test_spreadsheets_validate_valid_excel1(self):
-        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT 8HED3A', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
@@ -139,12 +127,9 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], 'should be success when no errors')
 
     def test_spreadsheets_validate_invalid_excel(self):
- 
-        prefix_dict = {1: "Property/Informational-property/Label/", 3: "Property/Informational-property/Description/"}
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.0.0.xml',
-                                               worksheet='LKT Events', tag_columns=[4],
-                                               has_column_names=True, prefix_dict=prefix_dict)
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+                                               worksheet='LKT Events', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()

@@ -30,7 +30,7 @@ class ProcessStrings(ProcessBase):
             dict: A dictionary of schema processing parameters in standard form.
 
         """
-        self.command = input_dict.get(base_constants.COMMAND_OPTION, '')
+        self.command = input_dict.get(base_constants.COMMAND, '')
         self.schema = input_dict.get(base_constants.SCHEMA, None)
         self.string_list = input_dict.get(base_constants.STRING_LIST, '')
         self.definitions = input_dict.get(base_constants.DEFINITIONS, None)

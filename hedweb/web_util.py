@@ -4,7 +4,7 @@ import json
 import os
 import zipfile
 from urllib.parse import urlparse
-from flask import current_app, Response, make_response, send_file
+from flask import Response, make_response, send_file
 from werkzeug.utils import secure_filename
 
 from hed import schema as hedschema
@@ -12,8 +12,6 @@ from hed import HedSchema, HedSchemaGroup
 
 from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
 from hedweb.constants import base_constants, file_constants
-
-app_config = current_app.config
 
 TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
@@ -171,10 +169,10 @@ def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=N
     """ Generate a filename for the attachment.
 
     Parameters:
-        base_name (str):   Name of the base, usually the name of the file that the issues were generated from.
-        name_prefix (str): Prefix prepended to the front of the base name.
-        name_suffix (str): Suffix appended to the end of the base name.
-        extension (str):   Extension to use.
+        base_name (str or None):   Name of the base, usually the name of the file that the issues were generated from.
+        name_prefix (str or None): Prefix prepended to the front of the base name.
+        name_suffix (str or None): Suffix appended to the end of the base name.
+        extension (str or None):   Extension to use.
         append_datetime (bool): If True, append the current date-time to the base output filename.
 
     Returns:

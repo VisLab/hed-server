@@ -6,13 +6,12 @@ from werkzeug.wrappers import Request
 from tests.test_web_base import TestWebBase
 from hed.schema import HedSchema, load_schema
 from hed.models import HedString
-from hed.models import Sidecar
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
 
 
 class Test(TestWebBase):
-    def test_get_input_from_string_form_empty(self):
+    def test_set_input_from_string_form_empty(self):
         from hedweb.process_strings import ProcessStrings
         with self.assertRaises(HedFileError):
             with self.app.app_context():
@@ -20,11 +19,11 @@ class Test(TestWebBase):
                 strings_proc.process()
 
 
-    def test_get_input_from_string_form(self):
+    def test_set_input_from_string_form(self):
         from hedweb.process_strings import ProcessStrings
         with self.app.test:
             environ = create_environ(data={base_constants.STRING_INPUT: 'Red,Blue',
-                                           base_constants.SCHEMA_VERSION: '8.0.0',
+                                           base_constants.SCHEMA_VERSION: '8.2.0',
                                            base_constants.CHECK_FOR_WARNINGS: 'on',
                                            base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE})
             request = Request(environ)
@@ -44,7 +43,7 @@ class Test(TestWebBase):
 
     def test_string_convert_to_short_invalid(self):
         from hedweb.process_strings import ProcessStrings
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         
         with self.app.app_context():
             proc_strings = ProcessStrings()
@@ -56,7 +55,7 @@ class Test(TestWebBase):
 
     def test_string_convert_to_short_valid(self):
         from hedweb.process_strings import ProcessStrings
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_strings = ProcessStrings()
             proc_strings.schema = load_schema(schema_path)
@@ -72,7 +71,7 @@ class Test(TestWebBase):
 
     def test_string_convert_to_long(self):
         from hedweb.process_strings import ProcessStrings  
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_strings = ProcessStrings()
             proc_strings.schema = load_schema(schema_path)
@@ -83,7 +82,7 @@ class Test(TestWebBase):
 
     def test_string_validate(self):
         from hedweb.process_strings import ProcessStrings  
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
 
         with self.app.app_context():
             proc_strings = ProcessStrings()

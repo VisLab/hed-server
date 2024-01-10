@@ -3,8 +3,6 @@ import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request, Response
 from hedweb.constants import base_constants, file_constants
-
-
 from tests.test_web_base import TestWebBase
 
 

@@ -1,6 +1,5 @@
 import os
 import unittest
-
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 from tests.test_web_base import TestWebBase
@@ -10,12 +9,7 @@ from hed.schema.hed_schema_io import load_schema, load_schema_version
 from hedweb.constants import base_constants
 
 
-
 class Test(TestWebBase):
-    # def test_generate_input_from_sidecar_form_empty(self):
-    #     from hedweb.sidecars import get_input_from_form
-    #     self.assertRaises(TypeError, get_input_from_form, {},
-    #                       "An exception should be raised if an empty request is passed")
 
     def test_one(self):
         from hedweb.process_sidecars import ProcessSidecars
@@ -27,7 +21,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(sidecar_path, 'rb') as fp:
-                environ = create_environ(data={base_constants.SIDECAR_FILE: fp, base_constants.SCHEMA_VERSION: '8.0.0',
+                environ = create_environ(data={base_constants.SIDECAR_FILE: fp, base_constants.SCHEMA_VERSION: '8.2.0',
                                                base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
             proc_sidecars = ProcessSidecars()
             request = Request(environ)
@@ -49,7 +43,7 @@ class Test(TestWebBase):
     def test_sidecars_process_invalid(self):
         from hedweb.process_sidecars import ProcessSidecars
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=sidecar_path, name='bids_events_bad'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events_bad',
@@ -60,15 +54,13 @@ class Test(TestWebBase):
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
                             'process to short should return a dictionary when errors')
-            self.assertEqual('warning', results['msg_category'],
-                             'process to short should give warning when JSON with errors')
-            self.assertTrue(results['data'],
-                            'process to short should not convert using HED 8.0.0.xml')
+            self.assertEqual('warning', results['msg_category'], 'should give warning when JSON with errors')
+            self.assertTrue(results['data'], 'should not convert using HED 8.2.0.xml')
 
     def test_sidecars_process_invalid_v2(self):
         from hedweb.process_sidecars import ProcessSidecars
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events_errors.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=sidecar_path, name='bids_events_bad'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events_bad',
@@ -79,15 +71,13 @@ class Test(TestWebBase):
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
                             'process to short should return a dictionary when errors')
-            self.assertEqual('warning', results['msg_category'],
-                             'process to short should give warning when JSON with errors')
-            self.assertTrue(results['data'],
-                            'process to short should not convert using HED 8.0.0.xml')
+            self.assertEqual('warning', results['msg_category'], 'should give warning when JSON with errors')
+            self.assertTrue(results['data'], 'should not convert using HED 8.2.0.xml')
 
     def test_sidecars_process_valid_to_short(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=json_path, name='bids_events'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
@@ -106,7 +96,7 @@ class Test(TestWebBase):
     def test_sidecars_process_valid_to_short_defs_expanded(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=json_path, name='bids_events'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
@@ -125,7 +115,7 @@ class Test(TestWebBase):
     def test_sidecars_process_valid_to_long(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=json_path, name='bids_events'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
@@ -144,7 +134,7 @@ class Test(TestWebBase):
     def test_sidecars_process_valid_to_long_defs_expanded(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         arguments = {base_constants.SCHEMA: load_schema(schema_path), 
                      base_constants.SIDECAR: Sidecar(files=json_path, name='bids_events'),
                      base_constants.SIDECAR_DISPLAY_NAME: 'bids_events',
@@ -161,7 +151,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_long_invalid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
@@ -176,7 +166,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_long_valid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')
@@ -191,7 +181,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_short_invalid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
@@ -205,15 +195,15 @@ class Test(TestWebBase):
     def test_bad_sidecar(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/both_types_events.json')
         json_sidecar = Sidecar(files=json_path, name='bids_events_bad')
-        hed_schema = load_schema_version('8.1.0')
+        hed_schema = load_schema_version('8.2.0')
         issues = json_sidecar.validate(hed_schema)
         self.assertIsInstance(issues, list)
-        self.assertEqual(len(issues), 36)
+        self.assertEqual(len(issues), 37)
 
     def test_sidecars_convert_to_short_valid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')
@@ -227,7 +217,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_invalid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
@@ -242,7 +232,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_invalid_multiple(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
@@ -257,7 +247,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_valid(self):
         from hedweb.process_sidecars import ProcessSidecars
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')    
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_sidecars = ProcessSidecars()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')

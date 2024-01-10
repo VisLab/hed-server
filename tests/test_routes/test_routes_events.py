@@ -30,7 +30,7 @@ class Test(TestWebBase):
         events_buffer = io.BytesIO(bytes(y, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
                           'sidecar_file': (sidecar_buffer, 'bids_events.json'),
                           'events_file': (events_buffer, 'bids_events.tsv'),
@@ -86,7 +86,7 @@ class Test(TestWebBase):
         remodel_buffer = io.BytesIO(bytes(x, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
                           base_constants.REMODEL_FILE: (remodel_buffer, 'simple_reorder_rmdl.json'),
                           base_constants.EVENTS_FILE: (events_buffer,
@@ -116,11 +116,11 @@ class Test(TestWebBase):
         remodel_buffer = io.BytesIO(bytes(x, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
                           base_constants.REMODEL_FILE: (remodel_buffer, 'bad_reorder_remdl.json'),
                           base_constants.EVENTS_FILE: (events_buffer,
-                                                       'sub-002_task-FacePerception_run-1_events.tsv.tsv')}
+                                                       'sub-002_task-FacePerception_run-1_events.tsv')}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'events_submit remodel should return a Response when commands are valid')
@@ -145,7 +145,7 @@ class Test(TestWebBase):
         events_buffer = io.BytesIO(bytes(y, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.SIDECAR_FILE: (json_buffer, 'bids_events.json'),
                           base_constants.EVENTS_FILE: (events_buffer, 'bids_events.tsv'),
@@ -198,7 +198,7 @@ class Test(TestWebBase):
         sidecar_buffer = io.BytesIO(bytes(x, 'utf-8'))
 
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
+            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
                           'sidecar_file': (sidecar_buffer, 'bids_events.json'),
                           'events_file': (sidecar_buffer, 'bids_events.tsv'),

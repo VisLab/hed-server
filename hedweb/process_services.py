@@ -8,8 +8,8 @@ from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.tabular_input import TabularInput
 from hed.errors import HedFileError
 from hed import schema as hedschema
-from hedweb.columns import get_prefix_dict
 from hedweb.constants import base_constants
+from hedweb.columns import get_column_names
 from hedweb.process_events import ProcessEvents
 from hedweb.process_schemas import ProcessSchemas
 from hedweb.process_spreadsheets import ProcessSpreadsheets
@@ -73,6 +73,8 @@ class ProcessServices:
             for column in params['columns_included']:
                 columns_included.append(column)
         arguments[base_constants.COLUMNS_INCLUDED] = columns_included
+        arguments[base_constants.TAG_COLUMNS] = get_column_names(params)
+        arguments[base_constants.HAS_COLUMN_NAMES] = True
 
     @staticmethod
     def set_sidecar(arguments, params):
@@ -116,12 +118,10 @@ class ProcessServices:
                 TabularInput(file=io.StringIO(params[base_constants.EVENTS_STRING]),
                              sidecar=arguments.get(base_constants.SIDECAR, None), name='Events')
         if base_constants.SPREADSHEET_STRING in params and params[base_constants.SPREADSHEET_STRING]:
-            tag_columns, prefix_dict = get_prefix_dict(params)
-            has_column_names = arguments.get(base_constants.HAS_COLUMN_NAMES, None)
             arguments[base_constants.SPREADSHEET] = \
                 SpreadsheetInput(file=io.StringIO(params[base_constants.SPREADSHEET_STRING]), file_type=".tsv",
-                                 tag_columns=tag_columns, has_column_names=has_column_names,
-                                 column_prefix_dictionary=prefix_dict, name='spreadsheets.tsv')
+                                 tag_columns=arguments[base_constants.TAG_COLUMNS], 
+                                 has_column_names=True, column_prefix_dictionary=None, name='spreadsheets.tsv')
         if base_constants.STRING_LIST in params and params[base_constants.STRING_LIST]:
             s_list = []
             for s in params[base_constants.STRING_LIST]:
@@ -162,7 +162,7 @@ class ProcessServices:
         if command != "get_services" and len(pieces) == 2:
             command = pieces[1]
             command_target = pieces[0]
-        has_column_names = params.get(base_constants.HAS_COLUMN_NAMES, '') == 'on'
+        has_column_names = True
         expand_defs = params.get(base_constants.EXPAND_DEFS, '') == 'on'
         check_for_warnings = params.get(base_constants.CHECK_FOR_WARNINGS, '') == 'on'
         include_description_tags = params.get(base_constants.INCLUDE_DESCRIPTION_TAGS, '') == 'on'
@@ -174,8 +174,6 @@ class ProcessServices:
                 base_constants.CHECK_FOR_WARNINGS: check_for_warnings,
                 base_constants.EXPAND_DEFS: expand_defs,
                 base_constants.INCLUDE_DESCRIPTION_TAGS: include_description_tags
-                # base_constants.TAG_COLUMNS: tag_columns,
-                # base_constants.COLUMN_PREFIX_DICTIONARY: prefix_dict
                 }
 
     @staticmethod
@@ -229,6 +227,7 @@ class ProcessServices:
             response["results"] = proc_obj.process()
         results = response.get("results", {})
         results["software_version"] = app_config['VERSIONS']
+        results = ProcessServices.package_spreadsheet(results)
         response["results"] = results
         return response
     
