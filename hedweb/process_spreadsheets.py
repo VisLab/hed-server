@@ -1,8 +1,8 @@
 import os
-from flask import current_app
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
+from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hedweb.web_util import get_schema_versions
 from hedweb.constants import base_constants, file_constants
@@ -19,6 +19,7 @@ class ProcessSpreadsheets(ProcessBase):
         """
         self.command = None
         self.schema = None
+        self.definitions = None
         self.spreadsheet = None
         self.worksheet = None
         self.spreadsheet_type = file_constants.TSV_EXTENSION
@@ -40,6 +41,10 @@ class ProcessSpreadsheets(ProcessBase):
         self.command = request.form.get(base_constants.COMMAND_OPTION, '')
         self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
         self.tag_columns = get_column_names(request.form)
+        if base_constants.DEFINITION_FILE in request.files:
+            f = request.files[base_constants.DEFINITION_FILE]
+            sidecar = Sidecar(files=f, name=secure_filename(f.filename))
+            self.definitions = sidecar.get_def_dict(self.schema, extra_def_dicts=None)
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
         file_ext = os.path.splitext(filename)[1]
         if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
@@ -67,7 +72,8 @@ class ProcessSpreadsheets(ProcessBase):
         elif self.command == base_constants.COMMAND_TO_SHORT or self.command == base_constants.COMMAND_TO_LONG:
             results = self.spreadsheet_convert()
         else:
-            raise HedFileError('UnknownSpreadsheetProcessingMethod', f"Command {self.command} is missing or invalid", "")
+            raise HedFileError('UnknownSpreadsheetProcessingMethod',
+                               f"Command {self.command} is missing or invalid", "")
         return results
     
     def spreadsheet_convert(self):
@@ -116,7 +122,8 @@ class ProcessSpreadsheets(ProcessBase):
         
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         display_name = self.spreadsheet.name
-        issues = self.spreadsheet.validate(self.schema, error_handler=error_handler, name=display_name)
+        issues = self.spreadsheet.validate(self.schema, extra_def_dicts=self.definitions,
+                                           error_handler=error_handler, name=display_name)
         issues = filter_issues(issues, self.check_for_warnings)
         if issues:
             data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation issues")

@@ -3,6 +3,9 @@ $(function () {
     prepareForm();
 });
 
+$('#definition_file').change(function() {
+    clearFlashMessages();
+})
 
 /**
  * Set the options according to the action specified.
@@ -38,6 +41,7 @@ $('#spreadsheet_clear').on('click', function () {
 function clearForm() {
     clearFlashMessages();
     clearSpreadsheet()
+    $('#definition_file').val('');
     $("#validate").prop('checked', true);
     setOptions();
     hideOtherSchemaVersionFileUpload()
