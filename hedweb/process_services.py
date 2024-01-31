@@ -17,13 +17,11 @@ from hedweb.process_sidecars import ProcessSidecars
 from hedweb.process_strings import ProcessStrings
 
 
-app_config = current_app.config
-
 class ProcessServices:
-   
+
     def __init__(self):
         self.temp = None
-    
+
     @staticmethod
     def set_input_from_request(request):
         """ Get a dictionary of input from a service request.
@@ -61,16 +59,16 @@ class ProcessServices:
         """
 
         columns_selected = {}
-        if 'columns_categorical' in params:
-            for column in params['columns_categorical']:
+        if base_constants.COLUMNS_CATEGORICAL in params:
+            for column in params[base_constants.COLUMNS_CATEGORICAL]:
                 columns_selected[column] = True
-        if 'columns_value' in params:
-            for column in params['columns_value']:
+        if base_constants.COLUMNS_VALUE in params:
+            for column in params[base_constants.COLUMNS_VALUE]:
                 columns_selected[column] = False
         arguments[base_constants.COLUMNS_SELECTED] = columns_selected
         columns_included = []
-        if 'columns_included' in params:
-            for column in params['columns_included']:
+        if base_constants.COLUMNS_INCLUDED in params:
+            for column in params[base_constants.COLUMNS_INCLUDED]:
                 columns_included.append(column)
         arguments[base_constants.COLUMNS_INCLUDED] = columns_included
         arguments[base_constants.TAG_COLUMNS] = get_column_names(params)
@@ -184,19 +182,18 @@ class ProcessServices:
             parameters (dict): A dictionary of parameters extracted from the service request.
 
         """
-        the_schema = None
-        try:
-            if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
-                the_schema = hedschema.from_string(parameters[base_constants.SCHEMA_STRING])
-            elif base_constants.SCHEMA_URL in parameters and parameters[base_constants.SCHEMA_URL]:
-                schema_url = parameters[base_constants.SCHEMA_URL]
-                the_schema = hedschema.load_schema(schema_url)
-            elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
-                # hed_file_path = hedschema.get_path_from_hed_version(parameters[base_constants.SCHEMA_VERSION])
-                versions = parameters[base_constants.SCHEMA_VERSION]
-                the_schema = hedschema.load_schema_version(versions)
-        except HedFileError:
-            the_schema = None
+        # the_schema = None
+        # try:
+        if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
+            the_schema = hedschema.from_string(parameters[base_constants.SCHEMA_STRING])
+        elif base_constants.SCHEMA_URL in parameters and parameters[base_constants.SCHEMA_URL]:
+            schema_url = parameters[base_constants.SCHEMA_URL]
+            the_schema = hedschema.load_schema(schema_url)
+        elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
+            versions = parameters[base_constants.SCHEMA_VERSION]
+            the_schema = hedschema.load_schema_version(versions)
+        # except HedFileError:
+        #     the_schema = None
 
         return the_schema
 
@@ -226,7 +223,7 @@ class ProcessServices:
             proc_obj.set_input_from_dict(arguments)
             response["results"] = proc_obj.process()
         results = response.get("results", {})
-        results["software_version"] = app_config['VERSIONS']
+        results["software_version"] = current_app.config['VERSIONS']
         results = ProcessServices.package_spreadsheet(results)
         response["results"] = results
         return response
@@ -291,7 +288,7 @@ class ProcessServices:
         returns = service_info['returns']
         results = service_info['results']
 
-        ver = app_config['VERSIONS']
+        ver = current_app.config['VERSIONS']
         services_string = f"\nServices:\n\tHEDTools version: {ver['tool_ver']} Date: {ver['tool_date']}\n" \
                           f"\tHEDServices version: {ver['web_ver']} Date: {ver['web_date']}"
         for service, info in services.items():

@@ -9,13 +9,13 @@ from hed.schema import HedSchema, load_schema
 from hed.models import Sidecar, TabularInput
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
+from hedweb.process_events import ProcessEvents
 
 
 class Test(TestWebBase):
     cache_schemas = True
     
     def get_event_proc(self, events_file, sidecar_file, schema_file):
-        from hedweb.process_events import ProcessEvents
         events_proc = ProcessEvents()
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), events_file)
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
@@ -31,15 +31,12 @@ class Test(TestWebBase):
         return events_proc
 
     def test_set_input_from_events_form_empty(self):
-        from hedweb.process_events import ProcessEvents
         with self.assertRaises(HedFileError):
             with self.app.app_context():
                 proc_events = ProcessEvents()
                 proc_events.process()
 
     def test_set_input_from_events_form(self):
-        from hedweb.process_events import ProcessEvents
-        from hed.schema import HedSchema
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.tsv')
         with self.app.app_context():
@@ -59,7 +56,6 @@ class Test(TestWebBase):
             self.assertTrue(event_proc.expand_defs, "should have expand_defs true when on")
 
     def test_events_process_empty_file(self):
-        from hedweb.process_events import ProcessEvents
         with self.assertRaises(HedFileError):
             proc_events = ProcessEvents()
             proc_events.process()
@@ -102,7 +98,6 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], "should be success when no errors")
 
     def test_generate_sidecar_invalid(self):
-        from hedweb.process_events import ProcessEvents
         options = {'columns_selected': {'event_type': True}}
         with self.assertRaises(AttributeError):
             with self.app.app_context():
@@ -111,7 +106,6 @@ class Test(TestWebBase):
                 results = events_proc.process()
 
     def test_generate_sidecar_valid(self):
-        from hedweb.process_events import ProcessEvents
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
         events_proc.columns_selected = {'event_type': True, 'bci_prediction': True, 'trial': False}
         events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
@@ -144,7 +138,6 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], 'should be success when no errors')
 
     def test_events_validate_invalid(self):
-        from hedweb.process_events import ProcessEvents
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
         events_proc.command = base_constants.COMMAND_VALIDATE
         with self.app.app_context():
@@ -153,7 +146,6 @@ class Test(TestWebBase):
             self.assertEqual('warning', results["msg_category"],'should be warning when errors')
 
     def test_events_validate_valid(self):
-        from hedweb.process_events import ProcessEvents
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
         events_proc.command = base_constants.COMMAND_VALIDATE
         with self.app.app_context():
@@ -183,8 +175,7 @@ class Test(TestWebBase):
     #     # TODO: Test the rows and columns of result.
 
     # def test_events_remodel_invalid_no_hed(self):
-    #     from hedweb.process_events import ProcessEvents
-    #     events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    #         #     events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
     #                                'data/sub-002_task-FacePerception_run-1_events.tsv')
     #     remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
     #                                 'data/simple_reorder_rmdl.json')

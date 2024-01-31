@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import json
 
 from hed import schema as hedschema
+from hed import HedFileError
 
 from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
@@ -72,13 +73,16 @@ def schemas_results():
         - convert:  text file with converted schema.
 
     """
+    proc_schemas = ProcessSchemas()
     try:
-        proc_schemas = ProcessSchemas()
         proc_schemas.set_input_from_form(request)
         a = proc_schemas.process()
         return package_results(a)
     except Exception as ex:
-        return handle_http_error(ex)
+        if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
+            return package_results(proc_schemas.format_error(proc_schemas.command, ex))
+        else:
+            return handle_http_error(ex)
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])
@@ -183,7 +187,6 @@ def spreadsheets_results():
         - convert:  converted spreadsheets.
 
     """
-
     try:
         proc_spreadsheets = ProcessSpreadsheets()
         proc_spreadsheets.set_input_from_form(request)
@@ -204,7 +207,7 @@ def strings_results():
     Notes:
         The response depends on the request, but appears in text box.
         - validation: validation errors
-        - convert:  converted sting.
+        - convert:  converted string.
 
     """
     try:

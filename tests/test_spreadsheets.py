@@ -7,12 +7,13 @@ from hed.errors.exceptions import HedFileError
 from hed.schema import HedSchema, load_schema
 from hed.models import SpreadsheetInput
 from hedweb.constants import base_constants
+from hedweb.process_spreadsheets import ProcessSpreadsheets
+
 
 class Test(TestWebBase):
-    
+
     @staticmethod
     def get_spread_proc(spread_file, schema_file, worksheet=None, tag_columns=None):
-        from hedweb.process_spreadsheets import ProcessSpreadsheets
         spread_proc = ProcessSpreadsheets()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
@@ -26,15 +27,14 @@ class Test(TestWebBase):
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
             spread_proc.schema = load_schema(schema_path)
         return spread_proc
-    
+
     def test_spreadsheets_empty_file(self):
         with self.assertRaises(HedFileError):
             with self.app.app_context():
                 spread_proc = self.get_spread_proc(None, None)
                 spread_proc.process()
-        
+
     def test_set_input_from_spreadsheets_form(self):
-        from hedweb.process_spreadsheets import ProcessSpreadsheets
         with self.app.test:
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
@@ -54,12 +54,12 @@ class Test(TestWebBase):
             self.assertIsInstance(spread_proc.spreadsheet, SpreadsheetInput, "should have an events object")
             self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
             self.assertEqual(spread_proc.command, base_constants.COMMAND_VALIDATE, "should have a command")
-            self.assertEqual(spread_proc.worksheet,'LKT 8HED3', "should have a sheet_name name")
+            self.assertEqual(spread_proc.worksheet, 'LKT 8HED3', "should have a sheet_name name")
             self.assertTrue(spread_proc.has_column_names, "should have column names")
 
-    def test_spreadsheets_process_validate_invalid(self):  
+    def test_spreadsheets_process_validate_invalid(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml', 
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
                                                worksheet='LKT Events', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             results = spread_proc.process()

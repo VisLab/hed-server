@@ -1,17 +1,19 @@
 from abc import ABC, abstractmethod
 
 class ProcessBase(ABC):
-
-    @abstractmethod
     def set_input_from_dict(self, input_dict):
-        """ Set input for processing from a JSON service request.
+        """ Sets the child class attributes based on input_dict.
+            Only sets attributes that exist.
 
         parameters:
             input_dict (dict): A dict object containing user data from a JSON service request.
-
         """
-        raise NotImplementedError
-    
+        # Only allowed to set variables from init, and also disallow private variables to avoid possible issues
+        for key, value in input_dict.items():
+            if not hasattr(self, key) or callable(getattr(self, key)) or key.startswith("_"):
+                continue
+            setattr(self, key, value)
+
     @abstractmethod
     def set_input_from_form(self, request):
         """ Set input for processing from a form.
@@ -31,4 +33,3 @@ class ProcessBase(ABC):
     
         """
         raise NotImplementedError
-    

@@ -38,25 +38,6 @@ class ProcessEvents(ProcessBase):
         self.remodel_operations = None
         self.query = None
 
-    def set_input_from_dict(self, input_dict):
-        """ Set input for processing from a JSON service request.
-
-        parameters:
-            input_dict (dict): A dict object containing user data from a JSON service request.
-
-        """
-        self.schema = input_dict.get(base_constants.SCHEMA, None)
-        self.events = input_dict.get(base_constants.EVENTS, None)
-        self.command = input_dict.get(base_constants.COMMAND, None)
-        self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
-        self.expand_defs = input_dict.get(base_constants.EXPAND_DEFS, False)
-        self.include_summaries = input_dict.get(base_constants.INCLUDE_SUMMARIES, False)
-        self.columns_selected = input_dict.get(base_constants.COLUMNS_SELECTED, None)
-        self.columns_included = input_dict.get(base_constants.COLUMNS_INCLUDED, None)
-        self.sidecar = input_dict.get(base_constants.SIDECAR, None)
-        self.remodel_operations = input_dict.get(base_constants.REMODEL_OPERATIONS, None)
-        self.query = input_dict.get(base_constants.QUERY, None)
-    
     def set_input_from_form(self, request):
         """ Set input for processing from an events form.
     
@@ -96,7 +77,6 @@ class ProcessEvents(ProcessBase):
             HedFileError:  If the command was not found or the input arguments were not valid.
     
         """
-        
         if not self.command:
             raise HedFileError('MissingCommand', 'Command is missing', '')
         elif self.command == base_constants.COMMAND_GENERATE_SIDECAR:
@@ -190,8 +170,7 @@ class ProcessEvents(ProcessBase):
                 'data': json.dumps(hed_dict, indent=4),
                 'output_display_name': file_name, 'msg_category': 'success',
                 'msg': 'JSON sidecar generation from event file complete'}
-    
-    
+
     def remodel(self):
         """ Remodel a given events file.
     
