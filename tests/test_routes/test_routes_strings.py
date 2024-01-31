@@ -1,10 +1,10 @@
 import json
 import unittest
-from tests.test_web_base import TestWebBase
 from hedweb.constants import base_constants
+from tests.test_routes.test_routes_base import TestRouteBase
 
 
-class Test(TestWebBase):
+class Test(TestRouteBase):
 
     def test_strings_results_empty_data(self):
         response = self.app.test.post('/strings_submit')
@@ -98,6 +98,33 @@ class Test(TestWebBase):
             response_dict = json.loads(response.data)
             self.assertEqual("warning", response_dict["msg_category"],
                              "Invalid hed string validation generates a warning")
+            self.assertTrue(response_dict["data"], "The data should have error messages")
+
+    def test_strings_results_validate_defs(self):
+        with self.app.app_context():
+            response = self.app.test.post('/strings_submit', content_type='multipart/form-data',
+                                          data={base_constants.SCHEMA_VERSION: '8.2.0',
+                                                base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
+                                                base_constants.CHECK_FOR_WARNINGS: 'on',
+                                                base_constants.STRING_INPUT: 'Def/TestDef/13',
+                                                # base_constants.DEFINITION_FILE: (def_data, 'def_test.json'),
+                                                base_constants.DEFINITION_FILE: self._get_file_buffer("def_test.json")
+                                                })
+
+            self.assertEqual(200, response.status_code, 'Validation of a valid string has a response')
+            response_dict = json.loads(response.data)
+            self.assertEqual("success", response_dict["msg_category"], "The list should validate successfully")
+            self.assertFalse(response_dict["data"], "No data should be returned if validation successful")
+
+            response = self.app.test.post('/strings_submit', content_type='multipart/form-data',
+                                          data={base_constants.SCHEMA_VERSION: '8.2.0',
+                                                base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
+                                                base_constants.CHECK_FOR_WARNINGS: 'on',
+                                                base_constants.STRING_INPUT: 'Def/TestDef/13'})
+            self.assertEqual(200, response.status_code, 'Validation of an invalid string has a response')
+            response_dict = json.loads(response.data)
+            self.assertEqual("warning", response_dict["msg_category"],
+                             "No Definition provided, so should produce an error")
             self.assertTrue(response_dict["data"], "The data should have error messages")
 
 

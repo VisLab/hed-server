@@ -3,6 +3,8 @@ from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
 from hed.models.sidecar import Sidecar
 from hed.models.hed_string import HedString
 from hed import schema as hedschema
+from hed.validator import HedValidator
+
 from hedweb.constants import base_constants
 from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
 from hedweb.process_base import ProcessBase
@@ -19,22 +21,6 @@ class ProcessStrings(ProcessBase):
         self.string_list = None
         self.definitions = None
         self.check_for_warnings = False
-
-    def set_input_from_dict(self, input_dict):
-        """ Extract a dictionary of input for processing from the schema form.
-
-        Args:
-            input_dict (dict): A dict object containing user data from a JSON service request.
-
-        Returns:
-            dict: A dictionary of schema processing parameters in standard form.
-
-        """
-        self.command = input_dict.get(base_constants.COMMAND, '')
-        self.schema = input_dict.get(base_constants.SCHEMA, None)
-        self.string_list = input_dict.get(base_constants.STRING_LIST, '')
-        self.definitions = input_dict.get(base_constants.DEFINITIONS, None)
-        self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
         
     def set_input_from_form(self, request):
         """ Extract a dictionary of input for processing from the events form.
@@ -74,7 +60,7 @@ class ProcessStrings(ProcessBase):
         else:
             raise HedFileError('UnknownProcessingMethod', f'Command {self.command} is missing or invalid', '')
         return results
-    
+
     def convert(self):
         """ Convert a list of strings from long to short or  from short to long.
     
@@ -109,8 +95,9 @@ class ProcessStrings(ProcessBase):
     
         validation_issues = []
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
+        validator = HedValidator(self.schema, self.definitions)
         for pos, h_string in enumerate(self.string_list, start=1):
-            issues = h_string.validate(self.schema, error_handler=error_handler)
+            issues = validator.validate(h_string, True, error_handler=error_handler)
             if issues:
                 validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
         if validation_issues:

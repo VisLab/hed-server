@@ -1,10 +1,9 @@
-import os
 import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
 from tests.test_web_base import TestWebBase
-from hed.schema import HedSchema, load_schema
+from hed.schema import HedSchema, load_schema_version
 from hed.models import HedString
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
@@ -17,7 +16,6 @@ class Test(TestWebBase):
             with self.app.app_context():
                 strings_proc = ProcessStrings()
                 strings_proc.process()
-
 
     def test_set_input_from_string_form(self):
         from hedweb.process_strings import ProcessStrings
@@ -43,11 +41,9 @@ class Test(TestWebBase):
 
     def test_string_convert_to_short_invalid(self):
         from hedweb.process_strings import ProcessStrings
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
-        
         with self.app.app_context():
             proc_strings = ProcessStrings()
-            proc_strings.schema = load_schema(schema_path)
+            proc_strings.schema = load_schema_version("8.2.0")
             proc_strings.string_list = [HedString('Red, Blech', proc_strings.schema)]
             proc_strings.command = base_constants.COMMAND_TO_SHORT
             results = proc_strings.process()
@@ -55,10 +51,9 @@ class Test(TestWebBase):
 
     def test_string_convert_to_short_valid(self):
         from hedweb.process_strings import ProcessStrings
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
         with self.app.app_context():
             proc_strings = ProcessStrings()
-            proc_strings.schema = load_schema(schema_path)
+            proc_strings.schema = load_schema_version("8.2.0")
             proc_strings.string_list = [HedString('Property/Informational-property/Description/Blech, Blue',
                                                   proc_strings.schema)]
             proc_strings.command = base_constants.COMMAND_TO_SHORT
@@ -70,24 +65,22 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], "should return success if converted")
 
     def test_string_convert_to_long(self):
-        from hedweb.process_strings import ProcessStrings  
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
+        from hedweb.process_strings import ProcessStrings
         with self.app.app_context():
             proc_strings = ProcessStrings()
-            proc_strings.schema = load_schema(schema_path)
+            proc_strings.schema = load_schema_version("8.2.0")
             proc_strings.string_list = [HedString('Red', proc_strings.schema), HedString('Blue', proc_strings.schema)]
             proc_strings.command = base_constants.COMMAND_TO_LONG
             results = proc_strings.process()
             self.assertEqual('success', results['msg_category'], "should return success if converted")
 
     def test_string_validate(self):
-        from hedweb.process_strings import ProcessStrings  
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
+        from hedweb.process_strings import ProcessStrings
 
         with self.app.app_context():
             proc_strings = ProcessStrings()
-            proc_strings.schema = load_schema(schema_path)
-            proc_strings.string_list = [HedString('Red', proc_strings.schema), 
+            proc_strings.schema = load_schema_version("8.2.0")
+            proc_strings.string_list = [HedString('Red', proc_strings.schema),
                                         HedString('Blech', proc_strings.schema)]
             proc_strings.command = base_constants.COMMAND_VALIDATE
             results = proc_strings.process()

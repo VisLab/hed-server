@@ -52,7 +52,7 @@ def create_columns_included(form_dict):
     return []
 
 
-def _create_columns_info(columns_file, has_column_names: True, sheet_name: None):
+def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     """ Create a dictionary of column information from a spreadsheet.
 
     Args:

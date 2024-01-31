@@ -28,23 +28,6 @@ class ProcessSpreadsheets(ProcessBase):
         self.check_for_warnings = False
         self.expand_defs = False
 
-    def set_input_from_dict(self, input_dict):
-        """ Set input for processing from a JSON service request.
-
-        parameters:
-            input_dict (dict): A dict object containing user data from a JSON service request.
-
-        """
-        self.command = input_dict.get(base_constants.COMMAND, None)
-        self.schema = input_dict.get(base_constants.SCHEMA, None)
-        self.spreadsheet = input_dict.get(base_constants.SPREADSHEET, None)
-        self.worksheet = input_dict.get(base_constants.WORKSHEET, None)
-        self.spreadsheet_type = input_dict.get(base_constants.SPREADSHEET_TYPE, file_constants.TSV_EXTENSION)
-        self.tag_columns = input_dict.get(base_constants.TAG_COLUMNS, [])
-        self.has_column_names = True
-        self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
-        self.expand_defs = input_dict.get(base_constants.EXPAND_DEFS, False)
-        
     def set_input_from_form(self, request):
         """ Set input for processing from a spreadsheets form.
 
@@ -55,7 +38,6 @@ class ProcessSpreadsheets(ProcessBase):
         self.schema = get_hed_schema_from_pull_down(request)
         self.worksheet = request.form.get(base_constants.WORKSHEET_NAME, None)
         self.command = request.form.get(base_constants.COMMAND_OPTION, '')
-        self.has_column_names =  True
         self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
         self.tag_columns = get_column_names(request.form)
         filename = request.files[base_constants.SPREADSHEET_FILE].filename
@@ -66,10 +48,8 @@ class ProcessSpreadsheets(ProcessBase):
                                             file_type=self.spreadsheet_type,
                                             worksheet_name=self.worksheet,
                                             tag_columns=self.tag_columns,
-                                            has_column_names=self.has_column_names,
-                                            column_prefix_dictionary=None,
                                             name=filename)
-    
+
     def process(self):
         """ Perform the requested action for the spreadsheet.
  

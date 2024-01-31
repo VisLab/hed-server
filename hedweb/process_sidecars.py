@@ -23,7 +23,7 @@ class ProcessSidecars(ProcessBase):
         """ Construct a ProcessSidecars object to handle sidecar form requests. 
 
         """
-        self.schema = None      
+        self.schema = None
         self.command = None
         self.sidecar = None
         self.spreadsheet = None
@@ -32,22 +32,6 @@ class ProcessSidecars(ProcessBase):
         self.include_description_tags = False
         self.spreadsheet_type = file_constants.TSV_EXTENSION
 
-    def set_input_from_dict(self, input_dict):
-        """ Set input for processing from a JSON service request.
-
-        parameters:
-            input_dict (dict): A dict object containing user data from a JSON service request.
-
-        """
-        self.command = input_dict.get(base_constants.COMMAND, None)
-        self.schema = input_dict.get(base_constants.SCHEMA, None)
-        self.sidecar = input_dict.get(base_constants.SIDECAR, None)
-        self.spreadsheet = input_dict.get(base_constants.SPREADSHEET, None)
-        self.check_for_warnings = input_dict.get(base_constants.CHECK_FOR_WARNINGS, False)
-        self.expand_defs = input_dict.get(base_constants.EXPAND_DEFS, False)
-        self.include_description_tags = input_dict.get(base_constants.INCLUDE_DEFINITION_TAGS, False)
-        self.spreadsheet_type = input_dict.get(base_constants.SPREADSHEET_TYPE, file_constants.TSV_EXTENSION)
-    
     def set_input_from_form(self, request):
         """ Set a dictionary of input for processing from a sidecars form.
 
@@ -65,9 +49,7 @@ class ProcessSidecars(ProcessBase):
         if base_constants.SIDECAR_FILE in request.files:
             f = request.files[base_constants.SIDECAR_FILE]
             if f.filename:
-                fb = [io.StringIO(f.read(file_constants.BYTE_LIMIT).decode('ascii'))]
-                filename = secure_filename(f.filename)
-                self.sidecar = Sidecar(files=fb, name=filename)
+                self.sidecar = Sidecar(files=f, name=secure_filename(f.filename))
         if base_constants.SPREADSHEET_FILE in request.files and request.files[base_constants.SPREADSHEET_FILE].filename:
             filename = request.files[base_constants.SPREADSHEET_FILE].filename
             file_ext = os.path.splitext(filename)[1]
