@@ -207,7 +207,7 @@ def strings_results():
     Notes:
         The response depends on the request, but appears in text box.
         - validation: validation errors
-        - convert:  converted sting.
+        - convert:  converted string.
 
     """
     try:
