@@ -36,6 +36,7 @@ COMMAND_VALIDATE = 'validate'
 
 DEFINITION_FILE = 'definition_file'
 DEFINITIONS = 'definitions'
+DEFINITION_STRING = 'definition_string'
 DOWNLOAD_FILE = 'download_file'
 
 EVENTS = 'events'
