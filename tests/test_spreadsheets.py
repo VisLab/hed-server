@@ -80,7 +80,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_convert_to_long_excel(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_TO_LONG
             spread_proc.check_for_warnings = True
