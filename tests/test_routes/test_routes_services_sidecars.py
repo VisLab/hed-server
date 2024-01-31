@@ -23,7 +23,7 @@ class Test(TestRouteBase):
                      base_constants.SIDECAR_STRING: self._get_file_string("bids_events.json"),
                      }
         with self.app.app_context():
-            response = self.app.test.post('/services_submit', "application/json", data=json.dumps(json_data))
+            response = self.app.test.post('/services_submit', content_type="application/json", data=json.dumps(json_data))
             json_data2 = json.loads(response.data)
             results = json_data2['results']
             self.assertEqual('success', results['msg_category'],
