@@ -4,6 +4,7 @@
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
 {% from "spreadsheets-input.html" import create_spreadsheets_input %}
+{% from "file-input.html" import create_file_input %}
 
 {% block content %}
     <h3>Spreadsheets with HED tags:</h3>
@@ -19,10 +20,10 @@
         {{ create_schemas_pulldown() }}
         <p> </p>
         <fieldset class="form-group">
-            
-        <legend>Upload:</legend>
-        {{create_spreadsheets_input(has_column_names_option=False) }}
-        {{ create_column_info('show_indices') }}
+            <legend>Upload:</legend>
+            {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
+            {{create_spreadsheets_input(has_column_names_option=False) }}
+            {{ create_column_info('show_indices') }}
         </fieldset>
         <p> </p>
         <fieldset>

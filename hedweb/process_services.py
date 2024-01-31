@@ -182,8 +182,8 @@ class ProcessServices:
             parameters (dict): A dictionary of parameters extracted from the service request.
 
         """
-        # the_schema = None
-        # try:
+
+        the_schema = None
         if base_constants.SCHEMA_STRING in parameters and parameters[base_constants.SCHEMA_STRING]:
             the_schema = hedschema.from_string(parameters[base_constants.SCHEMA_STRING])
         elif base_constants.SCHEMA_URL in parameters and parameters[base_constants.SCHEMA_URL]:
@@ -192,9 +192,6 @@ class ProcessServices:
         elif base_constants.SCHEMA_VERSION in parameters and parameters[base_constants.SCHEMA_VERSION]:
             versions = parameters[base_constants.SCHEMA_VERSION]
             the_schema = hedschema.load_schema_version(versions)
-        # except HedFileError:
-        #     the_schema = None
-
         return the_schema
 
     @staticmethod
