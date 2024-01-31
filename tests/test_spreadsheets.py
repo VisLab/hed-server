@@ -4,16 +4,17 @@ from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 from tests.test_web_base import TestWebBase
 from hed.errors.exceptions import HedFileError
-from hed.schema import HedSchema, load_schema
+from hed.schema import HedSchema
 from hed.models import SpreadsheetInput
 from hedweb.constants import base_constants
 from hedweb.process_spreadsheets import ProcessSpreadsheets
+from hed import Sidecar, load_schema_version
 
 
 class Test(TestWebBase):
 
     @staticmethod
-    def get_spread_proc(spread_file, schema_file, worksheet=None, tag_columns=None):
+    def get_spread_proc(spread_file, schema_version="8.2.0", worksheet=None, tag_columns=None):
         spread_proc = ProcessSpreadsheets()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
@@ -23,9 +24,8 @@ class Test(TestWebBase):
             spread_proc.spreadsheet = SpreadsheetInput(spread_path, worksheet_name=worksheet,
                                                        tag_columns=tag_columns, has_column_names=True,
                                                        column_prefix_dictionary=None, name=spread_file)
-        if schema_file:
-            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
-            spread_proc.schema = load_schema(schema_path)
+        if schema_version:
+            spread_proc.schema = load_schema_version(schema_version)
         return spread_proc
 
     def test_spreadsheets_empty_file(self):
@@ -59,7 +59,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_process_validate_invalid(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT Events', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             results = spread_proc.process()
@@ -70,7 +70,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_validate_valid(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = True
@@ -93,7 +93,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_convert_to_long_no_prefixes(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_TO_LONG
             spread_proc.check_for_warnings = False
@@ -107,7 +107,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_validate_valid_excel(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
@@ -118,7 +118,7 @@ class Test(TestWebBase):
 
     def test_spreadsheets_validate_valid_excel1(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
@@ -128,14 +128,29 @@ class Test(TestWebBase):
 
     def test_spreadsheets_validate_invalid_excel(self):
         with self.app.app_context():
-            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx', 'data/HED8.2.0.xml',
+            spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT Events', tag_columns=[4])
             spread_proc.command = base_constants.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
-            self.assertTrue(results['data'], 'should have empty data when errors')
-            self.assertEqual('warning', results['msg_category'], 'should be warning when no errors')
+            self.assertTrue(results['data'], 'should have data when errors')
+            self.assertEqual('warning', results['msg_category'], 'should be warning when errors')
 
+    def test_spreadsheet_validate_definitions(self):
+        spread_proc = self.get_spread_proc('data/spreadsheet_with_defs.tsv', tag_columns=[2])
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/def_test.json")
+        spread_proc.definitions = Sidecar(sidecar_path).extract_definitions(spread_proc.schema)
+        spread_proc.command = base_constants.COMMAND_VALIDATE
+        results = spread_proc.process()
+        self.assertFalse(results['data'], 'should have empty data when no errors')
+        self.assertEqual('success', results['msg_category'], 'should be success when no errors')
+
+    def test_spreadsheet_validate_definitions_missing(self):
+        spread_proc = self.get_spread_proc('data/spreadsheet_with_defs.tsv', tag_columns=[2])
+        spread_proc.command = base_constants.COMMAND_VALIDATE
+        results = spread_proc.process()
+        self.assertTrue(results['data'], 'should have data when errors')
+        self.assertEqual('warning', results['msg_category'], 'should be warning when errors')
 
 if __name__ == '__main__':
     unittest.main()

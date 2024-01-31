@@ -31,9 +31,7 @@ class ProcessServices:
 
         Returns:
             dict: A dictionary containing input arguments for calling the service request.
-
         """
-
         form_data = request.data
         form_string = form_data.decode()
         service_request = json.loads(form_string)
@@ -41,6 +39,7 @@ class ProcessServices:
         arguments[base_constants.SCHEMA] = ProcessServices.set_input_schema(service_request)
         ProcessServices.set_column_parameters(arguments, service_request)
         ProcessServices.set_remodel_parameters(arguments, service_request)
+        ProcessServices.set_definitions(arguments, service_request)
         ProcessServices.set_sidecar(arguments, service_request)
         ProcessServices.set_input_objects(arguments, service_request)
         arguments[base_constants.QUERY] = service_request.get('query', None)
@@ -53,11 +52,7 @@ class ProcessServices:
         Args:
             arguments (dict):  A dictionary with the extracted parameters that are to be processed.
             params (dict): The service request dictionary extracted from the Request object.
-
-        Updates the arguments dictionary with the column information in service_request.
-
         """
-
         columns_selected = {}
         if base_constants.COLUMNS_CATEGORICAL in params:
             for column in params[base_constants.COLUMNS_CATEGORICAL]:
@@ -81,13 +76,9 @@ class ProcessServices:
          Args:
              arguments (dict):  A dictionary with the extracted parameters that are to be processed.
              params (dict): The service request dictionary extracted from the Request object.
-
-         Updates the arguments dictionary with the sidecars.
-
          """
-        sidecar_list = []
-        if base_constants.SIDECAR_STRING in params and params[base_constants.SIDECAR_STRING]:
-            sidecar_list = params[base_constants.SIDECAR_STRING]
+        sidecar_list = params.get(base_constants.SIDECAR_STRING, [])
+        if sidecar_list:
             if not isinstance(sidecar_list, list):
                 sidecar_list = [sidecar_list]
         if sidecar_list:
@@ -97,6 +88,21 @@ class ProcessServices:
             arguments[base_constants.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar")
         else:
             arguments[base_constants.SIDECAR] = None
+
+    @staticmethod
+    def set_definitions(arguments, params):
+        """ Update arguments with the definitions if there are any.
+
+         Args:
+             arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+             params (dict): The service request dictionary extracted from the Request object.
+         """
+        definition_string = params.get(base_constants.DEFINITION_STRING, "")
+        def_file = None
+        if definition_string:
+            def_file = io.StringIO(definition_string)
+
+        arguments[base_constants.DEFINITIONS] = Sidecar(files=def_file).extract_definitions(arguments[base_constants.SCHEMA])
 
     @staticmethod
     def set_input_objects(arguments, params):
