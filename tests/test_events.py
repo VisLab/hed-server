@@ -1,5 +1,6 @@
 import os
-import json
+from io import StringIO
+import pandas as pd
 import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
@@ -14,16 +15,16 @@ from hedweb.process_events import ProcessEvents
 
 class Test(TestWebBase):
     cache_schemas = True
-    
+
     def get_event_proc(self, events_file, sidecar_file, schema_file):
         events_proc = ProcessEvents()
-        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), events_file)
-        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
-        events_proc.schema = load_schema(schema_path)
+        if schema_file:
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
+            events_proc.schema = load_schema(schema_path)
         if sidecar_file:
             events_proc.sidecar = Sidecar(files=os.path.join(os.path.dirname(os.path.abspath(__file__)), sidecar_file))
-        if events_path:
-            events_proc.events = TabularInput(file=os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+        if events_file:
+            events_proc.events = TabularInput(file=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                                 events_file), sidecar=events_proc.sidecar)
         events_proc.expand_defs = True
         events_proc.columns_included = None
@@ -153,49 +154,66 @@ class Test(TestWebBase):
             self.assertFalse(results['data'], 'should not have a data key when no validation errors')
             self.assertEqual('success', results['msg_category'], 'should be success when no errors')
 
-    # def test_events_remodel_valid_no_hed(self):
-    #     events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
-    #     events_proc.command = base_constants.COMMAND_REMODEL
-    #     
-    #     remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-    #                                 'data/simple_reorder_rmdl.json')
-    #     df = events_proc.events.dataframe
-    #     df_rows = len(df)
-    #     df_cols = len(df.columns)
-    #     with open(remodel_path, 'r') as fp:
-    #         remodel_json = json.load(fp)
-    #     remodeler = {'name': "simple_reorder_rmdl.json", 'operations': remodel_json}
-    #     hed_schema = None
-    #     sidecar = None
-    # 
-    #     with self.app.app_context():
-    #         results = remodel(hed_schema, events, sidecar, remodeler)
-    #     self.assertTrue(results['data'], 'remodel results should have a data key when successful')
-    #     self.assertEqual('success', results['msg_category'], 'remodel msg_category should be success when no errors')
-    #     # TODO: Test the rows and columns of result.
+    def test_events_remodel_valid_no_hed(self):
+        rmdl1 = [{
+            "operation": "remove_columns",
+            "description": "Remove unwanted columns prior to analysis",
+            "parameters": {
+                "column_names": ["value", "sample", "junk"],
+                "ignore_missing": True
+            }
+        }]
+        events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
+        events_proc.command = base_constants.COMMAND_REMODEL
+        events_proc.remodel_operations =  {'name': 'test', 'operations': rmdl1}
+        cols_orig = events_proc.events.columns
+        rows_orig = len(events_proc.events.dataframe)
+        with self.app.app_context():
+            results = events_proc.process()
+        self.assertTrue(results['data'], 'remodel results should have a data key when successful')
+        self.assertEqual('success', results['msg_category'], 'remodel msg_category should be success when no errors')
+        df = pd.read_csv(StringIO(results['data']), sep='\t')
+        self.assertEqual(len(df.columns), len(cols_orig) - 2),
+        self.assertEqual(len(df), rows_orig)
 
-    # def test_events_remodel_invalid_no_hed(self):
-    #         #     events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-    #                                'data/sub-002_task-FacePerception_run-1_events.tsv')
-    #     remodel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-    #                                 'data/simple_reorder_rmdl.json')
-    #     events = TabularInput(file=events_path, name='wh_events')
-    #     with open(remodel_path, 'r') as fp:
-    #         remodeler = json.load(fp)
-    #     hed_schema = None
-    #     sidecar = None
-    #     operation_0 = {'badoperation': 'remove_columns', 'description': 'bad structure',
-    #                    'parameters': {'ignore_missing': True}}
-    #     operation_1 = {'operation': 'unknown_command', 'description': 'bad command',
-    #                    'parameters': {'ignore_missing': True}}
-    #     operation_2 = {'command': 'remove_columns', 'description': 'bad parameters',
-    #                    'parameters': {'ignore_missing': True}}
-    #     operation_bad = [operation_0, remodeler[0], operation_1, remodeler[1], operation_2]
-    #     remodel_bad = {'name': 'remodel_bad.json', 'operations': operation_bad}
-    #     with self.app.app_context():
-    #         results = remodel(hed_schema, events, sidecar, remodel_bad)
-    #     self.assertTrue(results['data'], 'remodel results should have a data key when unsuccessful')
-    #     self.assertEqual('warning', results['msg_category'], 'remodel msg_category should be success when no errors')
+    def test_events_remodel_invalid_no_hed(self):
+            rmdl1 = [{
+                "operation": "remove_columns",
+                "description": "Remove unwanted columns prior to analysis",
+                "parameters": {
+                    "column_names": ["value", "sample", "junk"],
+                    "ignore_missing": False
+                }
+            }]
+            events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
+            events_proc.command = base_constants.COMMAND_REMODEL
+            events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
+            with self.app.app_context():
+                with self.assertRaises(KeyError) as ex:
+                    events_proc.process()
+            self.assertEqual(ex.exception.args[0], 'MissingColumnCannotBeRemoved')
+
+    def test_events_remodel_valid_with_hed(self):
+        rmdl1 = [{
+                    "operation": "factor_hed_type",
+                    "description": "Factor condition variables.",
+                    "parameters": {
+                        "type_tag": "Condition-variable"
+                    }
+                }]
+        events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv',
+                                          'data/task-facePerception_events.json', 'data/HED8.2.0.xml')
+        events_proc.command = base_constants.COMMAND_REMODEL
+        cols_orig = events_proc.events.columns
+        rows_orig = len(events_proc.events.dataframe)
+        events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
+        with self.app.app_context():
+            results = events_proc.process()
+        self.assertTrue(results['data'], 'remodel results should have a data key when successful')
+        self.assertEqual('success', results['msg_category'], 'remodel msg_category should be success when no errors')
+        df = pd.read_csv(StringIO(results['data']), sep='\t')
+        self.assertEqual(len(df.columns), len(cols_orig) + 7),
+        self.assertEqual(len(df), rows_orig)
 
 
 if __name__ == '__main__':
