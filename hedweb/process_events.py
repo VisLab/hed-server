@@ -79,7 +79,7 @@ class ProcessEvents(ProcessBase):
         """
         if not self.command:
             raise HedFileError('MissingCommand', 'Command is missing', '')
-        elif self.command == base_constants.COMMAND_GENERATE_SIDECAR:
+        elif self.command == base_constants.COMMAND_GENERATE_SIDECAR or self.command == base_constants.COMMAND_REMODEL:
             pass
         elif not self.schema or not \
                 isinstance(self.schema, (hedschema.hed_schema.HedSchema, hedschema.hed_schema_group.HedSchemaGroup)):
@@ -126,8 +126,7 @@ class ProcessEvents(ProcessBase):
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
-    
-    
+
     def _assemble(self):
         eligible_columns, missing_columns = separate_values(list(self.events.dataframe.columns), self.columns_included)
         if self.expand_defs:
