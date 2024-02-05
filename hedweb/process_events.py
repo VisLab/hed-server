@@ -11,7 +11,7 @@ from hed.models.tabular_input import TabularInput
 from hed.models.df_util import get_assembled, shrink_defs
 from hed.tools.util.data_util import separate_values
 from hed.tools.remodeling.dispatcher import Dispatcher
-from hed.tools.remodeling.validator import RemodelerValidator
+from hed.tools.remodeling.remodeler_validator import RemodelerValidator
 from hed.tools.analysis import analysis_util
 from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
