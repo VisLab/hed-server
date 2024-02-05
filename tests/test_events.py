@@ -202,7 +202,7 @@ class Test(TestWebBase):
                     }
                 }]
         events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv',
-                                          'data/task-facePerception_events.json', 'data/HED8.2.0.xml')
+                                          'data/task-FacePerception_events.json', 'data/HED8.2.0.xml')
         events_proc.command = base_constants.COMMAND_REMODEL
         cols_orig = events_proc.events.columns
         rows_orig = len(events_proc.events.dataframe)
