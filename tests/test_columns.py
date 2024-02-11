@@ -2,7 +2,7 @@ import unittest
 from tests.test_web_base import TestWebBase
 import io
 import os
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 import openpyxl
 from pandas import DataFrame
 from werkzeug.datastructures import FileStorage
@@ -33,9 +33,8 @@ class Test(TestWebBase):
         columns_file.filename = 'test.tsv'
 
         result = _create_columns_info(columns_file, has_column_names=True)
-        self.assertEqual(result[base_constants.COLUMNS_FILE], 'test.tsv')
-        self.assertListEqual(result[base_constants.COLUMN_LIST], ['A', 'B'])
-
+        self.assertEqual(result[bc.COLUMNS_FILE], 'test.tsv')
+        self.assertListEqual(result[bc.COLUMN_LIST], ['A', 'B'])
 
         excel_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelMultipleSheets.xlsx')
         with open(excel_file_path, 'rb') as file:
@@ -43,20 +42,20 @@ class Test(TestWebBase):
             columns_file.filename = os.path.basename(excel_file_path)
 
             result = _create_columns_info(columns_file, has_column_names=True)
-            self.assertEqual(result[base_constants.COLUMNS_FILE], 'ExcelMultipleSheets.xlsx')
-            self.assertListEqual(result[base_constants.COLUMN_LIST],
+            self.assertEqual(result[bc.COLUMNS_FILE], 'ExcelMultipleSheets.xlsx')
+            self.assertListEqual(result[bc.COLUMN_LIST],
                                  ['Event code', 'Short label', 'Long name', 'Description in text', 'HED tags'])
-            self.assertEqual(result[base_constants.WORKSHEET_SELECTED], "LKT 8HED3")
+            self.assertEqual(result[bc.WORKSHEET_SELECTED], "LKT 8HED3")
 
         with open(excel_file_path, 'rb') as file:
             columns_file = file
             columns_file.filename = os.path.basename(excel_file_path)
 
             result = _create_columns_info(columns_file, has_column_names=True, sheet_name="DAS Events")
-            self.assertEqual(result[base_constants.COLUMNS_FILE], 'ExcelMultipleSheets.xlsx')
-            self.assertListEqual(result[base_constants.COLUMN_LIST],
+            self.assertEqual(result[bc.COLUMNS_FILE], 'ExcelMultipleSheets.xlsx')
+            self.assertListEqual(result[bc.COLUMN_LIST],
                                  ['Event code', 'Short label', 'Description in text', 'Event category', 'HED tags'])
-            self.assertEqual(result[base_constants.WORKSHEET_SELECTED], "DAS Events")
+            self.assertEqual(result[bc.WORKSHEET_SELECTED], "DAS Events")
 
     def test_dataframe_from_worksheet_with_column_names(self):
         from hedweb.columns import dataframe_from_worksheet
@@ -80,32 +79,32 @@ class Test(TestWebBase):
         with open(excel_file_path, 'rb') as file:
             valid_excel_file = FileStorage(stream=file, filename='valid_excel.xlsx')
             input_dict = {
-                base_constants.COLUMNS_FILE: valid_excel_file,
-                base_constants.WORKSHEET_SELECTED: "DAS Events"
+                bc.COLUMNS_FILE: valid_excel_file,
+                bc.WORKSHEET_SELECTED: "DAS Events"
             }
             environ = create_environ(data=input_dict)
             request = Request(environ)
             result = get_columns_request(request)
-            self.assertIn(base_constants.COLUMNS_FILE, result)
-            self.assertIn(base_constants.COLUMN_LIST, result)
-            self.assertEqual(result[base_constants.COLUMNS_FILE], 'valid_excel.xlsx')
+            self.assertIn(bc.COLUMNS_FILE, result)
+            self.assertIn(bc.COLUMN_LIST, result)
+            self.assertEqual(result[bc.COLUMNS_FILE], 'valid_excel.xlsx')
 
     def test_get_column_names(self):
-        from hedweb.columns import get_column_names
+        from hedweb.columns import get_column_numbers
         form_dict = {
             'column_1_check': 'on',
             'column_2_check': 'off',
             'column_3_check': 'on',
             'another_field': 'value'
         }
-        result = get_column_names(form_dict)
+        result = get_column_numbers(form_dict)
         self.assertEqual(result, [1, 3])
         form_dict = {
             'column_1_check': 'off',
             'column_2_check': 'off',
             'another_field': 'value'
         }
-        result = get_column_names(form_dict)
+        result = get_column_numbers(form_dict)
         self.assertEqual(result, [])
 
         with self.assertRaises(ValueError):
@@ -114,7 +113,8 @@ class Test(TestWebBase):
                 'column_2_check': 'on',
                 'another_field': 'value'
             }
-            result = get_column_names(form_dict)
+            result = get_column_numbers(form_dict)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -71,7 +71,7 @@ class ProcessSchemas(ProcessBase):
         return results
 
     def compare(self):
-        data = compare_differences(self.schema, self.schema2, output='string', sections=None)
+        data = compare_differences(self.schema, self.schema2)
         output_name = self.schema.name + '_' + self.schema2.name + '_' + "differences.txt"
         msg_results = ''
         if not data:
@@ -153,7 +153,7 @@ class ProcessSchemas(ProcessBase):
 def get_schema(schema_input=None, version=None, as_xml_string=None):
     """ Return a HedSchema object from the given parameters.
 
-    Args:
+    Parameters:
         schema_input (str or FileStorage or None): Input url or file
         version (str or None): A schema version string to load, e.g. "8.2.0" or "score_1.1.0"
         as_xml_string (str or None): A schema in xml string format

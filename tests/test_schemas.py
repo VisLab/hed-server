@@ -105,9 +105,9 @@ class Test(TestWebBase):
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.1.0/8.2.0 can be compared")
             # Check for some differences
-            self.assertTrue("Attribute 'rooted' not in 'Schema1':" in results['data'])
-            self.assertTrue("Tags: And, Comparative-relation, Connective-relation, Directional-relation, Ethnicity, Event-context, Gentalia, Inset, Logical-relation, Lower-center-of, Lower-left-of, Lower-right-of, Offset, Onset, Or, Performed-using, Race, Spatial-relation, Temporal-relation, Upper-center-of, Upper-left-of, Upper-right-of" in results['data'])
-            self.assertTrue("elementProperty, isInheritedProperty, nodeProperty" in results['data'])
+            self.assertTrue("Differences between 8.1.0 and 8.2.0" in results['data'])
+            self.assertTrue("Ethnicity (Minor): Item Ethnicity added to Tags" in results['data'])
+            self.assertTrue("Dash (Patch): Suggested tag changed on Item/Object/Geometric-object/2D-shape/Dash" in results['data'])
 
             input_dict = {
                 base_constants.COMMAND: base_constants.COMMAND_COMPARE_SCHEMAS,

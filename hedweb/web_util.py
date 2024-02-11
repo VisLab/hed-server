@@ -29,7 +29,7 @@ def convert_hed_versions(hed_info):
 def file_extension_is_valid(filename, accepted_extensions=None):
     """ Return True if the file extension is an accepted one.
 
-    Args:
+    Parameters:
         filename (str): The name of the file to be checked.
         accepted_extensions (list): A list of accepted extensions.
 
@@ -50,7 +50,7 @@ def filter_issues(issues, check_for_warnings):
 def form_has_file(request, file_field, valid_extensions=None):
     """ Return True if a file with valid extension is in the request.
 
-    Args:
+    Parameters:
         request (Request): A Request object containing user data from the form.
         file_field (str): Name of the form field containing the file name.
         valid_extensions (list): A list of valid extensions.
@@ -69,7 +69,7 @@ def form_has_file(request, file_field, valid_extensions=None):
 def form_has_option(request, option_name, target_value):
     """ Return True if given option has a specific value.
 
-    Args:
+    Parameters:
         request (Request): A Request object produced by the post of a form.
         option_name (str): The name of the radio button group in the hedweb form.
         target_value (str): The name of the selected radio button option.
@@ -90,7 +90,7 @@ def form_has_option(request, option_name, target_value):
 def form_has_url(request, url_field, valid_extensions=None):
     """ Return True if the url_field has a valid extension.
 
-    Args:
+    Parameters:
         request (Request): A Request object containing form data.
         url_field (str): The name of the form field with the URL to be parsed.
         valid_extensions (list): A list of valid extensions.
@@ -108,7 +108,7 @@ def form_has_url(request, url_field, valid_extensions=None):
 def generate_download_file_from_text(results, file_header=None):
     """ Generate a download file from text output.
 
-    Args:
+    Parameters:
         results: Text with newlines for iterating.
         file_header (str): Optional header for download file blob.
 
@@ -139,7 +139,7 @@ def generate_download_file_from_text(results, file_header=None):
 def generate_download_spreadsheet(results):
     """ Generate a download Excel file.
 
-    Args:
+    Parameters:
         results (dict): Dictionary with the results to be downloaded.
 
     Returns:
@@ -203,7 +203,7 @@ def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=N
 def generate_text_response(results):
     """ Generate a download response.
 
-    Args:
+    Parameters:
         results (dict): Dictionary containing the results of the data.
 
     Returns:
@@ -221,7 +221,7 @@ def generate_text_response(results):
 def generate_download_zip_file(results):
     """ Generate a download response.
 
-    Args:
+    Parameters:
         results (dict): Dictionary of results to use in constructing response.
 
     Returns:
@@ -246,7 +246,7 @@ def generate_download_zip_file(results):
 def get_hed_schema_from_pull_down(request):
     """ Create a HedSchema object from form pull-down box.
 
-    Args:
+    Parameters:
         request (Request): A Request object containing form data.
 
     Returns:
@@ -293,7 +293,7 @@ def get_schema_versions(hed_schema):
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):
     """ Handle an error by returning a dictionary or simple string.
 
-    Args:
+    Parameters:
         ex (Exception): The exception raised.
         hed_info (dict): A dictionary of information describing the error.
         title (str):  A title to be included with the message.
@@ -329,7 +329,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
 def handle_http_error(ex):
     """ Handle a http error.
 
-    Args:
+    Parameters:
         ex (Exception): A class that extends python Exception class.
 
     Returns:
@@ -358,8 +358,8 @@ def handle_http_error(ex):
 def package_results(results):
     """Package a results dictionary into a standard form.
 
-    Args:
-        results (dict): A dictionary with the results
+    Parameters:
+        results (dict): A dictionary with the results.
 
     """
 

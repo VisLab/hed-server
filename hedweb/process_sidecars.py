@@ -1,5 +1,4 @@
 import os
-import io
 import json
 from werkzeug.utils import secure_filename
 
@@ -61,7 +60,7 @@ class ProcessSidecars(ProcessBase):
                                                 tag_columns=['HED'], has_column_names=True, name=filename)
 
     def process(self):
-        """Perform the requested action for the sidecar.
+        """ Perform the requested action for the sidecar.
         
         Returns:
             dict: A dictionary of results in standard form.
@@ -69,14 +68,14 @@ class ProcessSidecars(ProcessBase):
         """
         if not self.command:
             raise HedFileError('MissingCommand', 'Command is missing', '')
-        elif not self.sidecar:
+        elif not self.sidecar and not base_constants.COMMAND_MERGE_SPREADSHEET:
             raise HedFileError('MissingSidecarFile', "Please give a valid JSON sidecar file to process", "")
-        elif (self.command == base_constants.COMMAND_EXTRACT_SPREADSHEET or 
-                self.command == base_constants.COMMAND_MERGE_SPREADSHEET):
+        elif (self.command == base_constants.COMMAND_EXTRACT_SPREADSHEET or
+              self.command == base_constants.COMMAND_MERGE_SPREADSHEET):
             pass
         elif not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
             raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
-        
+
         if self.command == base_constants.COMMAND_VALIDATE:
             results = self.sidecar_validate()
         elif self.command == base_constants.COMMAND_TO_SHORT or self.command == base_constants.COMMAND_TO_LONG:
@@ -167,12 +166,16 @@ class ProcessSidecars(ProcessBase):
             raise HedFileError('MissingSpreadsheet', 'Cannot merge spreadsheet with sidecar', '')
         df = self.spreadsheet.dataframe
         hed_dict = df_to_hed(df, description_tag=self.include_description_tags)
-        json_string = self.sidecar.get_as_json_string()
-        sidecar_dict = json.loads(json_string)
+        if self.sidecar:
+            sidecar_dict = json.loads(self.sidecar.get_as_json_string())
+            display_name = self.sidecar.name
+        else:
+            sidecar_dict = {}
+            display_name = "empty_sidecar"
         merge_hed_dict(sidecar_dict, hed_dict)
-        display_name = self.sidecar.name
+
         data = json.dumps(sidecar_dict, indent=4)
-        file_name = generate_filename(display_name, name_suffix='_extracted_merged',
+        file_name = generate_filename(display_name, name_suffix='_merged_with_spreadsheet',
                                       extension='.json', append_datetime=True)
         return {base_constants.COMMAND: self.command,
                 base_constants.COMMAND_TARGET: 'sidecar',

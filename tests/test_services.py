@@ -8,11 +8,34 @@ from tests.test_web_base import TestWebBase
 from hed.schema import HedSchema, load_schema_version
 from hed.models import Sidecar
 from hed.errors.exceptions import HedFileError
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 from hedweb.process_services import ProcessServices
 
 
 class Test(TestWebBase):
+
+    @staticmethod
+    def get_request_template():
+        return {'service': '',
+                'schema_version': '',
+                'schema_url': '',
+                'schema_string': '',
+                'sidecar_string': '',
+                'events_string': '',
+                'spreadsheet_string': '',
+                'remodel_string': '',
+                'columns_selected': '',
+                'columns_categorical': '',
+                'columns_value': '',
+                'queries': '',
+                'query_names': '',
+                'check_for_warnings': False,
+                'expand_context': True,
+                'expand_defs': False,
+                'include_summaries': False,
+                'replace_defs': False
+                }
+
     def test_set_input_from_service_request_empty(self):
         with self.assertRaises(HedFileError):
             with self.app.app_context():
@@ -23,16 +46,35 @@ class Test(TestWebBase):
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(sidecar_path, 'rb') as fp:
                 sidecar_string = fp.read().decode('ascii')
-            json_data = {base_constants.SIDECAR_STRING: sidecar_string, base_constants.CHECK_FOR_WARNINGS: 'on',
-                         base_constants.SCHEMA_VERSION: '8.2.0', base_constants.SERVICE: 'sidecar_validate'}
+            json_data = {bc.SIDECAR_STRING: sidecar_string, bc.CHECK_FOR_WARNINGS: 'on',
+                         bc.SCHEMA_VERSION: '8.2.0', bc.SERVICE: 'sidecar_validate'}
             environ = create_environ(json=json_data)
             request = Request(environ)
             arguments = ProcessServices.set_input_from_request(request)
-            self.assertIn(base_constants.SIDECAR, arguments, "should have a json sidecar")
-            self.assertIsInstance(arguments[base_constants.SIDECAR], Sidecar, "should contain a sidecar")
-            self.assertIsInstance(arguments[base_constants.SCHEMA], HedSchema, "should have a HED schema")
-            self.assertEqual('sidecar_validate', arguments[base_constants.SERVICE], "should have a service request")
-            self.assertTrue(arguments[base_constants.CHECK_FOR_WARNINGS], "should have check_warnings true when on")
+            self.assertIn(bc.SIDECAR, arguments, "should have a json sidecar")
+            self.assertIsInstance(arguments[bc.SIDECAR], Sidecar, "should contain a sidecar")
+            self.assertIsInstance(arguments[bc.SCHEMA], HedSchema, "should have a HED schema")
+            self.assertEqual('sidecar_validate', arguments[bc.SERVICE], "should have a service request")
+            self.assertTrue(arguments[bc.CHECK_FOR_WARNINGS], "should have check_warnings true when on")
+
+    def test_set_input_from_service_request_full_template(self):
+        with self.app.test:
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
+            with open(sidecar_path, 'rb') as fp:
+                sidecar_string = fp.read().decode('ascii')
+            json_data = self.get_request_template()
+            json_data[bc.SIDECAR_STRING] = sidecar_string
+            json_data[bc.CHECK_FOR_WARNINGS] = True,
+            json_data[bc.SCHEMA_VERSION] = '8.2.0',
+            json_data[bc.SERVICE] = 'sidecar_validate'
+            environ = create_environ(json=json_data)
+            request = Request(environ)
+            arguments = ProcessServices.set_input_from_request(request)
+            self.assertIn(bc.SIDECAR, arguments, "should have a json sidecar")
+            self.assertIsInstance(arguments[bc.SIDECAR], Sidecar, "should contain a sidecar")
+            self.assertIsInstance(arguments[bc.SCHEMA], HedSchema, "should have a HED schema")
+            self.assertEqual('sidecar_validate', arguments[bc.SERVICE], "should have a service request")
+            self.assertTrue(arguments[bc.CHECK_FOR_WARNINGS], "should have check_warnings true when on")
 
     def test_set_column_parameters(self):
         from hedweb.process_services import ProcessServices
@@ -40,25 +82,14 @@ class Test(TestWebBase):
         arguments = {}
         params = {
             'columns_categorical': ['col1', 'col2'],
-            'columns_value': ['col3', 'col4'],
-            'columns_included': ['col1', 'col3', 'col5']
+            'columns_value': ['col3', 'col4']
         }
         ProcessServices.set_column_parameters(arguments, params)
 
-        self.assertEqual(arguments[base_constants.COLUMNS_SELECTED],
-                         {'col1': True, 'col2': True, 'col3': False, 'col4': False})
-        self.assertEqual(arguments[base_constants.COLUMNS_INCLUDED], ['col1', 'col3', 'col5'])
-        self.assertTrue(arguments[base_constants.HAS_COLUMN_NAMES])
-        self.assertFalse(arguments[base_constants.TAG_COLUMNS])
-
-        arguments = {}
-        params = {}
-        ProcessServices.set_column_parameters(arguments, params)
-
-        self.assertEqual(arguments[base_constants.COLUMNS_SELECTED], {})
-        self.assertEqual(arguments[base_constants.COLUMNS_INCLUDED], [])
-        self.assertTrue(arguments[base_constants.HAS_COLUMN_NAMES])
-        self.assertFalse(arguments[base_constants.TAG_COLUMNS])
+        self.assertEqual(arguments[bc.COLUMNS_CATEGORICAL], ['col1', 'col2'])
+        self.assertEqual(arguments[bc.COLUMNS_VALUE], ['col3', 'col4'])
+        self.assertTrue(arguments[bc.HAS_COLUMN_NAMES])
+        self.assertFalse(arguments[bc.TAG_COLUMNS])
 
     def test_services_set_sidecar(self):
         path_upper = 'data/eeg_ds003654s_hed_inheritance/task-FacePerception_events.json'
@@ -72,24 +103,24 @@ class Test(TestWebBase):
             data_upper = json.load(f)
         with open(sidecar_path_lower2) as f:
             data_lower2 = json.load(f)
-        params2 = {base_constants.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower2)]}
+        params2 = {bc.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower2)]}
         arguments2 = {}
         ProcessServices.set_sidecar(arguments2, params2)
-        self.assertIn(base_constants.SIDECAR, arguments2, 'should have a sidecar')
-        self.assertIsInstance(arguments2[base_constants.SIDECAR], Sidecar)
-        sidecar2 = arguments2[base_constants.SIDECAR]
+        self.assertIn(bc.SIDECAR, arguments2, 'should have a sidecar')
+        self.assertIsInstance(arguments2[bc.SIDECAR], Sidecar)
+        sidecar2 = arguments2[bc.SIDECAR]
         self.assertIn('event_type', data_upper, "should have key event_type")
         self.assertNotIn('event_type', data_lower2, "should not have event_type")
         self.assertIn('event_type', sidecar2.loaded_dict, "merged sidecar should have event_type")
 
         with open(sidecar_path_lower3) as f:
             data_lower3 = json.load(f)
-        params3 = {base_constants.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower3)]}
+        params3 = {bc.SIDECAR_STRING: [json.dumps(data_upper), json.dumps(data_lower3)]}
         arguments3 = {}
         ProcessServices.set_sidecar(arguments3, params3)
-        self.assertIn(base_constants.SIDECAR, arguments3, 'should have a sidecar')
-        self.assertIsInstance(arguments3[base_constants.SIDECAR], Sidecar)
-        sidecar3 = arguments3[base_constants.SIDECAR]
+        self.assertIn(bc.SIDECAR, arguments3, 'should have a sidecar')
+        self.assertIsInstance(arguments3[bc.SIDECAR], Sidecar)
+        sidecar3 = arguments3[bc.SIDECAR]
         self.assertIn('event_type', data_upper, "should have key event_type")
         self.assertNotIn('event_type', data_lower3, "should have event_type")
         self.assertIn('event_type', sidecar3.loaded_dict, "merged sidecar should have event_type")
@@ -107,43 +138,43 @@ class Test(TestWebBase):
 
         from hed import TabularInput, SpreadsheetInput, HedString
         arguments = {
-            base_constants.SCHEMA: load_schema_version("8.2.0"),
-            base_constants.SIDECAR: sidecar,
-            base_constants.TAG_COLUMNS: [4]
+            bc.SCHEMA: load_schema_version("8.2.0"),
+            bc.SIDECAR: sidecar,
+            bc.TAG_COLUMNS: [4]
         }
         params = {
-            base_constants.EVENTS_STRING: events_data,
-            base_constants.SPREADSHEET_STRING: events_data,
-            base_constants.STRING_LIST: ['Event', 'Age']
+            bc.EVENTS_STRING: events_data,
+            bc.SPREADSHEET_STRING: events_data,
+            bc.STRING_LIST: ['Event', 'Age']
         }
         ProcessServices.set_input_objects(arguments, params)
 
-        self.assertIsInstance(arguments[base_constants.EVENTS], TabularInput)
-        self.assertIsInstance(arguments[base_constants.SPREADSHEET], SpreadsheetInput)
-        self.assertEqual(len(arguments[base_constants.STRING_LIST]), 2)
-        for item in arguments[base_constants.STRING_LIST]:
+        self.assertIsInstance(arguments[bc.EVENTS], TabularInput)
+        self.assertIsInstance(arguments[bc.SPREADSHEET], SpreadsheetInput)
+        self.assertEqual(len(arguments[bc.STRING_LIST]), 2)
+        for item in arguments[bc.STRING_LIST]:
             self.assertIsInstance(item, HedString)
 
         # Raises error if tag columns not set, but it has a spreadsheet
         with self.assertRaises(KeyError):
             arguments = {}
             params = {
-                base_constants.EVENTS_STRING: "",
-                base_constants.SPREADSHEET_STRING: events_data,
+                bc.EVENTS_STRING: "",
+                bc.SPREADSHEET_STRING: events_data,
             }
             ProcessServices.set_input_objects(arguments, params)
 
         arguments = {
-            base_constants.SCHEMA: load_schema_version("8.2.0"),
-            base_constants.SIDECAR: sidecar,
-            base_constants.TAG_COLUMNS: [4]
+            bc.SCHEMA: load_schema_version("8.2.0"),
+            bc.SIDECAR: sidecar,
+            bc.TAG_COLUMNS: [4]
         }
         params = {}
         ProcessServices.set_input_objects(arguments, params)
 
-        self.assertNotIn(base_constants.EVENTS, arguments)
-        self.assertNotIn(base_constants.SPREADSHEET, arguments)
-        self.assertNotIn(base_constants.STRING_LIST, arguments)
+        self.assertNotIn(bc.EVENTS, arguments)
+        self.assertNotIn(bc.SPREADSHEET, arguments)
+        self.assertNotIn(bc.STRING_LIST, arguments)
 
     def test_set_remodel_parameters(self):
         remodel_file = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -165,37 +196,37 @@ class Test(TestWebBase):
 
     def test_get_service_info(self):
         params = {
-            base_constants.SERVICE: 'schema_validate',
-            base_constants.EXPAND_DEFS: 'on',
-            base_constants.CHECK_FOR_WARNINGS: 'off',
-            base_constants.INCLUDE_DESCRIPTION_TAGS: 'on'
+            bc.SERVICE: 'schema_validate',
+            bc.EXPAND_DEFS: True,
+            bc.CHECK_FOR_WARNINGS: False,
+            bc.INCLUDE_DESCRIPTION_TAGS: True
         }
 
         expected_result = {
-            base_constants.SERVICE: 'schema_validate',
-            base_constants.COMMAND: 'validate',
-            base_constants.COMMAND_TARGET: 'schema',
-            base_constants.HAS_COLUMN_NAMES: True,
-            base_constants.CHECK_FOR_WARNINGS: False,
-            base_constants.EXPAND_DEFS: True,
-            base_constants.INCLUDE_DESCRIPTION_TAGS: True
+            bc.SERVICE: 'schema_validate',
+            bc.COMMAND: 'validate',
+            bc.COMMAND_TARGET: 'schema',
+            bc.HAS_COLUMN_NAMES: True,
+            bc.CHECK_FOR_WARNINGS: False,
+            bc.EXPAND_DEFS: True,
+            bc.INCLUDE_DESCRIPTION_TAGS: True
         }
 
         result = ProcessServices.get_service_info(params)
         self.assertEqual(result, expected_result)
 
         params = {
-            base_constants.SERVICE: 'get_services'
+            bc.SERVICE: 'get_services'
         }
 
         expected_result = {
-            base_constants.SERVICE: 'get_services',
-            base_constants.COMMAND: 'get_services',
-            base_constants.COMMAND_TARGET: '',
-            base_constants.HAS_COLUMN_NAMES: True,
-            base_constants.CHECK_FOR_WARNINGS: False,
-            base_constants.EXPAND_DEFS: False,
-            base_constants.INCLUDE_DESCRIPTION_TAGS: False
+            bc.SERVICE: 'get_services',
+            bc.COMMAND: 'get_services',
+            bc.COMMAND_TARGET: '',
+            bc.HAS_COLUMN_NAMES: True,
+            bc.CHECK_FOR_WARNINGS: True,
+            bc.EXPAND_DEFS: False,
+            bc.INCLUDE_DESCRIPTION_TAGS: True
         }
 
         result = ProcessServices.get_service_info(params)
@@ -206,20 +237,20 @@ class Test(TestWebBase):
         schema = load_schema_version("8.2.0")
         schema_as_string = schema.get_as_xml_string()
 
-        parameters = {base_constants.SCHEMA_STRING: schema_as_string}
+        parameters = {bc.SCHEMA_STRING: schema_as_string}
         result = ProcessServices.set_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
         parameters = {
-            base_constants.SCHEMA_URL: 'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml'}
+            bc.SCHEMA_URL: 'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml'}
         result = ProcessServices.set_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
-        parameters = {base_constants.SCHEMA_VERSION: '8.2.0'}
+        parameters = {bc.SCHEMA_VERSION: '8.2.0'}
         result = ProcessServices.set_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
-        parameters = {base_constants.SCHEMA_STRING: 'invalid_schema_string'}
+        parameters = {bc.SCHEMA_STRING: 'invalid_schema_string'}
         with self.assertRaises(HedFileError):
             result = ProcessServices.set_input_schema(parameters)
 
@@ -235,10 +266,10 @@ class Test(TestWebBase):
             data = json.load(f)
         json_text = json.dumps(data)
         fb = io.StringIO(json_text)
-        arguments = {base_constants.SERVICE: 'sidecar_validate',
-                     base_constants.SCHEMA: load_schema_version('8.2.0'),
-                     base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
-                     base_constants.SIDECAR: Sidecar(files=fb, name='JSON_Sidecar')}
+        arguments = {bc.SERVICE: 'sidecar_validate',
+                     bc.SCHEMA: load_schema_version('8.2.0'),
+                     bc.COMMAND: 'validate', bc.COMMAND_TARGET: 'sidecar',
+                     bc.SIDECAR: Sidecar(files=fb, name='JSON_Sidecar')}
         with self.app.app_context():
             response = ProcessServices.process(arguments)
             self.assertFalse(response['error_type'],
@@ -246,7 +277,7 @@ class Test(TestWebBase):
             results = response['results']
             self.assertEqual('warning', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual(json.dumps('8.2.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.2.0 was used')
+            self.assertEqual(json.dumps('8.2.0'), results[bc.SCHEMA_VERSION], 'Version 8.2.0 was used')
 
     def test_process_services_sidecar_a(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
@@ -256,9 +287,9 @@ class Test(TestWebBase):
         fb = io.StringIO(json_text)
         hed_schema = load_schema_version("8.2.0")
         json_sidecar = Sidecar(files=fb, name='JSON_Sidecar')
-        arguments = {base_constants.SERVICE: 'sidecar_validate', base_constants.SCHEMA: hed_schema,
-                     base_constants.COMMAND: 'validate', base_constants.COMMAND_TARGET: 'sidecar',
-                     base_constants.SIDECAR: json_sidecar}
+        arguments = {bc.SERVICE: 'sidecar_validate', bc.SCHEMA: hed_schema,
+                     bc.COMMAND: 'validate', bc.COMMAND_TARGET: 'sidecar',
+                     bc.SIDECAR: json_sidecar}
         with self.app.app_context():
             response = ProcessServices.process(arguments)
             self.assertFalse(response['error_type'],
@@ -266,14 +297,14 @@ class Test(TestWebBase):
             results = response['results']
             self.assertEqual('success', results['msg_category'],
                              "sidecar_validation services has success on bids_events.json")
-            self.assertEqual(json.dumps('8.2.0'), results[base_constants.SCHEMA_VERSION], 'Version 8.2.0 was used')
+            self.assertEqual(json.dumps('8.2.0'), results[bc.SCHEMA_VERSION], 'Version 8.2.0 was used')
 
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with open(json_path) as f:
             data = json.load(f)
         json_text = json.dumps(data)
         fb = io.StringIO(json_text)
-        arguments[base_constants.SIDECAR] = Sidecar(files=fb, name='JSON_Sidecar_BAD')
+        arguments[bc.SIDECAR] = Sidecar(files=fb, name='JSON_Sidecar_BAD')
         with self.app.app_context():
             response = ProcessServices.process(arguments)
             self.assertFalse(response['error_type'],

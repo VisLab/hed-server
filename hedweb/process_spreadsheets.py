@@ -7,7 +7,7 @@ from hed.models.spreadsheet_input import SpreadsheetInput
 from hedweb.web_util import get_schema_versions
 from hedweb.constants import base_constants, file_constants
 from hedweb.process_base import ProcessBase
-from hedweb.columns import get_column_names
+from hedweb.columns import get_column_numbers
 from hedweb.web_util import filter_issues, form_has_option, generate_filename, get_hed_schema_from_pull_down
 
 
@@ -23,7 +23,6 @@ class ProcessSpreadsheets(ProcessBase):
         self.spreadsheet = None
         self.worksheet = None
         self.spreadsheet_type = file_constants.TSV_EXTENSION
-        self.prefix_dict = {}
         self.tag_columns = []
         self.has_column_names = True
         self.check_for_warnings = False
@@ -40,7 +39,7 @@ class ProcessSpreadsheets(ProcessBase):
         self.worksheet = request.form.get(base_constants.WORKSHEET_NAME, None)
         self.command = request.form.get(base_constants.COMMAND_OPTION, '')
         self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
-        self.tag_columns = get_column_names(request.form)
+        self.tag_columns = get_column_numbers(request.form)
         if base_constants.DEFINITION_FILE in request.files:
             f = request.files[base_constants.DEFINITION_FILE]
             sidecar = Sidecar(files=f, name=secure_filename(f.filename))
@@ -107,7 +106,7 @@ class ProcessSpreadsheets(ProcessBase):
                 base_constants.SPREADSHEET: self.spreadsheet, 'output_display_name': file_name,
                 base_constants.SCHEMA_VERSION: get_schema_versions(self.schema),
                 base_constants.MSG_CATEGORY: 'success',
-                base_constants.MSG: f'Spreadsheet {display_name} converted_successfully'} 
+                base_constants.MSG: f'Spreadsheet {display_name} converted successfully'}
     
     def spreadsheet_validate(self):
         """ Validates the spreadsheet.

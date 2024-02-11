@@ -1,7 +1,5 @@
 import openpyxl
 import os
-
-
 from pandas import DataFrame, read_csv
 from hed.errors import HedFileError
 from hed.tools.analysis.tabular_summary import TabularSummary
@@ -12,7 +10,7 @@ from hedweb.web_util import form_has_file, form_has_option
 def create_column_selections(form_dict):
     """ Return a tag prefix dictionary from a form dictionary.
 
-    Args:
+    Parameters:
         form_dict (dict): The column prefix table returned from a form.
 
     Returns:
@@ -38,24 +36,10 @@ def create_column_selections(form_dict):
     return columns_selections
 
 
-def create_columns_included(form_dict):
-    """ Return a list of columns to be included.
-
-    Args:
-        form_dict (dict): The dictionary returned from a form that contains the columns to be included.
-
-    Returns:
-        (list): Column names to be included.
-
-    """
-    # TODO: Implement this.
-    return []
-
-
 def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     """ Create a dictionary of column information from a spreadsheet.
 
-    Args:
+    Parameters:
         columns_file (File-like): File to create the dictionary for.
         has_column_names (bool):  If True, first row is interpreted as the column names.
         sheet_name (str): The name of the worksheet if this is an Excel file.
@@ -96,7 +80,7 @@ def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
 def dataframe_from_worksheet(worksheet, has_column_names):
     """ Return a pandas data frame from an Excel worksheet.
 
-    Args:
+    Parameters:
         worksheet (Worksheet): A single worksheet of an Excel file.
         has_column_names (bool): If True, interpret the first row as column names.
 
@@ -118,7 +102,7 @@ def dataframe_from_worksheet(worksheet, has_column_names):
 def get_columns_request(request):
     """ Create a columns info dictionary based on the request.
 
-    Args:
+    Parameters:
         request (Request): The Request object from which to extract the information.
 
     Returns:
@@ -137,7 +121,7 @@ def get_columns_request(request):
     return _create_columns_info(columns_file, has_column_names, sheet_name)
 
 
-def get_column_names(form_dict):
+def get_column_numbers(form_dict):
     """ Return a tag prefix dictionary from a form dictionary.
 
     Parameters:
@@ -163,7 +147,7 @@ def get_column_names(form_dict):
 def _get_worksheet(excel_file, sheet_name):
     """ Return a Worksheet and a list of sheet names from an Excel file.
 
-    Args:
+    Parameters:
         excel_file (str): Name of the Excel file to use.
         sheet_name (str or None): Name of the worksheet if any, otherwise the first one.
 

@@ -8,17 +8,19 @@ from hed.errors.error_reporter import check_for_any_errors
 from hed.models.definition_dict import DefinitionDict
 from hed.models.sidecar import Sidecar
 from hed.models.tabular_input import TabularInput
-from hed.models.df_util import get_assembled, shrink_defs
-from hed.tools.util.data_util import separate_values
+from hed.models.df_util import get_assembled
+from hed.models.query_service import get_query_handlers, search_strings
 from hed.tools.remodeling.dispatcher import Dispatcher
 from hed.tools.remodeling.remodeler_validator import RemodelerValidator
-from hed.tools.analysis import analysis_util
+from hed.tools.analysis.hed_tag_manager import HedTagManager
+from hed.tools.analysis.event_manager import EventManager
 from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 from hedweb.process_base import ProcessBase
 from hedweb.columns import create_column_selections
 from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_schema_versions
+
 
 class ProcessEvents(ProcessBase):
 
@@ -26,17 +28,22 @@ class ProcessEvents(ProcessBase):
         """ Construct a ProcessEvents object to handle events form requests. 
         
         """
+
         self.schema = None
         self.events = None
         self.command = None
         self.check_for_warnings = False
         self.expand_defs = False
         self.include_summaries = False
-        self.columns_selected = None
-        self.columns_included = None
+        self.columns_skip = []
+        self.columns_value = []
         self.sidecar = None
         self.remodel_operations = None
-        self.query = None
+        self.queries = None
+        self.query_names = None
+        self.remove_types = []
+        self.replace_defs = False
+        self.expand_context = True
 
     def set_input_from_form(self, request):
         """ Set input for processing from an events form.
@@ -45,26 +52,24 @@ class ProcessEvents(ProcessBase):
             request (Request): A Request object containing user data from the form.
     
         """
-        self.command = request.form.get(base_constants.COMMAND_OPTION, '')
-        self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
-        self.expand_defs = form_has_option(request, base_constants.EXPAND_DEFS, 'on')
-        self.include_summaries = form_has_option(request, base_constants.INCLUDE_SUMMARIES, 'on')
+        self.command = request.form.get(bc.COMMAND_OPTION, '')
+        self.check_for_warnings = form_has_option(request, bc.CHECK_FOR_WARNINGS, 'on')
+        self.expand_defs = form_has_option(request,  bc.EXPAND_DEFS, 'on')
+        self.include_summaries = form_has_option(request, bc.INCLUDE_SUMMARIES, 'on')
         self.columns_selected = create_column_selections(request.form)
-        if self.command == base_constants.COMMAND_ASSEMBLE:
-            self.columns_included = ['onset']   # TODO  add user interface option to choose columns.
-        if self.command != base_constants.COMMAND_GENERATE_SIDECAR:
+        if self.command != bc.COMMAND_GENERATE_SIDECAR:
             self.schema = get_hed_schema_from_pull_down(request)
-        if base_constants.SIDECAR_FILE in request.files:
-            f = request.files[base_constants.SIDECAR_FILE]
+        if bc.SIDECAR_FILE in request.files:
+            f = request.files[bc.SIDECAR_FILE]
             self.sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-        if self.command == base_constants.COMMAND_REMODEL and \
-                base_constants.REMODEL_FILE in request.files:
-            f = request.files[base_constants.REMODEL_FILE]
+        if self.command == bc.COMMAND_REMODEL and \
+                bc.REMODEL_FILE in request.files:
+            f = request.files[bc.REMODEL_FILE]
             name = secure_filename(f.filename)
             self.remodel_operations = {'name': name, 'operations': json.load(f)}
 
-        if base_constants.EVENTS_FILE in request.files:
-            f = request.files[base_constants.EVENTS_FILE]
+        if bc.EVENTS_FILE in request.files:
+            f = request.files[bc.EVENTS_FILE]
             self.events = TabularInput(file=f, sidecar=self.sidecar, name=secure_filename(f.filename))
 
     def process(self):
@@ -79,7 +84,7 @@ class ProcessEvents(ProcessBase):
         """
         if not self.command:
             raise HedFileError('MissingCommand', 'Command is missing', '')
-        elif self.command == base_constants.COMMAND_GENERATE_SIDECAR or self.command == base_constants.COMMAND_REMODEL:
+        elif self.command == bc.COMMAND_GENERATE_SIDECAR or self.command == bc.COMMAND_REMODEL:
             pass
         elif not self.schema or not \
                 isinstance(self.schema, (hedschema.hed_schema.HedSchema, hedschema.hed_schema_group.HedSchemaGroup)):
@@ -87,22 +92,22 @@ class ProcessEvents(ProcessBase):
         
         if not self.events or not isinstance(self.events, TabularInput):
             raise HedFileError('InvalidEventsFile', "An events file was not given or could not be read", "")
-        if self.command == base_constants.COMMAND_VALIDATE:
+        if self.command == bc.COMMAND_VALIDATE:
             results = self.validate()
-        elif self.command == base_constants.COMMAND_SEARCH:
+        elif self.command == bc.COMMAND_SEARCH:
             results = self.search()
-        elif self.command == base_constants.COMMAND_ASSEMBLE:
+        elif self.command == bc.COMMAND_ASSEMBLE:
             results = self.assemble()
-        elif self.command == base_constants.COMMAND_GENERATE_SIDECAR:
+        elif self.command == bc.COMMAND_GENERATE_SIDECAR:
             results = self.generate_sidecar()
-        elif self.command == base_constants.COMMAND_REMODEL:
+        elif self.command == bc.COMMAND_REMODEL:
             results = self.remodel()
         else:
             raise HedFileError('UnknownEventsProcessingMethod', f'Command {self.command} is missing or invalid', '')
         return results 
     
     def assemble(self):
-        """ Create a tabular file with the first column, specified additional columns and a HED column.
+        """ Create a tabular file with the original positions in first column and a HED column.
   
     
         Returns:
@@ -116,31 +121,33 @@ class ProcessEvents(ProcessBase):
         results = self.validate()
         if results['data']:
             return results
-        df, _, definitions = self._assemble()
+        hed_strings, definitions = get_assembled(self.events, self.schema, defs_expanded=self.expand_defs)
+        df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
         csv_string = df.to_csv(None, sep='\t', index=False, header=True)
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_ASSEMBLE,
-                base_constants.COMMAND_TARGET: 'events',
+        return {bc.COMMAND: bc.COMMAND_ASSEMBLE,
+                bc.COMMAND_TARGET: 'events',
                 'data': csv_string, 'output_display_name': file_name,
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
-    def _assemble(self):
-        eligible_columns, missing_columns = separate_values(list(self.events.dataframe.columns), self.columns_included)
-        if self.expand_defs:
-            shrink = False
-        else:
-            shrink = True
-        hed_strings, definitions = get_assembled(self.events, self.sidecar, self.schema, extra_def_dicts=None,
-                                                 join_columns=True, shrink_defs=shrink, expand_defs=self.expand_defs)
-        if not eligible_columns:
-            df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
-        else:
-            df = self.events.dataframe[eligible_columns].copy(deep=True)
-            df['HED_assembled'] = pd.Series(hed_strings).astype(str)
-        return df, hed_strings, definitions
+    # def _assemble(self):
+    #     eligible_columns, missing_columns =
+    #          separate_values(list(self.events.dataframe.columns), self.columns_included)
+    #     if self.expand_defs:
+    #         shrink = False
+    #     else:
+    #         shrink = True
+    #     hed_strings, definitions = get_assembled(self.events, self.sidecar, self.schema, extra_def_dicts=None,
+    #                                              shrink_defs=shrink, expand_defs=self.expand_defs)
+    #     if not eligible_columns:
+    #         df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
+    #     else:
+    #         df = self.events.dataframe[eligible_columns].copy(deep=True)
+    #         df['HED_assembled'] = pd.Series(hed_strings).astype(str)
+    #     return df, hed_strings, definitions
     
     def generate_sidecar(self):
         """ Generate a JSON sidecar template from a BIDS-style events file.
@@ -151,21 +158,30 @@ class ProcessEvents(ProcessBase):
         Notes: Options are the columns selected. If None, all columns are used.
     
         """
+        display_name = self.events.name
+        if self.columns_skip and self.columns_value:
+            overlap = set(self.columns_skip).intersection(set(self.columns_value))
+            if overlap:
+                return {bc.COMMAND: bc.COMMAND_GENERATE_SIDECAR, bc.COMMAND_TARGET: 'events',
+                        'data': f"Skipped and value column names have these names in common: {str(overlap)}",
+                        "output_display_name": generate_filename(display_name, name_suffix='sidecar_generation_issues',
+                                                                extension='.txt', append_datetime=True),
+                        bc.MSG_CATEGORY: 'warning',
+                        bc.MSG: f"Cannot generate sidecar because skipped and value column names overlap."}
+
         columns_info = TabularSummary.get_columns_info(self.events.dataframe)
         hed_dict = {}
-        for column_name, column_type in self.columns_selected.items():
-            if column_name not in columns_info:
+        for column_name in columns_info:
+            if column_name in self.columns_skip:
                 continue
-            if column_type:
-                column_values = list(columns_info[column_name].keys())
+            elif column_name in self.columns_value:
+                hed_dict[column_name] = generate_sidecar_entry(column_name)
             else:
-                column_values = None
-            hed_dict[column_name] = generate_sidecar_entry(column_name, column_values=column_values)
-        display_name = self.events.name
-    
+                hed_dict[column_name] = generate_sidecar_entry(column_name,
+                                                               column_values=list(columns_info[column_name].keys()))
         file_name = generate_filename(display_name, name_suffix='_generated', extension='.json', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_GENERATE_SIDECAR,
-                base_constants.COMMAND_TARGET: 'events',
+        return {bc.COMMAND: bc.COMMAND_GENERATE_SIDECAR,
+                bc.COMMAND_TARGET: 'events',
                 'data': json.dumps(hed_dict, indent=4),
                 'output_display_name': file_name, 'msg_category': 'success',
                 'msg': 'JSON sidecar generation from event file complete'}
@@ -182,6 +198,8 @@ class ProcessEvents(ProcessBase):
         """
     
         display_name = self.events.name
+        if not self.remodel_operations:
+            raise HedFileError("RemodelingOperationsMissing", "Must supply remodeling operations for remodeling", "")
         remodel_name = self.remodel_operations['name']
         operations = self.remodel_operations['operations']
         validator = RemodelerValidator()
@@ -190,8 +208,8 @@ class ProcessEvents(ProcessBase):
             issue_str = "\n".join(errors)
             file_name = generate_filename(remodel_name, name_suffix='_operation_parse_errors',
                                           extension='.txt', append_datetime=True)
-            return {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
-                    base_constants.COMMAND_TARGET: 'events',
+            return {bc.COMMAND: bc.COMMAND_REMODEL,
+                    bc.COMMAND_TARGET: 'events',
                     'data': issue_str, 'output_display_name': file_name,
                     'msg_category': "warning",
                     'msg': f"Remodeling operation list for {display_name} had validation issues"}
@@ -202,21 +220,21 @@ class ProcessEvents(ProcessBase):
             df = dispatch.prep_data(df)
             df = operation.do_op(dispatch, df, display_name, sidecar=self.sidecar)
             df = dispatch.post_proc_data(df)
-        data = df.to_csv(None, sep='\t', index=False, header=True)
+        data = df.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n')
         name_suffix = f"_remodeled_by_{remodel_name}"
         file_name = generate_filename(display_name, name_suffix=name_suffix, extension='.tsv', append_datetime=True)
         output_name = file_name
-        response = {base_constants.COMMAND: base_constants.COMMAND_REMODEL,
-                    base_constants.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
-                    base_constants.SCHEMA_VERSION: get_schema_versions(self.schema),
-                    base_constants.MSG_CATEGORY: 'success',
-                    base_constants.MSG: f"Command parsing for {display_name} remodeling was successful"}
+        response = {bc.COMMAND: bc.COMMAND_REMODEL,
+                    bc.COMMAND_TARGET: 'events', 'data': '', "output_display_name": output_name,
+                    bc.SCHEMA_VERSION: get_schema_versions(self.schema),
+                    bc.MSG_CATEGORY: 'success',
+                    bc.MSG: f"Command parsing for {display_name} remodeling was successful"}
         if dispatch.summary_dicts and self.include_summaries:
             file_list = dispatch.get_summaries()
             file_list.append({'file_name': output_name, 'file_format': '.tsv', 'file_type': 'tabular', 'content': data})
-            response[base_constants.FILE_LIST] = file_list
-            response[base_constants.ZIP_NAME] = generate_filename(display_name, name_suffix=name_suffix + '_zip',
-                                                                  extension='.zip', append_datetime=True)
+            response[bc.FILE_LIST] = file_list
+            response[bc.ZIP_NAME] = generate_filename(display_name, name_suffix=name_suffix + '_zip',
+                                                      extension='.zip', append_datetime=True)
         else:
             response['data'] = data
         return response
@@ -232,36 +250,31 @@ class ProcessEvents(ProcessBase):
             expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise, shrink definitions.
     
         """
-        
+
+        display_name = self.events.name
+        queries, query_names, issues = get_query_handlers(self.queries, self.query_names)
+        if issues:
+            return {bc.COMMAND: bc.COMMAND_SEARCH, bc.COMMAND_TARGET: 'events',
+                    'data': "Query errors:\n" + "\n".join(issues),
+                    "output_display_name": generate_filename(display_name, name_suffix='query_validation_issues',
+                                                             extension='.txt', append_datetime=True),
+                    bc.SCHEMA_VERSION: get_schema_versions(self.schema),
+                    bc.MSG_CATEGORY: 'warning',
+                    bc.MSG: f"Queries had validation issues"}
         results = self.validate()
         if results['data']:
             return results
-        results = self.validate_query()
-        if results['data']:
-            return results
-        df, hed_strings, definitions = self._assemble()
-        if not self.expand_defs:
-            shrink_defs(df, self.schema)
-        df_factor = analysis_util.search_strings(hed_strings, [self.query], query_names=['query_results'])
-        row_numbers = list(self.events.dataframe.index[df_factor.loc[:, 'query_results'] == 1])
-        if not row_numbers:
-            msg = f"Events file has no events satisfying the query {self.query}."
-            csv_string = ""
-        else:
-            df['query_results'] = df_factor.loc[:, 'query_results']
-            df = self.events.dataframe.iloc[row_numbers].reset_index()
-            csv_string = df.to_csv(None, sep='\t', index=False, header=True)
-            msg = f"Events file query {self.query} satisfied by {len(row_numbers)} out of {len(self.events.dataframe)} events."
-    
-        display_name = self.events.name
-        file_name = generate_filename(display_name, name_suffix='_query', extension='.tsv', append_datetime=True)
-        return {base_constants.COMMAND: base_constants.COMMAND_SEARCH,
-                base_constants.COMMAND_TARGET: 'events',
-                'data': csv_string, 'output_display_name': file_name,
-                'schema_version': self.schema.get_formatted_version(),
-                base_constants.MSG_CATEGORY: 'success', base_constants.MSG: msg}
-    
-    
+        tag_man = HedTagManager(EventManager(self.events, self.schema), remove_types=self.remove_types)
+        hed_objs = tag_man.get_hed_objs(include_context=self.expand_context, replace_defs=self.replace_defs)
+        df_factors = search_strings(hed_objs, queries, query_names=query_names)
+        file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
+        return {bc.COMMAND: bc.COMMAND_SEARCH,
+                bc.COMMAND_TARGET: 'events',
+                'data': df_factors.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n'),
+                'output_display_name': file_name, 'schema_version': self.schema.get_formatted_version(),
+                bc.MSG_CATEGORY: 'success',
+                bc.MSG: f"Successfully made {len(self.queries)} queries for {display_name}"}
+
     def validate(self):
         """ Validate the events tabular input object and return the results.
     
@@ -291,28 +304,7 @@ class ProcessEvents(ProcessBase):
             category = 'success'
             msg = f"Events file {display_name} did not have validation issues"
     
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'events',
+        return {bc.COMMAND: bc.COMMAND_VALIDATE, bc.COMMAND_TARGET: 'events',
                 'data': data, "output_display_name": file_name,
-                base_constants.SCHEMA_VERSION: get_schema_versions(self.schema),
-                base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
-    
-    def validate_query(self):
-        """ Validate the query and return the results.
-    
-        Returns
-            dict: A dictionary containing results of validation in standard format.
-    
-        """
-    
-        if not self.query:
-            data = "Empty query could not be processed."
-            category = 'warning'
-            msg = f"Empty query could not be processed"
-        else:
-            data = ''
-            category = 'success'
-            msg = f"Query had no validation issues"
-    
-        return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE, base_constants.COMMAND_TARGET: 'query',
-                'data': data, base_constants.SCHEMA_VERSION: get_schema_versions(self.schema),
-                base_constants.MSG_CATEGORY: category, base_constants.MSG: msg}
+                bc.SCHEMA_VERSION: get_schema_versions(self.schema),
+                bc.MSG_CATEGORY: category, bc.MSG: msg}

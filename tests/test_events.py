@@ -27,7 +27,8 @@ class Test(TestWebBase):
             events_proc.events = TabularInput(file=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                                 events_file), sidecar=events_proc.sidecar)
         events_proc.expand_defs = True
-        events_proc.columns_included = None
+        events_proc.columns_categorical = []
+        events_proc.columns_value = []
         events_proc.check_for_warnings = True
         return events_proc
 
@@ -99,19 +100,22 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], "should be success when no errors")
 
     def test_generate_sidecar_invalid(self):
-        options = {'columns_selected': {'event_type': True}}
-        with self.assertRaises(AttributeError):
-            with self.app.app_context():
-                events_proc = self.get_event_proc('data/bids_events.tsv', '', 'data/HED8.2.0.xml')
-                events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
-                results = events_proc.process()
+        with self.app.app_context():
+            events_proc = self.get_event_proc('data/bids_events.tsv', '', 'data/HED8.2.0.xml')
+            events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
+            events_proc.columns_skip = ['event_type']
+            events_proc.columns_value = ['event_type']
+            results = events_proc.process()
+            self.assertTrue('data' in results, 'make_query results should have a data key when errors')
+            self.assertEqual('warning', results["msg_category"],
+                             'make_query msg_category should be warning when errors')
 
     def test_generate_sidecar_valid(self):
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
-        events_proc.columns_selected = {'event_type': True, 'bci_prediction': True, 'trial': False}
         events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
         events_proc.expand_defs = True
-        events_proc.columns_included = None
+        events_proc.columns_value = ['trial']
+        events_proc.columns_skip = ['onset', 'duration', 'sample']
         events_proc.check_for_warnings = False
         results = events_proc.process()
         self.assertTrue(results['data'],
@@ -133,7 +137,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.command = base_constants.COMMAND_SEARCH
-            events_proc.query = "Sensory-event"
+            events_proc.queries = ["Sensory-event"]
             results = events_proc.process()
             self.assertTrue(results['data'], 'should have a data key when no errors')
             self.assertEqual('success', results['msg_category'], 'should be success when no errors')
