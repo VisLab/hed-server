@@ -9,7 +9,7 @@ from hed.schema import HedSchema, load_schema_version
 from hed.models import Sidecar
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants as bc
-from hedweb.process_services import ProcessServices
+from hedweb.process_service import ProcessServices
 
 
 class Test(TestWebBase):
@@ -77,7 +77,7 @@ class Test(TestWebBase):
             self.assertTrue(arguments[bc.CHECK_FOR_WARNINGS], "should have check_warnings true when on")
 
     def test_set_column_parameters(self):
-        from hedweb.process_services import ProcessServices
+        from hedweb.process_service import ProcessServices
 
         arguments = {}
         params = {
@@ -242,7 +242,8 @@ class Test(TestWebBase):
         self.assertIsInstance(result, HedSchema)
 
         parameters = {
-            bc.SCHEMA_URL: 'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml'}
+            bc.SCHEMA_URL:
+                'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml'}
         result = ProcessServices.set_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 

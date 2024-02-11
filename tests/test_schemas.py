@@ -6,14 +6,13 @@ from tests.test_web_base import TestWebBase
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
 from hed import HedSchema, load_schema, load_schema_version
-from hedweb.process_schemas import ProcessSchemas
+from hedweb.schema_operations import SchemaOperations
 
 
 class Test(TestWebBase):
 
-
     def test_set_input_from_schemas_form_valid(self):
-        from hedweb.process_schemas import ProcessSchemas
+        from hedweb.schema_operations import SchemaOperations
 
         with self.app.test:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
@@ -22,7 +21,7 @@ class Test(TestWebBase):
                                                base_constants.SCHEMA_UPLOAD_OPTIONS: base_constants.SCHEMA_FILE_OPTION,
                                                base_constants.COMMAND_OPTION:  base_constants.COMMAND_CONVERT_SCHEMA})
             request = Request(environ)
-            schema_proc = ProcessSchemas()
+            schema_proc = SchemaOperations()
             schema_proc.set_input_from_form(request)
             # ----temporary
             schema_proc.command = base_constants.COMMAND_CONVERT_SCHEMA
@@ -34,21 +33,21 @@ class Test(TestWebBase):
             self.assertFalse(schema_proc.check_for_warnings, "should have check_warnings false when not given")
 
     def test_schemas_process_empty(self):
-        from hedweb.process_schemas import ProcessSchemas  
+        from hedweb.schema_operations import SchemaOperations
         with self.assertRaises(HedFileError):
             with self.app.app_context():
-                proc_schemas = ProcessSchemas()
+                proc_schemas = SchemaOperations()
                 proc_schemas.process()
 
     def test_schemas_check(self):
         with (self.app.app_context()):
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.command = base_constants.COMMAND_VALIDATE
             proc_schemas.schema = load_schema_version("8.0.0")
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             input_dict = {
                 base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
                 base_constants.SCHEMA1: load_schema_version("8.0.0")
@@ -58,7 +57,7 @@ class Test(TestWebBase):
             self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
         with self.app.app_context():
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.command = base_constants.COMMAND_VALIDATE
             proc_schemas.schema = load_schema_version("8.2.0")
             results = proc_schemas.process()
@@ -68,14 +67,14 @@ class Test(TestWebBase):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.mediawiki')
         name = "HED8.2.0"
         with self.app.app_context():
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.command = base_constants.COMMAND_CONVERT_SCHEMA
             proc_schemas.schema = load_schema(schema_path, name=name)
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.2.0.mediawiki can be converted to xml")
             self.assertEqual(results['output_display_name'], "HED8.2.0.xml")
 
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             input_dict = {
                 base_constants.COMMAND: base_constants.COMMAND_CONVERT_SCHEMA,
                 base_constants.SCHEMA1: load_schema(schema_path, name=name)
@@ -90,7 +89,7 @@ class Test(TestWebBase):
         display_name = 'HEDbad'
         with self.assertRaises(HedFileError):
             with self.app.app_context():
-                proc_schemas = ProcessSchemas()
+                proc_schemas = SchemaOperations()
                 proc_schemas.command = base_constants.COMMAND_CONVERT_SCHEMA
                 proc_schemas.schema = load_schema(schema_path, name=display_name)
                 results = proc_schemas.process()
@@ -98,7 +97,7 @@ class Test(TestWebBase):
 
     def test_schemas_compare_valid(self):
         with self.app.app_context():
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.command = base_constants.COMMAND_COMPARE_SCHEMAS
             proc_schemas.schema = load_schema_version("8.1.0")
             proc_schemas.schema2 = load_schema_version("8.2.0")
@@ -107,21 +106,22 @@ class Test(TestWebBase):
             # Check for some differences
             self.assertTrue("Differences between 8.1.0 and 8.2.0" in results['data'])
             self.assertTrue("Ethnicity (Minor): Item Ethnicity added to Tags" in results['data'])
-            self.assertTrue("Dash (Patch): Suggested tag changed on Item/Object/Geometric-object/2D-shape/Dash" in results['data'])
+            self.assertTrue(
+                "Dash (Patch): Suggested tag changed on Item/Object/Geometric-object/2D-shape/Dash" in results['data'])
 
             input_dict = {
                 base_constants.COMMAND: base_constants.COMMAND_COMPARE_SCHEMAS,
                 base_constants.SCHEMA1: load_schema_version("8.1.0"),
                 base_constants.SCHEMA2: load_schema_version("8.2.0")
             }
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.set_input_from_dict(input_dict)
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.1.0/8.2.0 can be compared")
 
     def test_schemas_compare_identical(self):
         with self.app.app_context():
-            proc_schemas = ProcessSchemas()
+            proc_schemas = SchemaOperations()
             proc_schemas.command = base_constants.COMMAND_COMPARE_SCHEMAS
             proc_schemas.schema = load_schema_version("8.2.0")
             proc_schemas.schema2 = load_schema_version("8.2.0")
@@ -131,13 +131,13 @@ class Test(TestWebBase):
     def test_schemas_compare_invalid(self):
         with self.app.app_context():
             with self.assertRaises(HedFileError):
-                proc_schemas = ProcessSchemas()
+                proc_schemas = SchemaOperations()
                 proc_schemas.command = base_constants.COMMAND_COMPARE_SCHEMAS
                 proc_schemas.schema = load_schema_version("8.2.0")
                 proc_schemas.process()
 
             with self.assertRaises(HedFileError):
-                proc_schemas = ProcessSchemas()
+                proc_schemas = SchemaOperations()
                 proc_schemas.command = base_constants.COMMAND_COMPARE_SCHEMAS
                 proc_schemas.schema2 = load_schema_version("8.2.0")
                 proc_schemas.process()

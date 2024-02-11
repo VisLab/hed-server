@@ -9,12 +9,12 @@ from hedweb.constants import base_constants, page_constants
 from hedweb.constants import route_constants, file_constants
 from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
 
-from hedweb.process_events import ProcessEvents
-from hedweb.process_schemas import ProcessSchemas
-from hedweb.process_services import ProcessServices
-from hedweb.process_sidecars import ProcessSidecars
-from hedweb.process_spreadsheets import ProcessSpreadsheets 
-from hedweb.process_strings import ProcessStrings
+from hedweb.event_operations import EventOperations
+from hedweb.schema_operations import SchemaOperations
+from hedweb.process_service import ProcessServices
+from hedweb.sidecar_operations import SidecarOperations
+from hedweb.spreadsheet_operations import SpreadsheetOperations
+from hedweb.string_operations import StringOperations
 from hedweb.columns import get_columns_request
 
 app_config = current_app.config
@@ -52,7 +52,7 @@ def events_results():
     """
 
     try:
-        proc_events = ProcessEvents()
+        proc_events = EventOperations()
         proc_events.set_input_from_form(request)
         a = proc_events.process()
         return package_results(a)
@@ -73,7 +73,7 @@ def schemas_results():
         - convert:  text file with converted schema.
 
     """
-    proc_schemas = ProcessSchemas()
+    proc_schemas = SchemaOperations()
     try:
         proc_schemas.set_input_from_form(request)
         a = proc_schemas.process()
@@ -109,7 +109,7 @@ def schema_version_results():
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET', 'POST'])
 def schema_versions_results():
-    """ Return serialized JSON string with hed versions.
+    """ Return serialized JSON string with HED versions.
 
     Returns:
         str: A serialized JSON string containing a list of the HED versions.
@@ -164,7 +164,7 @@ def sidecars_results():
     """
 
     try:
-        proc_sidecars = ProcessSidecars()
+        proc_sidecars = SidecarOperations()
         proc_sidecars.set_input_from_form(request)
         a = proc_sidecars.process()
         b = package_results(a)
@@ -188,7 +188,7 @@ def spreadsheets_results():
 
     """
     try:
-        proc_spreadsheets = ProcessSpreadsheets()
+        proc_spreadsheets = SpreadsheetOperations()
         proc_spreadsheets.set_input_from_form(request)
         a = proc_spreadsheets.process()
         response = package_results(a)
@@ -211,7 +211,7 @@ def strings_results():
 
     """
     try:
-        proc_strings = ProcessStrings()
+        proc_strings = StringOperations()
         proc_strings.set_input_from_form(request)
         a = proc_strings.process()
         return json.dumps(a)

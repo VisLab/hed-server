@@ -10,14 +10,14 @@ from hed.schema import HedSchema, load_schema
 from hed.models import Sidecar, TabularInput
 from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants
-from hedweb.process_events import ProcessEvents
+from hedweb.event_operations import EventOperations
 
 
 class Test(TestWebBase):
     cache_schemas = True
 
     def get_event_proc(self, events_file, sidecar_file, schema_file):
-        events_proc = ProcessEvents()
+        events_proc = EventOperations()
         if schema_file:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
             events_proc.schema = load_schema(schema_path)
@@ -35,7 +35,7 @@ class Test(TestWebBase):
     def test_set_input_from_events_form_empty(self):
         with self.assertRaises(HedFileError):
             with self.app.app_context():
-                proc_events = ProcessEvents()
+                proc_events = EventOperations()
                 proc_events.process()
 
     def test_set_input_from_events_form(self):
@@ -50,16 +50,16 @@ class Test(TestWebBase):
                                                    base_constants.EVENTS_FILE: fpe, base_constants.EXPAND_DEFS: 'on',
                                                    base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE})
             request = Request(environ)
-            event_proc = ProcessEvents()
+            event_proc = EventOperations()
             event_proc.set_input_from_form(request)
-            self.assertIsInstance(event_proc.events, TabularInput,"should have an events object")
-            self.assertIsInstance(event_proc.schema, HedSchema,"should have a HED schema")
-            self.assertEqual(event_proc.command, base_constants.COMMAND_ASSEMBLE,"should have correct command")
+            self.assertIsInstance(event_proc.events, TabularInput, "should have an events object")
+            self.assertIsInstance(event_proc.schema, HedSchema, "should have a HED schema")
+            self.assertEqual(event_proc.command, base_constants.COMMAND_ASSEMBLE, "should have correct command")
             self.assertTrue(event_proc.expand_defs, "should have expand_defs true when on")
 
     def test_events_process_empty_file(self):
         with self.assertRaises(HedFileError):
-            proc_events = ProcessEvents()
+            proc_events = EventOperations()
             proc_events.process()
 
     def test_events_process_invalid(self):
@@ -87,7 +87,7 @@ class Test(TestWebBase):
             events_proc.check_for_warnings = False
             events_proc.command = base_constants.COMMAND_ASSEMBLE
             results = events_proc.process()
-            self.assertTrue('data' in results,'should have a data key when no errors')
+            self.assertTrue('data' in results, 'should have a data key when no errors')
             self.assertEqual('warning', results["msg_category"], 'should be warning when errors')
 
     def test_events_assemble_valid(self):
@@ -148,7 +148,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             results = events_proc.process()
             self.assertTrue(results['data'], 'should have a data key when validation errors')
-            self.assertEqual('warning', results["msg_category"],'should be warning when errors')
+            self.assertEqual('warning', results["msg_category"], 'should be warning when errors')
 
     def test_events_validate_valid(self):
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
@@ -169,7 +169,7 @@ class Test(TestWebBase):
         }]
         events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
         events_proc.command = base_constants.COMMAND_REMODEL
-        events_proc.remodel_operations =  {'name': 'test', 'operations': rmdl1}
+        events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
         cols_orig = events_proc.events.columns
         rows_orig = len(events_proc.events.dataframe)
         with self.app.app_context():
@@ -181,21 +181,21 @@ class Test(TestWebBase):
         self.assertEqual(len(df), rows_orig)
 
     def test_events_remodel_invalid_no_hed(self):
-            rmdl1 = [{
-                "operation": "remove_columns",
-                "description": "Remove unwanted columns prior to analysis",
-                "parameters": {
-                    "column_names": ["value", "sample", "junk"],
-                    "ignore_missing": False
-                }
-            }]
-            events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
-            events_proc.command = base_constants.COMMAND_REMODEL
-            events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
-            with self.app.app_context():
-                with self.assertRaises(KeyError) as ex:
-                    events_proc.process()
-            self.assertEqual(ex.exception.args[0], 'MissingColumnCannotBeRemoved')
+        rmdl1 = [{
+            "operation": "remove_columns",
+            "description": "Remove unwanted columns prior to analysis",
+            "parameters": {
+                "column_names": ["value", "sample", "junk"],
+                "ignore_missing": False
+            }
+        }]
+        events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
+        events_proc.command = base_constants.COMMAND_REMODEL
+        events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
+        with self.app.app_context():
+            with self.assertRaises(KeyError) as ex:
+                events_proc.process()
+        self.assertEqual(ex.exception.args[0], 'MissingColumnCannotBeRemoved')
 
     def test_events_remodel_valid_with_hed(self):
         rmdl1 = [{

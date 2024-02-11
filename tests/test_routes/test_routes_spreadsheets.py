@@ -39,7 +39,8 @@ class Test(TestRouteBase):
                           base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
                           base_constants.WORKSHEET_NAME: 'LKT Events',
                           base_constants.WORKSHEET_SELECTED: 'LKT Events',
-                          'column_4_check': 'on',
+                          'column_4_use': 'on',
+                          'column_4_name': 'HED tags',
                           base_constants.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
                           base_constants.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/spreadsheets_submit', content_type='multipart/form-data', data=input_data)

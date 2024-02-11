@@ -7,7 +7,7 @@ from hed.errors.exceptions import HedFileError
 from hed.schema import HedSchema
 from hed.models import SpreadsheetInput
 from hedweb.constants import base_constants
-from hedweb.process_spreadsheets import ProcessSpreadsheets
+from hedweb.spreadsheet_operations import SpreadsheetOperations
 from hed import Sidecar, load_schema_version
 
 
@@ -15,7 +15,7 @@ class Test(TestWebBase):
 
     @staticmethod
     def get_spread_proc(spread_file, schema_version="8.2.0", worksheet=None, tag_columns=None):
-        spread_proc = ProcessSpreadsheets()
+        spread_proc = SpreadsheetOperations()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
         spread_proc.has_column_names = True
@@ -49,7 +49,7 @@ class Test(TestWebBase):
                                                    base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE})
 
             request = Request(environ)
-            spread_proc = ProcessSpreadsheets()
+            spread_proc = SpreadsheetOperations()
             spread_proc.set_input_from_form(request)
             self.assertIsInstance(spread_proc.spreadsheet, SpreadsheetInput, "should have an events object")
             self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
@@ -151,6 +151,7 @@ class Test(TestWebBase):
         results = spread_proc.process()
         self.assertTrue(results['data'], 'should have data when errors')
         self.assertEqual('warning', results['msg_category'], 'should be warning when errors')
+
 
 if __name__ == '__main__':
     unittest.main()

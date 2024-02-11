@@ -17,24 +17,45 @@ def create_column_selections(form_dict):
         dict: Keys are column numbers (starting with 1) and values are tag prefixes to prepend.
 
     """
-
-    columns_selections = {}
+    columns = []
+    columns_selected = []
+    columns_categorical = []
     keys = form_dict.keys()
     for key in keys:
-        if not key.startswith('column') or not key.endswith('use'):
+        if not key.startswith('column_') or not key.endswith('_name'):
             continue
         pieces = key.split('_')
-        name_key = 'column_' + pieces[1] + '_name'
-        if name_key not in form_dict:
+        col_name = form_dict[key]
+        columns.append(col_name)
+        if 'column_' + pieces[1] + '_use' in keys:
+            columns_selected.append(col_name)
+        if 'column_'  +  pieces[1] + '_category' in keys:
+            columns_categorical.append(col_name)
+    columns_value = list(set(columns_selected).difference(set(columns_categorical)))
+    columns_skip = list(set(columns).difference(set(columns_selected)))
+    return columns_value, columns_skip
+
+
+def get_tag_columns(form_dict):
+    """ Return the tag column names selected from a form.
+
+    Parameters:
+        form_dict (dict): The column names table
+
+    Returns:
+        list: List of tag columns
+
+    """
+    tag_columns = []
+    keys = form_dict.keys()
+    for key in keys:
+        if not key.startswith('column_') or not key.endswith('_use'):
             continue
-        name = form_dict[name_key]
-        if form_dict.get('column_' + pieces[1] + '_category', None) == 'on':
-            columns_selections[name] = True
-        else:
-            columns_selections[name] = False
-
-    return columns_selections
-
+        pieces = key.split('_')
+        columnNameKey = 'column_' + pieces[1] + '_name'
+        if columnNameKey in keys and form_dict[columnNameKey]:
+            tag_columns.append(form_dict[columnNameKey])
+    return tag_columns
 
 def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     """ Create a dictionary of column information from a spreadsheet.
