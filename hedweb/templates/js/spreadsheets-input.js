@@ -92,6 +92,6 @@ function setIndicesTable() {
         let info = getColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheet, true)
         let cols = info['column_list']
         let selectedElement = document.getElementById("process_actions");
-        showIndices(cols, false)
+        showIndices(cols)
     }
 }

@@ -5,16 +5,17 @@ from werkzeug.wrappers import Request
 from tests.test_web_base import TestWebBase
 from hed.models import Sidecar
 from hed.schema import HedSchema
-from hed.schema.hed_schema_io import load_schema, load_schema_version
+from hed.schema.hed_schema_io import load_schema_version
 from hedweb.constants import base_constants
-from hedweb.process_sidecars import ProcessSidecars
+from hedweb.sidecar_operations import SidecarOperations
+from hedweb.process_form import ProcessForm
 
 
 class Test(TestWebBase):
 
     def test_one(self):
-        proc = ProcessSidecars()
-        self.assertIsInstance(proc, ProcessSidecars)
+        proc = SidecarOperations()
+        self.assertIsInstance(proc, SidecarOperations)
 
     def test_generate_input_from_sidecars_form(self):
         with self.app.app_context():
@@ -22,9 +23,10 @@ class Test(TestWebBase):
             with open(sidecar_path, 'rb') as fp:
                 environ = create_environ(data={base_constants.SIDECAR_FILE: fp, base_constants.SCHEMA_VERSION: '8.2.0',
                                                base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             request = Request(environ)
-            proc_sidecars.set_input_from_form(request)
+            parameters = ProcessForm.get_input_from_form(request)
+            proc_sidecars.set_input_from_dict(parameters)
 
             self.assertIsInstance(proc_sidecars.sidecar, Sidecar, "should have a JSON dictionary in sidecar list")
             self.assertIsInstance(proc_sidecars.schema, HedSchema, "should have a HED schema")
@@ -35,7 +37,7 @@ class Test(TestWebBase):
         from hed.errors.exceptions import HedFileError
         with self.assertRaises(HedFileError):
             with self.app.app_context():
-                proc_sidecars = ProcessSidecars()
+                proc_sidecars = SidecarOperations()
                 proc_sidecars.process()
 
     def test_sidecars_process_invalid(self):
@@ -44,7 +46,7 @@ class Test(TestWebBase):
                      base_constants.SIDECAR: Sidecar(files=sidecar_path, name='bids_events_bad'),
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
@@ -58,7 +60,7 @@ class Test(TestWebBase):
                      base_constants.SIDECAR: Sidecar(files=sidecar_path, name='bids_events_bad'),
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
@@ -74,7 +76,7 @@ class Test(TestWebBase):
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
 
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
@@ -90,7 +92,7 @@ class Test(TestWebBase):
                      base_constants.COMMAND: base_constants.COMMAND_TO_SHORT}
 
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
@@ -106,7 +108,7 @@ class Test(TestWebBase):
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
 
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict),
@@ -121,7 +123,7 @@ class Test(TestWebBase):
                      base_constants.EXPAND_DEFS: False,
                      base_constants.COMMAND: base_constants.COMMAND_TO_LONG}
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.set_input_from_dict(arguments)
             results = proc_sidecars.process()
             self.assertTrue(isinstance(results, dict), 'should return a dict when no errors and defs expanded')
@@ -131,7 +133,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_long_invalid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_LONG
@@ -144,7 +146,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_long_valid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_LONG
@@ -157,7 +159,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_short_invalid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_SHORT
@@ -177,7 +179,7 @@ class Test(TestWebBase):
     def test_sidecars_convert_to_short_valid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_SHORT
@@ -189,7 +191,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_invalid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_VALIDATE
@@ -202,7 +204,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_invalid_multiple(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events_bad.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events_bad')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_VALIDATE
@@ -215,7 +217,7 @@ class Test(TestWebBase):
     def test_sidecars_validate_valid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
         with self.app.app_context():
-            proc_sidecars = ProcessSidecars()
+            proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name='bids_events')
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_VALIDATE

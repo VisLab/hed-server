@@ -6,8 +6,9 @@ from tests.test_web_base import TestWebBase
 from hed.errors.exceptions import HedFileError
 from hed.schema import HedSchema
 from hed.models import SpreadsheetInput
-from hedweb.constants import base_constants
-from hedweb.process_spreadsheets import ProcessSpreadsheets
+from hedweb.constants import base_constants as bc
+from hedweb.process_form import ProcessForm
+from hedweb.spreadsheet_operations import SpreadsheetOperations
 from hed import Sidecar, load_schema_version
 
 
@@ -15,7 +16,7 @@ class Test(TestWebBase):
 
     @staticmethod
     def get_spread_proc(spread_file, schema_version="8.2.0", worksheet=None, tag_columns=None):
-        spread_proc = ProcessSpreadsheets()
+        spread_proc = SpreadsheetOperations()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
         spread_proc.has_column_names = True
@@ -40,20 +41,44 @@ class Test(TestWebBase):
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
             with open(spreadsheet_path, 'rb') as fp:
                 with open(schema_path, 'rb') as sp:
-                    environ = create_environ(data={base_constants.SPREADSHEET_FILE: fp,
-                                                   base_constants.SCHEMA_VERSION: base_constants.OTHER_VERSION_OPTION,
-                                                   base_constants.SCHEMA_PATH: sp,
-                                                   'column_4_check': 'on',
-                                                   base_constants.WORKSHEET_NAME: 'LKT 8HED3',
-                                                   base_constants.HAS_COLUMN_NAMES: 'on',
-                                                   base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE})
+                    environ = create_environ(data={bc.SPREADSHEET_FILE: fp,
+                                                   bc.SCHEMA_VERSION: '8.2.0',
+                                                   'column_4_use': 'on',
+                                                   'column_4_name': 'HED tags',
+                                                   bc.WORKSHEET_NAME: 'LKT 8HED3',
+                                                   bc.HAS_COLUMN_NAMES: 'on',
+                                                   bc.COMMAND_OPTION: bc.COMMAND_VALIDATE})
 
             request = Request(environ)
-            spread_proc = ProcessSpreadsheets()
-            spread_proc.set_input_from_form(request)
-            self.assertIsInstance(spread_proc.spreadsheet, SpreadsheetInput, "should have an events object")
+            parameters = ProcessForm.get_input_from_form(request)
+            spread_proc = SpreadsheetOperations(arguments=parameters)
+            self.assertIsInstance(spread_proc.spreadsheet, SpreadsheetInput, "should have an spreadsheet object")
             self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
-            self.assertEqual(spread_proc.command, base_constants.COMMAND_VALIDATE, "should have a command")
+            self.assertEqual(spread_proc.command, bc.COMMAND_VALIDATE, "should have a command")
+            self.assertEqual(spread_proc.worksheet, 'LKT 8HED3', "should have a sheet_name name")
+            self.assertTrue(spread_proc.has_column_names, "should have column names")
+
+    def test_set_input_from_spreadsheets_form_other(self):
+        with self.app.test:
+            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
+            with open(spreadsheet_path, 'rb') as fp:
+                with open(schema_path, 'rb') as sp:
+                    environ = create_environ(data={bc.SPREADSHEET_FILE: fp,
+                                                   bc.SCHEMA_VERSION: bc.OTHER_VERSION_OPTION,
+                                                   bc.SCHEMA_PATH: sp,
+                                                   'column_4_use': 'on',
+                                                   'column_4_name': 'HED tags',
+                                                   bc.WORKSHEET_NAME: 'LKT 8HED3',
+                                                   bc.HAS_COLUMN_NAMES: 'on',
+                                                   bc.COMMAND_OPTION: bc.COMMAND_VALIDATE})
+
+            request = Request(environ)
+            parameters = ProcessForm.get_input_from_form(request)
+            spread_proc = SpreadsheetOperations(arguments=parameters)
+            self.assertIsInstance(spread_proc.spreadsheet, SpreadsheetInput, "should have an spreadsheet object")
+            self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
+            self.assertEqual(spread_proc.command, bc.COMMAND_VALIDATE, "should have a command")
             self.assertEqual(spread_proc.worksheet, 'LKT 8HED3', "should have a sheet_name name")
             self.assertTrue(spread_proc.has_column_names, "should have column names")
 
@@ -61,7 +86,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT Events', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_VALIDATE
+            spread_proc.command = bc.COMMAND_VALIDATE
             results = spread_proc.process()
             self.assertTrue(isinstance(results, dict),
                             'process validate should return a dictionary when errors')
@@ -72,7 +97,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_VALIDATE
+            spread_proc.command = bc.COMMAND_VALIDATE
             spread_proc.check_for_warnings = True
             results = spread_proc.process()
             self.assertTrue(isinstance(results, dict), "should return a dict when no errors")
@@ -82,7 +107,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_TO_LONG
+            spread_proc.command = bc.COMMAND_TO_LONG
             spread_proc.check_for_warnings = True
             tags1 = spread_proc.spreadsheet.dataframe.iloc[0, 4]
             results = spread_proc.process()
@@ -95,7 +120,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_TO_LONG
+            spread_proc.command = bc.COMMAND_TO_LONG
             spread_proc.check_for_warnings = False
             tags1 = spread_proc.spreadsheet.dataframe.iloc[0, 4]
             results = spread_proc.process()
@@ -109,7 +134,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_VALIDATE
+            spread_proc.command = bc.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
 
@@ -120,7 +145,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT 8HED3A', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_VALIDATE
+            spread_proc.command = bc.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
             self.assertFalse(results['data'], 'should have empty data when no errors')
@@ -130,7 +155,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             spread_proc = self.get_spread_proc('data/ExcelMultipleSheets.xlsx',
                                                worksheet='LKT Events', tag_columns=[4])
-            spread_proc.command = base_constants.COMMAND_VALIDATE
+            spread_proc.command = bc.COMMAND_VALIDATE
             spread_proc.check_for_warnings = False
             results = spread_proc.process()
             self.assertTrue(results['data'], 'should have data when errors')
@@ -140,17 +165,18 @@ class Test(TestWebBase):
         spread_proc = self.get_spread_proc('data/spreadsheet_with_defs.tsv', tag_columns=[2])
         sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/def_test.json")
         spread_proc.definitions = Sidecar(sidecar_path).extract_definitions(spread_proc.schema)
-        spread_proc.command = base_constants.COMMAND_VALIDATE
+        spread_proc.command = bc.COMMAND_VALIDATE
         results = spread_proc.process()
         self.assertFalse(results['data'], 'should have empty data when no errors')
         self.assertEqual('success', results['msg_category'], 'should be success when no errors')
 
     def test_spreadsheet_validate_definitions_missing(self):
         spread_proc = self.get_spread_proc('data/spreadsheet_with_defs.tsv', tag_columns=[2])
-        spread_proc.command = base_constants.COMMAND_VALIDATE
+        spread_proc.command = bc.COMMAND_VALIDATE
         results = spread_proc.process()
         self.assertTrue(results['data'], 'should have data when errors')
         self.assertEqual('warning', results['msg_category'], 'should be warning when errors')
+
 
 if __name__ == '__main__':
     unittest.main()

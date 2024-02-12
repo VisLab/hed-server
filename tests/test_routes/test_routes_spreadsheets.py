@@ -1,6 +1,6 @@
 import unittest
 from flask import Response
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 from tests.test_routes.test_routes_base import TestRouteBase
 
 
@@ -16,14 +16,14 @@ class Test(TestRouteBase):
 
     def test_spreadsheets_results_validate_valid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.WORKSHEET_NAME: 'LKT 8HED3',
-                          base_constants.WORKSHEET_SELECTED: 'LKT 8HED3',
-                          base_constants.HAS_COLUMN_NAMES: 'on',
-                          'column_4_check': 'on',
-                          base_constants.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.0.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                          bc.WORKSHEET_NAME: 'LKT 8HED3',
+                          bc.WORKSHEET_SELECTED: 'LKT 8HED3',
+                          'column_4_use': 'on',
+                          'column_4_name': 'HED tags',
+                          bc.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/spreadsheets_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'spreadsheets_submit should return a Response when valid dictionary')
@@ -35,13 +35,14 @@ class Test(TestRouteBase):
 
     def test_results_validate_invalid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.0.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.WORKSHEET_NAME: 'LKT Events',
-                          base_constants.WORKSHEET_SELECTED: 'LKT Events',
-                          'column_4_check': 'on',
-                          base_constants.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                          bc.WORKSHEET_NAME: 'LKT Events',
+                          bc.WORKSHEET_SELECTED: 'LKT Events',
+                          'column_4_use': 'on',
+                          'column_4_name': 'HED tags',
+                          bc.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/spreadsheets_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'spreadsheet_submit validate should return a response object when invalid spreadsheet')
