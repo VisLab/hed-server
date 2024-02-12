@@ -8,6 +8,7 @@ from hed.schema import HedSchema
 from hed.schema.hed_schema_io import load_schema_version
 from hedweb.constants import base_constants
 from hedweb.sidecar_operations import SidecarOperations
+from hedweb.process_form import ProcessForm
 
 
 class Test(TestWebBase):
@@ -24,7 +25,8 @@ class Test(TestWebBase):
                                                base_constants.COMMAND_OPTION: base_constants.COMMAND_TO_LONG})
             proc_sidecars = SidecarOperations()
             request = Request(environ)
-            proc_sidecars.set_input_from_form(request)
+            parameters = ProcessForm.get_input_from_form(request)
+            proc_sidecars.set_input_from_dict(parameters)
 
             self.assertIsInstance(proc_sidecars.sidecar, Sidecar, "should have a JSON dictionary in sidecar list")
             self.assertIsInstance(proc_sidecars.schema, HedSchema, "should have a HED schema")

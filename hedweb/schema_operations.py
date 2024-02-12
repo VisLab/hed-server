@@ -4,7 +4,7 @@ from hed import schema as hedschema
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from hedweb.web_util import form_has_file, form_has_option, form_has_url, generate_filename, get_parsed_name
+from hedweb.web_util import generate_filename, get_parsed_name
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
 from hedweb.base_operations import BaseOperations
@@ -12,8 +12,11 @@ from hedweb.base_operations import BaseOperations
 
 class SchemaOperations(BaseOperations):
 
-    def __init__(self):
-        """ Construct a ProcessEvents object to handle events form requests. 
+    def __init__(self, arguments=None):
+        """ Construct a SchemaOperations object to handle sidecar operations.
+
+        Parameters:
+             arguments (dict): Dictionary with parameters extracted from form or service
 
         """
         super().__init__()
@@ -21,30 +24,8 @@ class SchemaOperations(BaseOperations):
         self.schema2 = None
         self.command = None
         self.check_for_warnings = False
-
-    def set_input_from_form(self, request):
-        """ Extract a dictionary of input for processing from the schemas form.
-
-        parameters:
-            request (Request): A Request object containing user data from the form.
-    
-        """
-        self.command = request.form.get(bc.COMMAND_OPTION, None)
-        self.check_for_warnings = form_has_option(request, bc.CHECK_FOR_WARNINGS, 'on')
-        if form_has_option(request, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION) and \
-                form_has_file(request, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
-            self.schema = get_schema(request.files[bc.SCHEMA_FILE])
-        elif form_has_option(request, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION) and \
-                form_has_url(request, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
-            self.schema = get_schema(request.values[bc.SCHEMA_URL])
-        if form_has_option(request, bc.SECOND_SCHEMA_UPLOAD_OPTIONS,
-                           bc.SECOND_SCHEMA_FILE_OPTION) and \
-                form_has_file(request, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
-            self.schema2 = get_schema(request.files[bc.SECOND_SCHEMA_FILE])
-        elif form_has_option(request, bc.SECOND_SCHEMA_UPLOAD_OPTIONS,
-                             bc.SECOND_SCHEMA_URL_OPTION) and \
-                form_has_url(request, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
-            self.schema2 = get_schema(request.values[bc.SECOND_SCHEMA_URL])
+        if arguments:
+            self.set_input_from_dict(arguments)
 
     def process(self):
         """ Perform the requested action for the schema.
@@ -88,7 +69,7 @@ class SchemaOperations(BaseOperations):
                 'msg': 'Schemas were successfully compared' + msg_results}
 
     def convert(self):
-        """ Return a string representation of hed_schema in the desired format as determined by the display name extension.
+        """ Return a string representation of hed_schema in format determined by the display name extension.
       
         Returns:
             dict: A dictionary of results in the standard results format.

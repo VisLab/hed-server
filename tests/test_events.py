@@ -9,7 +9,8 @@ from tests.test_web_base import TestWebBase
 from hed.schema import HedSchema, load_schema
 from hed.models import Sidecar, TabularInput
 from hed.errors.exceptions import HedFileError
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
+from hedweb.process_form import ProcessForm
 from hedweb.event_operations import EventOperations
 
 
@@ -45,16 +46,16 @@ class Test(TestWebBase):
 
             with open(sidecar_path, 'rb') as fp:
                 with open(events_path, 'rb') as fpe:
-                    environ = create_environ(data={base_constants.SIDECAR_FILE: fp,
-                                                   base_constants.SCHEMA_VERSION: '8.2.0',
-                                                   base_constants.EVENTS_FILE: fpe, base_constants.EXPAND_DEFS: 'on',
-                                                   base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE})
+                    environ = create_environ(data={bc.SIDECAR_FILE: fp,
+                                                   bc.SCHEMA_VERSION: '8.2.0',
+                                                   bc.EVENTS_FILE: fpe, bc.EXPAND_DEFS: 'on',
+                                                   bc.COMMAND_OPTION: bc.COMMAND_ASSEMBLE})
             request = Request(environ)
-            event_proc = EventOperations()
-            event_proc.set_input_from_form(request)
+            arguments = ProcessForm.get_input_from_form(request)
+            event_proc = EventOperations(arguments=arguments)
             self.assertIsInstance(event_proc.events, TabularInput, "should have an events object")
             self.assertIsInstance(event_proc.schema, HedSchema, "should have a HED schema")
-            self.assertEqual(event_proc.command, base_constants.COMMAND_ASSEMBLE, "should have correct command")
+            self.assertEqual(event_proc.command, bc.COMMAND_ASSEMBLE, "should have correct command")
             self.assertTrue(event_proc.expand_defs, "should have expand_defs true when on")
 
     def test_events_process_empty_file(self):
@@ -65,7 +66,7 @@ class Test(TestWebBase):
     def test_events_process_invalid(self):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
-            events_proc.command = base_constants.COMMAND_VALIDATE
+            events_proc.command = bc.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(isinstance(results, dict),
                             'process validation should return a result dictionary when validation errors')
@@ -75,7 +76,7 @@ class Test(TestWebBase):
     def test_events_process_valid(self):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
-            events_proc.command = base_constants.COMMAND_VALIDATE
+            events_proc.command = bc.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(isinstance(results, dict), "should return a dictionary when validation errors")
             self.assertEqual('success', results['msg_category'], "should give success when no errors")
@@ -85,7 +86,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
             events_proc.check_for_warnings = False
-            events_proc.command = base_constants.COMMAND_ASSEMBLE
+            events_proc.command = bc.COMMAND_ASSEMBLE
             results = events_proc.process()
             self.assertTrue('data' in results, 'should have a data key when no errors')
             self.assertEqual('warning', results["msg_category"], 'should be warning when errors')
@@ -94,7 +95,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.check_for_warnings = False
-            events_proc.command = base_constants.COMMAND_ASSEMBLE
+            events_proc.command = bc.COMMAND_ASSEMBLE
             results = events_proc.process()
             self.assertTrue(results['data'], "should have a data key when no errors")
             self.assertEqual('success', results['msg_category'], "should be success when no errors")
@@ -102,7 +103,7 @@ class Test(TestWebBase):
     def test_generate_sidecar_invalid(self):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', '', 'data/HED8.2.0.xml')
-            events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
+            events_proc.command = bc.COMMAND_GENERATE_SIDECAR
             events_proc.columns_skip = ['event_type']
             events_proc.columns_value = ['event_type']
             results = events_proc.process()
@@ -112,7 +113,7 @@ class Test(TestWebBase):
 
     def test_generate_sidecar_valid(self):
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
-        events_proc.command = base_constants.COMMAND_GENERATE_SIDECAR
+        events_proc.command = bc.COMMAND_GENERATE_SIDECAR
         events_proc.expand_defs = True
         events_proc.columns_value = ['trial']
         events_proc.columns_skip = ['onset', 'duration', 'sample']
@@ -127,7 +128,7 @@ class Test(TestWebBase):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
             events_proc.query = ""
-            events_proc.command = base_constants.COMMAND_SEARCH
+            events_proc.command = bc.COMMAND_SEARCH
             results = events_proc.process()
             self.assertTrue('data' in results, 'make_query results should have a data key when errors')
             self.assertEqual('warning', results["msg_category"],
@@ -136,7 +137,7 @@ class Test(TestWebBase):
     def test_events_search_valid(self):
         with self.app.app_context():
             events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
-            events_proc.command = base_constants.COMMAND_SEARCH
+            events_proc.command = bc.COMMAND_SEARCH
             events_proc.queries = ["Sensory-event"]
             results = events_proc.process()
             self.assertTrue(results['data'], 'should have a data key when no errors')
@@ -144,7 +145,7 @@ class Test(TestWebBase):
 
     def test_events_validate_invalid(self):
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events_bad.json', 'data/HED8.2.0.xml')
-        events_proc.command = base_constants.COMMAND_VALIDATE
+        events_proc.command = bc.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()
             self.assertTrue(results['data'], 'should have a data key when validation errors')
@@ -152,7 +153,7 @@ class Test(TestWebBase):
 
     def test_events_validate_valid(self):
         events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
-        events_proc.command = base_constants.COMMAND_VALIDATE
+        events_proc.command = bc.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()
             self.assertFalse(results['data'], 'should not have a data key when no validation errors')
@@ -168,7 +169,7 @@ class Test(TestWebBase):
             }
         }]
         events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
-        events_proc.command = base_constants.COMMAND_REMODEL
+        events_proc.command = bc.COMMAND_REMODEL
         events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
         cols_orig = events_proc.events.columns
         rows_orig = len(events_proc.events.dataframe)
@@ -190,7 +191,7 @@ class Test(TestWebBase):
             }
         }]
         events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv', None, None)
-        events_proc.command = base_constants.COMMAND_REMODEL
+        events_proc.command = bc.COMMAND_REMODEL
         events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}
         with self.app.app_context():
             with self.assertRaises(KeyError) as ex:
@@ -207,7 +208,7 @@ class Test(TestWebBase):
                 }]
         events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv',
                                           'data/task-FacePerception_events.json', 'data/HED8.2.0.xml')
-        events_proc.command = base_constants.COMMAND_REMODEL
+        events_proc.command = bc.COMMAND_REMODEL
         cols_orig = events_proc.events.columns
         rows_orig = len(events_proc.events.dataframe)
         events_proc.remodel_operations = {'name': 'test', 'operations': rmdl1}

@@ -2,20 +2,21 @@ import os
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
-from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hedweb.web_util import get_schema_versions
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
 from hedweb.base_operations import BaseOperations
-from hedweb.columns import get_tag_columns
-from hedweb.web_util import filter_issues, form_has_option, generate_filename, get_hed_schema_from_pull_down
+from hedweb.web_util import filter_issues, generate_filename
 
 
 class SpreadsheetOperations(BaseOperations):
 
-    def __init__(self):
-        """ Construct a ProcessSpreadsheets object to handle spreadsheet form requests. 
+    def __init__(self, arguments=None):
+        """ Construct a ProcessSpreadsheet object to handle spreadsheet operations.
+
+        Parameters:
+             arguments (dict): Dictionary with parameters extracted from form or service
 
         """
         self.command = None
@@ -28,32 +29,8 @@ class SpreadsheetOperations(BaseOperations):
         self.has_column_names = True
         self.check_for_warnings = False
         self.expand_defs = False
-
-    def set_input_from_form(self, request):
-        """ Set input for processing from a spreadsheets form.
-
-        parameters:
-            request (Request): A Request object containing user data from the form.
-
-        """
-        self.schema = get_hed_schema_from_pull_down(request)
-        self.worksheet = request.form.get(bc.WORKSHEET_NAME, None)
-        self.command = request.form.get(bc.COMMAND_OPTION, '')
-        self.check_for_warnings = form_has_option(request, bc.CHECK_FOR_WARNINGS, 'on')
-        self.tag_columns = get_tag_columns(request.form)
-        if bc.DEFINITION_FILE in request.files:
-            f = request.files[bc.DEFINITION_FILE]
-            sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-            self.definitions = sidecar.get_def_dict(self.schema, extra_def_dicts=None)
-        filename = request.files[bc.SPREADSHEET_FILE].filename
-        file_ext = os.path.splitext(filename)[1]
-        if file_ext in fc.EXCEL_FILE_EXTENSIONS:
-            self.spreadsheet_type = fc.EXCEL_EXTENSION
-        self.spreadsheet = SpreadsheetInput(file=request.files[bc.SPREADSHEET_FILE],
-                                            file_type=self.spreadsheet_type,
-                                            worksheet_name=self.worksheet,
-                                            tag_columns=self.tag_columns,
-                                            name=filename)
+        if arguments:
+            self.set_input_from_dict(arguments)
 
     def process(self):
         """ Perform the requested action for the spreadsheet.

@@ -1,5 +1,5 @@
 import unittest
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 from tests.test_routes.test_routes_base import TestRouteBase
 
 
@@ -16,7 +16,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
                           'command_option': 'convert',
-                          base_constants.SCHEMA_FILE: self._get_file_buffer("HEDBad8.0.0.mediawiki"),
+                          bc.SCHEMA_FILE: self._get_file_buffer("HEDBad8.0.0.mediawiki"),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a invalid mediawiki has a response')
@@ -31,7 +31,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
                           'command_option': 'convert_schema',
-                          base_constants.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
+                          bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a valid mediawiki has a response')
@@ -46,7 +46,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
                           'command_option': 'convert_schema',
-                          base_constants.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.xml"),
+                          bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.xml"),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Convert of a valid xml has a response')
@@ -103,7 +103,8 @@ class Test(TestRouteBase):
             headers_dict = dict(response.headers)
             self.assertEqual("error", headers_dict["Category"],
                              "A schema that cannot be loaded should return an error")
-            self.assertFalse(response.data, "The response data for a fully invalid mediawiki validation should be empty")
+            self.assertFalse(response.data,
+                             "The response data for a fully invalid mediawiki validation should be empty")
             self.assertTrue(headers_dict['Message'],
                             "The error message for invalid mediawiki conversion should not be empty")
 
@@ -111,7 +112,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
                           'command_option': 'validate',
-                          base_constants.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
+                          bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid mediawiki has a response')
@@ -126,7 +127,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             input_data = {'schema_upload_options': 'schema_file_option',
                           'command_option': 'validate',
-                          base_constants.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.xml"),
+                          bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.xml"),
                           'check_for_warnings': 'on'}
             response = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Validation of a valid xml has a response')

@@ -98,21 +98,22 @@ class Test(TestWebBase):
         result = get_tag_columns(form_dict)
         self.assertIsInstance(result, list)
         self.assertEqual(result, ['balony'])
-        # form_dict = {
-        #     'column_1_check': 'off',
-        #     'column_2_check': 'off',
-        #     'another_field': 'value'
-        # }
-        # result = get_column_numbers(form_dict)
-        # self.assertEqual(result, [])
-        #
-        # with self.assertRaises(ValueError):
-        #     form_dict = {
-        #         'column_bad_check': 'on',
-        #         'column_2_check': 'on',
-        #         'another_field': 'value'
-        #     }
-        #     result = get_column_numbers(form_dict)
+
+        form_dict = {
+            'column_1_check': 'off',
+            'column_2_check': 'off',
+            'another_field': 'value'
+        }
+        result = get_tag_columns(form_dict)
+        self.assertEqual(result, [])
+
+        form_dict = {
+            'column_bad_use': 'on',
+            'column_2_use': 'on',
+            'another_field': 'value'
+        }
+        result = get_tag_columns(form_dict)
+        self.assertEqual(result, [])
 
 
 if __name__ == '__main__':

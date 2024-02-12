@@ -1,19 +1,18 @@
-from werkzeug.utils import secure_filename
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
-from hed.models.sidecar import Sidecar
-from hed.models.hed_string import HedString
 from hed import schema as hedschema
 from hed.validator import HedValidator
 
-from hedweb.constants import base_constants
-from hedweb.web_util import form_has_option, get_hed_schema_from_pull_down
+from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
 
 
 class StringOperations(BaseOperations):
 
-    def __init__(self):
-        """ Construct a ProcessStrings object to handle strings form requests. 
+    def __init__(self, arguments=None):
+        """ Construct a StringOperations object to handle sidecar operations.
+
+        Parameters:
+             arguments (dict): Dictionary with parameters extracted from form or service
 
         """
         self.command = None
@@ -21,25 +20,9 @@ class StringOperations(BaseOperations):
         self.string_list = None
         self.definitions = None
         self.check_for_warnings = False
-        
-    def set_input_from_form(self, request):
-        """ Extract a dictionary of input for processing from the events form.
+        if arguments:
+            self.set_input_from_dict(arguments)
 
-        parameters:
-            request (Request): A Request object containing user data from the form.
-
-        """
-        self.command = request.form.get(base_constants.COMMAND_OPTION, None)
-        self.schema = get_hed_schema_from_pull_down(request)
-        hed_string = request.form.get(base_constants.STRING_INPUT, None)
-        if hed_string:
-            self.string_list = [HedString(hed_string, self.schema)]
-        if base_constants.DEFINITION_FILE in request.files:
-            f = request.files[base_constants.DEFINITION_FILE]
-            sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-            self.definitions = sidecar.get_def_dict(self.schema, extra_def_dicts=None)
-        self.check_for_warnings = form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on')
-      
     def process(self):
         """ Perform the requested string processing action.
  
@@ -53,9 +36,9 @@ class StringOperations(BaseOperations):
             raise HedFileError('BadHedSchema', "Please provide a valid HedSchema", "")
         elif not self.string_list:
             raise HedFileError('EmptyHedStringList', "Please provide HED strings to be processed", "")
-        if self.command == base_constants.COMMAND_VALIDATE:
+        if self.command == bc.COMMAND_VALIDATE:
             results = self.validate()
-        elif self.command == base_constants.COMMAND_TO_SHORT or self.command == base_constants.COMMAND_TO_LONG:
+        elif self.command == bc.COMMAND_TO_SHORT or self.command == bc.COMMAND_TO_LONG:
             results = self.convert()
         else:
             raise HedFileError('UnknownProcessingMethod', f'Command {self.command} is missing or invalid', '')
@@ -74,15 +57,15 @@ class StringOperations(BaseOperations):
             return results
         strings = []
         for pos, hed_string_obj in enumerate(self.string_list, start=1):
-            if self.command == base_constants.COMMAND_TO_LONG:
+            if self.command == bc.COMMAND_TO_LONG:
                 converted_string = hed_string_obj.get_as_form('long_tag')
             else:
                 converted_string = hed_string_obj.get_as_form('short_tag')
             strings.append(converted_string)
     
-            return {base_constants.COMMAND: self.command,
-                    base_constants.COMMAND_TARGET: 'strings', 'data': strings,
-                    base_constants.SCHEMA_VERSION: self.schema.get_formatted_version(),
+            return {bc.COMMAND: self.command,
+                    bc.COMMAND_TARGET: 'strings', 'data': strings,
+                    bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'success',
                     'msg': 'Strings converted successfully'}   
     
@@ -101,14 +84,14 @@ class StringOperations(BaseOperations):
             if issues:
                 validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
         if validation_issues:
-            return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                    base_constants.COMMAND_TARGET: 'strings', 'data': validation_issues,
-                    base_constants.SCHEMA_VERSION: self.schema.get_formatted_version(),
+            return {bc.COMMAND: bc.COMMAND_VALIDATE,
+                    bc.COMMAND_TARGET: 'strings', 'data': validation_issues,
+                    bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'warning',
                     'msg': 'Strings had validation issues'}
         else:
-            return {base_constants.COMMAND: base_constants.COMMAND_VALIDATE,
-                    base_constants.COMMAND_TARGET: 'strings', 'data': '',
-                    base_constants.SCHEMA_VERSION: self.schema.get_formatted_version(),
+            return {bc.COMMAND: bc.COMMAND_VALIDATE,
+                    bc.COMMAND_TARGET: 'strings', 'data': '',
+                    bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'success',
                     'msg': 'Strings validated successfully...'}

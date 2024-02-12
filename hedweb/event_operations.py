@@ -1,12 +1,10 @@
 import json
-from werkzeug.utils import secure_filename
 import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
 from hed.models.definition_dict import DefinitionDict
-from hed.models.sidecar import Sidecar
 from hed.models.tabular_input import TabularInput
 from hed.models.df_util import get_assembled
 from hed.models.query_service import get_query_handlers, search_strings
@@ -18,17 +16,18 @@ from hed.tools.analysis.tabular_summary import TabularSummary
 from hed.tools.analysis.annotation_util import generate_sidecar_entry
 from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
-from hedweb.columns import create_column_selections
-from hedweb.web_util import form_has_option, generate_filename, get_hed_schema_from_pull_down, get_schema_versions
+from hedweb.web_util import generate_filename, get_schema_versions
 
 
 class EventOperations(BaseOperations):
 
-    def __init__(self):
+    def __init__(self, arguments=None):
         """ Construct a ProcessEvents object to handle events form requests. 
-        
-        """
 
+        Parameters:
+             arguments (dict): Dictionary with parameters extracted from form or service
+
+        """
         self.schema = None
         self.events = None
         self.command = None
@@ -44,33 +43,8 @@ class EventOperations(BaseOperations):
         self.remove_types = []
         self.replace_defs = False
         self.expand_context = True
-
-    def set_input_from_form(self, request):
-        """ Set input for processing from an events form.
-    
-        parameters:
-            request (Request): A Request object containing user data from the form.
-    
-        """
-        self.command = request.form.get(bc.COMMAND_OPTION, '')
-        self.check_for_warnings = form_has_option(request, bc.CHECK_FOR_WARNINGS, 'on')
-        self.expand_defs = form_has_option(request,  bc.EXPAND_DEFS, 'on')
-        self.include_summaries = form_has_option(request, bc.INCLUDE_SUMMARIES, 'on')
-        self.columns_value, self.columns_skip = create_column_selections(request.form)
-        if self.command != bc.COMMAND_GENERATE_SIDECAR:
-            self.schema = get_hed_schema_from_pull_down(request)
-        if bc.SIDECAR_FILE in request.files:
-            f = request.files[bc.SIDECAR_FILE]
-            self.sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-        if self.command == bc.COMMAND_REMODEL and \
-                bc.REMODEL_FILE in request.files:
-            f = request.files[bc.REMODEL_FILE]
-            name = secure_filename(f.filename)
-            self.remodel_operations = {'name': name, 'operations': json.load(f)}
-
-        if bc.EVENTS_FILE in request.files:
-            f = request.files[bc.EVENTS_FILE]
-            self.events = TabularInput(file=f, sidecar=self.sidecar, name=secure_filename(f.filename))
+        if arguments:
+            self.set_input_from_dict(arguments)
 
     def process(self):
         """ Perform the requested action for the events file and its sidecar.
@@ -133,22 +107,6 @@ class EventOperations(BaseOperations):
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
-    # def _assemble(self):
-    #     eligible_columns, missing_columns =
-    #          separate_values(list(self.events.dataframe.columns), self.columns_included)
-    #     if self.expand_defs:
-    #         shrink = False
-    #     else:
-    #         shrink = True
-    #     hed_strings, definitions = get_assembled(self.events, self.sidecar, self.schema, extra_def_dicts=None,
-    #                                              shrink_defs=shrink, expand_defs=self.expand_defs)
-    #     if not eligible_columns:
-    #         df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
-    #     else:
-    #         df = self.events.dataframe[eligible_columns].copy(deep=True)
-    #         df['HED_assembled'] = pd.Series(hed_strings).astype(str)
-    #     return df, hed_strings, definitions
-    
     def generate_sidecar(self):
         """ Generate a JSON sidecar template from a BIDS-style events file.
   

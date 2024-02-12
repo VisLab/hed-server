@@ -16,16 +16,6 @@ class BaseOperations(ABC):
             setattr(self, key, value)
 
     @abstractmethod
-    def set_input_from_form(self, request):
-        """ Set input for processing from a form.
-
-        parameters:
-            request (Request): A Request object containing user data from the form.
-
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def process(self):
         """ Perform the requested string processing action.
  

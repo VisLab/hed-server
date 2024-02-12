@@ -253,7 +253,7 @@ class Test(TestWebBase):
 
         parameters = {bc.SCHEMA_STRING: 'invalid_schema_string'}
         with self.assertRaises(HedFileError):
-            result = ProcessServices.set_input_schema(parameters)
+            ProcessServices.set_input_schema(parameters)
 
     def test_get_services_list(self):
         with self.app.app_context():

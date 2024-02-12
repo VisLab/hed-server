@@ -1,6 +1,6 @@
 import unittest
 from flask import Response
-from hedweb.constants import base_constants
+from hedweb.constants import base_constants as bc
 from tests.test_routes.test_routes_base import TestRouteBase
 
 
@@ -16,12 +16,12 @@ class Test(TestRouteBase):
 
     def test_events_results_assemble_valid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          base_constants.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
-                          base_constants.EXPAND_DEFS: 'on',
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_ASSEMBLE,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.EXPAND_DEFS: 'on',
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Assembly of a valid events file has a response')
             headers_dict = dict(response.headers)
@@ -31,11 +31,11 @@ class Test(TestRouteBase):
 
     def test_events_results_assemble_invalid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          base_constants.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_ASSEMBLE,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Assembly of invalid events files has a response')
             headers_dict = dict(response.headers)
@@ -46,10 +46,10 @@ class Test(TestRouteBase):
 
     def test_events_results_remodel_valid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
-                          base_constants.REMODEL_FILE: self._get_file_buffer('simple_reorder_rmdl.json'),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("sub-002_task-FacePerception_run-1_events.tsv")}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_REMODEL,
+                          bc.REMODEL_FILE: self._get_file_buffer('simple_reorder_rmdl.json'),
+                          bc.EVENTS_FILE: self._get_file_buffer("sub-002_task-FacePerception_run-1_events.tsv")}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'events_submit remodel should return a Response when commands are valid')
@@ -61,10 +61,10 @@ class Test(TestRouteBase):
 
     def test_events_results_remodel_invalid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_REMODEL,
-                          base_constants.REMODEL_FILE: self._get_file_buffer('bad_reorder_remdl.json'),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("sub-002_task-FacePerception_run-1_events.tsv")}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_REMODEL,
+                          bc.REMODEL_FILE: self._get_file_buffer('bad_reorder_remdl.json'),
+                          bc.EVENTS_FILE: self._get_file_buffer("sub-002_task-FacePerception_run-1_events.tsv")}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'events_submit remodel should return a Response when commands are valid')
@@ -76,11 +76,11 @@ class Test(TestRouteBase):
 
     def test_events_results_validate_valid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'events_submit validate should return a Response when events valid')
@@ -92,11 +92,11 @@ class Test(TestRouteBase):
 
     def test_events_results_validate_invalid(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_VALIDATE,
-                          base_constants.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertTrue(isinstance(response, Response),
                             'events_submit validate should return a Response when events invalid')
@@ -109,12 +109,12 @@ class Test(TestRouteBase):
 
     def test_events_results_validate_bad_file(self):
         with self.app.app_context():
-            input_data = {base_constants.SCHEMA_VERSION: '8.2.0',
-                          base_constants.COMMAND_OPTION: base_constants.COMMAND_ASSEMBLE,
-                          base_constants.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
-                          base_constants.EVENTS_FILE: self._get_file_buffer("bids_events.json"),
-                          base_constants.EXPAND_DEFS: 'on',
-                          base_constants.CHECK_FOR_WARNINGS: 'on'}
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_ASSEMBLE,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EXPAND_DEFS: 'on',
+                          bc.CHECK_FOR_WARNINGS: 'on'}
             response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, response.status_code, 'Invalid events file has a response')
             headers_dict = dict(response.headers)

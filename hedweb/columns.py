@@ -3,7 +3,8 @@ import os
 from pandas import DataFrame, read_csv
 from hed.errors import HedFileError
 from hed.tools.analysis.tabular_summary import TabularSummary
-from hedweb.constants import base_constants, file_constants
+from hedweb.constants import base_constants as bc
+from hedweb.constants import file_constants as fc
 from hedweb.web_util import form_has_file, form_has_option
 
 
@@ -29,7 +30,7 @@ def create_column_selections(form_dict):
         columns.append(col_name)
         if 'column_' + pieces[1] + '_use' in keys:
             columns_selected.append(col_name)
-        if 'column_'  +  pieces[1] + '_category' in keys:
+        if 'column_' + pieces[1] + '_category' in keys:
             columns_categorical.append(col_name)
     columns_value = list(set(columns_selected).difference(set(columns_categorical)))
     columns_skip = list(set(columns).difference(set(columns_selected)))
@@ -52,10 +53,11 @@ def get_tag_columns(form_dict):
         if not key.startswith('column_') or not key.endswith('_use'):
             continue
         pieces = key.split('_')
-        columnNameKey = 'column_' + pieces[1] + '_name'
-        if columnNameKey in keys and form_dict[columnNameKey]:
-            tag_columns.append(form_dict[columnNameKey])
+        column_name_key = 'column_' + pieces[1] + '_name'
+        if column_name_key in keys and form_dict[column_name_key]:
+            tag_columns.append(form_dict[column_name_key])
     return tag_columns
+
 
 def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     """ Create a dictionary of column information from a spreadsheet.
@@ -79,11 +81,11 @@ def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     sheet_names = None
     filename = columns_file.filename
     file_ext = os.path.splitext(filename.lower())[1]
-    if file_ext in file_constants.EXCEL_FILE_EXTENSIONS:
+    if file_ext in fc.EXCEL_FILE_EXTENSIONS:
         worksheet, sheet_names = _get_worksheet(columns_file, sheet_name)
         dataframe = dataframe_from_worksheet(worksheet, has_column_names)
         sheet_name = worksheet.title
-    elif file_ext in file_constants.TEXT_FILE_EXTENSIONS:
+    elif file_ext in fc.TEXT_FILE_EXTENSIONS:
         dataframe = read_csv(columns_file, delimiter='\t', header=header)
     else:
         raise HedFileError('BadFileExtension',
@@ -92,9 +94,9 @@ def _create_columns_info(columns_file, has_column_names=True, sheet_name=None):
     col_dict = TabularSummary()
     col_dict.update(dataframe)
     col_counts = col_dict.get_number_unique()
-    columns_info = {base_constants.COLUMNS_FILE: filename, base_constants.COLUMN_LIST: col_list,
-                    base_constants.COLUMN_COUNTS: col_counts,
-                    base_constants.WORKSHEET_SELECTED: sheet_name, base_constants.WORKSHEET_NAMES: sheet_names}
+    columns_info = {bc.COLUMNS_FILE: filename, bc.COLUMN_LIST: col_list,
+                    bc.COLUMN_COUNTS: col_counts,
+                    bc.WORKSHEET_SELECTED: sheet_name, bc.WORKSHEET_NAMES: sheet_names}
     return columns_info
 
 
@@ -134,11 +136,11 @@ def get_columns_request(request):
 
 
     """
-    if not form_has_file(request, base_constants.COLUMNS_FILE):
+    if not form_has_file(request.files, bc.COLUMNS_FILE):
         raise HedFileError('MissingFile', 'An uploadable file was not provided', None)
-    columns_file = request.files.get(base_constants.COLUMNS_FILE, '')
-    has_column_names = form_has_option(request, 'has_column_names', 'on')
-    sheet_name = request.form.get(base_constants.WORKSHEET_SELECTED, None)
+    columns_file = request.files.get(bc.COLUMNS_FILE, '')
+    has_column_names = form_has_option(request.form, 'has_column_names', 'on')
+    sheet_name = request.form.get(bc.WORKSHEET_SELECTED, None)
     return _create_columns_info(columns_file, has_column_names, sheet_name)
 
 
