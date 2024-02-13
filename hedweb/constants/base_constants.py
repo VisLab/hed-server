@@ -14,7 +14,7 @@ COLUMNS_DISPLAY_NAME = 'columns_display_name'
 COLUMNS_FILE = 'columns_file'
 COLUMNS_INFO = 'columns_info'
 COLUMNS_PATH = 'columns_path'
-COLUMNS_SKIP = 'skip_columns'
+COLUMNS_SKIP = 'columns_skip'
 COLUMNS_VALUE = 'columns_value'
 
 COMMAND = 'command'
