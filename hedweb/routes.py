@@ -137,8 +137,6 @@ def services_results():
     """
 
     try:
-        hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
-        hedschema.cache_xml_versions()
         arguments = ProcessServices.set_input_from_request(request)
         response = ProcessServices.process(arguments)
         return json.dumps(response)
