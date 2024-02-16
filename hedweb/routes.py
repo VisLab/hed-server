@@ -82,7 +82,7 @@ def schemas_results():
         return package_results(a)
     except Exception as ex:
         if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
-            return package_results(proc_schemas.format_error(proc_schemas.command, ex))
+            return package_results(SchemaOperations.format_error("validate", ex))
         else:
             return handle_http_error(ex)
 
@@ -137,8 +137,6 @@ def services_results():
     """
 
     try:
-        hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
-        hedschema.cache_xml_versions()
         arguments = ProcessServices.set_input_from_request(request)
         response = ProcessServices.process(arguments)
         return json.dumps(response)
