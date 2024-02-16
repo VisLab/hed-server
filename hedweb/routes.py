@@ -82,7 +82,7 @@ def schemas_results():
         return package_results(a)
     except Exception as ex:
         if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
-            return package_results(proc_schemas.format_error(proc_schemas.command, ex))
+            return package_results(SchemaOperations.format_error("validate", ex))
         else:
             return handle_http_error(ex)
 
