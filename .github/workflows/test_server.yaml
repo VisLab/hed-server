@@ -1,0 +1,41 @@
+name: Test service routes externally
+
+# Todo: May want to tweak what branches this runs on
+on:
+  push:
+    branches: ["*"]
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.9]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make the script files executable
+        run: chmod +x deploy_hed_dev/deploy.sh
+
+      - name: Execute a script from the repository
+        run: | 
+          cd deploy_hed_dev 
+          ./deploy.sh
+          cd ..
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies(using develop hed-python)
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run service tests
+        run: python -m unittest discover tests_services
