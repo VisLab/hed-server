@@ -174,7 +174,7 @@ class Test(TestWebBase):
         hed_schema = load_schema_version('8.2.0')
         issues = json_sidecar.validate(hed_schema)
         self.assertIsInstance(issues, list)
-        self.assertEqual(len(issues), 37)
+        self.assertEqual(len(issues), 36)
 
     def test_sidecars_convert_to_short_valid(self):
         json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
