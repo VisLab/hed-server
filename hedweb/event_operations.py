@@ -6,7 +6,7 @@ from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
 from hed.models.definition_dict import DefinitionDict
 from hed.models.tabular_input import TabularInput
-from hed.models.df_util import get_assembled
+from hed.models.df_util import expand_defs, shrink_defs
 from hed.models.query_service import get_query_handlers, search_strings
 from hed.tools.remodeling.dispatcher import Dispatcher
 from hed.tools.remodeling.remodeler_validator import RemodelerValidator
@@ -95,8 +95,12 @@ class EventOperations(BaseOperations):
         results = self.validate()
         if results['data']:
             return results
-        hed_strings, definitions = get_assembled(self.events, self.schema, defs_expanded=self.expand_defs)
-        df = pd.DataFrame({"HED_assembled": [str(hed) for hed in hed_strings]})
+        definitions = self.events.get_def_dict(self.schema)
+        df = pd.DataFrame({"HED_assembled": self.events.series_a})
+        if self.expand_defs:
+            expand_defs(df, self.schema, definitions)
+        else:
+            shrink_defs(df, self.schema)
         csv_string = df.to_csv(None, sep='\t', index=False, header=True)
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
