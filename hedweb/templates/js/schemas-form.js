@@ -56,23 +56,23 @@ $('#schema_clear').on('click', function () {
     clearForm();
 });
 
-
-
-$('#schema_file_option').on('change', function () {
-    updateForm();
-});
-
-$('#schema_url_option').on('change',function () {
-    updateForm();
-});
-
-$('#second_schema_file_option').on('change', function () {
-    updateForm();
-});
-
-$('#second_schema_url_option').on('change',function () {
-    updateForm();
-});
+//
+//
+// $('#schema_file_option').on('change', function () {
+//     updateForm();
+// });
+//
+// $('#schema_url_option').on('change',function () {
+//     updateForm();
+// });
+//
+// $('#second_schema_file_option').on('change', function () {
+//     updateForm();
+// });
+//
+// $('#second_schema_url_option').on('change',function () {
+//     updateForm();
+// });
 
 /**
  * Clear the fields in the form.
@@ -113,11 +113,10 @@ function convertToOutputName(original_filename) {
  * Return the file name extracted from the schema selector.
  * 
  * @param {string} type - prefix on the html selectors (either "schema" or "second_schema")
- * @param {boolean} required - if true will output a flash error message if result is empty
  * 
  * @returns {string} file name extracted from the selector
  */
-function getSchemaFilename(type, required=true) {
+function getSchemaFilename(type) {
     let options_name = type + "_upload_options"
     let checkRadio = document.querySelector('input[name="' + options_name+ '"]:checked');
     if (checkRadio == null) {
@@ -258,7 +257,7 @@ function submitSchemaForm() {
 }*/
 
 
-function updateFlash(type, message) {
+function updateFlash(type) {
      clearFlashMessages();
      let filename = getSchemaFilename(type);
      if (!filename) {
@@ -278,6 +277,7 @@ function urlFileBasename(url) {
         urlObj = new URL(url)
     } catch (err) {
        flashMessageOnScreen(err.message, 'error', 'schema_flash');
+       return;
     }
     let pathname = urlObj.pathname;
     let index = pathname.lastIndexOf('/');

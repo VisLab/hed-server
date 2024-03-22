@@ -7,6 +7,7 @@ import re
 HED_SERVER_URL_KEY = "HED_SERVER_URL_KEY"
 
 BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:33004/hed_dev")
+# BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:5000")
 
 
 class Test(unittest.TestCase):
@@ -58,5 +59,3 @@ class Test(unittest.TestCase):
                          "Expected message category to be 'success'")
         self.assertEqual('"8.2.0"', results['schema_version'],
                          "Expected version 8.2.0 was used")
-
-
