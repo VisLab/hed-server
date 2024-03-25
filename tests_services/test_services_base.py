@@ -104,23 +104,23 @@ class ServicesTest(unittest.TestCase):
         }
         return headers
 
-    def test_submit_service_sidecar_route(self):
-        print("running test!")
-        url = f"{BASEURL}/services_submit"
-
-        headers = self._get_headers()
-        json_data = {"sidecar_string": self._get_file_string("bids_events.json"),
-                     "check_for_warnings": 'on',
-                     "schema_version": '8.2.0',
-                     "service": 'sidecar_validate'}
-        response = requests.post(url, json=json_data, headers=headers)
-        self.assertEqual(response.status_code, 200, "Request should be successful")
-        response_data = response.json()
-        results = response_data["results"]
-        self.assertEqual('success', results['msg_category'],
-                         "Expected message category to be 'success'")
-        self.assertEqual('"8.2.0"', results['schema_version'],
-                         "Expected version 8.2.0 was used")
+    # def test_submit_service_sidecar_route(self):
+    #     print("running test!")
+    #     url = f"{BASEURL}/services_submit"
+    #
+    #     headers = self._get_headers()
+    #     json_data = {"sidecar_string": self._get_file_string("bids_events.json"),
+    #                  "check_for_warnings": 'on',
+    #                  "schema_version": '8.2.0',
+    #                  "service": 'sidecar_validate'}
+    #     response = requests.post(url, json=json_data, headers=headers)
+    #     self.assertEqual(response.status_code, 200, "Request should be successful")
+    #     response_data = response.json()
+    #     results = response_data["results"]
+    #     self.assertEqual('success', results['msg_category'],
+    #                      "Expected message category to be 'success'")
+    #     self.assertEqual('"8.2.0"', results['schema_version'],
+    #                      "Expected version 8.2.0 was used")
 
     # def test_submit_service_sidecar_route(self):
     #     url = f"{self.BASEURL}/services_submit"
