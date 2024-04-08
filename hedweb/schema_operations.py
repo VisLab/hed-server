@@ -100,7 +100,7 @@ class SchemaOperations(BaseOperations):
     
         """
 
-        issues = self.schema.check_compliance()
+        issues = self.schema.check_compliance(self.check_for_warnings)
         if issues:
             issue_str = get_printable_issue_string(issues, f"Schema issues for {self.schema.name}:")
             file_name = self.schema.name + 'schema_issues.txt'
