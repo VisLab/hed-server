@@ -7,6 +7,7 @@ from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.tabular_input import TabularInput
 from hed.errors import HedFileError
+from hed.tools.analysis.annotation_util import strs_to_sidecar
 from hed import schema as hedschema
 from hedweb.constants import base_constants as bc
 from hedweb.event_operations import EventOperations
@@ -88,6 +89,7 @@ class ProcessServices:
              params (dict): The service request dictionary extracted from the Request object.
          """
         sidecar_list = params.get(bc.SIDECAR_STRING, [])
+        arguments[bc.SIDECAR] = strs_to_sidecar(sidecar_list)
         if sidecar_list:
             if not isinstance(sidecar_list, list):
                 sidecar_list = [sidecar_list]

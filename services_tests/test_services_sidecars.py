@@ -1,6 +1,6 @@
 import os
 import requests
-from tests_services.test_services_base import ServicesTest
+from services_tests.test_services_base import ServicesTest
 
 
 class SidecarTests(ServicesTest):

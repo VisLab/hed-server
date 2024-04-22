@@ -1,7 +1,7 @@
 import os
 import requests
 import re
-from tests_services.test_services_base import ServicesTest
+from services_tests.test_services_base import ServicesTest
 
 # class TestLibraryServices(ServicesTest):
 #     # Json library doesn't exist so disabling these for now

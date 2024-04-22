@@ -50,4 +50,4 @@ jobs:
           pip install requests
 
       - name: Run service tests
-        run: python -m unittest discover tests_services
+        run: python -m unittest discover services_tests
