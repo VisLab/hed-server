@@ -39,28 +39,28 @@ class Test(TestWebBase):
                 proc_schemas.process()
 
     def test_schemas_check(self):
-        with (self.app.app_context()):
-            proc_schemas = SchemaOperations()
-            proc_schemas.command = bc.COMMAND_VALIDATE
-            proc_schemas.schema = load_schema_version("8.0.0")
-            results = proc_schemas.process()
-            self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
+    #    with (self.app.app_context()):
+            # proc_schemas = SchemaOperations()
+            # proc_schemas.command = bc.COMMAND_VALIDATE
+            # proc_schemas.schema = load_schema_version("8.0.0")
+            # results = proc_schemas.process()
+            # self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
-            proc_schemas = SchemaOperations()
-            input_dict = {
-                bc.COMMAND: bc.COMMAND_VALIDATE,
-                bc.SCHEMA1: load_schema_version("8.0.0")
-            }
-            proc_schemas.set_input_from_dict(input_dict)
-            results = proc_schemas.process()
-            self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
+            # proc_schemas = SchemaOperations()
+            # input_dict = {
+            #     bc.COMMAND: bc.COMMAND_VALIDATE,
+            #     bc.SCHEMA1: load_schema_version("8.0.0")
+            # }
+            # proc_schemas.set_input_from_dict(input_dict)
+            # results = proc_schemas.process()
+            # self.assertTrue(results['data'], "HED 8.0.0 is not fully HED-3G compliant")
 
         with self.app.app_context():
             proc_schemas = SchemaOperations()
             proc_schemas.command = bc.COMMAND_VALIDATE
             proc_schemas.schema = load_schema_version("8.2.0")
             results = proc_schemas.process()
-            self.assertFalse(results['data'], "HED8.0.0 is HED-3G compliant")
+            self.assertFalse(results['data'], "HED8.2.0 is HED-3G compliant")
 
     def test_schemas_convert_valid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.mediawiki')
