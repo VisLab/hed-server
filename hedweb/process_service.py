@@ -90,16 +90,7 @@ class ProcessServices:
          """
         sidecar_list = params.get(bc.SIDECAR_STRING, [])
         arguments[bc.SIDECAR] = strs_to_sidecar(sidecar_list)
-        if sidecar_list:
-            if not isinstance(sidecar_list, list):
-                sidecar_list = [sidecar_list]
-        if sidecar_list:
-            file_list = []
-            for s_string in sidecar_list:
-                file_list.append(io.StringIO(s_string))
-            arguments[bc.SIDECAR] = Sidecar(files=file_list, name="Merged_Sidecar")
-        else:
-            arguments[bc.SIDECAR] = None
+
 
     @staticmethod
     def set_definitions(arguments, params):
