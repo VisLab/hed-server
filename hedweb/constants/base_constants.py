@@ -58,6 +58,7 @@ FORMAT_TO_TSV = 'to_tsv'
 HAS_COLUMN_NAMES = 'has_column_names'
 HEDSTRING = 'hedstring'
 
+INCLUDE_CONTEXT = 'include_context'
 INCLUDE_DEFINITION_TAGS = 'include_definition_tags'
 INCLUDE_DESCRIPTION_TAGS = 'include_description_tags'
 INCLUDE_SUMMARIES = 'include_summaries'
@@ -75,6 +76,8 @@ REMODEL_FILE = 'remodel_file'
 REMODEL_OPERATIONS = 'remodel_operations'
 REMODEL_STRING = 'remodel_string'
 REMOVE_DEFS = 'remove_defs'
+REMOVE_TYPES = 'remove_types'
+REPLACE_DEFS = 'replace_defs'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 
 # Schema-specific constants

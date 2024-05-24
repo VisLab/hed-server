@@ -84,7 +84,7 @@ class Test(TestWebBase):
             'columns_categorical': ['col1', 'col2'],
             'columns_value': ['col3', 'col4']
         }
-        ProcessServices.set_column_parameters(arguments, params)
+        ProcessServices.set_parameters(arguments, params)
 
         self.assertEqual(arguments[bc.COLUMNS_CATEGORICAL], ['col1', 'col2'])
         self.assertEqual(arguments[bc.COLUMNS_VALUE], ['col3', 'col4'])

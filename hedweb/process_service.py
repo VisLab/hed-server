@@ -37,7 +37,7 @@ class ProcessServices:
         service_request = json.loads(form_string)
         arguments = ProcessServices.get_service_info(service_request)
         arguments[bc.SCHEMA] = ProcessServices.set_input_schema(service_request)
-        ProcessServices.set_column_parameters(arguments, service_request)
+        ProcessServices.set_parameters(arguments, service_request)
         ProcessServices.set_remodel_parameters(arguments, service_request)
         ProcessServices.set_definitions(arguments, service_request)
         ProcessServices.set_sidecar(arguments, service_request)
@@ -46,17 +46,23 @@ class ProcessServices:
         return arguments
 
     @staticmethod
-    def set_column_parameters(arguments, params):
+    def set_parameters(arguments, params):
         """ Update arguments with the columns that requested for the service.
 
         Parameters:
             arguments (dict):  A dictionary with the extracted parameters that are to be processed.
             params (dict): The service request dictionary extracted from the Request object.
         """
+        # Column parameters
         arguments[bc.COLUMNS_CATEGORICAL] = ProcessServices.get_list(bc.COLUMNS_CATEGORICAL, params)
         arguments[bc.COLUMNS_VALUE] = ProcessServices.get_list(bc.COLUMNS_VALUE, params)
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
         arguments[bc.HAS_COLUMN_NAMES] = True
+
+        # Assemble parameters
+        arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
+        arguments[bc.REMOVE_TYPES] = ProcessServices.get_list(bc.REMOVE_TYPES, params)
+        arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
 
     @staticmethod
     def get_list(name, params):

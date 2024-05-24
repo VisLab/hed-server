@@ -33,6 +33,7 @@ class EventOperations(BaseOperations):
         self.command = None
         self.check_for_warnings = False
         self.expand_defs = False
+        self.include_context = False
         self.include_summaries = False
         self.columns_skip = []
         self.columns_value = []
@@ -96,12 +97,16 @@ class EventOperations(BaseOperations):
         if results['data']:
             return results
         definitions = self.events.get_def_dict(self.schema)
-        df = pd.DataFrame({"HED_assembled": self.events.series_a})
-        if self.expand_defs:
-            expand_defs(df, self.schema, definitions)
-        else:
-            shrink_defs(df, self.schema)
-        csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+        eventManager = EventManager(self.events, self.schema)
+        tagManager = HedTagManager(eventManager, self.remove_types)
+        hedStringObjs = tagManager.get_hed_objs(self.include_context, self.replace_defs)
+
+        # df = pd.DataFrame({"HED_assembled": self.events.series_a})
+        # if self.expand_defs:
+        #     expand_defs(df, self.schema, definitions)
+        # else:
+        #     shrink_defs(df, self.schema)
+        # csv_string = df.to_csv(None, sep='\t', index=False, header=True)
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_ASSEMBLE,
