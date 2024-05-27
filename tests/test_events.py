@@ -93,12 +93,51 @@ class Test(TestWebBase):
 
     def test_events_assemble_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc('data/bids_events.tsv', 'data/bids_events.json', 'data/HED8.2.0.xml')
+            # Test with defaults (no types, no replace, no context)
+            events_proc = self.get_event_proc('data/sub-002_task-FacePerception_run-1_events.tsv',
+                                              'data/task-FacePerception_events.json', 'data/HED8.2.0.xml')
             events_proc.check_for_warnings = False
             events_proc.command = bc.COMMAND_ASSEMBLE
             results = events_proc.process()
-            self.assertTrue(results['data'], "should have a data key when no errors")
+            data1 = results['data']
+            self.assertTrue(data1, "should have a data key when no errors")
             self.assertEqual('success', results['msg_category'], "should be success when no errors")
+
+            # Explicitly tests defaults
+            events_proc.remove_types = []
+            events_proc.replace_defs = False
+            events_proc.include_context = False
+            results = events_proc.process()
+            data2 = results['data']
+            self.assertTrue(data2, "should have a data key when no errors")
+            self.assertEqual(data1, data2)
+
+            # With context, no remove, no replace
+            events_proc.remove_types = []
+            events_proc.replace_defs = False
+            events_proc.include_context = True
+            results = events_proc.process()
+            data3 = results['data']
+            self.assertTrue(data3, "should have a data key when no errors")
+            self.assertGreater(len(data3), len(data2))
+
+            # With context, remove, no replace
+            events_proc.remove_types = ['Condition-variable', 'Task']
+            events_proc.replace_defs = False
+            events_proc.include_context = True
+            results = events_proc.process()
+            data4 = results['data']
+            self.assertTrue(data4, "should have a data key when no errors")
+            self.assertGreater(len(data3), len(data4))
+
+            # With context, remove, replace
+            events_proc.remove_types = ['Condition-variable', 'Task']
+            events_proc.replace_defs = True
+            events_proc.include_context = True
+            results = events_proc.process()
+            data5 = results['data']
+            self.assertTrue(data5, "should have a data key when no errors")
+            self.assertGreater(len(data5), len(data4))
 
     def test_generate_sidecar_invalid(self):
         with self.app.app_context():

@@ -56,14 +56,12 @@ FORMAT_TO_JSON = 'to_json'
 FORMAT_TO_TSV = 'to_tsv'
 
 HAS_COLUMN_NAMES = 'has_column_names'
-HEDSTRING = 'hedstring'
 
 INCLUDE_CONTEXT = 'include_context'
 INCLUDE_DEFINITION_TAGS = 'include_definition_tags'
 INCLUDE_DESCRIPTION_TAGS = 'include_description_tags'
 INCLUDE_SUMMARIES = 'include_summaries'
 ISSUE_STRING = 'issue_string'
-
 
 MSG = 'msg'
 MSG_CATEGORY = 'msg_category'
@@ -72,6 +70,7 @@ OUTPUT_DISPLAY_NAME = 'output_display_name'
 
 QUERIES = 'queries'
 QUERY_NAMES = 'query_names'
+
 REMODEL_FILE = 'remodel_file'
 REMODEL_OPERATIONS = 'remodel_operations'
 REMODEL_STRING = 'remodel_string'
