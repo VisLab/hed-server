@@ -1,4 +1,5 @@
-{% macro create_options(check_for_warnings=False,expand_defs=False,include_description_tags=False,include_summaries=False) %}
+{% macro create_options(check_for_warnings=False,expand_defs=False,include_context=False,
+include_description_tags=False,include_summaries=False,replace_defs=False) %}
     <fieldset id="options_section">
     <legend>Options:</legend>
         <div class="form-group" id="options">
@@ -16,6 +17,13 @@
                 </div>
             {% endif %}
 
+            {% if include_context %}
+                <div class="form-check form-switch" id="include_context_option">
+                    <input class="form-check-input" type="checkbox" name="include_context" id="include_context">
+                    <label class="form-check-label" for="include_context">Include context</label>
+                </div>
+            {% endif %}
+
             {% if include_description_tags %}
                 <div class="form-check form-switch" id="include_description_tags_option">
                     <input class="form-check-input" type="checkbox" name="include_description_tags" id="include_description_tags">
@@ -27,6 +35,13 @@
                 <div class="form-check form-switch" id="include_summaries_option">
                     <input class="form-check-input" type="checkbox" name="include_summaries" id="include_summaries">
                     <label class="form-check-label" for="include_summaries">Include summaries</label>
+                </div>
+            {% endif %}
+
+            {% if replace_defs %}
+                <div class="form-check form-switch" id="replace_defs_option">
+                    <input class="form-check-input" type="checkbox" name="replace_defs" id="replace_defs">
+                    <label class="form-check-label" for="replace_defs">Replace defs</label>
                 </div>
             {% endif %}
         </div>

@@ -33,8 +33,10 @@ class ProcessForm:
             bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ''),
             bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, 'on'),
+            bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
             bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, 'on'),
             bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, 'on'),
+            bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, 'on'),
             bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION
         }
         value, skip = create_column_selections(request.form)

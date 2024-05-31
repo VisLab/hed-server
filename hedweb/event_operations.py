@@ -95,15 +95,15 @@ class EventOperations(BaseOperations):
             return results
         definitions = self.events.get_def_dict(self.schema)
         event_manager = EventManager(self.events, self.schema)
+        df = self.events.dataframe
         tag_manager = HedTagManager(event_manager, self.remove_types)
         hed_objs = tag_manager.get_hed_objs(self.include_context, self.replace_defs)
-        hed_strs = [str(obj) for obj in hed_objs]
-        hed_string = '\n'.join(hed_strs)
+        hed_strs = [str(obj) if obj is not None else '' for obj in hed_objs]
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_ASSEMBLE,
                 bc.COMMAND_TARGET: 'events',
-                'data': hed_string, 'output_display_name': file_name,
+                'data': hed_strs, 'output_display_name': file_name,
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}

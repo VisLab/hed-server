@@ -104,7 +104,9 @@ function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
         hideOption("expand_defs");
+        hideOption("include_context")
         hideOption("include_summaries")
+        hideOption("replace_defs")
         hideOption("use_hed");
         showOption("check_for_warnings");
         $("#options_section").show();
@@ -114,9 +116,11 @@ function setOptions() {
         $("#show_events_section").hide();
     } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
+        hideOption("expand_defs")
         hideOption("include_summaries")
         hideOption("use_hed");
-        showOption("expand_defs");
+        showOption("include_context")
+        showOption("replace_defs");
         $("#options_section").show();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
@@ -125,7 +129,9 @@ function setOptions() {
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
+        hideOption("include_context")
         hideOption("include_summaries")
+        hideOption("replace_defs")
         hideOption("use_hed");
         $("#options_section").hide();
         $("#schema_pulldown_section").hide();
@@ -136,7 +142,9 @@ function setOptions() {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("use_hed");
+        showOption("include_context")
         showOption("include_summaries")
+        showOptions("replace_defs")
         $("#options_section").show();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").show();

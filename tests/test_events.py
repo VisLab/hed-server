@@ -119,7 +119,10 @@ class Test(TestWebBase):
             results = events_proc.process()
             data3 = results['data']
             self.assertTrue(data3, "should have a data key when no errors")
-            self.assertGreater(len(data3), len(data2))
+            self.assertGreater(len(data3[1]), len(data2[1]))
+            data3_str = "\n".join(data3)
+            data2_str = "\n".join(data2)
+            self.assertGreater(len(data3_str), len(data2_str))
 
             # With context, remove, no replace
             events_proc.remove_types = ['Condition-variable', 'Task']
@@ -128,7 +131,8 @@ class Test(TestWebBase):
             results = events_proc.process()
             data4 = results['data']
             self.assertTrue(data4, "should have a data key when no errors")
-            self.assertGreater(len(data3), len(data4))
+            data4_str = "\n".join(data4)
+            self.assertGreater(len(data3_str), len(data4_str))
 
             # With context, remove, replace
             events_proc.remove_types = ['Condition-variable', 'Task']
@@ -136,8 +140,9 @@ class Test(TestWebBase):
             events_proc.include_context = True
             results = events_proc.process()
             data5 = results['data']
+            data5_str = "\n".join(data5)
             self.assertTrue(data5, "should have a data key when no errors")
-            self.assertGreater(len(data5), len(data4))
+            self.assertGreater(len(data5_str), len(data4_str))
 
     def test_generate_sidecar_invalid(self):
         with self.app.app_context():
