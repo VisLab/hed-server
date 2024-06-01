@@ -228,15 +228,20 @@ class EventOperations(BaseOperations):
                     bc.SCHEMA_VERSION: get_schema_versions(self.schema),
                     bc.MSG_CATEGORY: 'warning',
                     bc.MSG: f"Queries had validation issues"}
+        self.check_for_warnings = False
         results = self.validate()
         if results['data']:
             return results
         hed_objs, definitions = self.get_hed_objs()
         df_factors = search_strings(hed_objs, queries, query_names=query_names)
+        if self.query_names:
+            write_header = True
+        else:
+            write_header = False
         file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_SEARCH,
                 bc.COMMAND_TARGET: 'events',
-                'data': df_factors.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n'),
+                'data': df_factors.to_csv(None, sep='\t', index=False, header=write_header, lineterminator='\n'),
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'output_display_name': file_name, 'schema_version': self.schema.get_formatted_version(),
                 bc.MSG_CATEGORY: 'success',
