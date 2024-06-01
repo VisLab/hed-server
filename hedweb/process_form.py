@@ -36,6 +36,7 @@ class ProcessForm:
             bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
             bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, 'on'),
             bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, 'on'),
+            bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, 'on'),
             bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, 'on'),
             bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION
         }

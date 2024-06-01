@@ -104,7 +104,7 @@ class Test(TestWebBase):
             self.assertEqual('success', results['msg_category'], "should be success when no errors")
 
             # Explicitly tests defaults
-            events_proc.remove_types = []
+            events_proc.remove_types_on = False
             events_proc.replace_defs = False
             events_proc.include_context = False
             results = events_proc.process()
@@ -113,7 +113,7 @@ class Test(TestWebBase):
             self.assertEqual(data1, data2)
 
             # With context, no remove, no replace
-            events_proc.remove_types = []
+            events_proc.remove_types_on = False
             events_proc.replace_defs = False
             events_proc.include_context = True
             results = events_proc.process()
@@ -125,7 +125,7 @@ class Test(TestWebBase):
             self.assertGreater(len(data3_str), len(data2_str))
 
             # With context, remove, no replace
-            events_proc.remove_types = ['Condition-variable', 'Task']
+            events_proc.remove_types_on = True
             events_proc.replace_defs = False
             events_proc.include_context = True
             results = events_proc.process()
@@ -135,7 +135,7 @@ class Test(TestWebBase):
             self.assertGreater(len(data3_str), len(data4_str))
 
             # With context, remove, replace
-            events_proc.remove_types = ['Condition-variable', 'Task']
+            events_proc.remove_types_on = True
             events_proc.replace_defs = True
             events_proc.include_context = True
             results = events_proc.process()

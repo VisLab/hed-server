@@ -30,17 +30,17 @@ class EventOperations(BaseOperations):
         self.events = None
         self.command = None
         self.check_for_warnings = False
+        self.columns_skip = []
+        self.columns_value = []
         self.expand_defs = False
         self.include_context = False
         self.include_summaries = False
-        self.columns_skip = []
-        self.columns_value = []
-        self.sidecar = None
-        self.remodel_operations = None
         self.queries = None
         self.query_names = None
-        self.remove_types = []
+        self.remodel_operations = None
+        self.remove_types_on = False
         self.replace_defs = False
+        self.sidecar = None
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -93,11 +93,7 @@ class EventOperations(BaseOperations):
         results = self.validate()
         if results['data']:
             return results
-        definitions = self.events.get_def_dict(self.schema)
-        event_manager = EventManager(self.events, self.schema)
-        df = self.events.dataframe
-        tag_manager = HedTagManager(event_manager, self.remove_types)
-        hed_objs = tag_manager.get_hed_objs(self.include_context, self.replace_defs)
+        hed_objs, definitions = self.get_hed_objs()
         hed_strs = [str(obj) if obj is not None else '' for obj in hed_objs]
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
@@ -149,7 +145,11 @@ class EventOperations(BaseOperations):
         """ Return the assembled objects and applicable definitions. """
         definitions = self.events.get_def_dict(self.schema)
         event_manager = EventManager(self.events, self.schema)
-        tag_manager = HedTagManager(event_manager, self.remove_types)
+        if self.remove_types_on:
+            types = ['Condition-variable', 'Task']
+        else:
+            types = []
+        tag_manager = HedTagManager(event_manager, types)
         hed_objs = tag_manager.get_hed_objs(self.include_context, self.replace_defs)
         return hed_objs, definitions
 
@@ -232,7 +232,7 @@ class EventOperations(BaseOperations):
         if results['data']:
             return results
         hed_objs, definitions = self.get_hed_objs()
-        df_factors = search_hed_objs(hed_objs, queries, query_names=query_names)
+        df_factors = search_strings(hed_objs, queries, query_names=query_names)
         file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_SEARCH,
                 bc.COMMAND_TARGET: 'events',

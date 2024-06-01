@@ -61,7 +61,7 @@ class ProcessServices:
 
         # Assemble parameters
         arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
-        arguments[bc.REMOVE_TYPES] = ProcessServices.get_list(bc.REMOVE_TYPES, params)
+        arguments[bc.REMOVE_TYPES_ON] = params.get(bc.REMOVE_TYPES_ON, False)
         arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
 
     @staticmethod

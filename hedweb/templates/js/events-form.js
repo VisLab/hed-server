@@ -106,6 +106,7 @@ function setOptions() {
         hideOption("expand_defs");
         hideOption("include_context")
         hideOption("include_summaries")
+        hideOption("remove_types_on")
         hideOption("replace_defs")
         hideOption("use_hed");
         showOption("check_for_warnings");
@@ -120,6 +121,7 @@ function setOptions() {
         hideOption("include_summaries")
         hideOption("use_hed");
         showOption("include_context")
+        showOption("remove_types_on")
         showOption("replace_defs");
         $("#options_section").show();
         $("#schema_pulldown_section").show();
@@ -131,6 +133,7 @@ function setOptions() {
         hideOption("expand_defs");
         hideOption("include_context")
         hideOption("include_summaries")
+        hideOption("remove_types_on")
         hideOption("replace_defs")
         hideOption("use_hed");
         $("#options_section").hide();
@@ -141,10 +144,10 @@ function setOptions() {
     } else if (selectedElement.value === "remodel") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
+        hideOption("remove_types_on")
+        hideOptions("replace_defs")
         hideOption("use_hed");
-        showOption("include_context")
         showOption("include_summaries")
-        showOptions("replace_defs")
         $("#options_section").show();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").show();

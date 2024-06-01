@@ -1,48 +1,49 @@
 {% macro create_options(check_for_warnings=False,expand_defs=False,include_context=False,
-include_description_tags=False,include_summaries=False,replace_defs=False) %}
+include_description_tags=False,include_summaries=False,replace_defs=False,remove_types_on=False) %}
     <fieldset id="options_section">
     <legend>Options:</legend>
         <div class="form-group" id="options">
             {% if check_for_warnings %}
-                <div class="form-check form-switch" id="check_for_warnings_option">
+                <span class="form-check form-switch" id="check_for_warnings_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="check_for_warnings" id="check_for_warnings">
                     <label class="form-check-label" for="check_for_warnings">Check for warnings</label>
-                </div>
+                </span> &nbsp; &nbsp;
             {% endif %}
-
             {% if expand_defs %}
-                <div class="form-check form-switch" id="expand_defs_option">
+                <span class="form-check form-switch" id="expand_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="expand_defs" id="expand_defs">
                     <label class="form-check-label" for="expand_defs">Expand defs</label>
-                </div>
+                </span> &nbsp; &nbsp;
             {% endif %}
-
             {% if include_context %}
-                <div class="form-check form-switch" id="include_context_option">
+                <span class="form-check form-switch" id="include_context_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_context" id="include_context">
                     <label class="form-check-label" for="include_context">Include context</label>
-                </div>
+                </span> &nbsp; &nbsp;
             {% endif %}
-
             {% if include_description_tags %}
-                <div class="form-check form-switch" id="include_description_tags_option">
+                <span class="form-check form-switch" id="include_description_tags_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_description_tags" id="include_description_tags">
                     <label class="form-check-label" for="include_description_tags">Include Description tags</label>
-                </div>
+                </span> &nbsp; &nbsp;
             {% endif %}
-
             {% if include_summaries %}
-                <div class="form-check form-switch" id="include_summaries_option">
+                <span class="form-check form-switch" id="include_summaries_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_summaries" id="include_summaries">
                     <label class="form-check-label" for="include_summaries">Include summaries</label>
-                </div>
+                </span> &nbsp; &nbsp;
             {% endif %}
-
             {% if replace_defs %}
-                <div class="form-check form-switch" id="replace_defs_option">
+                <span class="form-check form-switch" id="replace_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="replace_defs" id="replace_defs">
                     <label class="form-check-label" for="replace_defs">Replace defs</label>
-                </div>
+                </span>
+            {% endif %}
+            {% if remove_types_on %}
+                <span class="form-check form-switch" id="remove_types_on_option" style="display: inline-block;">
+                    <input class="form-check-input" type="checkbox" name="remove_types_on" id="remove_types_on">
+                    <label class="form-check-label" for="remove_types_on">Remove types</label>
+                </span>
             {% endif %}
         </div>
     </fieldset>
