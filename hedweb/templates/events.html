@@ -4,6 +4,7 @@
 {% from "column-info.html" import create_column_info %}
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
+{% from "query.html" import create_query %}
 
 {% block content %}
     <h3 data-toggle="collapse" data-target="#eventsinfo">BIDS-style event (tsv) file:</h3>
@@ -13,9 +14,11 @@
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-        {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True) }}
+        {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True) }}
         <p> </p>
         {{ create_options(check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
+         <p> </p>
+        {{ create_query() }}
          <p> </p>
         {{ create_schemas_pulldown() }}
          <p> </p>

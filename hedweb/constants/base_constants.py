@@ -69,6 +69,7 @@ OTHER_VERSION_OPTION = 'Other'
 OUTPUT_DISPLAY_NAME = 'output_display_name'
 
 QUERIES = 'queries'
+QUERY_INPUT = 'query_input'
 QUERY_NAMES = 'query_names'
 
 REMODEL_FILE = 'remodel_file'

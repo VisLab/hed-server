@@ -59,7 +59,7 @@ class ProcessServices:
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
         arguments[bc.HAS_COLUMN_NAMES] = True
 
-        # Assemble parameters
+        # Assemble and search parameters
         arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
         arguments[bc.REMOVE_TYPES_ON] = params.get(bc.REMOVE_TYPES_ON, False)
         arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
@@ -83,7 +83,7 @@ class ProcessServices:
             params (dict): The service request dictionary extracted from the Request object.
         """
         if bc.QUERIES in params and params[bc.QUERIES]:
-            arguments[bc.QUERIES] = params.get(bc.QUERIES, )
+            arguments[bc.QUERIES] = params.get(bc.QUERIES, None)
             arguments[bc.QUERY_NAMES] = params.get(bc.QUERY_NAMES, None)
 
     @staticmethod
