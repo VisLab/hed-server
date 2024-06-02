@@ -26,6 +26,11 @@ to_short=False,validate=False,compare_schemas=False) %}
                     aria-checked="true">Assemble annotations</option>
         {% endif %}
       
+        {% if search %}
+            <option value="search" aria-label="Search annotations."
+                    aria-checked="true">Search annotations</option>
+        {% endif %}
+      
         {% if convert_schema %}
              <option value="convert_schema" aria-label="Convert a schema to a different format." 
                     aria-checked="true">Convert schema</option>
@@ -56,10 +61,6 @@ to_short=False,validate=False,compare_schemas=False) %}
                     aria-checked="true">Execute remodel script</option>
         {% endif %}
       
-        {% if search %}
-            <option value="search" aria-label="Search annotations."
-                    aria-checked="true">Search annotations</option>
-        {% endif %}
      </select>
     </fieldset>
 {% endmacro %}

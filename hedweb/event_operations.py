@@ -5,7 +5,7 @@ from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
 from hed.models.definition_dict import DefinitionDict
 from hed.models.tabular_input import TabularInput
-from hed.models.query_service import get_query_handlers, search_strings
+from hed.models.query_service import get_query_handlers, search_hed_objs
 from hed.tools.remodeling.dispatcher import Dispatcher
 from hed.tools.remodeling.remodeler_validator import RemodelerValidator
 from hed.tools.analysis.hed_tag_manager import HedTagManager
@@ -233,7 +233,7 @@ class EventOperations(BaseOperations):
         if results['data']:
             return results
         hed_objs, definitions = self.get_hed_objs()
-        df_factors = search_strings(hed_objs, queries, query_names=query_names)
+        df_factors = search_hed_objs(hed_objs, queries, query_names=query_names)
         if self.query_names:
             write_header = True
         else:
