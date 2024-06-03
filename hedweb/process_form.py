@@ -30,6 +30,7 @@ class ProcessForm:
         """
 
         arguments = {
+            bc.REQUEST_TYPE: bc.FROM_FROM,
             bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ''),
             bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, 'on'),

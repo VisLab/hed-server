@@ -54,6 +54,8 @@ FORMAT_OPTION = 'format_option'
 FORMAT_TO_EXCEL = 'to_excel'
 FORMAT_TO_JSON = 'to_json'
 FORMAT_TO_TSV = 'to_tsv'
+FROM_FORM = 'from_form'
+FROM_SERVICE = 'from_service'
 
 HAS_COLUMN_NAMES = 'has_column_names'
 
@@ -79,6 +81,7 @@ REMOVE_DEFS = 'remove_defs'
 REMOVE_TYPES = 'remove_types'
 REMOVE_TYPES_ON = 'remove_types_on'
 REPLACE_DEFS = 'replace_defs'
+REQUEST_TYPE = 'request_type'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 
 # Schema-specific constants
