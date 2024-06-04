@@ -10,18 +10,15 @@
 
     <form id="string_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
         {{ create_actions(to_long=True,to_short=True,validate=True,search=True) }}
-        <p></p>
         {{ create_options(check_for_warnings=True) }}
         <p> </p>
-        {{ create_query() }}
-        <p></p>
         {{ create_schemas_pulldown() }}
         <p></p>
         <fieldset  class="form-group">
-            <legend>Process:</legend>
-            {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
+            <legend>Input:</legend>
+            {{ create_query() }}
+            {{ create_file_input("Optional definition sidecar (JSON file)", "definition_file", "", "definition_section") }}
             <label for=string_input" class="form-label mt-4">Enter a HED string:</label>
             <textarea class="form-control" rows="5" cols="60" wrap="soft" maxlength="25000"
                       name="string_input" id="string_input"></textarea>
@@ -29,7 +26,6 @@
             <textarea class="form-control" rows="5" cols="60" wrap="soft" maxlength="25000"
                           name="string_result" id="string_result"></textarea>
             <p> </p>
-        
             <button id="string_submit" type="button" class="btn btn-primary btn-large">Process</button>
             <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
             <button id="string_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>

@@ -24,6 +24,7 @@ class StringOperations(BaseOperations):
         self.query_names = None
         self.definitions = None
         self.check_for_warnings = False
+        self.request_type = None
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -86,14 +87,9 @@ class StringOperations(BaseOperations):
             expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise, shrink definitions.
 
         """
-        display_name = 'string_query'
-        if not self.queries and isinstance(self.queries, list):
-            use_queries = self.queries
-        elif self.queries:
-            use_queries = [self.queries]
-        else:
+        if not self.queries:
             raise HedFileError('EmptyQueries', 'Please provide a query to search', '')
-        queries, query_names, issues = get_query_handlers(use_queries, self.query_names)
+        queries, query_names, issues = get_query_handlers(self.queries, self.query_names)
         if issues:
             return {bc.COMMAND: bc.COMMAND_VALIDATE,
                     bc.COMMAND_TARGET: 'strings', 
@@ -107,21 +103,22 @@ class StringOperations(BaseOperations):
             return results
         df_factors = search_hed_objs(self.string_list, queries, query_names=query_names)
         
-        if self.request_from == "from_form" and df_factors[0, 0]:
+        if self.request_type == "from_form" and df_factors.iat[0, 0]:
             data = "String satisfies the query"
-        elif self.request_from == "from_form":
+        elif self.request_type == "from_form":
             data = "String does not satisfy query"
         else:
             numpy_array = df_factors.to_numpy()
-            data = json.dumps(numpy_array.tolist())
-        file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
+            data = numpy_array.tolist()
         return {bc.COMMAND: bc.COMMAND_SEARCH,
                 bc.COMMAND_TARGET: 'events',
                 'data': data,
-                'output_display_name': file_name, 'schema_version': self.schema.get_formatted_version(),
+                'schema_version': self.schema.get_formatted_version(),
                 'query_names': self.query_names,
+                'queries': self.queries,
+                'string_list': [str(hed) for hed in self.string_list],
                 bc.MSG_CATEGORY: 'success',
-                bc.MSG: f"Successfully made {len(self.queries)} queries for {display_name}"}
+                bc.MSG: f"Successfully made queries"}
 
     def validate(self):
         """ Validate a list of strings and returns a dictionary containing the issues or a no issues message.

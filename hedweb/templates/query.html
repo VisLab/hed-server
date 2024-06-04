@@ -1,6 +1,6 @@
 {% macro create_query() %}
-    <fieldset  class="form-group" id="query_input_section">
-            <legend>Query:</legend>
-            <input class="form-control" maxlength="25000" name="query_input" id="query_input"></input>
-    </fieldset>
+    <div id="query_input_section" >
+       <label for="query_input" class="form-label mt-4">Enter a HED query</label>
+       <input class="form-control" maxlength="25000" name="query_input" id="query_input"></input>
+    </div>
 {% endmacro %}

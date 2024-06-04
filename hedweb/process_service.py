@@ -186,7 +186,8 @@ class ProcessServices:
                 bc.HAS_COLUMN_NAMES: has_column_names,
                 bc.CHECK_FOR_WARNINGS: check_for_warnings,
                 bc.EXPAND_DEFS: expand_defs,
-                bc.INCLUDE_DESCRIPTION_TAGS: include_description_tags
+                bc.INCLUDE_DESCRIPTION_TAGS: include_description_tags,
+                bc.REQUEST_TYPE: bc.FROM_SERVICE
                 }
 
     @staticmethod

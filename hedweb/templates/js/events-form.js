@@ -115,7 +115,7 @@ function setOptions() {
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
@@ -129,7 +129,7 @@ function setOptions() {
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
@@ -150,14 +150,14 @@ function setOptions() {
         hideOption("include_context");
         showOption("include_summaries")
         hideOption("remove_types_on")
-        hideOptions("replace_defs");
+        hideOption("replace_defs");
         hideOption("use_hed");
         $("#options_section").show();
         $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").show();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     }  else if (selectedElement.value === "search") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
@@ -171,7 +171,7 @@ function setOptions() {
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     }
 }
 

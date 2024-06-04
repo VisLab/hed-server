@@ -15,15 +15,13 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
         {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True) }}
-        <p> </p>
         {{ create_options(check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
-         <p> </p>
-        {{ create_query() }}
          <p> </p>
         {{ create_schemas_pulldown() }}
          <p> </p>
         <fieldset class="form-group">
-            <legend>Upload:</legend>
+            <legend>Input:</legend>
+            {{ create_query() }}
             {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file',
                                  flash_id='', div_id='remodel_input_section') }}
             {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 
