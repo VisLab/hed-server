@@ -131,8 +131,14 @@ def generate_download_file_from_text(results, file_header=None):
     def generate():
         if file_header:
             yield file_header
-        for issue in download_text.splitlines(True):
-            yield issue
+        if isinstance(download_text, list):
+            # If download_text is a list, yield from its iterator
+            for item in download_text:
+                yield item
+        else:
+            # Otherwise, process it as a string
+            for issue in download_text.splitlines(True):
+                yield issue
 
     return Response(generate(), mimetype='text/plain charset=utf-8',
                     headers={'Content-Disposition': f"attachment filename={display_name}",
@@ -367,6 +373,8 @@ def package_results(results):
 
     """
 
+    if isinstance(results.get('data', None), list):
+        results['data'] = "\n".join(results['data']) + "\n"
     if results.get(bc.FILE_LIST, None):
         return generate_download_zip_file(results)
     elif results.get('data', None) and results.get('command_target', None) != 'spreadsheet':
@@ -375,3 +383,8 @@ def package_results(results):
         return generate_text_response(results)
     else:
         return generate_download_spreadsheet(results)
+
+    # if results.get(bc.FILE_LIST, None):
+    #     return generate_download_zip_file(results)
+    # if not results.get('data', None) and results.get('spreadsheet', None):
+    #     return generate_download_spreadsheet(results)

@@ -37,7 +37,7 @@ class ProcessServices:
         service_request = json.loads(form_string)
         arguments = ProcessServices.get_service_info(service_request)
         arguments[bc.SCHEMA] = ProcessServices.set_input_schema(service_request)
-        ProcessServices.set_column_parameters(arguments, service_request)
+        ProcessServices.set_parameters(arguments, service_request)
         ProcessServices.set_remodel_parameters(arguments, service_request)
         ProcessServices.set_definitions(arguments, service_request)
         ProcessServices.set_sidecar(arguments, service_request)
@@ -46,17 +46,24 @@ class ProcessServices:
         return arguments
 
     @staticmethod
-    def set_column_parameters(arguments, params):
+    def set_parameters(arguments, params):
         """ Update arguments with the columns that requested for the service.
 
         Parameters:
             arguments (dict):  A dictionary with the extracted parameters that are to be processed.
             params (dict): The service request dictionary extracted from the Request object.
         """
+        # Column parameters
+        arguments[bc.REQUEST_TYPE] = bc.FROM_SERVICE
         arguments[bc.COLUMNS_CATEGORICAL] = ProcessServices.get_list(bc.COLUMNS_CATEGORICAL, params)
         arguments[bc.COLUMNS_VALUE] = ProcessServices.get_list(bc.COLUMNS_VALUE, params)
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
         arguments[bc.HAS_COLUMN_NAMES] = True
+
+        # Assemble and search parameters
+        arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
+        arguments[bc.REMOVE_TYPES_ON] = params.get(bc.REMOVE_TYPES_ON, False)
+        arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
 
     @staticmethod
     def get_list(name, params):
@@ -77,7 +84,7 @@ class ProcessServices:
             params (dict): The service request dictionary extracted from the Request object.
         """
         if bc.QUERIES in params and params[bc.QUERIES]:
-            arguments[bc.QUERIES] = params.get(bc.QUERIES, )
+            arguments[bc.QUERIES] = params.get(bc.QUERIES, None)
             arguments[bc.QUERY_NAMES] = params.get(bc.QUERY_NAMES, None)
 
     @staticmethod
@@ -179,7 +186,8 @@ class ProcessServices:
                 bc.HAS_COLUMN_NAMES: has_column_names,
                 bc.CHECK_FOR_WARNINGS: check_for_warnings,
                 bc.EXPAND_DEFS: expand_defs,
-                bc.INCLUDE_DESCRIPTION_TAGS: include_description_tags
+                bc.INCLUDE_DESCRIPTION_TAGS: include_description_tags,
+                bc.REQUEST_TYPE: bc.FROM_SERVICE
                 }
 
     @staticmethod

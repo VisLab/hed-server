@@ -75,6 +75,19 @@ class Test(TestWebBase):
             results = proc_strings.process()
             self.assertEqual('success', results['msg_category'], "should return success if converted")
 
+    def test_string_search(self):
+        from hedweb.string_operations import StringOperations
+        with self.app.app_context():
+            proc_strings = StringOperations()
+            proc_strings.schema = load_schema_version("8.2.0")
+            proc_strings.string_list = [HedString('Red', proc_strings.schema), HedString('Blue', proc_strings.schema)]
+            proc_strings.command = bc.COMMAND_SEARCH
+            proc_strings.query_names = None
+            proc_strings.request_from = 'from_service'
+            proc_strings.queries = 'Red'
+            results = proc_strings.process()
+            self.assertEqual('success', results['msg_category'], "should return success if converted")
+
     def test_string_validate(self):
         from hedweb.string_operations import StringOperations
 

@@ -30,11 +30,15 @@ class ProcessForm:
         """
 
         arguments = {
+            bc.REQUEST_TYPE: bc.FROM_FORM,
             bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ''),
             bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, 'on'),
+            bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
             bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, 'on'),
             bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, 'on'),
+            bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, 'on'),
+            bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, 'on'),
             bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION
         }
         value, skip = create_column_selections(request.form)
@@ -43,6 +47,7 @@ class ProcessForm:
         arguments[bc.TAG_COLUMNS] = get_tag_columns(request.form)
         ProcessForm.set_schema_from_request(arguments, request)
         ProcessForm.set_json_files(arguments, request)
+        ProcessForm.set_queries(arguments, request)
         ProcessForm.set_input_objects(arguments, request)
         return arguments
 
@@ -81,6 +86,20 @@ class ProcessForm:
             arguments[bc.DEFINITIONS] = sidecar.get_def_dict(arguments[bc.SCHEMA], extra_def_dicts=None)
 
     @staticmethod
+    def set_queries(arguments, request):
+        """ Update arguments with lists of string queries
+        
+        Parameters:
+            arguments (dict):  A dictionary with the extracted parameters that are to be processed.
+            request (Request): A Request object containing form data.
+        """
+        arguments[bc.QUERY_NAMES] = None
+        if bc.QUERY_INPUT in request.form and request.form[bc.QUERY_INPUT]:
+            arguments[bc.QUERIES] = [request.form[bc.QUERY_INPUT]]
+        else:
+            arguments[bc.QUERIES] = None
+
+    @staticmethod
     def set_schema_from_request(arguments, request):
         """ Create a HedSchema object from form pull-down box.
 
@@ -90,7 +109,6 @@ class ProcessForm:
 
         Returns:
             HedSchema: The HED schema to use.
-
         """
 
         if form_has_option(request.form, bc.SCHEMA_VERSION) and \

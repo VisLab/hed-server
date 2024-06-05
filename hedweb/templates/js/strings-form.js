@@ -73,12 +73,23 @@ function setOptions() {
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
         $("#options_section").show();
+        $("#definition_section").show();
+        $("#query_input_section").hide();
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        $("#options_section").hide();
+         $("#options_section").hide();
+         $("#definition_section").hide();
+         $("#query_input_section").hide();
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
         $("#options_section").hide();
+        $("#definition_section").hide();
+        $("#query_input_section").hide();
+    } else if (selectedElement.value === "search") {
+        hideOption("check_for_warnings");
+        $("#options_section").hide();
+        $("#definition_section").hide();
+        $("#query_input_section").show();
     }
 }
 

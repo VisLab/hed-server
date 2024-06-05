@@ -1,13 +1,11 @@
 import json
-import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
 from hed.errors.error_reporter import check_for_any_errors
 from hed.models.definition_dict import DefinitionDict
 from hed.models.tabular_input import TabularInput
-from hed.models.df_util import expand_defs, shrink_defs
-from hed.models.query_service import get_query_handlers, search_strings
+from hed.models.query_service import get_query_handlers, search_hed_objs
 from hed.tools.remodeling.dispatcher import Dispatcher
 from hed.tools.remodeling.remodeler_validator import RemodelerValidator
 from hed.tools.analysis.hed_tag_manager import HedTagManager
@@ -32,17 +30,17 @@ class EventOperations(BaseOperations):
         self.events = None
         self.command = None
         self.check_for_warnings = False
-        self.expand_defs = False
-        self.include_summaries = False
         self.columns_skip = []
         self.columns_value = []
-        self.sidecar = None
-        self.remodel_operations = None
+        self.expand_defs = False
+        self.include_context = False
+        self.include_summaries = False
         self.queries = None
         self.query_names = None
-        self.remove_types = []
+        self.remodel_operations = None
+        self.remove_types_on = False
         self.replace_defs = False
-        self.expand_context = True
+        self.sidecar = None
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -95,18 +93,13 @@ class EventOperations(BaseOperations):
         results = self.validate()
         if results['data']:
             return results
-        definitions = self.events.get_def_dict(self.schema)
-        df = pd.DataFrame({"HED_assembled": self.events.series_a})
-        if self.expand_defs:
-            expand_defs(df, self.schema, definitions)
-        else:
-            shrink_defs(df, self.schema)
-        csv_string = df.to_csv(None, sep='\t', index=False, header=True)
+        hed_objs, definitions = self.get_hed_objs()
+        hed_strs = [str(obj) if obj is not None else '' for obj in hed_objs]
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_ASSEMBLE,
                 bc.COMMAND_TARGET: 'events',
-                'data': csv_string, 'output_display_name': file_name,
+                'data': hed_strs, 'output_display_name': file_name,
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
@@ -147,6 +140,18 @@ class EventOperations(BaseOperations):
                 'data': json.dumps(hed_dict, indent=4),
                 'output_display_name': file_name, 'msg_category': 'success',
                 'msg': 'JSON sidecar generation from event file complete'}
+
+    def get_hed_objs(self):
+        """ Return the assembled objects and applicable definitions. """
+        definitions = self.events.get_def_dict(self.schema)
+        event_manager = EventManager(self.events, self.schema)
+        if self.remove_types_on:
+            types = ['Condition-variable', 'Task']
+        else:
+            types = []
+        tag_manager = HedTagManager(event_manager, types)
+        hed_objs = tag_manager.get_hed_objs(self.include_context, self.replace_defs)
+        return hed_objs, definitions
 
     def remodel(self):
         """ Remodel a given events file.
@@ -223,16 +228,21 @@ class EventOperations(BaseOperations):
                     bc.SCHEMA_VERSION: get_schema_versions(self.schema),
                     bc.MSG_CATEGORY: 'warning',
                     bc.MSG: f"Queries had validation issues"}
+        self.check_for_warnings = False
         results = self.validate()
         if results['data']:
             return results
-        tag_man = HedTagManager(EventManager(self.events, self.schema), remove_types=self.remove_types)
-        hed_objs = tag_man.get_hed_objs(include_context=self.expand_context, replace_defs=self.replace_defs)
-        df_factors = search_strings(hed_objs, queries, query_names=query_names)
+        hed_objs, definitions = self.get_hed_objs()
+        df_factors = search_hed_objs(hed_objs, queries, query_names=query_names)
+        if self.query_names:
+            write_header = True
+        else:
+            write_header = False
         file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_SEARCH,
                 bc.COMMAND_TARGET: 'events',
-                'data': df_factors.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n'),
+                'data': df_factors.to_csv(None, sep='\t', index=False, header=write_header, lineterminator='\n'),
+                'definitions': DefinitionDict.get_as_strings(definitions),
                 'output_display_name': file_name, 'schema_version': self.schema.get_formatted_version(),
                 bc.MSG_CATEGORY: 'success',
                 bc.MSG: f"Successfully made {len(self.queries)} queries for {display_name}"}

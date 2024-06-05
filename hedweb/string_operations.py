@@ -1,10 +1,12 @@
+import json
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
 from hed import schema as hedschema
+from hed import get_query_handlers, search_hed_objs
 from hed.validator import HedValidator
 
 from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
-
+from hedweb.web_util import generate_filename
 
 class StringOperations(BaseOperations):
 
@@ -18,8 +20,11 @@ class StringOperations(BaseOperations):
         self.command = None
         self.schema = None 
         self.string_list = None
+        self.queries = None
+        self.query_names = None
         self.definitions = None
         self.check_for_warnings = False
+        self.request_type = None
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -38,6 +43,8 @@ class StringOperations(BaseOperations):
             raise HedFileError('EmptyHedStringList', "Please provide HED strings to be processed", "")
         if self.command == bc.COMMAND_VALIDATE:
             results = self.validate()
+        elif self.command == bc.COMMAND_SEARCH:
+            results = self.search()
         elif self.command == bc.COMMAND_TO_SHORT or self.command == bc.COMMAND_TO_LONG:
             results = self.convert()
         else:
@@ -67,8 +74,52 @@ class StringOperations(BaseOperations):
                     bc.COMMAND_TARGET: 'strings', 'data': strings,
                     bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'success',
-                    'msg': 'Strings converted successfully'}   
-    
+                    'msg': 'Strings converted successfully'}
+
+    def search(self):
+        """ Return a list or a boolean
+
+        Returns:
+            dict: A dictionary pointing to results or errors.
+
+        Notes:  The options for this are
+            columns_included (list):  A list of column names of columns to include.
+            expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise, shrink definitions.
+
+        """
+        if not self.queries:
+            raise HedFileError('EmptyQueries', 'Please provide a query to search', '')
+        queries, query_names, issues = get_query_handlers(self.queries, self.query_names)
+        if issues:
+            return {bc.COMMAND: bc.COMMAND_VALIDATE,
+                    bc.COMMAND_TARGET: 'strings', 
+                    'data': get_printable_issue_string(issues, f"Query errors"),
+                    bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
+                    'msg_category': 'warning',
+                    'msg': 'Strings had validation issues'}
+        self.check_for_warnings = False
+        results = self.validate()
+        if results['data']:
+            return results
+        df_factors = search_hed_objs(self.string_list, queries, query_names=query_names)
+        
+        if self.request_type == "from_form" and df_factors.iat[0, 0]:
+            data = "String satisfies the query"
+        elif self.request_type == "from_form":
+            data = "String does not satisfy query"
+        else:
+            numpy_array = df_factors.to_numpy()
+            data = numpy_array.tolist()
+        return {bc.COMMAND: bc.COMMAND_SEARCH,
+                bc.COMMAND_TARGET: 'events',
+                'data': data,
+                'schema_version': self.schema.get_formatted_version(),
+                'query_names': self.query_names,
+                'queries': self.queries,
+                'string_list': [str(hed) for hed in self.string_list],
+                bc.MSG_CATEGORY: 'success',
+                bc.MSG: f"Successfully made queries"}
+
     def validate(self):
         """ Validate a list of strings and returns a dictionary containing the issues or a no issues message.
 

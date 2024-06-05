@@ -84,7 +84,7 @@ class Test(TestWebBase):
             'columns_categorical': ['col1', 'col2'],
             'columns_value': ['col3', 'col4']
         }
-        ProcessServices.set_column_parameters(arguments, params)
+        ProcessServices.set_parameters(arguments, params)
 
         self.assertEqual(arguments[bc.COLUMNS_CATEGORICAL], ['col1', 'col2'])
         self.assertEqual(arguments[bc.COLUMNS_VALUE], ['col3', 'col4'])
@@ -209,7 +209,8 @@ class Test(TestWebBase):
             bc.HAS_COLUMN_NAMES: True,
             bc.CHECK_FOR_WARNINGS: False,
             bc.EXPAND_DEFS: True,
-            bc.INCLUDE_DESCRIPTION_TAGS: True
+            bc.INCLUDE_DESCRIPTION_TAGS: True,
+            bc.REQUEST_TYPE: bc.FROM_SERVICE
         }
 
         result = ProcessServices.get_service_info(params)
@@ -226,7 +227,8 @@ class Test(TestWebBase):
             bc.HAS_COLUMN_NAMES: True,
             bc.CHECK_FOR_WARNINGS: True,
             bc.EXPAND_DEFS: False,
-            bc.INCLUDE_DESCRIPTION_TAGS: True
+            bc.INCLUDE_DESCRIPTION_TAGS: True,
+            bc.REQUEST_TYPE: bc.FROM_SERVICE
         }
 
         result = ProcessServices.get_service_info(params)

@@ -54,15 +54,16 @@ FORMAT_OPTION = 'format_option'
 FORMAT_TO_EXCEL = 'to_excel'
 FORMAT_TO_JSON = 'to_json'
 FORMAT_TO_TSV = 'to_tsv'
+FROM_FORM = 'from_form'
+FROM_SERVICE = 'from_service'
 
 HAS_COLUMN_NAMES = 'has_column_names'
-HEDSTRING = 'hedstring'
 
+INCLUDE_CONTEXT = 'include_context'
 INCLUDE_DEFINITION_TAGS = 'include_definition_tags'
 INCLUDE_DESCRIPTION_TAGS = 'include_description_tags'
 INCLUDE_SUMMARIES = 'include_summaries'
 ISSUE_STRING = 'issue_string'
-
 
 MSG = 'msg'
 MSG_CATEGORY = 'msg_category'
@@ -70,11 +71,17 @@ OTHER_VERSION_OPTION = 'Other'
 OUTPUT_DISPLAY_NAME = 'output_display_name'
 
 QUERIES = 'queries'
+QUERY_INPUT = 'query_input'
 QUERY_NAMES = 'query_names'
+
 REMODEL_FILE = 'remodel_file'
 REMODEL_OPERATIONS = 'remodel_operations'
 REMODEL_STRING = 'remodel_string'
 REMOVE_DEFS = 'remove_defs'
+REMOVE_TYPES = 'remove_types'
+REMOVE_TYPES_ON = 'remove_types_on'
+REPLACE_DEFS = 'replace_defs'
+REQUEST_TYPE = 'request_type'
 REQUIRED_COLUMN_INDICES = 'required_column_indices'
 
 # Schema-specific constants
