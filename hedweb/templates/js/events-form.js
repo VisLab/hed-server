@@ -4,13 +4,11 @@ $(function () {
     prepareForm();
 })
 
-
 $('#process_actions').change(function(){
     clearFlashMessages();
     setOptions();
     setEventsTable()
 });
-
 
 $('#sidecar_file').change(function() {
     clearFlashMessages();
@@ -105,31 +103,43 @@ function setEventsTable() {
 function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
-        hideOption("expand_defs");
-        hideOption("include_summaries")
-        hideOption("use_hed");
         showOption("check_for_warnings");
+        hideOption("expand_defs");
+        hideOption("include_context");
+        hideOption("include_summaries");
+        hideOption("remove_types_on");
+        hideOption("replace_defs");
+        hideOption("use_hed");
         $("#options_section").show();
+        $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
-        hideOption("include_summaries")
+        hideOption("expand_defs");
+        showOption("include_context");
+        hideOption("include_summaries");
+        showOption("remove_types_on");
+        showOption("replace_defs");
         hideOption("use_hed");
-        showOption("expand_defs");
         $("#options_section").show();
+        $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
-        hideOption("include_summaries")
+        hideOption("include_context");
+        hideOption("include_summaries");
+        hideOption("remove_types_on");
+        hideOption("replace_defs");
         hideOption("use_hed");
         $("#options_section").hide();
+        $("#query_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#remodel_input_section").hide();
         $("#sidecar_input_section").hide();
@@ -137,13 +147,31 @@ function setOptions() {
     } else if (selectedElement.value === "remodel") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
-        hideOption("use_hed");
+        hideOption("include_context");
         showOption("include_summaries")
+        hideOption("remove_types_on")
+        hideOption("replace_defs");
+        hideOption("use_hed");
         $("#options_section").show();
+        $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").show();
         $("#sidecar_input_section").show();
-        $("#show_events_section").hide();
+        $("#show_events_section").show();
+    }  else if (selectedElement.value === "search") {
+        hideOption("check_for_warnings");
+        hideOption("expand_defs");
+        showOption("include_context");
+        hideOption("include_summaries");
+        showOption("remove_types_on");
+        showOption("replace_defs");
+        hideOption("use_hed");
+        $("#options_section").show();
+        $("#query_input_section").show();
+        $("#schema_pulldown_section").show();
+        $("#remodel_input_section").hide();
+        $("#sidecar_input_section").show();
+        $("#show_events_section").show();
     }
 }
 

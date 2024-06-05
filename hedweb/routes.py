@@ -3,16 +3,20 @@ from werkzeug.utils import secure_filename
 import json
 
 from hed import schema as hedschema
+from hed import HedFileError
 
-from hedweb.constants import base_constants, page_constants
+from hedweb.constants import base_constants as bc
+from hedweb.constants import page_constants
 from hedweb.constants import route_constants, file_constants
 from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
-from hedweb import sidecars as sidecar
-from hedweb import events as events
-from hedweb import spreadsheets as spreadsheets
-from hedweb import services as services
-from hedweb import strings as strings
-from hedweb import schemas as schema
+
+from hedweb.event_operations import EventOperations
+from hedweb.schema_operations import SchemaOperations
+from hedweb.process_form import ProcessForm
+from hedweb.process_service import ProcessServices
+from hedweb.sidecar_operations import SidecarOperations
+from hedweb.spreadsheet_operations import SpreadsheetOperations
+from hedweb.string_operations import StringOperations
 from hedweb.columns import get_columns_request
 
 app_config = current_app.config
@@ -50,8 +54,9 @@ def events_results():
     """
 
     try:
-        input_arguments = events.get_events_form_input(request)
-        a = events.process(input_arguments)
+        parameters = ProcessForm.get_input_from_form(request)
+        proc_events = EventOperations(parameters)
+        a = proc_events.process()
         return package_results(a)
     except Exception as ex:
         return handle_http_error(ex)
@@ -71,11 +76,15 @@ def schemas_results():
 
     """
     try:
-        arguments = schema.get_input_from_form(request)
-        a = schema.process(arguments)
+        parameters = ProcessForm.get_input_from_form(request)
+        proc_schemas = SchemaOperations(parameters)
+        a = proc_schemas.process()
         return package_results(a)
     except Exception as ex:
-        return handle_http_error(ex)
+        if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
+            return package_results(SchemaOperations.format_error("validate", ex))
+        else:
+            return handle_http_error(ex)
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])
@@ -89,12 +98,12 @@ def schema_version_results():
 
     try:
         hed_info = {}
-        if base_constants.SCHEMA_PATH in request.files:
-            f = request.files[base_constants.SCHEMA_PATH]
+        if bc.SCHEMA_PATH in request.files:
+            f = request.files[bc.SCHEMA_PATH]
             name, extension = get_parsed_name(secure_filename(f.filename))
             hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
                                                schema_format=extension)
-            hed_info[base_constants.SCHEMA_VERSION] = hed_schema.get_formatted_version()
+            hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)
     except Exception as ex:
         return handle_error(ex)
@@ -102,7 +111,7 @@ def schema_version_results():
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET', 'POST'])
 def schema_versions_results():
-    """ Return serialized JSON string with hed versions.
+    """ Return serialized JSON string with HED versions.
 
     Returns:
         str: A serialized JSON string containing a list of the HED versions.
@@ -111,7 +120,7 @@ def schema_versions_results():
 
     try:
         hedschema.cache_xml_versions()
-        hed_info = {base_constants.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
+        hed_info = {bc.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
         hed_list = convert_hed_versions(hed_info)
         return json.dumps(hed_list)
     except Exception as ex:
@@ -128,10 +137,8 @@ def services_results():
     """
 
     try:
-        hedschema.set_cache_directory(current_app.config['HED_CACHE_FOLDER'])
-        hedschema.cache_xml_versions()
-        arguments = services.get_input_from_request(request)
-        response = services.process(arguments)
+        arguments = ProcessServices.set_input_from_request(request)
+        response = ProcessServices.process(arguments)
         return json.dumps(response)
     except Exception as ex:
         errors = handle_error(ex, return_as_str=False)
@@ -157,8 +164,9 @@ def sidecars_results():
     """
 
     try:
-        input_arguments = sidecar.get_input_from_form(request)
-        a = sidecar.process(input_arguments)
+        parameters = ProcessForm.get_input_from_form(request)
+        proc_sidecars = SidecarOperations(parameters)
+        a = proc_sidecars.process()
         b = package_results(a)
         return b
         # return package_results(a)
@@ -179,10 +187,10 @@ def spreadsheets_results():
         - convert:  converted spreadsheets.
 
     """
-
     try:
-        arguments = spreadsheets.get_input_from_form(request)
-        a = spreadsheets.process(arguments)
+        parameters = ProcessForm.get_input_from_form(request)
+        proc_spreadsheets = SpreadsheetOperations(parameters)
+        a = proc_spreadsheets.process()
         response = package_results(a)
         return response
     except Exception as ex:
@@ -199,12 +207,13 @@ def strings_results():
     Notes:
         The response depends on the request, but appears in text box.
         - validation: validation errors
-        - convert:  converted sting.
+        - convert:  converted string.
 
     """
     try:
-        input_arguments = strings.get_input_from_form(request)
-        a = strings.process(input_arguments)
+        parameters = ProcessForm.get_input_from_form(request)
+        proc_strings = StringOperations(parameters)
+        a = proc_strings.process()
         return json.dumps(a)
     except Exception as ex:
         return handle_error(ex)

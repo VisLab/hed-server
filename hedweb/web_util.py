@@ -4,17 +4,15 @@ import json
 import os
 import zipfile
 from urllib.parse import urlparse
-from flask import current_app, Response, make_response, send_file
+from flask import Response, make_response, send_file
 from werkzeug.utils import secure_filename
-
 from hed import schema as hedschema
+from hed.schema import load_schema_version
 from hed import HedSchema, HedSchemaGroup
 
 from hed.errors import HedFileError, ErrorSeverity, ErrorHandler
-from hedweb.constants import base_constants, file_constants
-
-app_config = current_app.config
-
+from hedweb.constants import base_constants as bc
+from hedweb.constants import file_constants as fc
 TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 
@@ -31,7 +29,7 @@ def convert_hed_versions(hed_info):
 def file_extension_is_valid(filename, accepted_extensions=None):
     """ Return True if the file extension is an accepted one.
 
-    Args:
+    Parameters:
         filename (str): The name of the file to be checked.
         accepted_extensions (list): A list of accepted extensions.
 
@@ -49,11 +47,11 @@ def filter_issues(issues, check_for_warnings):
     return issues
 
 
-def form_has_file(request, file_field, valid_extensions=None):
+def form_has_file(files, file_field, valid_extensions=None):
     """ Return True if a file with valid extension is in the request.
 
-    Args:
-        request (Request): A Request object containing user data from the form.
+    Parameters:
+        files (Request.files): A Request object files dictionary containing request information about files.
         file_field (str): Name of the form field containing the file name.
         valid_extensions (list): A list of valid extensions.
 
@@ -62,17 +60,17 @@ def form_has_file(request, file_field, valid_extensions=None):
 
     """
 
-    if file_field in request.files and file_extension_is_valid(request.files[file_field].filename, valid_extensions):
+    if file_field in files and file_extension_is_valid(files[file_field].filename, valid_extensions):
         return True
     else:
         return False
 
 
-def form_has_option(request, option_name, target_value):
+def form_has_option(form, option_name, target_value=None):
     """ Return True if given option has a specific value.
 
-    Args:
-        request (Request): A Request object produced by the post of a form.
+    Parameters:
+        form (Request.form): A Request.form dictionary containing the request.
         option_name (str): The name of the radio button group in the hedweb form.
         target_value (str): The name of the selected radio button option.
 
@@ -84,16 +82,20 @@ def form_has_option(request, option_name, target_value):
 
     """
 
-    if option_name in request.form and request.form[option_name] == target_value:
+    if option_name not in form:
+        return False
+    elif target_value and form[option_name] == target_value:
+        return True
+    elif not target_value and form[option_name]:
         return True
     return False
 
 
-def form_has_url(request, url_field, valid_extensions=None):
+def form_has_url(form, url_field, valid_extensions=None):
     """ Return True if the url_field has a valid extension.
 
-    Args:
-        request (Request): A Request object containing form data.
+    Parameters:
+        form (Request.form): A Request object form data.
         url_field (str): The name of the form field with the URL to be parsed.
         valid_extensions (list): A list of valid extensions.
 
@@ -101,16 +103,16 @@ def form_has_url(request, url_field, valid_extensions=None):
         bool: True if a URL is present in request object.
 
     """
-    if url_field not in request.form:
+    if url_field not in form:
         return False
-    parsed_url = urlparse(request.form.get(url_field))
+    parsed_url = urlparse(form.get(url_field))
     return file_extension_is_valid(parsed_url.path, valid_extensions)
 
 
 def generate_download_file_from_text(results, file_header=None):
     """ Generate a download file from text output.
 
-    Args:
+    Parameters:
         results: Text with newlines for iterating.
         file_header (str): Optional header for download file blob.
 
@@ -129,19 +131,25 @@ def generate_download_file_from_text(results, file_header=None):
     def generate():
         if file_header:
             yield file_header
-        for issue in download_text.splitlines(True):
-            yield issue
+        if isinstance(download_text, list):
+            # If download_text is a list, yield from its iterator
+            for item in download_text:
+                yield item
+        else:
+            # Otherwise, process it as a string
+            for issue in download_text.splitlines(True):
+                yield issue
 
     return Response(generate(), mimetype='text/plain charset=utf-8',
                     headers={'Content-Disposition': f"attachment filename={display_name}",
-                             'Category': results[base_constants.MSG_CATEGORY],
-                             'Message': results[base_constants.MSG]})
+                             'Category': results[bc.MSG_CATEGORY],
+                             'Message': results[bc.MSG]})
 
 
 def generate_download_spreadsheet(results):
     """ Generate a download Excel file.
 
-    Args:
+    Parameters:
         results (dict): Dictionary with the results to be downloaded.
 
     Returns:
@@ -149,20 +157,20 @@ def generate_download_spreadsheet(results):
 
     """
     # return generate_download_test()
-    spreadsheet = results[base_constants.SPREADSHEET]
+    spreadsheet = results[bc.SPREADSHEET]
     if not spreadsheet.loaded_workbook:
         return generate_download_file_from_text({'data': spreadsheet.to_csv(),
-                                                 'output_display_name': results[base_constants.OUTPUT_DISPLAY_NAME],
-                                                 base_constants.MSG_CATEGORY: results[base_constants.MSG_CATEGORY],
-                                                 base_constants.MSG: results[base_constants.MSG]})
+                                                 'output_display_name': results[bc.OUTPUT_DISPLAY_NAME],
+                                                 bc.MSG_CATEGORY: results[bc.MSG_CATEGORY],
+                                                 bc.MSG: results[bc.MSG]})
     buffer = io.BytesIO()
     spreadsheet.to_excel(buffer)
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers['Content-Disposition'] = 'attachment; filename=' + results[base_constants.OUTPUT_DISPLAY_NAME]
-    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
-    response.headers['Message'] = results[base_constants.MSG]
+    response.headers['Content-Disposition'] = 'attachment; filename=' + results[bc.OUTPUT_DISPLAY_NAME]
+    response.headers['Category'] = results[bc.MSG_CATEGORY]
+    response.headers['Message'] = results[bc.MSG]
     response.mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     return response
 
@@ -171,10 +179,10 @@ def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=N
     """ Generate a filename for the attachment.
 
     Parameters:
-        base_name (str):   Name of the base, usually the name of the file that the issues were generated from.
-        name_prefix (str): Prefix prepended to the front of the base name.
-        name_suffix (str): Suffix appended to the end of the base name.
-        extension (str):   Extension to use.
+        base_name (str or None):   Name of the base, usually the name of the file that the issues were generated from.
+        name_prefix (str or None): Prefix prepended to the front of the base name.
+        name_suffix (str or None): Suffix appended to the end of the base name.
+        extension (str or None):   Extension to use.
         append_datetime (bool): If True, append the current date-time to the base output filename.
 
     Returns:
@@ -205,7 +213,7 @@ def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=N
 def generate_text_response(results):
     """ Generate a download response.
 
-    Args:
+    Parameters:
         results (dict): Dictionary containing the results of the data.
 
     Returns:
@@ -213,7 +221,7 @@ def generate_text_response(results):
 
 
     """
-    headers = {'Category': results[base_constants.MSG_CATEGORY], 'Message': results[base_constants.MSG]}
+    headers = {'Category': results[bc.MSG_CATEGORY], 'Message': results[bc.MSG]}
     download_text = results.get('data', '')
     if len(download_text) > 0:
         headers['Content-Length'] = len(download_text)
@@ -223,7 +231,7 @@ def generate_text_response(results):
 def generate_download_zip_file(results):
     """ Generate a download response.
 
-    Args:
+    Parameters:
         results (dict): Dictionary of results to use in constructing response.
 
     Returns:
@@ -232,7 +240,7 @@ def generate_download_zip_file(results):
 
     """
 
-    file_list = results[base_constants.FILE_LIST]
+    file_list = results[bc.FILE_LIST]
     archive = io.BytesIO()
     with zipfile.ZipFile(archive, mode="a", compression=zipfile.ZIP_DEFLATED) as zf:
         for item in file_list:
@@ -240,15 +248,15 @@ def generate_download_zip_file(results):
     archive.seek(0)
     zip_name = results.get('zip_name', results['output_display_name'])
     response = send_file(archive, as_attachment=True, download_name=zip_name)
-    response.headers['Message'] = results[base_constants.MSG]
-    response.headers['Category'] = results[base_constants.MSG_CATEGORY]
+    response.headers['Message'] = results[bc.MSG]
+    response.headers['Category'] = results[bc.MSG_CATEGORY]
     return response
 
 
 def get_hed_schema_from_pull_down(request):
     """ Create a HedSchema object from form pull-down box.
 
-    Args:
+    Parameters:
         request (Request): A Request object containing form data.
 
     Returns:
@@ -256,19 +264,13 @@ def get_hed_schema_from_pull_down(request):
 
     """
 
-    if base_constants.SCHEMA_VERSION not in request.form:
+    if bc.SCHEMA_VERSION not in request.form:
         raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
-    elif request.form[base_constants.SCHEMA_VERSION] != base_constants.OTHER_VERSION_OPTION:
-        version = request.form[base_constants.SCHEMA_VERSION].split('_')
-        if len(version) == 1:
-            hed_file_path = hedschema.get_path_from_hed_version(version[0])
-        else:
-            hed_file_path = hedschema.get_path_from_hed_version(version[1], library_name=version[0])
-        hed_schema = hedschema.load_schema(hed_file_path)
-    elif request.form[base_constants.SCHEMA_VERSION] == \
-            base_constants.OTHER_VERSION_OPTION and base_constants.SCHEMA_PATH in request.files:
-        f = request.files[base_constants.SCHEMA_PATH]
-        hed_schema = hedschema.from_string(f.read(file_constants.BYTE_LIMIT).decode('ascii'),
+    elif request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
+        hed_schema = load_schema_version(request.form[bc.SCHEMA_VERSION])
+    elif bc.SCHEMA_PATH in request.files:
+        f = request.files[bc.SCHEMA_PATH]
+        hed_schema = hedschema.from_string(f.read(fc.BYTE_LIMIT).decode('ascii'),
                                            schema_format=secure_filename(f.filename))
     else:
         raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")
@@ -289,51 +291,6 @@ def get_parsed_name(filename, is_url=False):
     return display_name, file_type
 
 
-def get_schema(schema_input, input_type="version", schema_format='.xml', display_name=''):
-    """ Return a HedSchema object from the given parameters.
-
-    Args:
-        schema_input (str, file): A string indicating the schema based on the input_type
-        input_type (str): 'filename', 'url', 'version', or 'string' indicating how to interpret schema_input.
-        schema_format (str): file extension of the schema format.
-        display_name (str): Display name of the schema if known.
-
-    Returns:
-        HedSchema: The extracted HedSchema object if successful.
-        dict: A dictionary that can be returned as a response if errors.
-
-    """
-    hed_schema = None
-    file_found = True
-    issues_dict = {}
-    name = display_name
-    extension = schema_format
-    try:
-        if input_type == 'file':
-            name, extension = get_parsed_name(secure_filename(schema_input.filename))
-            hed_schema = hedschema.from_string(schema_input.read(file_constants.BYTE_LIMIT).decode('ascii'),
-                                               schema_format=extension)
-        elif input_type == 'url':
-            name, extension = get_parsed_name(schema_input, is_url=True)
-            hed_schema = hedschema.load_schema(schema_input)
-        elif input_type == 'string':
-            hed_schema = hedschema.from_string(schema_input, schema_format=schema_format)
-        elif input_type == 'version':
-            name = schema_input
-            extension = '.xml'
-            hed_schema = hedschema.load_schema_version(schema_input)
-        else:
-            file_found = False
-        if not file_found:
-            raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a loadable schema", "")
-    except HedFileError as e:
-        if e.issues:
-            issues_dict = e.issues
-    except Exception as ex:   # TODO: remove after schema load is updated
-        issues_dict = [{"code":"BAD_FILE", "message": ex.args[0]}]
-    return {"schema": hed_schema, "name": name, "type": extension, "issues": issues_dict}
-
-
 def get_schema_versions(hed_schema):
     if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
         return hed_schema.get_formatted_version()
@@ -346,7 +303,7 @@ def get_schema_versions(hed_schema):
 def handle_error(ex, hed_info=None, title=None, return_as_str=True):
     """ Handle an error by returning a dictionary or simple string.
 
-    Args:
+    Parameters:
         ex (Exception): The exception raised.
         hed_info (dict): A dictionary of information describing the error.
         title (str):  A title to be included with the message.
@@ -367,7 +324,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
     if not title:
         title = ''
     if hasattr(ex, 'message'):
-        message = ex.message
+        message = str(ex.message)
     else:
         message = str(ex)
 
@@ -382,7 +339,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
 def handle_http_error(ex):
     """ Handle a http error.
 
-    Args:
+    Parameters:
         ex (Exception): A class that extends python Exception class.
 
     Returns:
@@ -396,7 +353,7 @@ def handle_http_error(ex):
     else:
         error_code = type(ex).__name__
     if hasattr(ex, 'message'):
-        message = ex.message
+        message = str(ex.message)
     else:
         message = str(ex)
     message = message.replace('\n', ' ')
@@ -405,18 +362,20 @@ def handle_http_error(ex):
     else:
         filename = ''
     error_message = f"{error_code}: {filename} [{message}]"
-    return generate_text_response({'data': '', base_constants.MSG_CATEGORY: 'error', base_constants.MSG: error_message})
+    return generate_text_response({'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message})
 
 
 def package_results(results):
     """Package a results dictionary into a standard form.
 
-    Args:
-        results (dict): A dictionary with the results
+    Parameters:
+        results (dict): A dictionary with the results.
 
     """
 
-    if results.get(base_constants.FILE_LIST, None):
+    if isinstance(results.get('data', None), list):
+        results['data'] = "\n".join(results['data']) + "\n"
+    if results.get(bc.FILE_LIST, None):
         return generate_download_zip_file(results)
     elif results.get('data', None) and results.get('command_target', None) != 'spreadsheet':
         return generate_download_file_from_text(results)
@@ -424,3 +383,8 @@ def package_results(results):
         return generate_text_response(results)
     else:
         return generate_download_spreadsheet(results)
+
+    # if results.get(bc.FILE_LIST, None):
+    #     return generate_download_zip_file(results)
+    # if not results.get('data', None) and results.get('spreadsheet', None):
+    #     return generate_download_spreadsheet(results)

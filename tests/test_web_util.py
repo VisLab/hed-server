@@ -2,9 +2,8 @@ import os
 import unittest
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request, Response
-from hedweb.constants import base_constants, file_constants
-
-
+from hedweb.constants import base_constants as bc
+from hedweb.constants import file_constants
 from tests.test_web_base import TestWebBase
 
 
@@ -18,34 +17,35 @@ class Test(TestWebBase):
                 environ = create_environ(data={'sidecar_file': fp})
 
             request = Request(environ)
-            self.assertTrue(form_has_file(request, 'sidecar_file'), "Form has file when no extension requirements")
-            self.assertFalse(form_has_file(request, 'temp'), "Form does not have file when form name is wrong")
-            self.assertFalse(form_has_file(request, 'sidecar_file', file_constants.SPREADSHEET_EXTENSIONS),
+            self.assertTrue(form_has_file(request.files, 'sidecar_file'),
+                            "Form has file when no extension requirements")
+            self.assertFalse(form_has_file(request.files, 'temp'), "Form does not have file when form name is wrong")
+            self.assertFalse(form_has_file(request.files, 'sidecar_file', file_constants.SPREADSHEET_EXTENSIONS),
                              "Form does not have file when extension is wrong")
-            self.assertTrue(form_has_file(request, 'sidecar_file', [".json"]),
+            self.assertTrue(form_has_file(request.files, 'sidecar_file', [".json"]),
                             "Form has file when extensions and form field match")
 
     def test_form_has_option(self):
         from hedweb.web_util import form_has_option
 
         with self.app.test as _:
-            environ = create_environ(data={base_constants.CHECK_FOR_WARNINGS: 'on'})
+            environ = create_environ(data={bc.CHECK_FOR_WARNINGS: 'on'})
             request = Request(environ)
-            self.assertTrue(form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'on'),
+            self.assertTrue(form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
                             "Form has the required option when set")
-            self.assertFalse(form_has_option(request, base_constants.CHECK_FOR_WARNINGS, 'off'),
+            self.assertFalse(form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'off'),
                              "Form does not have required option when target value is wrong one")
-            self.assertFalse(form_has_option(request, 'blank', 'on'),
+            self.assertFalse(form_has_option(request.form, 'blank', 'on'),
                              "Form does not have required option when option is not in the form")
 
     def test_form_has_url(self):
         from hedweb.web_util import form_has_url
         with self.app.test as _:
-            environ = create_environ(data={base_constants.SCHEMA_URL: 'https://www.google.com/my.json'})
+            environ = create_environ(data={bc.SCHEMA_URL: 'https://www.google.com/my.json'})
             request = Request(environ)
-            self.assertTrue(form_has_url(request, base_constants.SCHEMA_URL), "Form has a URL that is specified")
-            self.assertFalse(form_has_url(request, 'temp'), "Form does not have a field that is not specified")
-            self.assertFalse(form_has_url(request, base_constants.SCHEMA_URL, file_constants.SPREADSHEET_EXTENSIONS),
+            self.assertTrue(form_has_url(request.form, bc.SCHEMA_URL), "Form has a URL that is specified")
+            self.assertFalse(form_has_url(request.form, 'temp'), "Form does not have a field that is not specified")
+            self.assertFalse(form_has_url(request.form, bc.SCHEMA_URL, file_constants.SPREADSHEET_EXTENSIONS),
                              "Form does not URL with the wrong extension")
 
     def test_generate_download_file_from_text(self):
@@ -74,9 +74,9 @@ class Test(TestWebBase):
                                            column_prefix_dictionary={1: 'Attribute/Informational/Label/',
                                                                      3: 'Attribute/Informational/Description/'},
                                            name='ExcelOneSheet.xlsx')
-            results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
-                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            results = {bc.SPREADSHEET: spreadsheet,
+                       bc.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
+                       bc.MSG: 'Successful download', bc.MSG_CATEGORY: 'success'}
             response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for xlsx files')
             headers_dict = dict(response.headers)
@@ -97,9 +97,9 @@ class Test(TestWebBase):
                                            column_prefix_dictionary={1: 'Label/',
                                                                      3: 'Description/'},
                                            name='ExcelOneSheet.xlsx')
-            results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
-                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            results = {bc.SPREADSHEET: spreadsheet,
+                       bc.OUTPUT_DISPLAY_NAME: 'ExcelOneSheetA.xlsx',
+                       bc.MSG: 'Successful download', bc.MSG_CATEGORY: 'success'}
             response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for tsv files')
             headers_dict = dict(response.headers)
@@ -121,9 +121,9 @@ class Test(TestWebBase):
                                            column_prefix_dictionary={2: 'Attribute/Informational/Label/',
                                                                      4: 'Attribute/Informational/Description/'},
                                            name='LKTEventCodesHED3.tsv')
-            results = {base_constants.SPREADSHEET: spreadsheet,
-                       base_constants.OUTPUT_DISPLAY_NAME: 'LKTEventCodesHED3.tsv',
-                       base_constants.MSG: 'Successful download', base_constants.MSG_CATEGORY: 'success'}
+            results = {bc.SPREADSHEET: spreadsheet,
+                       bc.OUTPUT_DISPLAY_NAME: 'LKTEventCodesHED3.tsv',
+                       bc.MSG: 'Successful download', bc.MSG_CATEGORY: 'success'}
             response = generate_download_spreadsheet(results)
             self.assertIsInstance(response, Response, 'generate_download_spreadsheet returns a response for tsv files')
             headers_dict = dict(response.headers)
@@ -211,14 +211,14 @@ class Test(TestWebBase):
     def test_generate_text_response(self):
         with self.app.test_request_context():
             from hedweb.web_util import generate_text_response
-            results = {'data': 'testme', base_constants.MSG: 'testing', base_constants.MSG_CATEGORY: 'success'}
+            results = {'data': 'testme', bc.MSG: 'testing', bc.MSG_CATEGORY: 'success'}
             response = generate_text_response(results)
             self.assertIsInstance(response, Response, 'generate_download_text_response returns a response')
             headers_dict = dict(response.headers)
             self.assertEqual(200, response.status_code, 'generate_download_text_response should return status code 200')
             self.assertEqual('text/plain charset=utf-8', response.mimetype,
                              "generate_download_download_text_response should return text")
-            self.assertEqual(results[base_constants.MSG], headers_dict['Message'],
+            self.assertEqual(results[bc.MSG], headers_dict['Message'],
                              "generate_download_text_response have the correct message in the response")
             self.assertEqual(results['data'], response.data.decode('ascii'),
                              "generate_download_text_response have the download text as response data")
@@ -241,10 +241,10 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_version(self):
         from hed.schema import HedSchema
-        from hedweb.constants import base_constants
+        from hedweb.constants import base_constants as bc
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
-            environ = create_environ(data={base_constants.SCHEMA_VERSION: '8.0.0'})
+            environ = create_environ(data={bc.SCHEMA_VERSION: '8.0.0'})
             request = Request(environ)
             hed_schema = get_hed_schema_from_pull_down(request)
             self.assertIsInstance(hed_schema, HedSchema,
@@ -252,13 +252,13 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_other(self):
         from hed.schema import HedSchema
-        from hedweb.constants import base_constants
+        from hedweb.constants import base_constants as bc
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
             with open(schema_path, 'rb') as fp:
-                environ = create_environ(data={base_constants.SCHEMA_VERSION: base_constants.OTHER_VERSION_OPTION,
-                                               base_constants.SCHEMA_PATH: fp})
+                environ = create_environ(data={bc.SCHEMA_VERSION: bc.OTHER_VERSION_OPTION,
+                                               bc.SCHEMA_PATH: fp})
             request = Request(environ)
             hed_schema = get_hed_schema_from_pull_down(request)
             self.assertIsInstance(hed_schema, HedSchema,

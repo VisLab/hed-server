@@ -2,7 +2,7 @@
    {% if div_id|string != '' %}
       <div id={{ div_id }}>
    {% endif %}
-        <label for="formFile" class="form-label mt-4">{{ title }}</label>
+        <label for="{{ file_id }}" class="form-label mt-4">{{ title }}</label>
         <input class="form-control" type="file" id={{ file_id }} name={{ file_id }}>
         {% if flash_id|string != '' %}
              <p class="flash" id={{ flash_id }}></p>

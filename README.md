@@ -98,4 +98,6 @@ It generally refers to a version without the latest features.
 
 API documentation is generated on ReadTheDocs when a new version is
 pushed on any of the three branches. For example, the API documentation for the
-`latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/).  
+`latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/). 
+
+More information about using the webtools can be found at [https://www.hed-resources.org]([https://www.hed-resources.org]).

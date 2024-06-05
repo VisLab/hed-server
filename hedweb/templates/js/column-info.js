@@ -87,11 +87,11 @@ function showEvents(columnList, columnCounts) {
         let column = "column_" + i;
         let useName = column + "_use";
         let categoryName = column + "_category";
-        let columnField = column + "_name";
+        let columnNameField = column + "_name";
         let categoryBoxes = '<td><input type="checkbox" class="form-check-input form-check" ' +
                             'name="' + categoryName + '" id="' + categoryName + '">' +
-                            '<input type="text" hidden id="' + columnField + '" name="' + columnField +
-                            '" value="' + columnName + '"</td>';
+                            '<input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
+                            '" value="' + columnName + '"></td>';
 
         let row = '<tr class="table-active"><td><input type="checkbox" ' + 
                   'class="form-check-input form-check" name="' + useName + '" id="' + useName + '"></td>' +
@@ -104,29 +104,23 @@ function showEvents(columnList, columnCounts) {
 /**
  * Sets the components related to the spreadsheet columns when they are not empty.
  * @param {Array} columnList - An dictionary with column names
- * @param {boolean} hasPrefixes - if true then the prefix inputs are displayed.
  * 
  */
-function showIndices(columnList, hasPrefixes=true) {
+function showIndices(columnList) {
     $('#show_indices_section').show();
     let indicesTable = $('#show_indices_table');
     let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
-    if (hasPrefixes) {
-        contents += '<th scope="col">Use tag prefix:</th>';
-    }
     contents += '</tr></thead>';
     indicesTable.empty();
     for (let i = 0; i < columnList.length; i++) {
         let columnName = columnList[i]
-        let checkName = "column_" + i + "_check";
-        let checkInput = "column_" + i + "_input";
-        let row = '<tr class="table-active"><td><input type="checkbox" ' + 
-                  'class="form-check-input form-check" name="' + checkName + '" id="' + checkName + '"></td>' +
-                  '<td>' + columnName + '</td>'; 
-        if (hasPrefixes) {
-            row += '<td><input class="wide_text"' + ' type="text" name="' + checkInput +
-                '" id="' + checkInput + '" size="50"></td>';
-        }
+        let column = "column_" + i;
+        let useName = column + "_use";
+        let columnNameField = column + "_name";
+        let row = '<tr class="table-active"><td><input type="checkbox" ' +
+            'class="form-check-input form-check" name="' + useName + '" id="' + useName +
+            '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
+            '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
         contents = contents + row + '</tr>';
     }
     indicesTable.append(contents + '</table>')

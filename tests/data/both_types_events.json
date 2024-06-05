@@ -15,7 +15,7 @@
        "LongName": "Response time after stimulus",
        "Description": "Time from stimulus presentation until subject presses button",
        "Units": "ms",
-       "HED": "Duration/# ms, Action/Button press"
+       "HED": "Time-interval/# ms, Action/Button press"
    },
    "stim_file": {
        "LongName": "Stimulus file name",
