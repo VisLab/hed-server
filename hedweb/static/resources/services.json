@@ -20,37 +20,41 @@
             ],
             "Returns": "An error file as text if issues."
         },
-        "events_search": {
-            "Name": "events_search",
-            "Description": "Search a BIDS-style event file and return list of event numbers satisfying search.",
-            "Parameters": [
-                "events_string",
-                "sidecar_string",
-                [
-                    "schema_string",
-                    "schema_url",
-                    "schema_version"
-                ],
-                "query_list",
-                "columns_included"
-            ],
-            "Returns": "An error file as text if issues or a list of row numbers as text if successful."},
         "events_assemble": {
             "Name": "events_assemble",
             "Description": "Assemble annotations for each event. Returns: text of assembled events or error list.",
             "Parameters": [
                 "events_string",
-                "columns_included",
                 "sidecar_string",
                 [
                     "schema_string",
                     "schema_url",
                     "schema_version"
                 ],
-                "expand_defs"
+                "include_context",
+                "replace_defs",
+                "remove_types_on"
             ],
             "Returns": "A string containing the text of assembled events file or a list of issues. The definitions are also returned if any."
         },
+        "events_search": {
+            "Name": "events_search",
+            "Description": "Search a BIDS-style event file and return an array of zeros and ones indicating whether the search was satisfied.",
+            "Parameters": [
+                "events_string",
+                "sidecar_string",
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "queries",
+                "include_context",
+                "replace_defs",
+                "remove_types_on"
+            ],
+            "Returns": "An error file as text if issues or an array of zeros and ones indicating whether respective queries were satisfied."},
+
         "events_generate_sidecar": {
             "Name": "events_generate_sidecar",
             "Description": "Extract a template JSON sidecar based on the contents of the event file.",
@@ -136,6 +140,7 @@
             "Description": "Validate a spreadsheet (tsv string) with HED tags in specified columns.",
             "Parameters": [
                 "spreadsheet_string",
+                "definitions (JSON sidecar)",
                 [
                     "schema_string",
                     "schema_url",
@@ -152,6 +157,7 @@
             "Description": "Convert the indicated columns of a spreadsheet to long.",
             "Parameters": [
                 "spreadsheet_string",
+                "definitions (JSON sidecar)",
                 [
                     "schema_string",
                     "schema_url",
@@ -166,7 +172,8 @@
         "spreadsheet_to_short": {
             "Description": "Convert the indicated columns of a spreadsheet to short.",
             "Parameters": [
-                "string_list",
+                "spreadsheet_list",
+                "definitions (JSON sidecar)",
                 [
                     "schema_string",
                     "schema_url",
@@ -182,6 +189,7 @@
             "Description": "Validate a list of HED strings and return issues if any.",
             "Parameters": [
                 "string_list",
+                "definitions (JSON sidecar)",
                 [
                     "schema_string",
                     "schema_url",
@@ -214,22 +222,37 @@
                 ]
             ],
             "Returns": "The string converted to short form or a list of issues if any."
-        }
+        },
+        "strings_search": {
+            "Name": "strings_search",
+            "Description": "Search a list of HED strings for queries and return an array of zeros and ones based on which strings satisfied which queries.",
+            "Parameters": [
+                "string_list",
+                [
+                    "schema_string",
+                    "schema_url",
+                    "schema_version"
+                ],
+                "queries"
+            ],
+            "Returns": "An error file as text if issues or an array of zeros and ones indicating whether respective queries were satisfied."}
     },
     "parameter_meanings": {
         "check_for_warnings": "If true, check for warnings when processing HED strings.",
         "column_x_check": "If present with value 'on' column x has HED tags. (x is column position starting at 0.)",
         "columns_categorical": "A list of names of categorical event file columns",
-        "columns_included": "A list of names of columns to be included for assembly or query.",
         "columns_value": "A list of names of value event file columns",
         "events_string": "A BIDS events file as a string.",
         "expand_defs": "If true replaces Def/XXX with Def-expand/XXX grouped with the definition content.",
         "has_column_names": "If true, interpret the first row of file as column names.",
         "hed_strings": "List of HED strings to be processed.",
+        "include_context": "If true include the event context in the assembled HED strings.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
         "include_summaries": "Return any summaries in addition to the events file when remodeling.",
-        "query_list": "A list of query strings for searching.",
+        "queries": "A single string or a list of query strings for searching.",
         "remodel_string": "JSON remodel commands as a string",
+        "remove_types_on": "If true remove Condition-variable and Task tags from HED strings",
+        "replace_defs": "If true replace Def tags with contents of respective definitions",
         "schema_string": "HED XML schema as a string.",
         "schema_url": "A URL from which a HED schema can be downloaded.",
         "schema_version": "Version of HED to used in processing.",
