@@ -3,5 +3,6 @@ flask-wtf>=1.2.1
 config>=0.5.1
 openpyxl>=3.1.2
 pandas>=2.2.0
+mod_wsgi>=4.9.0
 Werkzeug>=3.0.1
 requests>=2.31.0
