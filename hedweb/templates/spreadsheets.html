@@ -8,30 +8,25 @@
 
 {% block content %}
     <h3>Spreadsheets with HED tags:</h3>
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/forms.css') }}">
     <form id="spreadsheet_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
         {{ create_actions(to_long=True,to_short=True,validate=True) }}
         {{ create_options(check_for_warnings=True,expand_defs=True) }}
-        <p> </p>
-        {{ create_schemas_pulldown() }}
-        <p> </p>
+        <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
             {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
             {{create_spreadsheets_input(has_column_names_option=False) }}
             {{ create_column_info('show_indices') }}
         </fieldset>
-        <p> </p>
+        <p>&nbsp;</p>
+        {{ create_schemas_pulldown() }}
         <fieldset>
         <button id="spreadsheet_submit" type="button" class="btn btn-primary btn-large">Process</button>
         <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
         <button id="spreadsheet_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
         </fieldset>
-
-        <p> </p>
         <p class="flash" id="spreadsheet_flash"></p>
     </form>
     <script type="module">
