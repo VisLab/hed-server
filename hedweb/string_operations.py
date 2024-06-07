@@ -136,7 +136,7 @@ class StringOperations(BaseOperations):
                 validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
         if validation_issues:
             return {bc.COMMAND: bc.COMMAND_VALIDATE,
-                    bc.COMMAND_TARGET: 'strings', 'data': validation_issues,
+                    bc.COMMAND_TARGET: 'strings', 'data': get_printable_issue_string(issues, f"Validation errors"),
                     bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'warning',
                     'msg': 'Strings had validation issues'}
