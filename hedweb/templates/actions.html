@@ -23,7 +23,7 @@ to_short=False,validate=False,compare_schemas=False) %}
 
         {% if assemble %}
             <option value="assemble" aria-label="Assemble the HED annotations for an events file." 
-                    aria-checked="true">Assemble annotations</option>
+                    aria-checked="true">Assemble HED annotations</option>
         {% endif %}
       
         {% if search %}
@@ -33,17 +33,17 @@ to_short=False,validate=False,compare_schemas=False) %}
       
         {% if convert_schema %}
              <option value="convert_schema" aria-label="Convert a schema to a different format." 
-                    aria-checked="true">Convert schema</option>
+                    aria-checked="true">Convert HED schema</option>
         {% endif %}
       
         {% if compare_schemas %}
             <option value="compare_schemas" aria-label="Compare to find similarities and differences." 
-                    aria-checked="true">Compare schemas</option>
+                    aria-checked="true">Compare HED schemas</option>
         {% endif %}
       
         {% if generate_sidecar %}
            <option value="generate_sidecar" aria-label="Generate a template sidecar from an events file." 
-                    aria-checked="true">Generate sidecar template</option>
+                    aria-checked="true">Generate JSON sidecar template</option>
         {% endif %}
 
         {% if extract_spreadsheet %}

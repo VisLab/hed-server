@@ -7,16 +7,12 @@
 
 {% block content %}
     <h3>BIDS-style JSON sidecar:</h3>
-
     <form id="sidecar_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
         {{ create_actions(to_long=True,to_short=True,extract_spreadsheet=True,
                           validate=True,merge_spreadsheet=True) }}
         {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
-        <p> </p>
-        {{ create_schemas_pulldown() }}
-        <p> </p>
+        <p>&nbsp;</p>
         <fieldset  class="form-group">
             <legend>Input:</legend>
             {{ create_file_input('JSON sidecar', 'sidecar_file') }}
@@ -24,13 +20,13 @@
              {{ create_spreadsheets_input(has_column_names_option=False) }}
              </div>
         </fieldset>
-        <p> </p>
+        <p>&nbsp;</p>
+        {{ create_schemas_pulldown() }}
         <fieldset class="form-group">
         <button id="sidecar_submit" type="button" class="btn btn-primary btn-large">Process</button>
         <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
         <button id="sidecar_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
         </fieldset>
-        <p> </p>
         <p class="flash" id="sidecar_flash"></p>
     </form>
     <script type="module">

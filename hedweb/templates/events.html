@@ -7,16 +7,13 @@
 {% from "query.html" import create_query %}
 
 {% block content %}
-    <h3 data-toggle="collapse" data-target="#eventsinfo">BIDS-style event (tsv) file:</h3>
-    <div id="eventsinfo" class="collapse">
-    </div>
+    <h3>BIDS-style event (tsv) file:</h3>
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
         {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True) }}
         {{ create_options(check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
-         <p> </p>
+        <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
             {{ create_file_input('Upload events (tsv file):', 'events_file', '') }}
@@ -28,7 +25,7 @@
             {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file',
                                  flash_id='', div_id='remodel_input_section') }}
         </fieldset>
-        <p>xxxx</p>
+        <p>&nbsp;</p>
         {{ create_schemas_pulldown() }}
         <fieldset>
         <button id="events_submit" type="button" class="btn btn-primary btn-large">Process</button>

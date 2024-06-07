@@ -12,13 +12,13 @@ include_description_tags=False,include_summaries=False,replace_defs=False,remove
             {% if expand_defs %}
                 <span class="form-check form-switch" id="expand_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="expand_defs" id="expand_defs">
-                    <label class="form-check-label" for="expand_defs">Expand defs</label>
+                    <label class="form-check-label" for="expand_defs">Expand Def tags</label>
                 </span> &nbsp; &nbsp;
             {% endif %}
             {% if include_context %}
                 <span class="form-check form-switch" id="include_context_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_context" id="include_context">
-                    <label class="form-check-label" for="include_context">Include context</label>
+                    <label class="form-check-label" for="include_context">Include event context</label>
                 </span> &nbsp; &nbsp;
             {% endif %}
             {% if include_description_tags %}
@@ -36,13 +36,13 @@ include_description_tags=False,include_summaries=False,replace_defs=False,remove
             {% if replace_defs %}
                 <span class="form-check form-switch" id="replace_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="replace_defs" id="replace_defs">
-                    <label class="form-check-label" for="replace_defs">Replace defs</label>
+                    <label class="form-check-label" for="replace_defs">Replace Def tags</label>
                 </span> &nbsp; &nbsp;
             {% endif %}
             {% if remove_types_on %}
                 <span class="form-check form-switch" id="remove_types_on_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="remove_types_on" id="remove_types_on">
-                    <label class="form-check-label" for="remove_types_on">Remove types</label>
+                    <label class="form-check-label" for="remove_types_on">Remove Condition-variable and Task tags</label>
                 </span>
             {% endif %}
         </div>
