@@ -29,6 +29,7 @@ class Test(TestRouteBase):
 
             response = self.app.test.post('/services_submit', content_type='application/json',
                                           data=json.dumps(json_data))
+            x = response.data
             json_data2 = json.loads(response.data)
             results = json_data2['results']
             self.assertTrue(isinstance(results, dict), "should return a dictionary when validation errors")
@@ -39,7 +40,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             json_data = {bc.CHECK_FOR_WARNINGS: 'on',
                          bc.SCHEMA_VERSION: '8.2.0',
-                         bc.STRING_LIST: "Blech",
+                         bc.STRING_LIST: 'Blech',
                          bc.SERVICE: 'strings_validate'}
 
             response = self.app.test.post('/services_submit', content_type='application/json',
@@ -49,4 +50,4 @@ class Test(TestRouteBase):
             self.assertTrue(isinstance(results, dict), "should return a dictionary when validation errors")
             self.assertEqual('warning', results['msg_category'], "should give warning with issues")
             self.assertTrue(results["data"], 'process return data for issues')
-            self.assertEqual(len(results["data"]), 5, "Server is allowing a string as a string list input")
+            self.assertEqual(len(results["data"]), 84, "Server is allowing a string as a string list input")

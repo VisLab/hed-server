@@ -1,12 +1,10 @@
-import json
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
 from hed import schema as hedschema
 from hed import get_query_handlers, search_hed_objs
 from hed.validator import HedValidator
-
 from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
-from hedweb.web_util import generate_filename
+
 
 class StringOperations(BaseOperations):
 
@@ -130,13 +128,13 @@ class StringOperations(BaseOperations):
         validation_issues = []
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         validator = HedValidator(self.schema, self.definitions)
-        for pos, h_string in enumerate(self.string_list, start=1):
+        for pos, h_string in enumerate(self.string_list):
             issues = validator.validate(h_string, True, error_handler=error_handler)
             if issues:
                 validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
         if validation_issues:
             return {bc.COMMAND: bc.COMMAND_VALIDATE,
-                    bc.COMMAND_TARGET: 'strings', 'data': validation_issues,
+                    bc.COMMAND_TARGET: 'strings', 'data': '\n'.join(validation_issues),
                     bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                     'msg_category': 'warning',
                     'msg': 'Strings had validation issues'}
