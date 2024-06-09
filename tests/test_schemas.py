@@ -104,9 +104,9 @@ class Test(TestWebBase):
             self.assertTrue(results['data'], "HED 8.1.0/8.2.0 can be compared")
             # Check for some differences
             self.assertTrue("Differences between 8.1.0 and 8.2.0" in results['data'])
-            self.assertTrue("Ethnicity (Minor): Item Ethnicity added to Tags" in results['data'])
+            self.assertTrue("Ethnicity (Minor): Item Ethnicity added" in results['data'])
             self.assertTrue(
-                "Dash (Patch): Suggested tag changed on Item/Object/Geometric-object/2D-shape/Dash" in results['data'])
+                "Dash (Patch): Suggested tag changed on Dash from empty to Sensory-presentation" in results['data'])
 
             input_dict = {
                 bc.COMMAND: bc.COMMAND_COMPARE_SCHEMAS,
