@@ -270,7 +270,7 @@ def get_hed_schema_from_pull_down(request):
         hed_schema = load_schema_version(request.form[bc.SCHEMA_VERSION])
     elif bc.SCHEMA_PATH in request.files:
         f = request.files[bc.SCHEMA_PATH]
-        hed_schema = hedschema.from_string(f.read(fc.BYTE_LIMIT).decode('ascii'),
+        hed_schema = hedschema.from_string(f.read(fc.BYTE_LIMIT).decode('utf-8'),
                                            schema_format=secure_filename(f.filename))
     else:
         raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")

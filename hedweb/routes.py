@@ -101,7 +101,7 @@ def schema_version_results():
         if bc.SCHEMA_PATH in request.files:
             f = request.files[bc.SCHEMA_PATH]
             name, extension = get_parsed_name(secure_filename(f.filename))
-            hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('ascii'),
+            hed_schema = hedschema.from_string(f.stream.read(file_constants.BYTE_LIMIT).decode('utf-8'),
                                                schema_format=extension)
             hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)

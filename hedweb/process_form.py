@@ -117,7 +117,7 @@ class ProcessForm:
         elif form_has_option(request.form, bc.SCHEMA_VERSION) and form_has_file(request.files, bc.SCHEMA_PATH):
             f = request.files[bc.SCHEMA_PATH]
             arguments[bc.SCHEMA] = \
-                from_string(f.read(fc.BYTE_LIMIT).decode('ascii'), schema_format=secure_filename(f.filename))
+                from_string(f.read(fc.BYTE_LIMIT).decode('utf-8'), schema_format=secure_filename(f.filename))
         if form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION) and \
                 form_has_file(request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_FILE])
@@ -148,7 +148,7 @@ class ProcessForm:
         """
         if isinstance(schema_input, FileStorage):
             name, extension = get_parsed_name(secure_filename(schema_input.filename))
-            hed_schema = hedschema.from_string(schema_input.read(fc.BYTE_LIMIT).decode('ascii'),
+            hed_schema = hedschema.from_string(schema_input.read(fc.BYTE_LIMIT).decode('utf-8'),
                                                schema_format=extension,
                                                name=name)
         elif isinstance(schema_input, str):

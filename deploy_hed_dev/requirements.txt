@@ -1,4 +1,4 @@
-flask>=3.0.2
+flask>=3.0.3
 flask-wtf>=1.2.1
 config>=0.5.1
 mod_wsgi>=4.9.0
