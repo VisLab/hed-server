@@ -28,6 +28,6 @@ class TestRouteBase(TestWebBase):
     def _get_file_string(self, filename):
         filename = self._get_path(filename)
         with open(filename, 'rb') as fp:
-            filename_string = fp.read().decode('ascii')
+            filename_string = fp.read().decode('utf-8')
 
         return filename_string

@@ -220,7 +220,7 @@ class Test(TestWebBase):
                              "generate_download_download_text_response should return text")
             self.assertEqual(results[bc.MSG], headers_dict['Message'],
                              "generate_download_text_response have the correct message in the response")
-            self.assertEqual(results['data'], response.data.decode('ascii'),
+            self.assertEqual(results['data'], response.data.decode('utf-8'),
                              "generate_download_text_response have the download text as response data")
 
     def test_get_hed_schema_from_pull_down_empty(self):
