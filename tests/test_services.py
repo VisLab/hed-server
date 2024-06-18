@@ -45,7 +45,7 @@ class Test(TestWebBase):
         with self.app.test:
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(sidecar_path, 'rb') as fp:
-                sidecar_string = fp.read().decode('ascii')
+                sidecar_string = fp.read().decode('utf-8')
             json_data = {bc.SIDECAR_STRING: sidecar_string, bc.CHECK_FOR_WARNINGS: 'on',
                          bc.SCHEMA_VERSION: '8.2.0', bc.SERVICE: 'sidecar_validate'}
             environ = create_environ(json=json_data)
@@ -61,7 +61,7 @@ class Test(TestWebBase):
         with self.app.test:
             sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/bids_events.json')
             with open(sidecar_path, 'rb') as fp:
-                sidecar_string = fp.read().decode('ascii')
+                sidecar_string = fp.read().decode('utf-8')
             json_data = self.get_request_template()
             json_data[bc.SIDECAR_STRING] = sidecar_string
             json_data[bc.CHECK_FOR_WARNINGS] = True,

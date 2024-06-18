@@ -136,8 +136,11 @@ class ProcessServices:
                                                          has_column_names=True, column_prefix_dictionary=None,
                                                          name='spreadsheets.tsv')
         if bc.STRING_LIST in params and params[bc.STRING_LIST]:
+            working_list = params[bc.STRING_LIST]
+            if isinstance(working_list, str):
+                working_list = [working_list]           
             s_list = []
-            for s in params[bc.STRING_LIST]:
+            for s in working_list:
                 s_list.append(HedString(s, hed_schema=schema))
             arguments[bc.STRING_LIST] = s_list
 

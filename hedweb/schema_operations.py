@@ -148,7 +148,7 @@ def get_schema(schema_input=None, version=None, as_xml_string=None):
     """
     if isinstance(schema_input, FileStorage):
         name, extension = get_parsed_name(secure_filename(schema_input.filename))
-        hed_schema = hedschema.from_string(schema_input.read(fc.BYTE_LIMIT).decode('ascii'),
+        hed_schema = hedschema.from_string(schema_input.read(fc.BYTE_LIMIT).decode('utf-8'),
                                            schema_format=extension,
                                            name=name)
     elif isinstance(schema_input, str):

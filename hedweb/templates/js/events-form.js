@@ -119,10 +119,10 @@ function setOptions() {
     } else if (selectedElement.value === "assemble") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
-        showOption("include_context");
+        showOption("include_context", true);
         hideOption("include_summaries");
-        showOption("remove_types_on");
-        showOption("replace_defs");
+        showOption("remove_types_on", true);
+        showOption("replace_defs", true);
         hideOption("use_hed");
         $("#options_section").show();
         $("#query_input_section").hide();
@@ -161,10 +161,10 @@ function setOptions() {
     }  else if (selectedElement.value === "search") {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
-        showOption("include_context");
+        showOption("include_context", true);
         hideOption("include_summaries");
-        showOption("remove_types_on");
-        showOption("replace_defs");
+        showOption("remove_types_on", true);
+        showOption("replace_defs", true);
         hideOption("use_hed");
         $("#options_section").show();
         $("#query_input_section").show();
