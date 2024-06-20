@@ -2,6 +2,70 @@
 requires = ["setuptools>=42", "versioneer[toml]"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "hedweb"
+dynamic = ["version"]
+description = "Web interface, REST services, and Docker deployment for HED tools."
+readme = "README.md"
+authors = [
+    { name = "VisLab" },
+    { name = "Ian Callanan" },
+    { name = "Jeremy Cockfield" },
+    { name = "Kay Robbins", email = "Kay.Robbins@utsa.edu" }
+]
+license = { text = "MIT License" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+dependencies = [
+    "click",
+    "coverage",
+    "defusedxml",
+    "et-xmlfile",
+    "Flask",
+    "Flask-WTF",
+    "inflect",
+    "itsdangerous",
+    "jdcal",
+    "Jinja2",
+    "MarkupSafe",
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "portalocker",
+    "python-dateutil",
+    "pytz",
+    "requests",
+    "semantic-version",
+    "six",
+    "Sphinx",
+    "SphinxExtensions",
+    "sphinx_rtd_theme",
+    "Werkzeug",
+    "xlrd",
+    "attrs"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/hed-standard/hed-web/"
+"Bug Tracker" = "https://github.com/hed-standard/hed-web/issues"
+
+[tool.setuptools.packages.find]
+namespaces = true
+include = ["hed*"]
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "hedweb/_version.py"
+versionfile_build = "hedweb/_version.py"
+tag_prefix = ""
+parentdir_prefix = "hedweb-"
+
 [tool.codespell]
 skip = '*.git,*.pdf,*.xml,*.mediawiki,*.svg,versioneer.py,venv*,*.tsv,*.yaml,*.yml,*.json,*.rdf,*.jsonld,spec_tests,*.css,*.css.map'
-ignore-words-list = 'te,parms,cACE'
+ignore-words-list = 'te,parms,cACE,assertIn'
