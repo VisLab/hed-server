@@ -22,32 +22,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "click",
-    "coverage",
-    "defusedxml",
-    "et-xmlfile",
     "Flask",
     "Flask-WTF",
-    "inflect",
-    "itsdangerous",
-    "jdcal",
-    "Jinja2",
-    "MarkupSafe",
-    "numpy",
     "openpyxl",
     "pandas",
-    "portalocker",
-    "python-dateutil",
-    "pytz",
-    "requests",
-    "semantic-version",
-    "six",
-    "Sphinx",
-    "SphinxExtensions",
-    "sphinx_rtd_theme",
     "Werkzeug",
-    "xlrd",
-    "attrs"
+    "requests"
 ]
 
 [project.urls]
