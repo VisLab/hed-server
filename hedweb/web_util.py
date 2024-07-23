@@ -18,12 +18,11 @@ TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 def convert_hed_versions(hed_info):
     hed_list = []
+    standard_list = hed_info['schema_version_list'].get(None, [])
     for key, key_list in hed_info['schema_version_list'].items():
-        if key is None:
-            hed_list = hed_list + key_list
-        else:
+        if key is not None:
             hed_list = hed_list + [key + '_' + element for element in key_list]
-    return {'schema_version_list': hed_list}
+    return {'schema_version_list': standard_list + hed_list}
 
 
 def file_extension_is_valid(filename, accepted_extensions=None):
