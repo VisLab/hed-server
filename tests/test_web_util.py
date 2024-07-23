@@ -20,9 +20,9 @@ class Test(TestWebBase):
         just_blank = {'schema_version_list': {'': ['9.0.0', '9.1.0']}}
         just_blank_list = convert_hed_versions(just_blank)
         self.assertTrue(just_blank_list['schema_version_list'] == ['_9.0.0', '_9.1.0'])
-        alls = {'schema_version_list': {'score': ['1.0.0', '2.0.0'], None: ['8.0.0', '8.1.0']}}
-        alls_list = convert_hed_versions(alls)
-        self.assertTrue(alls_list['schema_version_list'] == ['8.0.0', '8.1.0', 'score_1.0.0', 'score_2.0.0'])
+        test_all = {'schema_version_list': {'score': ['1.0.0', '2.0.0'], None: ['8.0.0', '8.1.0']}}
+        test_all_list = convert_hed_versions(test_all)
+        self.assertTrue(test_all_list['schema_version_list'] == ['8.0.0', '8.1.0', 'score_1.0.0', 'score_2.0.0'])
 
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file
