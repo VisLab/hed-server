@@ -123,17 +123,19 @@ class EventOperations(BaseOperations):
                                                                  extension='.txt', append_datetime=True),
                         bc.MSG_CATEGORY: 'warning',
                         bc.MSG: f"Cannot generate sidecar because skipped and value column names overlap."}
-
-        columns_info = TabularSummary.get_columns_info(self.events.dataframe)
-        hed_dict = {}
-        for column_name in columns_info:
-            if column_name in self.columns_skip:
-                continue
-            elif column_name in self.columns_value:
-                hed_dict[column_name] = generate_sidecar_entry(column_name)
-            else:
-                hed_dict[column_name] = generate_sidecar_entry(column_name,
-                                                               column_values=list(columns_info[column_name].keys()))
+        tab_sum = TabularSummary(value_cols=self.columns_value, skip_cols=self.columns_skip)
+        tab_sum.update(self.events.dataframe)
+        hed_dict = tab_sum.extract_sidecar_template()
+        # columns_info = TabularSummary.get_columns_info(self.events.dataframe)
+        # hed_dict = {}
+        # for column_name in columns_info:
+        #     if column_name in self.columns_skip:
+        #         continue
+        #     elif column_name in self.columns_value:
+        #         hed_dict[column_name] = generate_sidecar_entry(column_name)
+        #     else:
+        #         hed_dict[column_name] = generate_sidecar_entry(column_name,
+        #                                                        column_values=list(columns_info[column_name].keys()))
         file_name = generate_filename(display_name, name_suffix='_generated', extension='.json', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_GENERATE_SIDECAR,
                 bc.COMMAND_TARGET: 'events',

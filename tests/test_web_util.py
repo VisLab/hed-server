@@ -9,6 +9,21 @@ from tests.test_web_base import TestWebBase
 
 class Test(TestWebBase):
 
+    def test_convert_hed_versions(self):
+        from hedweb.web_util import convert_hed_versions
+        no_none = {'schema_version_list': {'score': ['1.0.0', '2.0.0']}}
+        no_none_list = convert_hed_versions(no_none)
+        self.assertTrue(no_none_list['schema_version_list'] == ['score_1.0.0', 'score_2.0.0'])
+        just_none = {'schema_version_list': {None: ['8.0.0', '8.1.0']}}
+        just_none_list = convert_hed_versions(just_none)
+        self.assertTrue(just_none_list['schema_version_list'] == ['8.0.0', '8.1.0'])
+        just_blank = {'schema_version_list': {'': ['9.0.0', '9.1.0']}}
+        just_blank_list = convert_hed_versions(just_blank)
+        self.assertTrue(just_blank_list['schema_version_list'] == ['_9.0.0', '_9.1.0'])
+        test_all = {'schema_version_list': {'score': ['1.0.0', '2.0.0'], None: ['8.0.0', '8.1.0']}}
+        test_all_list = convert_hed_versions(test_all)
+        self.assertTrue(test_all_list['schema_version_list'] == ['8.0.0', '8.1.0', 'score_1.0.0', 'score_2.0.0'])
+
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file
         with self.app.test as _:
@@ -241,7 +256,6 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_version(self):
         from hed.schema import HedSchema
-        from hedweb.constants import base_constants as bc
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
             environ = create_environ(data={bc.SCHEMA_VERSION: '8.0.0'})
@@ -252,7 +266,6 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_other(self):
         from hed.schema import HedSchema
-        from hedweb.constants import base_constants as bc
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
