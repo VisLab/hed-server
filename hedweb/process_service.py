@@ -57,6 +57,7 @@ class ProcessServices:
         arguments[bc.REQUEST_TYPE] = bc.FROM_SERVICE
         arguments[bc.COLUMNS_CATEGORICAL] = ProcessServices.get_list(bc.COLUMNS_CATEGORICAL, params)
         arguments[bc.COLUMNS_VALUE] = ProcessServices.get_list(bc.COLUMNS_VALUE, params)
+        arguments[bc.COLUMNS_SKIP] = ProcessServices.get_list(bc.COLUMNS_SKIP, params)
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
         arguments[bc.HAS_COLUMN_NAMES] = True
 

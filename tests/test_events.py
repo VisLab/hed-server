@@ -1,5 +1,6 @@
 import os
 from io import StringIO
+import json
 import pandas as pd
 import unittest
 from werkzeug.test import create_environ
@@ -167,6 +168,10 @@ class Test(TestWebBase):
                         'generate_sidecar results should have a data key when no errors')
         self.assertEqual('success', results['msg_category'],
                          'generate_sidecar msg_category should be success when no errors')
+        sidecar_template = json.loads(results['data'])
+        self.assertFalse('onset' in sidecar_template)
+        self.assertIsInstance(sidecar_template['event_type']['HED'], dict)
+        self.assertTrue(isinstance(sidecar_template['trial']['HED'], str))
 
     def test_search_invalid(self):
         with self.app.app_context():
