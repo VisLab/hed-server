@@ -16,7 +16,7 @@ Pygments==2.18.0
 PyYAML==6.0.1
 requests==2.32.3
 snowballstemmer==2.2.0
-Sphinx==7.4.7
+Sphinx==8.0.2
 sphinx-rtd-theme==2.0.0
 sphinxcontrib-applehelp==2.0.0
 sphinxcontrib-devhelp==1.0.6
