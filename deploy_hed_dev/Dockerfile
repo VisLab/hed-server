@@ -29,7 +29,7 @@ RUN mkdir -p /var/log/hedtools && \
 # Copy the application code into the container
 COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
-COPY runserver.py /root/
+COPY ./hedtools/hedweb/runserver.py /root/
 
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig

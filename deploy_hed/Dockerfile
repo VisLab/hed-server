@@ -1,4 +1,4 @@
-FFROM python:3.10-slim-buster
+FROM python:3.10-slim-buster
 
 # Set the working directory inside the container
 WORKDIR /root
@@ -28,7 +28,7 @@ RUN mkdir -p /var/log/hedtools && \
 # Copy the application code into the container
 COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
-COPY runserver.py /root/
+./hedtools/hedweb/runserver.py /root/
 
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
