@@ -1,5 +1,14 @@
-# hedweb
+## hedweb
 [![Documentation Status](https://readthedocs.org/projects/hed-web/badge/?version=latest)](https://hed-web.readthedocs.io/en/latest/?badge=latest)
+
+### Online deployment
+The stable version of the HED online tools is available for your use at:
+[**https://hedtools.org/hed**](https://hedtools.org/hed).
+An alternate version [**https://hedtools.org/hed_dev**](https://hedtools.org/hed_dev)
+has the latest features, some of which are experimental.
+
+
+### Running locally
 
 This project contains the web interface code for deploying HED tools as a web application running in a docker module.   
 The instructions assume that you have cloned the 
@@ -9,8 +18,6 @@ The instructions assume that you have cloned the
 git clone https://github.com/hed-standard/hed-web
 ```
 
-
-### Running locally
 The application can be run locally on an internal test web server by calling 
 the `runserver` application directly.
 To do this you will have to do the following:
@@ -65,7 +72,7 @@ to your `deploy_hed` directory.
 ```  
    cd ~/deploy_hed
 ```
-3.  Execute the `deploy.sh` script:
+4. Execute the `deploy.sh` script:
 
 ```  
    sudo bash deploy.sh
