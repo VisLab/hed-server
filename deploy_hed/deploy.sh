@@ -1,130 +1,117 @@
 #!/bin/bash
 
-# deploy.sh - A script used to _build and deploy a docker container for the HEDTools online validator
+# deploy.sh - Script to build and deploy a Docker container for the HEDTools online validator
 
-if [ $# -eq 0 ]; then
-  BRANCH="master"
-else
-  BRANCH="$1"
-fi
 ##### Constants
-
-DEPLOY_DIR=${PWD}
+BRANCH="${1:-master}"
+DEPLOY_DIR=$(pwd)
 IMAGE_NAME="hedtools:latest"
 CONTAINER_NAME="hedtools"
 GIT_WEB_REPO_URL="https://github.com/hed-standard/hed-web"
-GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
-GIT_WEB_REPO_BRANCH=${BRANCH}
+GIT_WEB_REPO_BRANCH="$BRANCH"
 HOST_PORT=33000
 CONTAINER_PORT=80
 
+# Directory paths
+GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
-SOURCE_DEPLOY_DIR="${DEPLOY_DIR}/hed-web/deploy_hed"
-BASE_CONFIG_FILE="${SOURCE_DEPLOY_DIR}/base_config.py"
+SOURCE_DEPLOY_DIR="${GIT_HED_WEB_DIR}/deploy_hed_dev"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
-SOURCE_WSGI_FILE="${SOURCE_DEPLOY_DIR}/web.wsgi"
+
+# Source files
+BASE_CONFIG_FILE="${SOURCE_DEPLOY_DIR}/base_config.py"
 SOURCE_DOCKERFILE="${SOURCE_DEPLOY_DIR}/Dockerfile"
 SOURCE_REQUIREMENTS_FILE="${SOURCE_DEPLOY_DIR}/requirements.txt"
-SOURCE_HTTPD_CONF="${SOURCE_DEPLOY_DIR}/httpd.conf"
-WEB_CODE_DIR="${DEPLOY_DIR}/hed-web/hedweb"
+WEB_CODE_DIR="${GIT_HED_WEB_DIR}/hedweb"
 
 ##### Functions
 
-clone_github_repos(){
-echo "Deploy dir: ${DEPLOY_DIR}"
-cd "${DEPLOY_DIR}" || exit_error
-echo "Cloning repo ${GIT_WEB_REPO_URL} in ${DEPLOY_DIR} using ${GIT_WEB_REPO_BRANCH} branch"
-git clone "${GIT_WEB_REPO_URL}" -b "${GIT_WEB_REPO_BRANCH}"
+# Print error message and exit
+error_exit() {
+    echo "[ERROR] $1"
+    exit 1
 }
 
-create_web_directory()
-{
-echo Creating hedweb directory...
-echo "Make ${CODE_DEPLOY_DIR}"
-mkdir "${CODE_DEPLOY_DIR}"
-echo "Copy ${BASE_CONFIG_FILE} to ${CONFIG_FILE}"
-cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}"
-echo "Copy ${SOURCE_WSGI_FILE} to ${CODE_DEPLOY_DIR}"
-cp "${SOURCE_WSGI_FILE}" "${CODE_DEPLOY_DIR}/."
-echo "Copy ${SOURCE_DOCKERFILE} to ${DEPLOY_DIR}"
-cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/."
-echo "Copy ${SOURCE_REQUIREMENTS_FILE} to ${DEPLOY_DIR}"
-cp "${SOURCE_REQUIREMENTS_FILE}" "${DEPLOY_DIR}/."
-echo "Copy ${SOURCE_HTTPD_CONF} to ${DEPLOY_DIR}"
-cp "${SOURCE_HTTPD_CONF}" "${DEPLOY_DIR}/."
-echo "Copy ${WEB_CODE_DIR} directory to ${CODE_DEPLOY_DIR}"
-cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}"
+# Clone the GitHub repository
+clone_github_repos() {
+    echo "Cloning repository ${GIT_WEB_REPO_URL} into ${DEPLOY_DIR} using branch ${GIT_WEB_REPO_BRANCH}..."
+    git clone --branch "${GIT_WEB_REPO_BRANCH}" "${GIT_WEB_REPO_URL}" || error_exit "Failed to clone repo ${GIT_WEB_REPO_URL}"
 }
 
-switch_to_web_directory()
-{
-echo Switching to hedweb directory...
-cd "${DEPLOY_DIR}" || error_exit "Cannot access $DEPLOY_DIR"
+# Create the necessary web directory structure and copy config files
+setup_web_directory() {
+    echo "Setting up web directory..."
+    mkdir -p "${CODE_DEPLOY_DIR}"
+    cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}" || error_exit "Failed to copy base config file"
+    cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/Dockerfile" || error_exit "Failed to copy Dockerfile"
+    cp "${SOURCE_REQUIREMENTS_FILE}" "${DEPLOY_DIR}/requirements.txt" || error_exit "Failed to copy requirements.txt"
+    cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}" || error_exit "Failed to copy web code"
 }
 
-build_new_container()
-{
-echo "Building new container ${IMAGE_NAME} ..."
-docker build -t $IMAGE_NAME . --build-arg CACHE_BUST=$(date +%s)
+# Build a new Docker image
+build_docker_image() {
+    echo "Building Docker image ${IMAGE_NAME}..."
+    docker build -t "${IMAGE_NAME}" . --build-arg CACHE_BUST=$(date +%s) || error_exit "Docker build failed"
 }
 
-delete_old_container()
-{
-echo "Deleting old container ${CONTAINER_NAME} ..."
-docker rm -f $CONTAINER_NAME
+# Stop and remove the old container if it exists
+remove_old_container() {
+    echo "Removing old container ${CONTAINER_NAME} if it exists..."
+    docker rm -f "${CONTAINER_NAME}" &>/dev/null || echo "No existing container to remove"
 }
 
-run_new_container()
-{
-echo "Running new container $CONTAINER_NAME ..."
-docker run --restart=always --name $CONTAINER_NAME -d -p 127.0.0.1:$HOST_PORT:$CONTAINER_PORT $IMAGE_NAME --log-opt max-size=50m
+# Run the new Docker container
+run_new_container() {
+    echo "Running new container ${CONTAINER_NAME}..."
+    docker run --restart=always --name "${CONTAINER_NAME}" -d -p "127.0.0.1:${HOST_PORT}:${CONTAINER_PORT}" "${IMAGE_NAME}" || error_exit "Failed to start new Docker container"
 }
 
-cleanup_directory()
-{
-echo "Cleaning up directory ${GIT_HED_WEB_DIR} ..."
-rm -rf "${GIT_HED_WEB_DIR}"
-echo "Cleaning up ${CODE_DEPLOY_DIR}"
-rm -rf "${CODE_DEPLOY_DIR}"
+# Clean up old directories
+cleanup_directories() {
+    echo "Cleaning up deployment directories..."
+    rm -rf "${GIT_HED_WEB_DIR}" "${CODE_DEPLOY_DIR}" || error_exit "Failed to clean up directories"
 }
 
-error_exit()
-{
-	echo "$1" 1>&2
-	exit 1
+# Print deployment details
+output_deployment_info() {
+    cat <<EOF
+[INFO] Deployment Information:
+- Deploy directory: ${DEPLOY_DIR}
+- Docker image name: ${IMAGE_NAME}
+- Docker container name: ${CONTAINER_NAME}
+- Git repository URL: ${GIT_WEB_REPO_URL}
+- Git branch: ${GIT_WEB_REPO_BRANCH}
+- Host port: ${HOST_PORT}
+- Container port: ${CONTAINER_PORT}
+- Local code directory: ${CODE_DEPLOY_DIR}
+- Configuration file: ${CONFIG_FILE}
+EOF
 }
 
-output_paths()
-{
-echo "The relevant deployment information is:"
-echo "Deploy directory: ${DEPLOY_DIR}"
-echo "Docker image name: ${IMAGE_NAME}"
-echo "Docker container name: ${CONTAINER_NAME}"
-echo "Git tools repo: ${GIT_TOOLS_REPO_URL}"
-echo "Git web repo: ${GIT_WEB_REPO_URL}"
-echo "Git web repo branch: ${GIT_WEB_REPO_BRANCH}"
-echo "Git hed web dir: ${GIT_HED_WEB_DIR}"
-echo "Host port: ${HOST_PORT}"
-echo "Container port: ${CONTAINER_PORT}"
-echo "Local deployment directory: ${DEPLOY_DIR}"
-echo "Local deploy code dir: ${DEPLOY_CODE_DIR}"
-echo "Local code deployment directory: ${CODE_DEPLOY_DIR}"
-echo "Configuration file: ${CONFIG_FILE}"
-echo "Base configuration file: ${BASE_CONFIG_FILE}"
-echo "Source WSGI file: ${SOURCE_WSGI_FILE}"
-echo "Source web code directory: ${WEB_CODE_DIR}"
-}
+##### Main Script
 
-##### Main
-echo "Starting...."
-output_paths
-echo "....."
-echo "Cleaning up directories before deploying..."
-cleanup_directory
-clone_github_repos || error_exit "Cannot clone repo ${GIT_WEB_REPO_URL}"
-create_web_directory
-switch_to_web_directory
-build_new_container
-delete_old_container
+echo "[INFO] Starting deployment..."
+output_deployment_info
+
+echo "[INFO] Cleaning up old directories..."
+cleanup_directories
+
+echo "[INFO] Cloning GitHub repository..."
+clone_github_repos
+
+echo "[INFO] Setting up web directory..."
+setup_web_directory
+
+echo "[INFO] Building Docker image..."
+build_docker_image
+
+echo "[INFO] Removing old container..."
+remove_old_container
+
+echo "[INFO] Running new container..."
 run_new_container
-cleanup_directory
+
+echo "[INFO] Cleaning up temporary directories..."
+cleanup_directories
+
+echo "[INFO] Deployment successful!"
