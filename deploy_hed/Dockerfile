@@ -10,9 +10,7 @@ RUN apt-get update && apt-get install -y \
     git \
     musl-dev \
     libxslt-dev \
-    libxml2-dev && \
-    curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* \
+    libxml2-dev && 
     # Upgrade pip and install requirements
     pip3 install --upgrade pip && \
     pip3 install -r requirements.txt
