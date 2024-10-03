@@ -37,4 +37,4 @@ ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 EXPOSE 33000
 
 # Run the Flask application with Gunicorn, binding to port 33000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:33000", "hedtools.hedweb.wsgi:application"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:33000", "runserver:app"]
