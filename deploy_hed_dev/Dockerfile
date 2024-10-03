@@ -41,4 +41,4 @@ ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 EXPOSE 33004
 
 # Run the Flask application with Gunicorn, binding to port 33004
-CMD ["gunicorn", "-w", "4", "-b", "127.0.0.1:33004", "runserver:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:33004", "runserver:app"]
