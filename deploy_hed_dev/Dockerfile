@@ -31,6 +31,9 @@ COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
 COPY ./hedtools/hedweb/runserver.py /root/
 
+# Set the PYTHONPATH environment variable to include /root/hedtools
+ENV PYTHONPATH="/root/hedtools"
+
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 
