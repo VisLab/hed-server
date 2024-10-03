@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     musl-dev \
     libxslt-dev \
     libxml2-dev && \
+    curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* \
     # Upgrade pip and install requirements
     pip3 install --upgrade pip && \
     pip3 install -r requirements.txt
@@ -41,4 +43,4 @@ ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 EXPOSE 33004
 
 # Run the Flask application with Gunicorn, binding to port 33004
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:33004", "runserver:app"]
+CMD ["gunicorn", "-w", "4", "-b", "127.0.0.0:33004", "runserver:app"]
