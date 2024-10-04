@@ -28,7 +28,6 @@ RUN mkdir -p /var/log/hedtools && \
 # Copy the application code into the container
 COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
-#COPY ./hedtools/hedweb/runserver.py /root/
 
 # Set the PYTHONPATH environment variable to include /root/hedtools
 ENV PYTHONPATH="/root/hedtools"
