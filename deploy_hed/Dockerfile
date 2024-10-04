@@ -28,7 +28,7 @@ RUN mkdir -p /var/log/hedtools && \
 # Copy the application code into the container
 COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
-./hedtools/hedweb/runserver.py /root/
+#COPY ./hedtools/hedweb/runserver.py /root/
 
 # Set the PYTHONPATH environment variable to include /root/hedtools
 ENV PYTHONPATH="/root/hedtools"
@@ -40,4 +40,4 @@ ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 EXPOSE 80
 
 # Run the Flask application with Gunicorn, binding to port 33000
-CMD ["gunicorn", "-w", "4", "-b", "127.0.0.1:80", "runserver:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "hedtools.hedweb.runserver:app"]
