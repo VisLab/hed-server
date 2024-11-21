@@ -1,3 +1,4 @@
+APPEND_ASSEMBLED = 'append_assembled'
 CHECK_FOR_WARNINGS = 'check_for_warnings'
 
 COLUMN_COUNTS = 'column_counts'

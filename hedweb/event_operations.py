@@ -1,4 +1,6 @@
 import json
+from io import StringIO
+import pandas as pd
 
 from hed import schema as hedschema
 from hed.errors import get_printable_issue_string, HedFileError, ErrorHandler
@@ -11,7 +13,6 @@ from hed.tools.remodeling.remodeler_validator import RemodelerValidator
 from hed.tools.analysis.hed_tag_manager import HedTagManager
 from hed.tools.analysis.event_manager import EventManager
 from hed.tools.analysis.tabular_summary import TabularSummary
-from hed.tools.analysis.annotation_util import generate_sidecar_entry
 from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
 from hedweb.web_util import generate_filename, get_schema_versions
@@ -29,6 +30,7 @@ class EventOperations(BaseOperations):
         self.schema = None
         self.events = None
         self.command = None
+        self.append_assembled = False
         self.check_for_warnings = False
         self.columns_skip = []
         self.columns_value = []
@@ -94,12 +96,18 @@ class EventOperations(BaseOperations):
         if results['data']:
             return results
         hed_objs, definitions = self.get_hed_objs()
-        hed_strs = [str(obj) if obj is not None else '' for obj in hed_objs]
+        data = [str(obj) if obj is not None else '' for obj in hed_objs]
+        if self.append_assembled:
+            df = self.events.dataframe
+            df['HedAssembled'] = data
+            with StringIO() as output:
+                df.to_csv(output, sep='\t', index=False, header=True)
+                data = output.getvalue()  # Retrieve the written string
         display_name = self.events.name
         file_name = generate_filename(display_name, name_suffix='_expanded', extension='.tsv', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_ASSEMBLE,
                 bc.COMMAND_TARGET: 'events',
-                'data': hed_strs, 'output_display_name': file_name,
+                'data': data, 'output_display_name': file_name,
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
@@ -126,16 +134,6 @@ class EventOperations(BaseOperations):
         tab_sum = TabularSummary(value_cols=self.columns_value, skip_cols=self.columns_skip)
         tab_sum.update(self.events.dataframe)
         hed_dict = tab_sum.extract_sidecar_template()
-        # columns_info = TabularSummary.get_columns_info(self.events.dataframe)
-        # hed_dict = {}
-        # for column_name in columns_info:
-        #     if column_name in self.columns_skip:
-        #         continue
-        #     elif column_name in self.columns_value:
-        #         hed_dict[column_name] = generate_sidecar_entry(column_name)
-        #     else:
-        #         hed_dict[column_name] = generate_sidecar_entry(column_name,
-        #                                                        column_values=list(columns_info[column_name].keys()))
         file_name = generate_filename(display_name, name_suffix='_generated', extension='.json', append_datetime=True)
         return {bc.COMMAND: bc.COMMAND_GENERATE_SIDECAR,
                 bc.COMMAND_TARGET: 'events',
@@ -236,14 +234,14 @@ class EventOperations(BaseOperations):
             return results
         hed_objs, definitions = self.get_hed_objs()
         df_factors = search_hed_objs(hed_objs, queries, query_names=query_names)
-        if self.query_names:
-            write_header = True
+        if self.append_assembled:
+            df = pd.concat([self.events.dataframe, df_factors], axis=1)
+            df = df.loc[:, ~df.columns.duplicated(keep='last')]
+            data = df.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n')
         else:
-            write_header = False
+            data = df_factors.to_csv(None, sep='\t', index=False, header=True, lineterminator='\n')
         file_name = generate_filename(display_name, name_suffix='_queries', extension='.tsv', append_datetime=True)
-        return {bc.COMMAND: bc.COMMAND_SEARCH,
-                bc.COMMAND_TARGET: 'events',
-                'data': df_factors.to_csv(None, sep='\t', index=False, header=write_header, lineterminator='\n'),
+        return {bc.COMMAND: bc.COMMAND_SEARCH, bc.COMMAND_TARGET: 'events', 'data': data,
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'output_display_name': file_name, 'schema_version': self.schema.get_formatted_version(),
                 bc.MSG_CATEGORY: 'success',

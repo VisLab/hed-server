@@ -103,6 +103,7 @@ function setEventsTable() {
 function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
+        hideOption("append_assembled");
         showOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_context");
@@ -117,6 +118,7 @@ function setOptions() {
         $("#sidecar_input_section").show();
         $("#show_events_section").show();
     } else if (selectedElement.value === "assemble") {
+        showOption("append_assembled", true);
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         showOption("include_context", true);
@@ -131,6 +133,7 @@ function setOptions() {
         $("#sidecar_input_section").show();
         $("#show_events_section").show();
     } else if (selectedElement.value === "generate_sidecar") {
+        hideOption("append_assembled");
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_context");
@@ -145,6 +148,7 @@ function setOptions() {
         $("#sidecar_input_section").hide();
         $("#show_events_section").show();
     } else if (selectedElement.value === "remodel") {
+        hideOption("append_assembled");
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_context");
@@ -159,6 +163,8 @@ function setOptions() {
         $("#sidecar_input_section").show();
         $("#show_events_section").show();
     }  else if (selectedElement.value === "search") {
+        showOption("append_assembled", true);
+        hideOption("append_assembled");
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         showOption("include_context", true);
