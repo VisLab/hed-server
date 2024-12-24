@@ -164,7 +164,6 @@ function setOptions() {
         $("#show_events_section").show();
     }  else if (selectedElement.value === "search") {
         showOption("append_assembled", true);
-        hideOption("append_assembled");
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         showOption("include_context", true);

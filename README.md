@@ -1,4 +1,5 @@
 ## hedweb
+![Python3](https://img.shields.io/badge/python->=3.10-blue.svg)
 [![Documentation Status](https://readthedocs.org/projects/hed-web/badge/?version=latest)](https://hed-web.readthedocs.io/en/latest/?badge=latest)
 
 ### Online deployment
