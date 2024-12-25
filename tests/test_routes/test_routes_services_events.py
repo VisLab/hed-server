@@ -33,7 +33,7 @@ class Test(TestRouteBase):
             response = self.app.test.post('/services_submit', content_type='application/json',
                                           data=json.dumps(json_data))
             json_data2 = json.loads(response.data)
-            results = json_data2.get["results"]
+            results = json_data2.get("results")
             self.assertEqual('warning', results["msg_category"], 'should be warning when errors')
 
     def test_submit_service_events_validate_route_file_issues(self):

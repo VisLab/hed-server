@@ -1,5 +1,3 @@
-
-
 $(function () {
     prepareForm();
 })
@@ -28,6 +26,10 @@ $('#events_file').on('change', function () {
 });
 
 /**
+ * Submit the form if there is an events file and an available HED schema
+ */
+
+/**
  * Submit the form if there is an events file and an available hed schema
  */
 $('#events_submit').on('click', function () {
@@ -36,11 +38,23 @@ $('#events_submit').on('click', function () {
         submitForm();
     }
 });
+// document.getElementById('events_submit').addEventListener('click', function () {
+//     if (!schemaSpecifiedWhenOtherIsSelected() ||
+//         !fileIsSpecified('events_file', 'events_flash', 'Events file is not specified.')) {
+//         return;
+//     }
+//     try {
+//      await submitForm();
+//     } catch (error) {
+//             console.error("Form could not be submitted:", error)
+//     }
+// });
+
 
 /**
- * Clear the form.
+ * Clear the events form.
  */
-$('#events_clear').click(function() {
+document.getElementById('events_clear').addEventListener('click', function () {
     clearForm();
 });
 
@@ -184,35 +198,39 @@ function setOptions() {
  * Submit the form and return the validation results. If there are issues then they are returned in an attachment
  * file.
  */
-function submitForm() {
-    let eventsForm = document.getElementById("events_form");
-    let formData = new FormData(eventsForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
-    let prefix = 'issues';
-    let eventsFile = $('#events_file')[0].files[0].name;
-    let includeSummaries = $('#include_summaries').is(':checked')
-    let display_name = convertToResultsName(eventsFile, prefix)
+async function submitForm() {
+    const [formData, defaultName] = prepareSubmitForm("events");
+    const includeSummaries = $('#include_summaries').is(':checked')
     clearFlashMessages();
     flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
-    let postType = {
-        type: 'POST',
-        url: "{{url_for('route_blueprint.events_results')}}",
-        data: formData,
-        contentType: false,
-        processData: false,
 
-        success: function (download, status, xhr) {
-            getResponseSuccess(download, xhr, display_name, 'events_flash')
-        },
-        error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'events_flash')
+     try {
+        const response = await fetch("{{url_for('route_blueprint.events_results')}}", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
+        }
+
+        let download;
+        if (includeSummaries){
+            download = await response.blob();
+        } else {
+            download = await response.text();
+        }
+        handleResponse(response, download, defaultName, 'events_flash');
+      } catch (error) {
+       if (error.response) {
+            handleResponseFailure(error.response, message, error, displayName, 'events_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'events_flash');
         }
     }
-    if (includeSummaries){
-        postType["xhrFields"] = {
-            responseType: 'blob'
-        }
-    }
-    $.ajax(postType)
 }

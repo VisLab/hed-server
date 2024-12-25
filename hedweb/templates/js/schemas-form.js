@@ -1,7 +1,7 @@
-
 $(function () {
     prepareForm();
 });
+
 
 /**
  * Set the options according to the action specified.
