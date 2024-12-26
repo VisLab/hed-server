@@ -28,10 +28,6 @@ $('#events_file').on('change', function () {
 /**
  * Submit the form if there is an events file and an available HED schema
  */
-
-/**
- * Submit the form if there is an events file and an available hed schema
- */
 $('#events_submit').on('click', function () {
     if (fileIsSpecified('#events_file', 'events_flash', 'Events file is not specified.')
         && schemaSpecifiedWhenOtherIsSelected()) {
@@ -64,9 +60,9 @@ document.getElementById('events_clear').addEventListener('click', function () {
  */
 function clearForm() {
     clearFlashMessages();
-    $('#sidecar_file').val('');
-    $('#events_file').val('');
-    $('#remodel_file').val('');
+    document.getElementById('sidecar_file').value = '';
+    document.getElementById('events_file').value = '';
+    document.getElementById('remodel_file').value = '';
     setOptions();
     hideOtherSchemaVersionFileUpload();
     setEventsTable();
@@ -89,7 +85,7 @@ function clearFlashMessages() {
 function prepareForm() {
     clearForm();
     $('#events_form')[0].reset();
-    $('#process_actions').val('validate');
+    document.getElementById('process_actions').value = 'validate';
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
 }
@@ -226,7 +222,7 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'events_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, displayName, 'events_flash');
+            handleResponseFailure(error.response, message, error, defaultName, 'events_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

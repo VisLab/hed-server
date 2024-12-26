@@ -69,11 +69,11 @@ function getFilenameAndExtension(pathname){
 
 /**
  * Gets the file download name from a Response header
- * @param {Object} xhr - Dictionary containing Response header information
- * @param {String} default_name - The default name to use
+ * @param {Object} headers - Dictionary containing Response header information
+ * @param {String} defaultName - The default name to use
  * @returns {String} - Name of the save file
  */
-function getFilenameFromResponseHeader(headers, default_name) {
+function getFilenameFromResponseHeader(headers, defaultName) {
     const disposition = headers.get('Content-disposition')
     let filename = "";
     if (disposition && disposition.indexOf('attachment') !== -1) {
@@ -84,7 +84,7 @@ function getFilenameFromResponseHeader(headers, default_name) {
         }
     }
     if (!filename) {
-        filename = default_name;
+        filename = defaultName;
     }
     return filename
 }
@@ -111,9 +111,11 @@ function prepareSubmitForm(type) {
     const selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value);
     const fileDesignator=  $(`#${type}_file`)[0];
-    formData.append(type, fileDesignator.files[0])
-    const displayName = convertToResultsName(fileDesignator.files[0].name, '_processed');
-    return [formData, displayName]
+    let defaultName = "default_processed"
+    if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {
+        defaultName = convertToResultsName(fileDesignator.files[0].name, '_processed');
+    }
+    return [formData, defaultName]
 }
 
 

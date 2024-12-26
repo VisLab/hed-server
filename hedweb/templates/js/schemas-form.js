@@ -185,31 +185,36 @@ function setOptions() {
 /**
  * Submit the form and return the conversion results as an attachment
  */
-function submitSchemaForm() {
-    let schemaForm = document.getElementById("schema_form");
-    let formData = new FormData(schemaForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
+async function submitSchemaForm() {
+    const [formData, defaultName] = prepareSubmitForm("schema");
     let schemaURL = document.getElementById("schema_url")
     formData.append("schema_url", schemaURL.value)
-    let display_name = convertToOutputName(getSchemaFilename("schema"))
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
-    let postType = {
-            type: 'POST',
-            url: "{{url_for('route_blueprint.schemas_results')}}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: "text",
-            success: function (download, status, xhr) {
-                getResponseSuccess(download, xhr, display_name, 'schema_flash')
-            },
-            error: function (xhr, status, errorThrown) {
-                getResponseFailure(xhr, status, errorThrown, display_name, 'schema_flash')
-            }
+    try {
+        const response = await fetch("{{url_for('route_blueprint.schemas_results')}}", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
         }
-    $.ajax(postType)
+
+        const download = await response.text();
+        handleResponse(response, download, defaultName, 'schema_flash');
+      } catch (error) {
+       if (error.response) {
+            handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'schema_flash');
+        }
+    }
 }
 
 
