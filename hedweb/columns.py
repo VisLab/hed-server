@@ -136,6 +136,7 @@ def get_columns_request(request):
 
 
     """
+    print(request)
     if not form_has_file(request.files, bc.COLUMNS_FILE):
         raise HedFileError('MissingFile', 'An uploadable file was not provided', None)
     columns_file = request.files.get(bc.COLUMNS_FILE, '')

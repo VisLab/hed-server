@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
     prepareForm();
 });
 
@@ -93,7 +93,9 @@ function setOptions() {
  * file.
  */
 async function submitForm() {
-    const [formData, defaultName] = prepareSubmitForm("spreadsheet")
+    const [formData, defaultName] = prepareSubmitForm("spreadsheet");
+    const worksheetName = getWorksheetName();
+    formData.append('worksheet_selected', worksheetName)
     const spreadsheetFile = getSpreadsheetFileName();
     const isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
         !$("#validate").prop("checked");
@@ -112,7 +114,7 @@ async function submitForm() {
             error.response = response;
             throw error;
         }
-
+        console.log(response);
         let download;
         if (isExcel) {
             download = await response.blob();

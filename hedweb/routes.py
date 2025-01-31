@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, current_app
+from flask import render_template, request, Blueprint, current_app, jsonify
 from werkzeug.utils import secure_filename
 import json
 
@@ -23,19 +23,29 @@ app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 
-@route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
+@route_blueprint.route('/columns_info_results', strict_slashes=False, methods=['POST'])
 def columns_info_results():
-    """ Return spreadsheets column and sheet names.
-
-    Returns:
-        str: A serialized JSON string with column and sheet_name information.
-
-    """
-    try:
+    if request.method == 'POST':
         columns_info = get_columns_request(request)
-        return json.dumps(columns_info)
-    except Exception as ex:
-        return handle_error(ex)
+        return jsonify(columns_info)
+    return jsonify({"message": "Method not allowed."}), 405
+
+
+# @route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
+# def columns_info_results():
+#     """ Return spreadsheets column and sheet names.
+#
+#     Returns:
+#         str: A serialized JSON string with column and sheet_name information.
+#
+#     """
+#     try:
+#         print("to here")
+#         print(request)
+#         columns_info = get_columns_request(request)
+#         return json.dumps(columns_info)
+#     except Exception as ex:
+#         return handle_error(ex)
 
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])

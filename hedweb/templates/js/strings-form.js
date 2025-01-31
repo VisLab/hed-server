@@ -1,7 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
     prepareForm();
 });
-
 
 /**
  * Set the options according to the action specified.
@@ -100,20 +99,14 @@ function stringIsSpecified() {
     return true;
 }
 
-function prepareSubmitForm() {
-    const stringForm = document.getElementById("string_form");
-    const formData = new FormData(stringForm);
-    const selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value);
-    return formData
-}
 
 /**
  * Submit the form and return the validation results. If there are issues then they are returned in an attachment
  * file.
  */
 async function submitStringForm() {
-    const formData = prepareSubmitForm();
+    const [formData, defaultName] = prepareSubmitForm("string");
+    console.log(Array.from(formData.entries()));
     clearFlashMessages();
     flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash');
     try {

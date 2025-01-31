@@ -218,50 +218,6 @@ async function submitSchemaForm() {
 }
 
 
-/*function updateForm() {
-     clearFlashMessages();
-     let filename = getSchemaFilename("schema");
-     let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
-     let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);
-
-     let hasValidFilename = false;
-     if (isXMLFilename) {
-       // $('#schema-conversion-submit').html("Convert to mediawiki")
-        hasValidFilename = true;
-     } else if (isMediawikiFilename) {
-        //$('#schema-conversion-submit').html("Convert to XML");
-        hasValidFilename = true;
-     } else {
-        // $('#schema-conversion-submit').html("Convert Format");
-     }
-
-     let urlChecked = document.getElementById("schema_url_option").checked;
-     if (!urlChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-     let uploadChecked = document.getElementById("schema_file_option").checked;
-     if (!uploadChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-
-     if (filename && urlChecked && !hasValidFilename) {
-        flashMessageOnScreen('Please choose a valid schema url (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (filename && uploadChecked && !hasValidFilename) {
-         flashMessageOnScreen('Please upload a valid schema file (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (!uploadChecked && !urlChecked) {
-        flashMessageOnScreen('No source file specified.', 'error', 'schema_flash');
-     }
-
-     flashMessageOnScreen('', 'success', 'schema_flash')
-}*/
-
-
 function updateFlash(type) {
      clearFlashMessages();
      let filename = getSchemaFilename(type);

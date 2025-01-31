@@ -3,9 +3,13 @@ $(function () {
 })
 
 $('#process_actions').change(function(){
-    clearFlashMessages();
-    setOptions();
-    setEventsTable()
+   try {
+       clearFlashMessages();
+       setOptions();
+       setEventsTable()
+   }catch (error) {
+       console.error('Error in setting events table', error);
+   }
 });
 
 $('#sidecar_file').change(function() {
@@ -20,20 +24,30 @@ $('#remodel_file').change(function() {
 /**
  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
-$('#events_file').on('change', function () {
+document.getElementById('events_file').addEventListener('change', function () {
     clearFlashMessages();
-    setEventsTable('#events_file')
+    setEventsTable()
 });
+
+// /**
+//  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
+//  */
+// $('#events_file').on('change', async function () {
+//     clearFlashMessages();
+//     await setEventsTable('#events_file')
+// });
+
 
 /**
  * Submit the form if there is an events file and an available HED schema
  */
 $('#events_submit').on('click', function () {
-    if (fileIsSpecified('#events_file', 'events_flash', 'Events file is not specified.')
+    if (fileIsSpecified('events_file', 'events_flash', 'Events file is not specified.')
         && schemaSpecifiedWhenOtherIsSelected()) {
         submitForm();
     }
 });
+
 // document.getElementById('events_submit').addEventListener('click', function () {
 //     if (!schemaSpecifiedWhenOtherIsSelected() ||
 //         !fileIsSpecified('events_file', 'events_flash', 'Events file is not specified.')) {
@@ -65,7 +79,7 @@ function clearForm() {
     document.getElementById('remodel_file').value = '';
     setOptions();
     hideOtherSchemaVersionFileUpload();
-    setEventsTable();
+    clearEventsTable();
 }
 
 /**
@@ -90,22 +104,36 @@ function prepareForm() {
     hideOtherSchemaVersionFileUpload();
 }
 
+function clearEventsTable() {
+    clearFlashMessages();
+    hideColumnInfo("show_events");
+    removeColumnInfo("show_events");
+}
+
+
 /**
  * Sets the column table for this event file
  */
-function setEventsTable() {
-    clearColumnInfoFlashMessages();
-    removeColumnInfo("show_events")
-    let action = $('#process_actions').val()
-    let events = $('#events_file');
-    let eventsFile = events[0].files[0];
-    if (action === 'generate_sidecar' && eventsFile != null) {
-        let info = getColumnsInfo(eventsFile, 'events_flash', undefined, true)
-        let cols = info['column_list']
-        let counts = info['column_counts']
-        showEvents(cols, counts)
+
+async function setEventsTable() {
+    clearEventsTable();
+    if ($('#process_actions').val() !== 'generate_sidecar') {
+        return;
+    }
+
+    let eventsFile = document.querySelector('#events_file').files[0];
+    if (!eventsFile || !(eventsFile instanceof File)) {
+        flashMessageOnScreen('An event file must be provided ...', 'warning', 'events_flash');
+        return null;
+    }
+    const info = await getColumnsInfo(eventsFile, 'events_flash', undefined, true);
+    if (info) {
+        let cols = info['column_list'];
+        let counts = info['column_counts'];
+        showEvents(cols, counts);
     }
 }
+
 
 /**
  * Set the options for the events depending on the action
@@ -199,16 +227,16 @@ async function submitForm() {
     const includeSummaries = $('#include_summaries').is(':checked')
     clearFlashMessages();
     flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
-
      try {
-        const response = await fetch("{{url_for('route_blueprint.events_results')}}", {
-            method: "POST",
-            body: formData,
-        });
+          const submitUrl = "{{ url_for('route_blueprint.columns_info_results', _external=True) }}";
+          const response = await fetch(submitUrl, {
+              method: "POST",
+              body: formData,
+          });
 
-        if (!response.ok) {
+          if (!response.ok) {
             const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred`);
+            const error = new Error(errorData.message || `A response error occurred Status: ${response.status}`);
             error.response = response;
             throw error;
         }

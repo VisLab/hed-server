@@ -32,7 +32,9 @@ function fileHasValidExtension(filePath, acceptedFileExtensions) {
  * @returns {boolean} - returns true if file is specified.
  */
 function fileIsSpecified(nameID, flashID, errorMsg) {
-    let theFile = $(nameID);
+    console.log(nameID)
+    let theFile = $('#' + nameID);
+    console.log(theFile)
     if (theFile[0].files.length === 0) {
         flashMessageOnScreen(errorMsg, 'error', flashID);
         return false;
@@ -109,6 +111,7 @@ function prepareSubmitForm(type) {
     const form = document.getElementById(`${type}_form`);
     const formData = new FormData(form);
     const selectedElement = document.getElementById("process_actions");
+    console.log(selectedElement.value);
     formData.append("command_option", selectedElement.value);
     const fileDesignator=  $(`#${type}_file`)[0];
     let defaultName = "default_processed"
@@ -162,7 +165,8 @@ function getResponseSuccess(download, xhr, display_name, flashLocation) {
 
 /**
  * Downloads a response as a file if there is data.
- * @param {String} download - The downloaded data to be turned into a file.
+ * @param {Response} response - The response from the http request.
+ * @param {String | Blob| String[]} download - The downloaded data to be turned into a file.
  * @param {String} defaultName - Download filename to use if not included in the downloaded response.
  * @param {String} flashLocation - Name of the field in which to write messages if available.
  */
