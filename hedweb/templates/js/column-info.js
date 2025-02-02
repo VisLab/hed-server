@@ -61,6 +61,7 @@ async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheet
         });
 
         if (!response.ok) {
+            console.log(response)
             throw new Error(`Network response was not ok. Status: ${response.status}`);
         }
 
@@ -71,7 +72,7 @@ async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheet
         }
         return info; // Successfully resolved information
     } catch (error) {
-        flashMessageOnScreen(`File could not be processed: ${Error.message}`, 'error', flashMessageLocation);
+        flashMessageOnScreen(`File could not be processed: ${error.message}`, 'error', flashMessageLocation);
         return null;
     }
 }
@@ -120,16 +121,18 @@ function showIndices(columnList) {
     let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
     contents += '</tr></thead>';
     indicesTable.empty();
-    for (let i = 0; i < columnList.length; i++) {
-        let columnName = columnList[i]
-        let column = "column_" + i;
-        let useName = column + "_use";
-        let columnNameField = column + "_name";
-        let row = '<tr class="table-active"><td><input type="checkbox" ' +
-            'class="form-check-input form-check" name="' + useName + '" id="' + useName +
-            '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
-            '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
-        contents = contents + row + '</tr>';
+    if (columnList) {
+        for (let i = 0; i < columnList.length; i++) {
+            let columnName = columnList[i]
+            let column = "column_" + i;
+            let useName = column + "_use";
+            let columnNameField = column + "_name";
+            let row = '<tr class="table-active"><td><input type="checkbox" ' +
+                'class="form-check-input form-check" name="' + useName + '" id="' + useName +
+                '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
+                '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
+            contents = contents + row + '</tr>';
+        }
     }
     indicesTable.append(contents + '</table>')
 }

@@ -18,3 +18,11 @@ function showOption(optionName, checked=false) {
     $("#" + optionName).prop('checked', checked)
 }
 
+function showElement(id) {
+    document.getElementById(id).style.display = '';
+}
+
+function hideElement(id) {
+    document.getElementById(id).style.display = 'none';
+}
+

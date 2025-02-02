@@ -111,8 +111,8 @@ function prepareSubmitForm(type) {
     const form = document.getElementById(`${type}_form`);
     const formData = new FormData(form);
     const selectedElement = document.getElementById("process_actions");
-    console.log(selectedElement.value);
     formData.append("command_option", selectedElement.value);
+    formData.append('csrf_token', "{{ csrf_token() }}");
     const fileDesignator=  $(`#${type}_file`)[0];
     let defaultName = "default_processed"
     if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {

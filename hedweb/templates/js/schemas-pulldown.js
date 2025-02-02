@@ -38,61 +38,69 @@ function clearSchemaSelectFlashMessages() {
 /**
  * Gets the HED versions that are in the HED version drop-down menu.
  */
-function getSchemaVersions() {
-    $.ajax({
-            type: 'GET',
-            url: "{{url_for('route_blueprint.schema_versions_results')}}",
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function (schemaInfo) {
-                if (schemaInfo['schema_version_list']) {
-                     populateSchemaVersionsDropdown(schemaInfo['schema_version_list']);
-                } else if (schemaInfo['message'])
-                    flashMessageOnScreen(schemaInfo['message'], 'error', 'schema_select_flash')
-                else {
-                    flashMessageOnScreen('Server could not retrieve HED versions. Please provide your own.',
-                        'error', 'schema_select_flash')
-                }
-            },
-            error: function (jqXHR) {
-                flashMessageOnScreen('Server could retrieve HED schema versions. Please provide your own.',
-                    'error', 'schema_select_flash');
-            }
+
+async function getSchemaVersions() {
+    try {
+        const fetchUrl = "{{ url_for('route_blueprint.schema_versions_results', _external=True)}}";
+        const response = await fetch(fetchUrl, {
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
         }
-    );
+
+        const schemaInfo = await response.json();  // Parse JSON response
+
+        if (schemaInfo['schema_version_list']) {
+            populateSchemaVersionsDropdown(schemaInfo['schema_version_list']);
+        } else if (schemaInfo['message']) {
+            flashMessageOnScreen(schemaInfo['message'], 'error', 'schema_select_flash');
+        } else {
+            flashMessageOnScreen('Server could not retrieve HED versions. Please provide your own.',
+                'error', 'schema_select_flash');
+        }
+    } catch (error) {
+        flashMessageOnScreen('Server could not retrieve HED schema versions. Please provide your own.',
+            'error', 'schema_select_flash');
+        console.error('Fetch error:', error);
+    }
 }
 
 /**
  * Gets the version from the HED file that the user uploaded.
  * @param {Object} hedXMLFile - A HED XML file.
  */
-function getVersionFromSchemaFile(hedXMLFile) {
+async function getVersionFromSchemaFile(hedXMLFile) {
     let formData = new FormData();
     formData.append('schema_path', hedXMLFile);
-    $.ajax({
-        type: 'POST',
-        url: "{{ url_for('route_blueprint.schema_version_results')}}",
-        data: formData,
-        contentType: false,
-        processData: false,
-        dataType: 'json',
-        success: function (hedInfo) {
-            if (hedInfo['schema_version']) {
-                flashMessageOnScreen('Using HED version ' + hedInfo['schema_version'], 'success', 'schema_select_flash');
-            } else if (hedInfo['message'])
-                flashMessageOnScreen(hedInfo['message'], 'error', 'schema_select_flash')
-            else {
-                flashMessageOnScreen('Server could retrieve HED versions. Please provide your own.',
-                        'error', 'schema_select_flash')
-            }
-        },
-        error: function (jqXHR) {
-            //console.log(jqXHR.responseJSON.message);
-            flashMessageOnScreen('Could not get version number from HED XML file.',
+    formData.append('csrf_token', "{{ csrf_token() }}");
+    try {
+        const submitUrl = "{{ url_for('route_blueprint.schema_version_results', _external=True)}}";
+        const response = await fetch(submitUrl, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const hedInfo = await response.json();  // Parse JSON response
+
+        if (hedInfo['schema_version']) {
+            flashMessageOnScreen('Using HED version ' + hedInfo['schema_version'], 'success', 'schema_select_flash');
+        } else if (hedInfo['message']) {
+            flashMessageOnScreen(hedInfo['message'], 'error', 'schema_select_flash');
+        } else {
+            flashMessageOnScreen('Server could not retrieve HED versions. Please provide your own.',
                 'error', 'schema_select_flash');
         }
-    });
+
+    } catch (error) {
+        flashMessageOnScreen('Could not get version number from HED XML file.', 'error', 'schema_select_flash');
+        console.error('Fetch error:', error);
+    }
 }
 
 

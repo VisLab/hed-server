@@ -2,7 +2,7 @@ $(function () {
     prepareForm();
 })
 
-$('#process_actions').change(function(){
+document.getElementById('process_actions').addEventListener('change', function(){
    try {
        clearFlashMessages();
        setOptions();
@@ -12,14 +12,15 @@ $('#process_actions').change(function(){
    }
 });
 
-$('#sidecar_file').change(function() {
-    clearFlashMessages();
-})
 
-$('#remodel_file').change(function() {
+document.getElementById('sidecar_file').addEventListener('change', function() {
     clearFlashMessages();
-})
+});
 
+
+document.getElementById('remodel_file').addEventListener('change', function() {
+    clearFlashMessages();
+});
 
 /**
  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
@@ -28,14 +29,6 @@ document.getElementById('events_file').addEventListener('change', function () {
     clearFlashMessages();
     setEventsTable()
 });
-
-// /**
-//  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
-//  */
-// $('#events_file').on('change', async function () {
-//     clearFlashMessages();
-//     await setEventsTable('#events_file')
-// });
 
 
 /**
@@ -47,18 +40,6 @@ $('#events_submit').on('click', function () {
         submitForm();
     }
 });
-
-// document.getElementById('events_submit').addEventListener('click', function () {
-//     if (!schemaSpecifiedWhenOtherIsSelected() ||
-//         !fileIsSpecified('events_file', 'events_flash', 'Events file is not specified.')) {
-//         return;
-//     }
-//     try {
-//      await submitForm();
-//     } catch (error) {
-//             console.error("Form could not be submitted:", error)
-//     }
-// });
 
 
 /**
@@ -98,7 +79,6 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
-    $('#events_form')[0].reset();
     document.getElementById('process_actions').value = 'validate';
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
@@ -114,15 +94,16 @@ function clearEventsTable() {
 /**
  * Sets the column table for this event file
  */
-
 async function setEventsTable() {
     clearEventsTable();
-    if ($('#process_actions').val() !== 'generate_sidecar') {
+    if (document.getElementById('process_actions').value !== 'generate_sidecar') {
         return;
     }
 
     let eventsFile = document.querySelector('#events_file').files[0];
-    if (!eventsFile || !(eventsFile instanceof File)) {
+    if (!eventsFile) {
+        return null
+    } else if (!(eventsFile instanceof File)) {
         flashMessageOnScreen('An event file must be provided ...', 'warning', 'events_flash');
         return null;
     }
@@ -149,7 +130,8 @@ function setOptions() {
         hideOption("remove_types_on");
         hideOption("replace_defs");
         hideOption("use_hed");
-        $("#options_section").show();
+        showElement("options_section")
+        //$("#options_section").show();
         $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
@@ -228,7 +210,7 @@ async function submitForm() {
     clearFlashMessages();
     flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
      try {
-          const submitUrl = "{{ url_for('route_blueprint.columns_info_results', _external=True) }}";
+          const submitUrl = "{{ url_for('route_blueprint.events_results', _external=True) }}";
           const response = await fetch(submitUrl, {
               method: "POST",
               body: formData,

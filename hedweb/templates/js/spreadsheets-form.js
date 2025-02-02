@@ -104,7 +104,8 @@ async function submitForm() {
         'spreadsheet_flash')
 
     try {
-        const response = await fetch("{{url_for('route_blueprint.spreadsheets_results')}}", {
+        const fetchUrl = "{{url_for('route_blueprint.spreadsheets_results', _external=True)}}"
+        const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,
         });

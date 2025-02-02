@@ -142,7 +142,8 @@ async function submitForm() {
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
 
     try {
-        const response = await fetch("{{url_for('route_blueprint.sidecars_results')}}", {
+        const fetchUrl = "{{url_for('route_blueprint.sidecars_results',  _external=True)}}";
+        const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,
         });
