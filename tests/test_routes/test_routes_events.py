@@ -59,6 +59,22 @@ class Test(TestRouteBase):
                              "A valid remodeling operation should be successful")
             self.assertTrue(response.data, "The remodeled events file should return data")
 
+    def test_events_results_remodel_summary(self):
+        with self.app.app_context():
+            input_data = {bc.SCHEMA_VERSION: '8.2.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_REMODEL,
+                          bc.INCLUDE_SUMMARIES: 'on',
+                          bc.REMODEL_FILE: self._get_file_buffer('test_with_summary_rmdl.json'),
+                          bc.EVENTS_FILE: self._get_file_buffer("sub-002_task-FacePerception_run-1_events.tsv")}
+            response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
+            self.assertTrue(isinstance(response, Response),
+                            'events_submit remodel should return a Response when commands are valid')
+            self.assertEqual(200, response.status_code, 'Remodeling valid file has a valid status code')
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"],
+                             "A valid remodeling operation should be successful")
+            self.assertTrue(response.data, "The remodeled events file should return data")
+
     def test_events_results_remodel_invalid(self):
         with self.app.app_context():
             input_data = {bc.SCHEMA_VERSION: '8.2.0',

@@ -65,6 +65,9 @@ class ProcessServices:
         arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
         arguments[bc.REMOVE_TYPES_ON] = params.get(bc.REMOVE_TYPES_ON, False)
         arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
+        arguments[bc.EXPAND_DEFS] = params.get(bc.EXPAND_DEFS, False)
+        arguments[bc.INCLUDE_DESCRIPTION_TAGS] = params.get(bc.INCLUDE_DESCRIPTION_TAGS, False)
+        arguments[bc.INCLUDE_SUMMARIES] = params.get(bc.INCLUDE_SUMMARIES, False)
 
     @staticmethod
     def get_list(name, params):
