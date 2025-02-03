@@ -34,7 +34,7 @@ class Test(TestRouteBase):
                                           content_type='application/json', data=json.dumps(json_data))
             json_data2 = json.loads(response.data)
             results = json_data2['results']
-            self.assertEqual('warning', results["msg_category"], 'should be warning when errors')
+            self.assertEqual('success', results["msg_category"], 'ignores missing columns')
 
     def test_submit_service_spreadsheets_validate_route_file_issues(self):
         with self.app.app_context():

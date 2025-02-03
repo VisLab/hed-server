@@ -345,6 +345,19 @@ def handle_http_error(ex):
         Response: A response object indicating the field_type of error.
 
     """
+    return generate_text_response(get_exception_message(ex))
+
+
+def get_exception_message(ex):
+    """ Extract a suitable message for exception as a dictionary
+
+    Parameters:
+        ex (Exception): A class that extends python Exception class.
+
+    Returns:
+        Response: A response object indicating the field_type of error.
+
+    """
     if hasattr(ex, 'error_type'):
         error_code = ex.error_type
     elif hasattr(ex, 'code'):
@@ -361,7 +374,7 @@ def handle_http_error(ex):
     else:
         filename = ''
     error_message = f"{error_code}: {filename} [{message}]"
-    return generate_text_response({'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message})
+    return {'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message}
 
 
 def package_results(results):

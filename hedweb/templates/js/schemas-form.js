@@ -1,7 +1,7 @@
-
 $(function () {
     prepareForm();
 });
+
 
 /**
  * Set the options according to the action specified.
@@ -185,76 +185,37 @@ function setOptions() {
 /**
  * Submit the form and return the conversion results as an attachment
  */
-function submitSchemaForm() {
-    let schemaForm = document.getElementById("schema_form");
-    let formData = new FormData(schemaForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
+async function submitSchemaForm() {
+    const [formData, defaultName] = prepareSubmitForm("schema");
     let schemaURL = document.getElementById("schema_url")
     formData.append("schema_url", schemaURL.value)
-    let display_name = convertToOutputName(getSchemaFilename("schema"))
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
-    let postType = {
-            type: 'POST',
-            url: "{{url_for('route_blueprint.schemas_results')}}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: "text",
-            success: function (download, status, xhr) {
-                getResponseSuccess(download, xhr, display_name, 'schema_flash')
-            },
-            error: function (xhr, status, errorThrown) {
-                getResponseFailure(xhr, status, errorThrown, display_name, 'schema_flash')
-            }
+    try {
+        const response = await fetch("{{url_for('route_blueprint.schemas_results')}}", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
         }
-    $.ajax(postType)
+
+        const download = await response.text();
+        handleResponse(response, download, defaultName, 'schema_flash');
+      } catch (error) {
+       if (error.response) {
+            handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'schema_flash');
+        }
+    }
 }
-
-
-/*function updateForm() {
-     clearFlashMessages();
-     let filename = getSchemaFilename("schema");
-     let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
-     let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);
-
-     let hasValidFilename = false;
-     if (isXMLFilename) {
-       // $('#schema-conversion-submit').html("Convert to mediawiki")
-        hasValidFilename = true;
-     } else if (isMediawikiFilename) {
-        //$('#schema-conversion-submit').html("Convert to XML");
-        hasValidFilename = true;
-     } else {
-        // $('#schema-conversion-submit').html("Convert Format");
-     }
-
-     let urlChecked = document.getElementById("schema_url_option").checked;
-     if (!urlChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-     let uploadChecked = document.getElementById("schema_file_option").checked;
-     if (!uploadChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-
-     if (filename && urlChecked && !hasValidFilename) {
-        flashMessageOnScreen('Please choose a valid schema url (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (filename && uploadChecked && !hasValidFilename) {
-         flashMessageOnScreen('Please upload a valid schema file (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (!uploadChecked && !urlChecked) {
-        flashMessageOnScreen('No source file specified.', 'error', 'schema_flash');
-     }
-
-     flashMessageOnScreen('', 'success', 'schema_flash')
-}*/
 
 
 function updateFlash(type) {

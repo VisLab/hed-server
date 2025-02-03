@@ -25,49 +25,57 @@ function removeColumnInfo(table) {
     }
 }
 
-/**
- * Gets information a file with columns. This information the names of the columns in the specified
- * sheet_name and indices that contain HED tags.
- * @param {File} columnsFile - File object with columns.
- * @param {string} flashMessageLocation - ID name of the flash message element in which to display errors.
- * @param {string} worksheetName - Name of sheet_name or undefined.
- * @param {boolean} hasColumnNames - If true has column names
- * @returns {Array} - Array of worksheet names
- */
-function getColumnsInfo(columnsFile, flashMessageLocation, worksheetName=undefined, hasColumnNames=true) {
-    if (columnsFile == null)
-        return null
-    let formData = new FormData();
+function createFormData(columnsFile, hasColumnNames, worksheetName) {
+    const formData = new FormData();
+    formData.append('csrf_token', "{{ csrf_token() }}");
     formData.append('columns_file', columnsFile);
     if (hasColumnNames) {
-        formData.append('has_column_names', 'on')
+        formData.append('has_column_names', 'on');
     }
     if (worksheetName !== undefined) {
-        formData.append('worksheet_selected', worksheetName)
+        formData.append('worksheet_selected', worksheetName);
     }
-    let return_info = null;
-    $.ajax({
-        type: 'POST',
-        url: "{{url_for('route_blueprint.columns_info_results')}}",
-        data: formData,
-        contentType: false,
-        processData: false,
-        dataType: 'json',
-        async: false,
-        success: function (info) {
-            if (info['message']) {
-                flashMessageOnScreen(info['message'], 'error', flashMessageLocation);
-            } else {
-                return_info = info;
-            }
-        },
-        error: function () {
-            flashMessageOnScreen('File could not be processed.', 'error', flashMessageLocation);
-        }
-    });
-    return return_info;
+    return formData;
 }
 
+async function getColumnsInfo(columnsFile, flashMessageLocation, worksheetName = undefined, hasColumnNames = true) {
+    if (columnsFile == null) {
+        return null;
+    }
+
+    try {
+        const info = await getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheetName, hasColumnNames);
+        return info; // Return resolved information
+    } catch (error) {
+        return null; // Return null on error
+    }
+}
+
+async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheetName = undefined, hasColumnNames = true) {
+    const formData = createFormData(columnsFile, hasColumnNames, worksheetName);
+    try {
+        const fetchUrl = "{{ url_for('route_blueprint.columns_info_results', _external=True) }}";
+        const response = await fetch(fetchUrl, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            console.log(response)
+            throw new Error(`Network response was not ok. Status: ${response.status}`);
+        }
+
+        const info = await response.json();
+        if (info['message']) {
+            flashMessageOnScreen(info['message'], 'error', flashMessageLocation);
+            return null;
+        }
+        return info; // Successfully resolved information
+    } catch (error) {
+        flashMessageOnScreen(`File could not be processed: ${error.message}`, 'error', flashMessageLocation);
+        return null;
+    }
+}
 
 /**
  * Displays a vertical list of column names with counts and checkboxes for creating sidecar templates.
@@ -81,22 +89,23 @@ function showEvents(columnList, columnCounts) {
                    '<th scope="col">Column name (unique entries)</th>' + 
                     '<th scope="col">Categorical?</th></tr></thead>'
     columnEventsTable.empty();
+    if (columnList) {
+        for (let i = 0; i < columnList.length; i++) {
+            let columnName = columnList[i]
+            let column = "column_" + i;
+            let useName = column + "_use";
+            let categoryName = column + "_category";
+            let columnNameField = column + "_name";
+            let categoryBoxes = '<td><input type="checkbox" class="form-check-input form-check" ' +
+                'name="' + categoryName + '" id="' + categoryName + '">' +
+                '<input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
+                '" value="' + columnName + '"></td>';
 
-    for (let i = 0; i < columnList.length; i++) {
-        let columnName = columnList[i]
-        let column = "column_" + i;
-        let useName = column + "_use";
-        let categoryName = column + "_category";
-        let columnNameField = column + "_name";
-        let categoryBoxes = '<td><input type="checkbox" class="form-check-input form-check" ' +
-                            'name="' + categoryName + '" id="' + categoryName + '">' +
-                            '<input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
-                            '" value="' + columnName + '"></td>';
-
-        let row = '<tr class="table-active"><td><input type="checkbox" ' + 
-                  'class="form-check-input form-check" name="' + useName + '" id="' + useName + '"></td>' +
-            '<td>' + columnName  + ' (' + columnCounts[columnName] + ')</td>' + categoryBoxes + '</tr>';
-        contents = contents + row;
+            let row = '<tr class="table-active"><td><input type="checkbox" ' +
+                'class="form-check-input form-check" name="' + useName + '" id="' + useName + '"></td>' +
+                '<td>' + columnName + ' (' + columnCounts[columnName] + ')</td>' + categoryBoxes + '</tr>';
+            contents = contents + row;
+        }
     }
     columnEventsTable.append(contents + '</table>')
 }
@@ -112,16 +121,18 @@ function showIndices(columnList) {
     let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
     contents += '</tr></thead>';
     indicesTable.empty();
-    for (let i = 0; i < columnList.length; i++) {
-        let columnName = columnList[i]
-        let column = "column_" + i;
-        let useName = column + "_use";
-        let columnNameField = column + "_name";
-        let row = '<tr class="table-active"><td><input type="checkbox" ' +
-            'class="form-check-input form-check" name="' + useName + '" id="' + useName +
-            '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
-            '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
-        contents = contents + row + '</tr>';
+    if (columnList) {
+        for (let i = 0; i < columnList.length; i++) {
+            let columnName = columnList[i]
+            let column = "column_" + i;
+            let useName = column + "_use";
+            let columnNameField = column + "_name";
+            let row = '<tr class="table-active"><td><input type="checkbox" ' +
+                'class="form-check-input form-check" name="' + useName + '" id="' + useName +
+                '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
+                '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
+            contents = contents + row + '</tr>';
+        }
     }
     indicesTable.append(contents + '</table>')
 }

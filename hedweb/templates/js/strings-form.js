@@ -1,4 +1,3 @@
-
 $(function () {
     prepareForm();
 });
@@ -100,36 +99,34 @@ function stringIsSpecified() {
     return true;
 }
 
+
 /**
  * Submit the form and return the validation results. If there are issues then they are returned in an attachment
  * file.
  */
-function submitStringForm() {
-    let stringForm = document.getElementById("string_form");
-    let formData = new FormData(stringForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
+async function submitStringForm() {
+    const [formData, defaultName] = prepareSubmitForm("string");
+    console.log(Array.from(formData.entries()));
     clearFlashMessages();
-    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash')
-    $.ajax({
-            type: 'POST',
-            url: "{{url_for('route_blueprint.strings_results')}}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function (hedInfo) {
-                clearFlashMessages();
-                if (hedInfo['data']) {
-                    $('#string_result').val(hedInfo['data'])
-                } else {
-                    $('#string_result').val('')
-                }
-                flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_flash')
-            },
-            error: function (jqXHR) {
-                flashMessageOnScreen(jqXHR.responseJSON.message, 'error', 'string_flash')
-            }
+    flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash');
+    try {
+        const response = await fetch("{{url_for('route_blueprint.strings_results')}}",
+            {method: "POST", body: formData});
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `A response error occurred`);
         }
-    )
+
+        const hedInfo = await response.json();
+        clearFlashMessages();
+        if (hedInfo['data']) {
+            document.getElementById('string_result').value = hedInfo['data'];
+        } else {
+            document.getElementById('string_result').value = '';
+        }
+        flashMessageOnScreen(hedInfo['msg'], hedInfo['msg_category'], 'string_flash')
+    } catch (error) {
+        flashMessageOnScreen(error.message, 'error', 'string_flash')
+    }
 }

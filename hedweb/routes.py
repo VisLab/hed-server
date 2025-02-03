@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, current_app
+from flask import render_template, request, Blueprint, current_app, jsonify
 from werkzeug.utils import secure_filename
 import json
 
@@ -8,7 +8,8 @@ from hed import HedFileError
 from hedweb.constants import base_constants as bc
 from hedweb.constants import page_constants
 from hedweb.constants import route_constants, file_constants
-from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
+from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results, \
+    get_exception_message
 
 from hedweb.event_operations import EventOperations
 from hedweb.schema_operations import SchemaOperations
@@ -23,19 +24,15 @@ app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 
-@route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
+@route_blueprint.route('/columns_info_results', strict_slashes=False, methods=['POST'])
 def columns_info_results():
-    """ Return spreadsheets column and sheet names.
-
-    Returns:
-        str: A serialized JSON string with column and sheet_name information.
-
-    """
     try:
-        columns_info = get_columns_request(request)
-        return json.dumps(columns_info)
+        if request.method == 'POST':
+            columns_info = get_columns_request(request)
+            return jsonify(columns_info)
+        return jsonify({"message": "Method not allowed."}), 405
     except Exception as ex:
-        return handle_error(ex)
+        return get_exception_message(ex)
 
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])

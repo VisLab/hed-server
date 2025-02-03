@@ -1,6 +1,6 @@
 ROUTE_BLUEPRINT = 'route_blueprint'
 ADDITIONAL_EXAMPLES_ROUTE = '/additional-examples'
-COLUMNS_INFO_ROUTE = '/get_columns_info'
+COLUMNS_INFO_ROUTE = '/columns_info_results'
 HED_ERRORS_ROUTE = '/hed-errors'
 EVENTS_ROUTE = '/events'
 EVENTS_SUBMIT_ROUTE = '/events_submit'

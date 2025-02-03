@@ -16,7 +16,7 @@
         <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
-            {{ create_file_input('Upload events (tsv file):', 'events_file', '') }}
+            {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_file_flash') }}
             <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
             {{ create_column_info('show_events') }}
             {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 

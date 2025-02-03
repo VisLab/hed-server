@@ -1,14 +1,14 @@
 
 
 /**
- * Converts a path and prefix to a text results name
+ * Converts a path and suffix to a text results name
  * @param {String} filename - Pathname of the original file
- * @param {String} prefix - Prefix to be appended to the file name of original file
+ * @param {String} suffix - Suffix to be appended to the file name of original file
  * @returns {String} - File name of the
  */
-function convertToResultsName(filename, prefix) {
+function convertToResultsName(filename, suffix) {
     let parts = getFilenameAndExtension(filename);
-    return prefix + "_" + parts[0] + ".txt"
+    return parts[0] + suffix + ".txt"
 }
 
 
@@ -26,19 +26,22 @@ function fileHasValidExtension(filePath, acceptedFileExtensions) {
 
 /**
  * Checks to see if a file has been specified.
- * @param {string} nameID - #id of the element holding the name
- * @param {string} flashID - id of the flash element to display error message
- * @param {string} errorMsg - error message to be displayed if file isn't in form
- * @returns {boolean} - returns true if file is specified
+ * @param {string} nameID - id of the element holding the name (no #).
+ * @param {string} flashID - id of the flash element to display error message.
+ * @param {string} errorMsg - error message to be displayed if file isn't in form.
+ * @returns {boolean} - returns true if file is specified.
  */
 function fileIsSpecified(nameID, flashID, errorMsg) {
-    let theFile = $(nameID);
+    console.log(nameID)
+    let theFile = $('#' + nameID);
+    console.log(theFile)
     if (theFile[0].files.length === 0) {
         flashMessageOnScreen(errorMsg, 'error', flashID);
         return false;
     }
     return true;
 }
+
 
 /**
  * Flash a message on the screen.
@@ -68,13 +71,12 @@ function getFilenameAndExtension(pathname){
 
 /**
  * Gets the file download name from a Response header
- * @param {Object} xhr - Dictionary containing Response header information
- * @param {String} default_name - The default name to use
+ * @param {Object} headers - Dictionary containing Response header information
+ * @param {String} defaultName - The default name to use
  * @returns {String} - Name of the save file
  */
-function getFilenameFromResponseHeader(xhr, default_name) {
-    let disposition = xhr.getResponseHeader('Content-Disposition')
-
+function getFilenameFromResponseHeader(headers, defaultName) {
+    const disposition = headers.get('Content-disposition')
     let filename = "";
     if (disposition && disposition.indexOf('attachment') !== -1) {
         let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -84,10 +86,41 @@ function getFilenameFromResponseHeader(xhr, default_name) {
         }
     }
     if (!filename) {
-        filename = default_name;
+        filename = defaultName;
     }
     return filename
 }
+
+// function prepareSubmitForm() {
+//     const eventsForm = document.getElementById("events_form");
+//     const formData = new FormData(eventsForm);
+//     const selectedElement = document.getElementById("process_actions");
+//     formData.append("command_option", selectedElement.value);
+//     const eventsFile =  $("#events_file")[0];
+//     formData.append('events', eventsFile.files[0])
+//     const displayName = convertToResultsName(eventsFile.files[0].name, '_processed');
+//     return [formData, displayName]
+// }
+
+/**
+ * Create the form data and default display name for the submit form.
+ * @param {string} type - The ID of the form to construct the data from.
+ * @returns {[FormData, string]} - The form data and a default display name.
+ */
+function prepareSubmitForm(type) {
+    const form = document.getElementById(`${type}_form`);
+    const formData = new FormData(form);
+    const selectedElement = document.getElementById("process_actions");
+    formData.append("command_option", selectedElement.value);
+    formData.append('csrf_token', "{{ csrf_token() }}");
+    const fileDesignator=  $(`#${type}_file`)[0];
+    let defaultName = "default_processed"
+    if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {
+        defaultName = convertToResultsName(fileDesignator.files[0].name, '_processed');
+    }
+    return [formData, defaultName]
+}
+
 
 
 /**
@@ -96,16 +129,16 @@ function getFilenameFromResponseHeader(xhr, default_name) {
  * @param {String} status - a status text message
  * @param {String} errorThrown - name of the error thrown
  * @param {String} display_name - Name used for the downloaded blob file
- * @param {String} flash_location - ID of the flash location element for displaying response Message
+ * @param {String} flashLocation - ID of the flash location element for displaying response Message
  */
-function getResponseFailure( xhr, status, errorThrown, display_name, flash_location) {
+function getResponseFailure( xhr, status, errorThrown, display_name, flashLocation) {
     let info = xhr.getResponseHeader('Message');
     let category =  xhr.getResponseHeader('Category');
     if (!info) {
         info = 'Unknown processing error occurred';
     }
     info = info + '[Source: ' + display_name + ']' + '[Status:' + status + ']' + '[Error:' + errorThrown + ']';
-    flashMessageOnScreen(info, category, flash_location);
+    flashMessageOnScreen(info, category, flashLocation);
 }
 
 /**
@@ -113,9 +146,9 @@ function getResponseFailure( xhr, status, errorThrown, display_name, flash_locat
  * @param {String} download - The downloaded data to be turned into a file.
  * @param {Object} xhr - http response header
  * @param {String} display_name - Download filename to use if not included in the downloaded response.
- * @param {String} flash_location - Name of the field in which to write messages if available.
+ * @param {String} flashLocation - Name of the field in which to write messages if available.
  */
-function getResponseSuccess(download, xhr, display_name, flash_location) {
+function getResponseSuccess(download, xhr, display_name, flashLocation) {
     let info = xhr.getResponseHeader('Message');
     let category =  xhr.getResponseHeader('Category');
     let contentType = xhr.getResponseHeader('Content-type');
@@ -124,11 +157,40 @@ function getResponseSuccess(download, xhr, display_name, flash_location) {
         triggerDownloadBlob(download, filename, contentType);
     }
     if (info) {
-        flashMessageOnScreen(info, category, flash_location);
+        flashMessageOnScreen(info, category, flashLocation);
     } else {
-        flashMessageOnScreen('', 'success', flash_location);
+        flashMessageOnScreen('', 'success', flashLocation);
     }
 }
+
+/**
+ * Downloads a response as a file if there is data.
+ * @param {Response} response - The response from the http request.
+ * @param {String | Blob| String[]} download - The downloaded data to be turned into a file.
+ * @param {String} defaultName - Download filename to use if not included in the downloaded response.
+ * @param {String} flashLocation - Name of the field in which to write messages if available.
+ */
+function handleResponse(response, download, defaultName, flashLocation) {
+    const info = response.headers.get('Message');
+    const category =  response.headers.get('Category');
+    let contentType = response.headers.get('Content-type');
+    if (download) {
+        let filename = getFilenameFromResponseHeader(response.headers, defaultName)
+        triggerDownloadBlob(download, filename, contentType);
+    }
+    if (info) {
+        flashMessageOnScreen(info, category, flashLocation);
+    } else {
+        flashMessageOnScreen('', 'success', flashLocation);
+    }
+}
+
+function handleResponseFailure(response, message, error, displayName, flashLocation) {
+    const category =  response.headers.has('Category') ? response.headers.get('Category') : 'error';
+    const flashMsg = `${message}[Source: ${displayName}][Status: ${response.status}][Error: ${error.message}]`;
+    flashMessageOnScreen(flashMsg, category, flashLocation);
+}
+
 
 
 /**
@@ -162,17 +224,27 @@ function splitExt(filename) {
 
 /**
  * Trigger the "save as" dialog for a text blob to save as a file with display name.
- * @param {String} download_blob - Bytes to put in the file
- * @param {String} display_name - File name to use if none provided in the downloaded content
- * @param {String} content_type - Type of file to create
+ * @param {Blob|Array|String} download - Bytes or blob to put in the file
+ * @param {String} displayName - File name to use if none provided in the downloaded content
+ * @param {String} contentType - Type of file to create
  */
-function triggerDownloadBlob(download_blob, display_name, content_type) {
-    const url = URL.createObjectURL(new Blob([download_blob], {type:content_type}));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', display_name);
-    document.body.appendChild(link);
-    link.click();
+function triggerDownloadBlob(download, displayName, contentType) {
+    let url;
+    if ((download instanceof Blob) && (download.size > 0)) {
+        url = URL.createObjectURL(download, {type: contentType});
+    }  else if ((download instanceof Array) && (download.length > 0)) {
+        url = URL.createObjectURL(new Blob(download, {type: contentType}));
+    } else if (download.length > 0) {
+        url = URL.createObjectURL(new Blob([download], {type: contentType}));
+    }
+    if (url) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', displayName);
+        //document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(url); // Clean up the URL
+    }
 }
 
 /**
