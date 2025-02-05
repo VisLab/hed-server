@@ -51,7 +51,7 @@ async function getSchemaVersions() {
         }
 
         const schemaInfo = await response.json();  // Parse JSON response
-
+        console.log(schemaInfo)
         if (schemaInfo['schema_version_list']) {
             populateSchemaVersionsDropdown(schemaInfo['schema_version_list']);
         } else if (schemaInfo['message']) {
@@ -133,9 +133,11 @@ function hideOtherSchemaVersionFileUpload() {
 function populateSchemaVersionsDropdown(hedVersions) {
     let hedVersionDropdown = $('#schema_version');
     $('#schema_version').empty()
-    hedVersionDropdown.append('<option value=' + hedVersions[0] + '>' + hedVersions[0] + ' (Latest)</option>');
-    for (let i = 1; i < hedVersions.length; i++) {
-        hedVersionDropdown.append('<option value=' + hedVersions[i] + '>' + hedVersions[i] + '</option>');
+    if (hedVersions.length > 0) {
+        hedVersionDropdown.append('<option value=' + hedVersions[0] + '>' + hedVersions[0] + ' (Latest)</option>');
+        for (let i = 1; i < hedVersions.length; i++) {
+            hedVersionDropdown.append('<option value=' + hedVersions[i] + '>' + hedVersions[i] + '</option>');
+        }
     }
     hedVersionDropdown.append('<option value=' + OTHER_VERSION_OPTION + '>' + OTHER_VERSION_OPTION +
         '</option>');

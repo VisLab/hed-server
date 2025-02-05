@@ -5,11 +5,12 @@ FROM python:3.10-slim-buster
 WORKDIR /root
 
 # Copy the requirements file and install system dependencies
-COPY requirements.txt /root/
+COPY . .
 RUN apt-get update && apt-get install -y \
     gcc \
     git \
     musl-dev \
+    logrotate \
     libxslt-dev \
     libxml2-dev && \
     # Upgrade pip and install requirements
@@ -36,8 +37,14 @@ ENV PYTHONPATH="/root/hedtools"
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 
+# Copy the logrotate configuration for Gunicorn
+COPY gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
+
 # Expose the Gunicorn port (80 by default)
 EXPOSE 80
 
 # Run the Flask application with Gunicorn, binding to port 80
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "hedtools.hedweb.runserver:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", \
+     "--access-logfile", "/var/log/hedtools/access.log", \
+     "--error-logfile", "/var/log/hedtools/error.log", \
+     "--log-level info", "hedtools.hedweb.runserver:app"]
