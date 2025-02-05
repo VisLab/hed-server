@@ -117,23 +117,6 @@ function setOptions() {
     }
 }
 
-// /**
-//  * Prepare the data needed for the sidecar submit form.
-//  * @returns {[FormData, String]} - Filled in form data and a default name for downloads.
-//  */
-// function prepareSubmitForm() {
-//     const sidecarForm = document.getElementById("sidecar_form");
-//     const formData = new FormData(sidecarForm);
-//     const selectedElement = document.getElementById("process_actions");
-//     formData.append("command_option", selectedElement.value)
-//     const sidecarFile = $("#sidecar_file")[0];
-//     formData.append('sidecar', sidecarFile.files[0])
-//     const spreadsheetFile = $("#spreadsheet_file")[0];
-//     formData.append('spreadsheet', spreadsheetFile.files[0])
-//     const displayName = convertToResultsName(sidecarFile.files[0].name, '_processed')
-//     return [formData, displayName]
-// }
-
 
 async function submitForm() {
     const [formData, defaultName] = prepareSubmitForm("sidecar");
@@ -142,7 +125,7 @@ async function submitForm() {
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
 
     try {
-        const fetchUrl = "{{url_for('route_blueprint.sidecars_results',  _external=True)}}";
+        const fetchUrl = "{{url_for('route_blueprint.sidecars_results')}}";
         const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,

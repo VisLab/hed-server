@@ -54,7 +54,7 @@ async function getColumnsInfo(columnsFile, flashMessageLocation, worksheetName =
 async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheetName = undefined, hasColumnNames = true) {
     const formData = createFormData(columnsFile, hasColumnNames, worksheetName);
     try {
-        const fetchUrl = "{{ url_for('route_blueprint.columns_info_results', _external=True) }}";
+        const fetchUrl = "{{ url_for('route_blueprint.columns_info_results') }}";
         const response = await fetch(fetchUrl, {
             method: 'POST',
             body: formData

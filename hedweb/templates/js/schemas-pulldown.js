@@ -41,7 +41,7 @@ function clearSchemaSelectFlashMessages() {
 
 async function getSchemaVersions() {
     try {
-        const fetchUrl = "{{ url_for('route_blueprint.schema_versions_results', _external=True)}}";
+        const fetchUrl = "{{url_for('route_blueprint.schema_versions_results')}}";
         const response = await fetch(fetchUrl, {
             method: 'GET'
         });
