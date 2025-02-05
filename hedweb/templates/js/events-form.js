@@ -210,7 +210,7 @@ async function submitForm() {
     clearFlashMessages();
     flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
      try {
-          const submitUrl = "{{ url_for('route_blueprint.events_results', _external=True) }}";
+          const submitUrl = "{{ url_for('route_blueprint.events_results') }}";
           const response = await fetch(submitUrl, {
               method: "POST",
               body: formData,

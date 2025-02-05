@@ -91,16 +91,6 @@ function getFilenameFromResponseHeader(headers, defaultName) {
     return filename
 }
 
-// function prepareSubmitForm() {
-//     const eventsForm = document.getElementById("events_form");
-//     const formData = new FormData(eventsForm);
-//     const selectedElement = document.getElementById("process_actions");
-//     formData.append("command_option", selectedElement.value);
-//     const eventsFile =  $("#events_file")[0];
-//     formData.append('events', eventsFile.files[0])
-//     const displayName = convertToResultsName(eventsFile.files[0].name, '_processed');
-//     return [formData, displayName]
-// }
 
 /**
  * Create the form data and default display name for the submit form.
@@ -120,7 +110,6 @@ function prepareSubmitForm(type) {
     }
     return [formData, defaultName]
 }
-
 
 
 /**
