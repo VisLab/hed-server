@@ -114,6 +114,6 @@ echo "[INFO] Running new container..."
 run_new_container
 
 echo "[INFO] Cleaning up temporary directories..."
-#  cleanup_directories
+cleanup_directories
 
 echo "[INFO] Deployment successful!"

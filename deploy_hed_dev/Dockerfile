@@ -46,5 +46,5 @@ EXPOSE 80
 # Run the Flask application with Gunicorn, binding to port 80
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", \
      "--access-logfile", "/var/log/hedtools/access.log", \
-     "--error-logfile", "/var/log/hedtools/error.log", \
+     "--error-logfile", "/var/log/hedtools/error.log",  "--capture-output",\
      "--log-level", "info", "hedtools.hedweb.runserver:app"]
