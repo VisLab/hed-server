@@ -47,4 +47,4 @@ EXPOSE 80
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", \
      "--access-logfile", "/var/log/hedtools/access.log", \
      "--error-logfile", "/var/log/hedtools/error.log", \
-     "--log-level info", "hedtools.hedweb.runserver:app"]
+     "--log-level", "info", "hedtools.hedweb.runserver:app"]
