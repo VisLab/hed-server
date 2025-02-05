@@ -38,8 +38,8 @@ ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 # Expose the Gunicorn port (80 by default)
 EXPOSE 80
 
+# Copy the logrotate configuration for Gunicorn
+COPY gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
+
 # Run the Flask application with Gunicorn, binding to port 33000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", \
-     "--access-logfile", "/var/log/gunicorn/access.log", \
-     "--error-logfile", "/var/log/gunicorn/error.log", \
-     "--log-level info", "hedtools.hedweb.runserver:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "hedtools.hedweb.runserver:app"]
