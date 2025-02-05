@@ -22,7 +22,7 @@ CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 BASE_CONFIG_FILE="${SOURCE_DEPLOY_DIR}/base_config.py"
 SOURCE_DOCKERFILE="${SOURCE_DEPLOY_DIR}/Dockerfile"
 SOURCE_REQUIREMENTS_FILE="${SOURCE_DEPLOY_DIR}/requirements.txt"
-LOGROTATE_CONF_FILE = "${SOURCE_DEPLOY_DIR}/gunicorn-logrotate.conf"
+LOGROTATE_CONF_FILE="${SOURCE_DEPLOY_DIR}/gunicorn-logrotate.conf"
 WEB_CODE_DIR="${GIT_HED_WEB_DIR}/hedweb"
 
 ##### Functions
@@ -46,7 +46,7 @@ setup_web_directory() {
     cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}" || error_exit "Failed to copy base config file"
     cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/Dockerfile" || error_exit "Failed to copy Dockerfile"
     cp "${SOURCE_REQUIREMENTS_FILE}" "${DEPLOY_DIR}/requirements.txt" || error_exit "Failed to copy requirements.txt"
-    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" || error_exit "Failed to copy gunicorn-logrotate.conf"
+    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" || error_exit "Failed to copy ${LOGROTATE_CONF_FILE} to ${DEPLOY_DIR}/gunicorn-logrotate.conf"
     cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}" || error_exit "Failed to copy web code"
 }
 
@@ -114,6 +114,6 @@ echo "[INFO] Running new container..."
 run_new_container
 
 echo "[INFO] Cleaning up temporary directories..."
-cleanup_directories
+#  cleanup_directories
 
 echo "[INFO] Deployment successful!"
