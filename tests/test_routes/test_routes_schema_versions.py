@@ -7,7 +7,7 @@ from tests.test_routes.test_routes_base import TestRouteBase
 class Test(TestRouteBase):
     def test_schema_versions(self):
         with self.app.app_context():
-            response = self.app.test.post('/schema_versions')
+            response = self.app.test.get('/schema_versions')
             self.assertEqual(200, response.status_code, 'The HED version list does not require data')
             versions = response.data
             self.assertTrue(versions, "The returned data is not empty")
