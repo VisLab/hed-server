@@ -42,12 +42,11 @@ function clearSchemaSelectFlashMessages() {
 async function getSchemaVersions() {
 
     try {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const fetchUrl = "{{url_for('route_blueprint.schema_versions_results')}}";
         const response = await fetch(fetchUrl, {
             method: 'GET',
             headers: {
-               'X-CSRFToken': csrfToken
+               'X-CSRFToken': "{{ csrf_token() }}"
             },
             credentials: 'same-origin'
         });
