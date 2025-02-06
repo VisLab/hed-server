@@ -108,6 +108,10 @@ async function submitForm() {
         const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin'
         });
         if (!response.ok) {
             const errorData = await response.json()
@@ -115,7 +119,6 @@ async function submitForm() {
             error.response = response;
             throw error;
         }
-        console.log(response);
         let download;
         if (isExcel) {
             download = await response.blob();

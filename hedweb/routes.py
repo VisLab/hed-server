@@ -119,7 +119,6 @@ def schema_versions_results():
         hedschema.cache_xml_versions()
         hed_info = {bc.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
         hed_list = convert_hed_versions(hed_info)
-        print(f"hed_list: {str(hed_list)}")
         return jsonify(hed_list)
     except Exception as ex:
         return handle_error(ex)

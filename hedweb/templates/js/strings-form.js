@@ -106,12 +106,17 @@ function stringIsSpecified() {
  */
 async function submitStringForm() {
     const [formData, defaultName] = prepareSubmitForm("string");
-    console.log(Array.from(formData.entries()));
     clearFlashMessages();
     flashMessageOnScreen('HED string is being processed ...', 'success', 'string_flash');
     try {
-        const response = await fetch("{{url_for('route_blueprint.strings_results')}}",
-            {method: "POST", body: formData});
+        const response = await fetch("{{url_for('route_blueprint.strings_results')}}", {
+            method: "POST",
+            body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin'
+        });
 
         if (!response.ok) {
             const errorData = await response.json();

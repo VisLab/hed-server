@@ -56,7 +56,6 @@ async function getSchemaVersions() {
         }
 
         const schemaInfo = await response.json();  // Parse JSON response
-        console.log(schemaInfo)
         if (schemaInfo['schema_version_list']) {
             populateSchemaVersionsDropdown(schemaInfo['schema_version_list']);
         } else if (schemaInfo['message']) {

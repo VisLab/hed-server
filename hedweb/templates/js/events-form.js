@@ -214,6 +214,10 @@ async function submitForm() {
           const response = await fetch(submitUrl, {
               method: "POST",
               body: formData,
+              headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+              },
+              credentials: 'same-origin'
           });
 
           if (!response.ok) {

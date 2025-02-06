@@ -76,7 +76,6 @@ async function setIndicesTable() {
     if (spreadsheetFile != null) {
         let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheet, true)
         let cols = info['column_list']
-        console.log(cols)
         let selectedElement = document.getElementById("process_actions");
         showIndices(cols)
     }
