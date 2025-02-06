@@ -120,7 +120,6 @@ function setOptions() {
 
 async function submitForm() {
     const [formData, defaultName] = prepareSubmitForm("sidecar");
-    console.log(formData.entries);
     clearFlashMessages();
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
 
@@ -129,6 +128,10 @@ async function submitForm() {
         const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin'
         });
 
         if (!response.ok) {

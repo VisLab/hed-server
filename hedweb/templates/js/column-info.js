@@ -57,11 +57,14 @@ async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheet
         const fetchUrl = "{{ url_for('route_blueprint.columns_info_results') }}";
         const response = await fetch(fetchUrl, {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin'
         });
 
         if (!response.ok) {
-            console.log(response)
             throw new Error(`Network response was not ok. Status: ${response.status}`);
         }
 

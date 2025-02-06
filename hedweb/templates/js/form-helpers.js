@@ -32,9 +32,7 @@ function fileHasValidExtension(filePath, acceptedFileExtensions) {
  * @returns {boolean} - returns true if file is specified.
  */
 function fileIsSpecified(nameID, flashID, errorMsg) {
-    console.log(nameID)
     let theFile = $('#' + nameID);
-    console.log(theFile)
     if (theFile[0].files.length === 0) {
         flashMessageOnScreen(errorMsg, 'error', flashID);
         return false;
