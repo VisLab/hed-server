@@ -106,7 +106,7 @@ def schema_version_results():
         return handle_error(ex)
 
 
-@route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET', 'POST'])
+@route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET'])
 def schema_versions_results():
     """ Return serialized JSON string with HED versions.
 
@@ -116,14 +116,11 @@ def schema_versions_results():
     """
 
     try:
-        x = request
-        print(x)
         hedschema.cache_xml_versions()
         hed_info = {bc.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
-        print(f"hed_info: {str(hed_info)}")
         hed_list = convert_hed_versions(hed_info)
         print(f"hed_list: {str(hed_list)}")
-        return json.dumps(hed_list)
+        return jsonify(hed_list)
     except Exception as ex:
         return handle_error(ex)
 
