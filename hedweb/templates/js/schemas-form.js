@@ -194,7 +194,9 @@ async function submitSchemaForm() {
             method: "POST",
             body: formData,
             headers: {
-               'X-CSRFToken': "{{ csrf_token() }}"
+               'X-CSRFToken': "{{ csrf_token() }}",
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
             },
             credentials: 'same-origin'
         });
