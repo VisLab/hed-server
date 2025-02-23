@@ -22,7 +22,7 @@ CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 BASE_CONFIG_FILE="${SOURCE_DEPLOY_DIR}/base_config.py"
 SOURCE_DOCKERFILE="${SOURCE_DEPLOY_DIR}/Dockerfile"
 SOURCE_REQUIREMENTS_FILE="${SOURCE_DEPLOY_DIR}/requirements.txt"
-LOGROTATE_CONF_FILE = "${SOURCE_DEPLOY_DIR}/gunicorn-logrotate.conf"
+LOGROTATE_CONF_FILE="${SOURCE_DEPLOY_DIR}/gunicorn-logrotate.conf"
 WEB_CODE_DIR="${GIT_HED_WEB_DIR}/hedweb"
 
 ##### Functions
