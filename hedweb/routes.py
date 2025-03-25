@@ -72,16 +72,14 @@ def schemas_results():
         - convert:  text file with converted schema.
 
     """
+    parameters = {}
     try:
         parameters = ProcessForm.get_input_from_form(request)
         proc_schemas = SchemaOperations(parameters)
         a = proc_schemas.process()
-        return package_results(a)
+        return jsonify(a)
     except Exception as ex:
-        if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
-            return package_results(SchemaOperations.format_error("validate", ex))
-        else:
-            return handle_http_error(ex)
+        return jsonify(get_exception_message(ex))
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])

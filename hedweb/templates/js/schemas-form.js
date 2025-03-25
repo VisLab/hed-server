@@ -210,7 +210,8 @@ async function submitSchemaForm() {
         }
 
         const download = await response.text();
-        handleResponse(response, download, defaultName, 'schema_flash');
+        console.log(download);
+        handleResponse1(response, download, defaultName, 'schema_flash');
       } catch (error) {
        if (error.response) {
             handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
