@@ -71,7 +71,7 @@ class Test(TestWebBase):
             proc_schemas.schema = load_schema(schema_path, name=name)
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.2.0.mediawiki can be converted to xml")
-            self.assertEqual(results['output_display_name'], "HED8.2.0.xml")
+            self.assertEqual(results['output_display_name'], "HED8.2.0_converted.zip")
 
             proc_schemas = SchemaOperations()
             input_dict = {
@@ -81,7 +81,7 @@ class Test(TestWebBase):
             proc_schemas.set_input_from_dict(input_dict)
             results = proc_schemas.process()
             self.assertTrue(results['data'], "HED 8.2.0.mediawiki can be converted to xml")
-            self.assertEqual(results['output_display_name'], "HED8.2.0.xml")
+            self.assertEqual(results['output_display_name'], "HED8.2.0_converted.zip")
 
     def test_schemas_convert_invalid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HEDbad.xml')

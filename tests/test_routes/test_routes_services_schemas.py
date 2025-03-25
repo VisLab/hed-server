@@ -38,12 +38,13 @@ class Test(TestRouteBase):
             json_data = {bc.CHECK_FOR_WARNINGS: 'on',
                          bc.SCHEMA_VERSION: '8.2.0', bc.SERVICE: f"schemas_{bc.COMMAND_CONVERT_SCHEMA}"}
 
-            response = self.app.test.post('/services_submit', content_type='application/json',
+            results = self.app.test.post('/services_submit', content_type='application/json',
                                           data=json.dumps(json_data))
-            json_data2 = json.loads(response.data)
-            results = json_data2['results']
-            self.assertEqual('success', results['msg_category'],
-                             "schemas_convert_schema services has success on HED8.2.0.xml")
+            self.assertEqual(200, results.status_code, 'Conversion of a valid xml url has a response')
+            headers_dict = dict(results.headers)
+            response = json.loads(results.data.decode('utf-8'))
+            self.assertEqual("success", response["results"]['msg_category'], 'An valid schema')
+            self.assertTrue(response["results"]["data"], "The response data for valid schema is not empty")
+            self.assertEqual(response["results"]['msg'], 'Schema was successfully converted')
 
-            loaded_schema = from_string(results["data"], schema_format=".mediawiki")
-            self.assertEqual(loaded_schema, load_schema_version("8.2.0"))
+

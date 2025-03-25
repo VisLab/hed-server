@@ -178,6 +178,54 @@ function handleResponseFailure(response, message, error, displayName, flashLocat
     flashMessageOnScreen(flashMsg, category, flashLocation);
 }
 
+function handleResponse1(response, responseText, defaultName, flashTarget) {
+    let parsed;
+    try {
+        parsed = JSON.parse(responseText);
+    } catch (e) {
+        flashMessageOnScreen("Response was not valid JSON", 'error', flashTarget);
+        return;
+    }
+
+    const data = parsed.data;
+    const filename = parsed.output_display_name || defaultName || "download.txt";
+
+     if (data === '') {
+        // If data is an empty string, don't download anything
+        flashMessageOnScreen(parsed.msg, 'success', flashTarget);
+        return;
+    }
+
+    if (filename.endsWith(".zip")) {
+        // Handle base64-encoded ZIP
+        const binary = atob(data); // decode base64
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+
+        const blob = new Blob([bytes], { type: 'application/zip' });
+        triggerDownload1(blob, filename);
+    } else {
+        // Plain text file
+        const blob = new Blob([data], { type: 'text/plain' });
+        triggerDownload1(blob, filename);
+    }
+
+    flashMessageOnScreen(parsed.msg, parsed.msg_category, flashTarget);
+}
+
+function triggerDownload1(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
 
 
 /**
