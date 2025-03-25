@@ -1,5 +1,11 @@
-
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('include_prereleases');
+    if (checkbox) {
+        checkbox.addEventListener('change', getSchemaVersions);
+    }
+});
 /**
+ *
  * Event handler function when the HED version drop-down menu changes. If Other is selected the file browser
  * underneath it will appear. If another option is selected then it will disappear.
  */
@@ -40,9 +46,10 @@ function clearSchemaSelectFlashMessages() {
  */
 
 async function getSchemaVersions() {
-
+    const checkbox = document.getElementById('include_prereleases');
+    const isChecked = checkbox && checkbox.checked ? 'true' : 'false';
     try {
-        const fetchUrl = "{{url_for('route_blueprint.schema_versions_results')}}";
+        const fetchUrl = `{{url_for("route_blueprint.schema_versions_results")}}?include_prereleases=${isChecked}`;
         const response = await fetch(fetchUrl, {
             method: 'GET',
             headers: {
@@ -140,7 +147,7 @@ function populateSchemaVersionsDropdown(hedVersions) {
     if (hedVersions.length > 0) {
         hedVersionDropdown.append('<option value=' + hedVersions[0] + '>' + hedVersions[0] + ' (Latest)</option>');
         for (let i = 1; i < hedVersions.length; i++) {
-            hedVersionDropdown.append('<option value=' + hedVersions[i] + '>' + hedVersions[i] + '</option>');
+            hedVersionDropdown.append('<option value=' + hedVersions[i].trim().split(' ')[0] + '>' + hedVersions[i] + '</option>');
         }
     }
     hedVersionDropdown.append('<option value=' + OTHER_VERSION_OPTION + '>' + OTHER_VERSION_OPTION +

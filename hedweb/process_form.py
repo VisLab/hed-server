@@ -121,6 +121,7 @@ class ProcessForm:
 
         if form_has_option(request.form, bc.SCHEMA_VERSION) and \
                 request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
+            x = request.form[bc.SCHEMA_VERSION]
             arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
         elif form_has_option(request.form, bc.SCHEMA_VERSION) and form_has_file(request.files, bc.SCHEMA_PATH):
             f = request.files[bc.SCHEMA_PATH]

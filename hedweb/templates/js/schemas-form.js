@@ -187,16 +187,17 @@ function setOptions() {
  */
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
+    // const data = Object.fromEntries(formData.entries());
+    // console.log(data);
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     try {
-        const response = await fetch("{{url_for('route_blueprint.schemas_results')}}", {
+        const fetchUrl = "{{url_for('route_blueprint.schemas_results')}}";
+        const response = await fetch(fetchUrl, {
             method: "POST",
             body: formData,
             headers: {
-               'X-CSRFToken': "{{ csrf_token() }}",
-               'Accept': 'application/json',
-               'Content-Type': 'application/json'
+               'X-CSRFToken': "{{ csrf_token() }}"
             },
             credentials: 'same-origin'
         });

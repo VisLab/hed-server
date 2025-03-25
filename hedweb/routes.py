@@ -117,9 +117,13 @@ def schema_versions_results():
 
     try:
         hedschema.cache_xml_versions()
-        hed_info = {bc.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
-        hed_list = convert_hed_versions(hed_info)
-        return jsonify(hed_list)
+        hed_base = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=False))
+        include_prereleases = request.args.get('include_prereleases', 'false').lower() == 'true'
+        if include_prereleases:
+            hed_pre = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=True))
+            prereleases = [version + ' (prerelease)' for version in hed_pre if version not in hed_base]
+            hed_base.extend(prereleases)
+        return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
     except Exception as ex:
         return handle_error(ex)
 

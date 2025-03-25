@@ -120,6 +120,8 @@ function setOptions() {
 
 async function submitForm() {
     const [formData, defaultName] = prepareSubmitForm("sidecar");
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
     clearFlashMessages();
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
 
