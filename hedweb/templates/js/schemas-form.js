@@ -38,6 +38,18 @@ $('#second_schema_url').on('change', function () {
     updateFlash("second_schema");
 });
 
+$('#schema_folder').on('change', function () {
+    const files = this.files;
+    const label = $('#schema_folder_label');
+
+    if (files.length > 0) {
+        const folderName = files[0].webkitRelativePath.split('/')[0];
+        label.text(`Upload a HED schema folder: ${folderName}`);
+    } else {
+        label.text(UPLOAD_FILE_LABEL);
+    }
+});
+
 /**
  * Submit the form if a schema is specified.
  */
@@ -81,7 +93,9 @@ function clearForm() {
     clearFlashMessages();
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
+    $('#schema_folder_option').prop('checked', false);
     $('#schema_url').val(DEFAULT_XML_URL);
+    $('#schema_folder_label').text(UPLOAD_FILE_LABEL);
     $('#second_schema_url').val(DEFAULT_XML_URL);
     $('#schema_file').val('');
     $('#second_schema_file').val('');
@@ -93,20 +107,6 @@ function clearForm() {
  */
 function clearFlashMessages() {
     flashMessageOnScreen('', 'success', 'schema_flash');
-}
-
-function convertToOutputName(original_filename) {
-    let file_parts = splitExt(original_filename);
-    let basename = file_parts[0]
-    let extension = file_parts[1]
-    let new_extension = 'bad'
-    if (extension === SCHEMA_XML_EXTENSION) {
-        new_extension = SCHEMA_MEDIAWIKI_EXTENSION
-    } else if (extension === SCHEMA_MEDIAWIKI_EXTENSION) {
-        new_extension = SCHEMA_XML_EXTENSION
-    }
-
-    return basename + "." + new_extension
 }
 
 /**
@@ -136,7 +136,6 @@ function getSchemaFilename(type) {
         return schemaFile[0].files[0].name;
     }
 
- 
     if (checkRadioVal === type + "_url_option") {
         let schemaUrl = $('#' + type + '_url').val();
         let schemaUrlIsEmpty = schemaUrl === "";
@@ -145,6 +144,20 @@ function getSchemaFilename(type) {
             return '';
         }
         return urlFileBasename(schemaUrl);
+    }
+
+    if (checkRadioVal === type + "_folder_option") {
+        let schemaFolder = $('#' + type + '_folder');
+        let files = schemaFolder[0].files;
+
+        if (!files || files.length === 0) {
+            flashMessageOnScreen('Schema folder not selected.', 'error', 'schema_flash');
+            return '';
+        }
+
+        // Option: Return a list of filenames or the name of the root folder
+        // For now, return the name of the first file in the folder:
+        return files[0].webkitRelativePath.split('/')[0];  // Root folder name
     }
     return '';
 }
@@ -187,8 +200,13 @@ function setOptions() {
  */
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
-    // const data = Object.fromEntries(formData.entries());
-    // console.log(data);
+    const files = $('#schema_folder')[0].files;
+    for (const file of files) {
+        // Preserve relative paths using the webkitRelativePath
+        formData.append('files[]', file, file.webkitRelativePath);
+    }
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     try {
