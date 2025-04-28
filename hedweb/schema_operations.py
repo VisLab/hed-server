@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 import base64
 from hedweb.web_util import get_exception_message
+from hed.scripts.script_util import validate_schema_object
 from flask import send_file
 
 
@@ -125,7 +126,7 @@ class SchemaOperations(BaseOperations):
     
         """
 
-        issues = self.schema.check_compliance(self.check_for_warnings)
+        issues = validate_schema_object(self.schema, self.schema.name)
         if issues:
             issue_str = get_printable_issue_string(issues, f"Schema issues for {self.schema.name}:")
             file_name = self.schema.name + '_schema_issues.txt'
