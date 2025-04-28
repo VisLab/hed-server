@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, current_app
+from flask import render_template, request, Blueprint, current_app, jsonify
 from werkzeug.utils import secure_filename
 import json
 
@@ -8,7 +8,8 @@ from hed import HedFileError
 from hedweb.constants import base_constants as bc
 from hedweb.constants import page_constants
 from hedweb.constants import route_constants, file_constants
-from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results
+from hedweb.web_util import convert_hed_versions, get_parsed_name, handle_http_error, handle_error, package_results, \
+    get_exception_message
 
 from hedweb.event_operations import EventOperations
 from hedweb.schema_operations import SchemaOperations
@@ -23,19 +24,15 @@ app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 
-@route_blueprint.route(route_constants.COLUMNS_INFO_ROUTE, methods=['POST'])
+@route_blueprint.route('/columns_info_results', strict_slashes=False, methods=['POST'])
 def columns_info_results():
-    """ Return spreadsheets column and sheet names.
-
-    Returns:
-        str: A serialized JSON string with column and sheet_name information.
-
-    """
     try:
-        columns_info = get_columns_request(request)
-        return json.dumps(columns_info)
+        if request.method == 'POST':
+            columns_info = get_columns_request(request)
+            return jsonify(columns_info)
+        return jsonify({"message": "Method not allowed."}), 405
     except Exception as ex:
-        return handle_error(ex)
+        return get_exception_message(ex)
 
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
@@ -75,16 +72,14 @@ def schemas_results():
         - convert:  text file with converted schema.
 
     """
+    parameters = {}
     try:
         parameters = ProcessForm.get_input_from_form(request)
         proc_schemas = SchemaOperations(parameters)
         a = proc_schemas.process()
-        return package_results(a)
+        return jsonify(a)
     except Exception as ex:
-        if isinstance(ex, HedFileError) and len(ex.issues) >= 1:
-            return package_results(SchemaOperations.format_error("validate", ex))
-        else:
-            return handle_http_error(ex)
+        return jsonify(get_exception_message(ex))
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])
@@ -109,7 +104,7 @@ def schema_version_results():
         return handle_error(ex)
 
 
-@route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET', 'POST'])
+@route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET'])
 def schema_versions_results():
     """ Return serialized JSON string with HED versions.
 
@@ -120,9 +115,13 @@ def schema_versions_results():
 
     try:
         hedschema.cache_xml_versions()
-        hed_info = {bc.SCHEMA_VERSION_LIST: hedschema.get_hed_versions(library_name="all")}
-        hed_list = convert_hed_versions(hed_info)
-        return json.dumps(hed_list)
+        hed_base = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=False))
+        include_prereleases = request.args.get('include_prereleases', 'false').lower() == 'true'
+        if include_prereleases:
+            hed_pre = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=True))
+            prereleases = [version + ' (prerelease)' for version in hed_pre if version not in hed_base]
+            hed_base.extend(prereleases)
+        return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
     except Exception as ex:
         return handle_error(ex)
 

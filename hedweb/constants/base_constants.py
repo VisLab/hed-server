@@ -1,3 +1,4 @@
+APPEND_ASSEMBLED = 'append_assembled'
 CHECK_FOR_WARNINGS = 'check_for_warnings'
 
 COLUMN_COUNTS = 'column_counts'
@@ -91,6 +92,7 @@ SCHEMA_DISPLAY_NAME = 'schema_display_name'
 SCHEMA_FILE = 'schema_file'
 SCHEMA_FILE_FLASH = 'schema_file_flash'
 SCHEMA_FILE_OPTION = 'schema_file_option'
+SCHEMA_FOLDER_OPTION = 'schema_folder_option'
 SCHEMA_FORMAT = 'schema_format'
 SCHEMA_PATH = 'schema_path'
 SCHEMA_SELECT_FLASH = 'schema_select_flash'

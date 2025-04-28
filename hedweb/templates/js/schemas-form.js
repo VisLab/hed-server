@@ -1,7 +1,7 @@
-
 $(function () {
     prepareForm();
 });
+
 
 /**
  * Set the options according to the action specified.
@@ -36,6 +36,18 @@ $('#second_schema_url').on('change', function () {
     updateFileLabel($('#second_schema_url').val(), '#second_schema_url_display_name');
     $('#second_schema_url_option').prop('checked', true);
     updateFlash("second_schema");
+});
+
+$('#schema_folder').on('change', function () {
+    const files = this.files;
+    const label = $('#schema_folder_label');
+
+    if (files.length > 0) {
+        const folderName = files[0].webkitRelativePath.split('/')[0];
+        label.text(`Upload a HED schema folder: ${folderName}`);
+    } else {
+        label.text(UPLOAD_FILE_LABEL);
+    }
 });
 
 /**
@@ -81,7 +93,9 @@ function clearForm() {
     clearFlashMessages();
     $('#schema_url_option').prop('checked', false);
     $('#schema_file_option').prop('checked', false);
+    $('#schema_folder_option').prop('checked', false);
     $('#schema_url').val(DEFAULT_XML_URL);
+    $('#schema_folder_label').text(UPLOAD_FILE_LABEL);
     $('#second_schema_url').val(DEFAULT_XML_URL);
     $('#schema_file').val('');
     $('#second_schema_file').val('');
@@ -93,20 +107,6 @@ function clearForm() {
  */
 function clearFlashMessages() {
     flashMessageOnScreen('', 'success', 'schema_flash');
-}
-
-function convertToOutputName(original_filename) {
-    let file_parts = splitExt(original_filename);
-    let basename = file_parts[0]
-    let extension = file_parts[1]
-    let new_extension = 'bad'
-    if (extension === SCHEMA_XML_EXTENSION) {
-        new_extension = SCHEMA_MEDIAWIKI_EXTENSION
-    } else if (extension === SCHEMA_MEDIAWIKI_EXTENSION) {
-        new_extension = SCHEMA_XML_EXTENSION
-    }
-
-    return basename + "." + new_extension
 }
 
 /**
@@ -136,7 +136,6 @@ function getSchemaFilename(type) {
         return schemaFile[0].files[0].name;
     }
 
- 
     if (checkRadioVal === type + "_url_option") {
         let schemaUrl = $('#' + type + '_url').val();
         let schemaUrlIsEmpty = schemaUrl === "";
@@ -145,6 +144,20 @@ function getSchemaFilename(type) {
             return '';
         }
         return urlFileBasename(schemaUrl);
+    }
+
+    if (checkRadioVal === type + "_folder_option") {
+        let schemaFolder = $('#' + type + '_folder');
+        let files = schemaFolder[0].files;
+
+        if (!files || files.length === 0) {
+            flashMessageOnScreen('Schema folder not selected.', 'error', 'schema_flash');
+            return '';
+        }
+
+        // Option: Return a list of filenames or the name of the root folder
+        // For now, return the name of the first file in the folder:
+        return files[0].webkitRelativePath.split('/')[0];  // Root folder name
     }
     return '';
 }
@@ -185,76 +198,48 @@ function setOptions() {
 /**
  * Submit the form and return the conversion results as an attachment
  */
-function submitSchemaForm() {
-    let schemaForm = document.getElementById("schema_form");
-    let formData = new FormData(schemaForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
-    let schemaURL = document.getElementById("schema_url")
-    formData.append("schema_url", schemaURL.value)
-    let display_name = convertToOutputName(getSchemaFilename("schema"))
+async function submitSchemaForm() {
+    const [formData, defaultName] = prepareSubmitForm("schema");
+    const files = $('#schema_folder')[0].files;
+    for (const file of files) {
+        // Preserve relative paths using the webkitRelativePath
+        formData.append('files[]', file, file.webkitRelativePath);
+    }
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
-    let postType = {
-            type: 'POST',
-            url: "{{url_for('route_blueprint.schemas_results')}}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: "text",
-            success: function (download, status, xhr) {
-                getResponseSuccess(download, xhr, display_name, 'schema_flash')
+    try {
+        const fetchUrl = "{{url_for('route_blueprint.schemas_results')}}";
+        const response = await fetch(fetchUrl, {
+            method: "POST",
+            body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
             },
-            error: function (xhr, status, errorThrown) {
-                getResponseFailure(xhr, status, errorThrown, display_name, 'schema_flash')
-            }
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
         }
-    $.ajax(postType)
+
+        const download = await response.text();
+        console.log(download);
+        handleResponse1(response, download, defaultName, 'schema_flash');
+      } catch (error) {
+       if (error.response) {
+            handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'schema_flash');
+        }
+    }
 }
-
-
-/*function updateForm() {
-     clearFlashMessages();
-     let filename = getSchemaFilename("schema");
-     let isXMLFilename = fileHasValidExtension(filename, [SCHEMA_XML_EXTENSION]);
-     let isMediawikiFilename = fileHasValidExtension(filename, [SCHEMA_MEDIAWIKI_EXTENSION]);
-
-     let hasValidFilename = false;
-     if (isXMLFilename) {
-       // $('#schema-conversion-submit').html("Convert to mediawiki")
-        hasValidFilename = true;
-     } else if (isMediawikiFilename) {
-        //$('#schema-conversion-submit').html("Convert to XML");
-        hasValidFilename = true;
-     } else {
-        // $('#schema-conversion-submit').html("Convert Format");
-     }
-
-     let urlChecked = document.getElementById("schema_url_option").checked;
-     if (!urlChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-     let uploadChecked = document.getElementById("schema_file_option").checked;
-     if (!uploadChecked || hasValidFilename) {
-        flashMessageOnScreen("", 'success', 'schema_flash')
-     }
-
-     if (filename && urlChecked && !hasValidFilename) {
-        flashMessageOnScreen('Please choose a valid schema url (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (filename && uploadChecked && !hasValidFilename) {
-         flashMessageOnScreen('Please upload a valid schema file (.xml, .mediawiki)', 'error',
-        'schema_flash');
-     }
-
-     if (!uploadChecked && !urlChecked) {
-        flashMessageOnScreen('No source file specified.', 'error', 'schema_flash');
-     }
-
-     flashMessageOnScreen('', 'success', 'schema_flash')
-}*/
 
 
 function updateFlash(type) {

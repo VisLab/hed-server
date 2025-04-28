@@ -12,11 +12,11 @@
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True) }}
-        {{ create_options(check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
+        {{ create_options(append_assembled=True,check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
         <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
-            {{ create_file_input('Upload events (tsv file):', 'events_file', '') }}
+            {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_file_flash') }}
             <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
             {{ create_column_info('show_events') }}
             {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 

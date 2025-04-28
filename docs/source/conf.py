@@ -23,8 +23,8 @@ copyright = '2018-, HED Working Group'
 author = 'HED Working Group'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
-version = '0.0.1'
+release = '0.2.0'
+version = '0.2.0'
 
 currentdir = os.path.abspath(os.path.dirname(__file__))
 # -- General configuration ---------------------------------------------------

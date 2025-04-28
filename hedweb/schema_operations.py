@@ -1,3 +1,13 @@
+import os
+import io
+import tempfile
+import zipfile
+import base64
+from hedweb.web_util import get_exception_message
+from hed.scripts.script_util import validate_schema_object
+from flask import send_file
+
+
 from hed.errors import get_printable_issue_string, HedFileError
 from hed.schema.schema_compare import compare_differences
 from hed import schema as hedschema
@@ -69,28 +79,44 @@ class SchemaOperations(BaseOperations):
                 'msg': 'Schemas were successfully compared' + msg_results}
 
     def convert(self):
-        """ Return a string representation of hed_schema in format determined by the display name extension.
-      
+        """Convert schema to multiple formats, save to temp dir, zip, and return as base64-encoded data.
+
         Returns:
             dict: A dictionary of results in the standard results format.
-    
         """
 
-        if self.schema.source_format == fc.SCHEMA_XML_EXTENSION:
-            data = self.schema.get_as_mediawiki_string()
-            extension = '.mediawiki'
-        else:
-            data = self.schema.get_as_xml_string()
-            extension = '.xml'
-        file_name = self.schema.name + extension
+        schema_name = self.schema.name
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base_dir = os.path.join(tmpdir, f"{schema_name}_converted")
+            os.makedirs(base_dir, exist_ok=True)
+            # Write all the formats to the temp directory.
+            self.schema.save_as_xml(os.path.join(base_dir, schema_name + '.xml'))
+            self.schema.save_as_mediawiki(os.path.join(base_dir, schema_name + '.mediawiki'))
+            self.schema.save_as_dataframes(os.path.join(base_dir, 'hedtsv', schema_name,  schema_name + '.tsv'))
 
-        return {'command': bc.COMMAND_CONVERT_SCHEMA,
-                bc.COMMAND_TARGET: 'schema',
-                'data': data,
-                'output_display_name': file_name,
-                'schema_version': self.schema.get_formatted_version(),
+            # Create zip archive in memory
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                for root, _, files in os.walk(base_dir):
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        arcname = os.path.relpath(full_path, os.path.dirname(base_dir))
+                        zipf.write(full_path, arcname)
+
+            zip_buffer.seek(0)
+            zip_bytes = zip_buffer.read()
+            encoded_zip = base64.b64encode(zip_bytes).decode('utf-8')
+            zip_file_name = f"{schema_name}_converted.zip"
+
+            return {
+                'command': 'convert_schema',
+                'command_target': 'schema',
+                'data': encoded_zip,
+                'output_display_name': zip_file_name,
+                'schema_version': schema_name,
                 'msg_category': 'success',
-                'msg': 'Schema was successfully converted'}
+                'msg': 'Schema was successfully converted'
+            }
 
     def validate(self):
         """ Run schema compliance for HED-3G.
@@ -100,10 +126,10 @@ class SchemaOperations(BaseOperations):
     
         """
 
-        issues = self.schema.check_compliance(self.check_for_warnings)
+        issues = validate_schema_object(self.schema, self.schema.name)
         if issues:
             issue_str = get_printable_issue_string(issues, f"Schema issues for {self.schema.name}:")
-            file_name = self.schema.name + 'schema_issues.txt'
+            file_name = self.schema.name + '_schema_issues.txt'
             return {'command': bc.COMMAND_VALIDATE,
                     bc.COMMAND_TARGET: 'schema',
                     'data': issue_str,
@@ -122,8 +148,12 @@ class SchemaOperations(BaseOperations):
 
     @staticmethod
     def format_error(command, exception):
-        issue_str = get_printable_issue_string(exception.issues, f"Schema issues for {exception.filename}:")
-        file_name = generate_filename(exception.filename, name_suffix='_issues', extension='.txt')
+        if isinstance(exception, HedFileError) and len(exception.issues) >= 1:
+            issue_str = get_printable_issue_string(exception.issues, f"Schema issues for {exception.filename}:")
+            file_name = generate_filename(exception.filename, name_suffix='_issues', extension='.txt')
+        else:
+            issue_str = get_exception_message(exception)
+            file_name = 'unknown'
         return {'command': command,
                 bc.COMMAND_TARGET: 'schema',
                 'data': issue_str,

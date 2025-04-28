@@ -14,22 +14,7 @@ $('#has_column_names').on('change', function() {
  */
 $('#spreadsheet_file').on('change', function () {
     clearFlashMessages();
-    let spreadsheet = $('#spreadsheet_file');
-    let spreadsheetPath = spreadsheet.val();
-    let spreadsheetFile = spreadsheet[0].files[0];
-
-    let info = getColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash', undefined,true);
-    if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
-        populateWorksheetDropdown(info["worksheet_names"]);
-    } else if (fileHasValidExtension(spreadsheetPath, TEXT_FILE_EXTENSIONS)) {
-        $('#worksheet_name').empty();
-        $('#worksheet_select').hide();
-    }
-    
-    if ($('#show_indices_section') != null) {
-        let selectedElement = document.getElementById("process_actions");
-        setIndicesTable(selectedElement.value === "validate");
-    }
+    setColumnTable();
 })
 
 
@@ -79,7 +64,7 @@ function populateWorksheetDropdown(worksheetNames) {
     }
 }
 
-function setIndicesTable() {
+async function setIndicesTable() {
     clearColumnInfoFlashMessages();
     removeColumnInfo("show_indices_table")
     let spreadsheet = $('#spreadsheet_file')[0];
@@ -89,9 +74,28 @@ function setIndicesTable() {
     }
     let spreadsheetFile = spreadsheet.files[0];
     if (spreadsheetFile != null) {
-        let info = getColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheet, true)
+        let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheet, true)
         let cols = info['column_list']
         let selectedElement = document.getElementById("process_actions");
         showIndices(cols)
+    }
+}
+
+async function setColumnTable() {
+    let spreadsheet = $('#spreadsheet_file');
+    let spreadsheetPath = spreadsheet.val();
+    let spreadsheetFile = spreadsheet[0].files[0];
+
+    let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash', undefined,true);
+    if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
+        await populateWorksheetDropdown(info["worksheet_names"]);
+    } else if (fileHasValidExtension(spreadsheetPath, TEXT_FILE_EXTENSIONS)) {
+        $('#worksheet_name').empty();
+        $('#worksheet_select').hide();
+    }
+
+    if ($('#show_indices_section') != null) {
+        let selectedElement = document.getElementById("process_actions");
+        setIndicesTable(selectedElement.value === "validate");
     }
 }

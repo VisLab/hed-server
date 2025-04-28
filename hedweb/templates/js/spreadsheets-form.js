@@ -1,7 +1,7 @@
-
 $(function () {
     prepareForm();
 });
+
 
 $('#definition_file').change(function() {
     clearFlashMessages();
@@ -20,17 +20,18 @@ $('#process_actions').change(function(){
 /**
  * Submits the form if a file is given and the schema is selected.
  */
-$('#spreadsheet_submit').on('click', function () {
-    if (fileIsSpecified('#spreadsheet_file', 'spreadsheet_flash', 'Spreadsheet is not specified.') &&
+document.getElementById('spreadsheet_submit').addEventListener('click', function ()  {
+    if (fileIsSpecified('spreadsheet_file', 'spreadsheet_flash', 'Spreadsheet is not specified.') &&
         schemaSpecifiedWhenOtherIsSelected()) {
         submitForm();
     }
 });
 
+
 /**
- * Clears the form.
+ * Clear the spreadsheet form.
  */
-$('#spreadsheet_clear').on('click', function () {
+document.getElementById('spreadsheet_clear').addEventListener('click', function () {
     clearForm();
 });
 
@@ -91,48 +92,48 @@ function setOptions() {
  * Submit the form and return the results. If there are issues then they are returned in an attachment
  * file.
  */
-function submitForm() {
-    let spreadsheetForm = document.getElementById("spreadsheet_form");
-    let formData = new FormData(spreadsheetForm);
-    let worksheetName = getWorksheetName();
+async function submitForm() {
+    const [formData, defaultName] = prepareSubmitForm("spreadsheet");
+    const worksheetName = getWorksheetName();
     formData.append('worksheet_selected', worksheetName)
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
-    let prefix = 'issues';
-    if(worksheetName) {
-        prefix = prefix + '_worksheet_' + worksheetName;
-    }
-    let spreadsheetFile = getSpreadsheetFileName();
-    let display_name = convertToResultsName(spreadsheetFile, prefix)
+    const spreadsheetFile = getSpreadsheetFileName();
+    const isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
+        !$("#validate").prop("checked");
     clearFlashMessages();
     flashMessageOnScreen('Spreadsheet is being processed ...', 'success',
         'spreadsheet_flash')
-    let isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
-            !$("#validate").prop("checked");
-    $.ajax({
-        type: 'POST',
-        url: "{{url_for('route_blueprint.spreadsheets_results')}}",
-        data: formData,
-        contentType: false,
-        processData: false,
-        xhr: function () {
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 2) {
-                    if (xhr.status === 200 && isExcel) {
-                        xhr.responseType = "blob";
-                    } else {
-                        xhr.responseType = "text";
-                    }
-                }
-            };
-            return xhr;
-        },
-        success: function (data, status, xqXHR) {
-            getResponseSuccess(data, xqXHR, display_name, 'spreadsheet_flash')
-        },
-        error: function (xhr, status, errorThrown) {
-            getResponseFailure(xhr, status, errorThrown, display_name, 'spreadsheet_flash')
+
+    try {
+        const fetchUrl = "{{url_for('route_blueprint.spreadsheets_results')}}"
+        const response = await fetch(fetchUrl, {
+            method: "POST",
+            body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin'
+        });
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
         }
-    })
+        let download;
+        if (isExcel) {
+            download = await response.blob();
+        } else {
+            download = await response.text();
+        }
+        handleResponse(response, download, defaultName, 'spreadsheet_flash');
+
+    } catch (error) {
+        if (error.response) {
+            handleResponseFailure(error.response, message, error, defaultName, 'spreadsheet_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'spreadsheet_flash');
+        }
+    }
 }

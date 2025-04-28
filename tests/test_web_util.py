@@ -11,18 +11,18 @@ class Test(TestWebBase):
 
     def test_convert_hed_versions(self):
         from hedweb.web_util import convert_hed_versions
-        no_none = {'schema_version_list': {'score': ['1.0.0', '2.0.0']}}
+        no_none = {'score': ['1.0.0', '2.0.0']}
         no_none_list = convert_hed_versions(no_none)
-        self.assertTrue(no_none_list['schema_version_list'] == ['score_1.0.0', 'score_2.0.0'])
-        just_none = {'schema_version_list': {None: ['8.0.0', '8.1.0']}}
+        self.assertTrue(no_none_list == ['score_1.0.0', 'score_2.0.0'])
+        just_none = {None: ['8.0.0', '8.1.0']}
         just_none_list = convert_hed_versions(just_none)
-        self.assertTrue(just_none_list['schema_version_list'] == ['8.0.0', '8.1.0'])
-        just_blank = {'schema_version_list': {'': ['9.0.0', '9.1.0']}}
+        self.assertTrue(just_none_list == ['8.0.0', '8.1.0'])
+        just_blank = {'': ['9.0.0', '9.1.0']}
         just_blank_list = convert_hed_versions(just_blank)
-        self.assertTrue(just_blank_list['schema_version_list'] == ['_9.0.0', '_9.1.0'])
-        test_all = {'schema_version_list': {'score': ['1.0.0', '2.0.0'], None: ['8.0.0', '8.1.0']}}
+        self.assertTrue(just_blank_list == ['_9.0.0', '_9.1.0'])
+        test_all = {'score': ['1.0.0', '2.0.0'], None: ['8.0.0', '8.1.0']}
         test_all_list = convert_hed_versions(test_all)
-        self.assertTrue(test_all_list['schema_version_list'] == ['8.0.0', '8.1.0', 'score_1.0.0', 'score_2.0.0'])
+        self.assertTrue(test_all_list == ['8.0.0', '8.1.0', 'score_1.0.0', 'score_2.0.0'])
 
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file

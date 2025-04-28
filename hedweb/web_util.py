@@ -18,11 +18,11 @@ TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 def convert_hed_versions(hed_info):
     hed_list = []
-    standard_list = hed_info['schema_version_list'].get(None, [])
-    for key, key_list in hed_info['schema_version_list'].items():
+    standard_list = hed_info.get(None, [])
+    for key, key_list in hed_info.items():
         if key is not None:
             hed_list = hed_list + [key + '_' + element for element in key_list]
-    return {'schema_version_list': standard_list + hed_list}
+    return standard_list + hed_list
 
 
 def file_extension_is_valid(filename, accepted_extensions=None):
@@ -345,6 +345,19 @@ def handle_http_error(ex):
         Response: A response object indicating the field_type of error.
 
     """
+    return generate_text_response(get_exception_message(ex))
+
+
+def get_exception_message(ex):
+    """ Extract a suitable message for exception as a dictionary
+
+    Parameters:
+        ex (Exception): A class that extends python Exception class.
+
+    Returns:
+        Response: A response object indicating the field_type of error.
+
+    """
     if hasattr(ex, 'error_type'):
         error_code = ex.error_type
     elif hasattr(ex, 'code'):
@@ -361,7 +374,7 @@ def handle_http_error(ex):
     else:
         filename = ''
     error_message = f"{error_code}: {filename} [{message}]"
-    return generate_text_response({'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message})
+    return {'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message}
 
 
 def package_results(results):

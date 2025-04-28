@@ -16,9 +16,9 @@
         <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
-            {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
             {{create_spreadsheets_input(has_column_names_option=False) }}
             {{ create_column_info('show_indices') }}
+            {{ create_file_input('Optional definition sidecar (JSON file)', 'definition_file') }}
         </fieldset>
         <p>&nbsp;</p>
         {{ create_schemas_pulldown() }}

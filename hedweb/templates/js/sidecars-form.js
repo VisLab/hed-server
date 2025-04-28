@@ -1,4 +1,3 @@
-
 $(function () {
     prepareForm();
 });
@@ -19,21 +18,22 @@ $('#sidecar_file').change(function() {
 /**
  * Submit the form if schema and json file specified.
  */
-$('#sidecar_submit').on('click', function () {
+document.getElementById('sidecar_submit').addEventListener('click', function () {
     if (!schemaSpecifiedWhenOtherIsSelected()) {
         return;
-    } 
-    // let selectedElement = document.getElementById("process_actions");
-    if ($('#process_actions').val() === "merge_spreadsheet" ||
-        fileIsSpecified('#sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.' )) {
+    }
+
+    const processActions = document.getElementById('process_actions');
+    if (processActions.value === "merge_spreadsheet" ||
+        fileIsSpecified('sidecar_file', 'sidecar_flash', 'Sidecar file is not specified.')) {
         submitForm();
     }
 });
 
 /**
- * Clear the form.
+ * Clear the sidecar form.
  */
-$('#sidecar_clear').on('click', function () {
+document.getElementById('sidecar_clear').addEventListener('click', function () {
     clearForm();
 });
 
@@ -117,35 +117,40 @@ function setOptions() {
     }
 }
 
-/**
- * Submit the form and return the validation results. If there are issues then they are returned in an attachment
- * file.
- */
-function submitForm() {
-    let sidecarForm = document.getElementById("sidecar_form");
-    let formData = new FormData(sidecarForm);
-    let selectedElement = document.getElementById("process_actions");
-    formData.append("command_option", selectedElement.value)
-    let sidecarFile = $("#sidecar_file")[0];
-    formData.append('sidecar', sidecarFile.files[0])
-    let display_name = convertToResultsName(sidecarFile, 'issues')
-    let spreadsheetFile = $("#spreadsheet_file")[0];
-    formData.append('spreadsheet', spreadsheetFile.files[0])
+
+async function submitForm() {
+    const [formData, defaultName] = prepareSubmitForm("sidecar");
+    // const data = Object.fromEntries(formData.entries());
+    // console.log(data);
     clearFlashMessages();
     flashMessageOnScreen('Sidecar is being processed ...', 'success', 'sidecar_flash')
-    $.ajax({
-            type: 'POST',
-            url: "{{url_for('route_blueprint.sidecars_results')}}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'text',
-            success: function (download, status, xhr) {
-                getResponseSuccess(download, xhr, display_name, 'sidecar_flash')
+
+    try {
+        const fetchUrl = "{{url_for('route_blueprint.sidecars_results')}}";
+        const response = await fetch(fetchUrl, {
+            method: "POST",
+            body: formData,
+            headers: {
+               'X-CSRFToken': "{{ csrf_token() }}"
             },
-            error: function (xhr, status, errorThrown) {
-                getResponseFailure(xhr, status, errorThrown, display_name, 'sidecar_flash')
-            }
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            const error = new Error(errorData.message || `A response error occurred`);
+            error.response = response;
+            throw error;
         }
-    )
+        const download = await response.text();
+        handleResponse(response, download, defaultName, 'sidecar_flash')
+    } catch (error) {
+       if (error.response) {
+            handleResponseFailure(error.response, message, error, displayName, 'sidecar_flash');
+        } else {
+            // Network or unexpected error
+            const info = `Unexpected error occurred [Source: ${displayName}][Error: ${error.message}]`;
+            flashMessageOnScreen(info, 'error', 'sidecar_flash');
+        }
+    }
 }

@@ -8,8 +8,9 @@
           <label class="form-check-label" for="schema_url_option">Enter HED schema URL:</label>
           <input class="form-control" type="url" id="schema_url"  name="schema_url"
                  aria-label="Enter schema URL here">
-        </div>
-            <p></p>
+          </div>
+          <p></p>
+
           <div class="form-check" id="schema_file_group">
             <input class="form-check-input" type="radio" name="schema_upload_options" 
                    id="schema_file_option" value="schema_file_option"
@@ -18,7 +19,21 @@
               HED schema file to upload:
             </label>
               <input class="form-control" type="file" id="schema_file" name="schema_file"
-                     id="schema_file" aria-label="Enter schema file to upload here">
+                      aria-label="Enter schema file to upload here">
+          </div>
+          <p></p>
+
+          <!-- ✅ Option 3: Folder upload -->
+          <div class="form-check" id="schema_folder_group">
+            <input class="form-check-input" type="radio" name="schema_upload_options"
+                   id="schema_folder_option" value="schema_folder_option"
+                   aria-label="Select this button to upload a HED schema folder">
+            <label class="form-check-label" for="schema_folder_option" id="schema_folder_label">
+              Upload a HED schema folder:
+            </label>
+            <input class="form-control" type="file" id="schema_folder" name="schema_folder[]"
+                   webkitdirectory directory multiple
+                   aria-label="Select a folder to upload">
           </div>
         </fieldset>
     <div id="second_schema_section">
@@ -41,7 +56,7 @@
                 HED schema file to upload:
             </label>
             <input class="form-control" type="file" id="second_schema_file" name="second_schema_file"
-                   id="second_schema_file" aria-label="Enter schema file to upload here">
+                   aria-label="Enter schema file to upload here">
         </div>
     </fieldset>
     </div>

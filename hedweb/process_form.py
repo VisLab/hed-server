@@ -1,5 +1,6 @@
 import os
 import json
+import tempfile
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from hed.schema import load_schema_version, from_string
@@ -32,6 +33,7 @@ class ProcessForm:
         arguments = {
             bc.REQUEST_TYPE: bc.FROM_FORM,
             bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ''),
+            bc.APPEND_ASSEMBLED: form_has_option(request.form, bc.APPEND_ASSEMBLED, 'on'),
             bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, 'on'),
             bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
@@ -63,10 +65,17 @@ class ProcessForm:
             arguments[bc.WORKSHEET] = request.form.get(bc.WORKSHEET_NAME, None)
             filename = request.files[bc.SPREADSHEET_FILE].filename
             file_ext = os.path.splitext(filename)[1]
-            if file_ext in fc.EXCEL_FILE_EXTENSIONS:
+            if file_ext.lower() in fc.EXCEL_FILE_EXTENSIONS:
                 arguments[bc.SPREADSHEET_TYPE] = fc.EXCEL_EXTENSION
                 arguments[bc.SPREADSHEET] = SpreadsheetInput(file=request.files[bc.SPREADSHEET_FILE],
                                                              file_type=fc.EXCEL_EXTENSION,
+                                                             worksheet_name=arguments[bc.WORKSHEET],
+                                                             tag_columns=arguments[bc.TAG_COLUMNS],
+                                                             has_column_names=True, name=filename)
+            elif file_ext.lower() in fc.TEXT_FILE_EXTENSIONS:
+                arguments[bc.SPREADSHEET_TYPE] = fc.TSV_EXTENSION
+                arguments[bc.SPREADSHEET] = SpreadsheetInput(file=request.files[bc.SPREADSHEET_FILE],
+                                                             file_type=fc.TSV_EXTENSION,
                                                              worksheet_name=arguments[bc.WORKSHEET],
                                                              tag_columns=arguments[bc.TAG_COLUMNS],
                                                              has_column_names=True, name=filename)
@@ -110,26 +119,62 @@ class ProcessForm:
         Returns:
             HedSchema: The HED schema to use.
         """
+        if form_has_option(request.form, bc.SCHEMA_VERSION):
+            ProcessForm.set_schema_from_version(arguments, request)
+            return
 
-        if form_has_option(request.form, bc.SCHEMA_VERSION) and \
-                request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
-            arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
-        elif form_has_option(request.form, bc.SCHEMA_VERSION) and form_has_file(request.files, bc.SCHEMA_PATH):
-            f = request.files[bc.SCHEMA_PATH]
-            arguments[bc.SCHEMA] = \
-                from_string(f.read(fc.BYTE_LIMIT).decode('utf-8'), schema_format=secure_filename(f.filename))
+        # The schemas section only
         if form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION) and \
                 form_has_file(request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_FILE])
         elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION) and \
                 form_has_url(request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.values[bc.SCHEMA_URL])
+        elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION) and \
+                'files[]' in request.files:
+            ProcessForm.set_tsv_schema(arguments, request)
+
         if form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FILE_OPTION) and \
                 form_has_file(request.files, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.files[bc.SECOND_SCHEMA_FILE])
         elif form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_URL_OPTION) and \
                 form_has_url(request.form, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.values[bc.SECOND_SCHEMA_URL])
+
+    @staticmethod
+    def set_tsv_schema(arguments, request):
+        files = request.files.getlist('files[]')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rel_path = ''
+            for file in files:
+                rel_path = file.filename  # Preserves webkitRelativePath from the client
+                print(rel_path)
+                save_path = os.path.join(tmpdir, rel_path)
+                print(save_path)
+                # Create any needed subdirectories
+                os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+                # Save the file to the temp directory
+                file.save(save_path)
+
+            filename = os.path.splitext(os.path.basename(rel_path))[0]
+            dir_name = os.path.dirname(rel_path)
+            base_name = filename.rsplit('_', 1)[0]
+            save_path = os.path.join(tmpdir, dir_name, base_name + '.tsv')
+            print(base_name, save_path)
+            arguments[bc.SCHEMA] = hedschema.load_schema(save_path, name=base_name)
+        return
+
+    @staticmethod
+    def set_schema_from_version(arguments, request):
+        if request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
+            arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
+        elif form_has_file(request.files, bc.SCHEMA_PATH):
+            f = request.files[bc.SCHEMA_PATH]
+            arguments[bc.SCHEMA] = \
+                from_string(f.read(fc.BYTE_LIMIT).decode('utf-8'), schema_format=secure_filename(f.filename))
+        else:
+            arguments[bc.SCHEMA] = None
 
     @staticmethod
     def get_schema(schema_input=None, version=None, as_xml_string=None):
