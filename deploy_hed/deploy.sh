@@ -15,7 +15,7 @@ CONTAINER_PORT=80
 # Directory paths
 GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
-SOURCE_DEPLOY_DIR="${GIT_HED_WEB_DIR}/deploy_hed_dev"
+SOURCE_DEPLOY_DIR="${GIT_HED_WEB_DIR}/deploy_hed"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 
 # Source files
