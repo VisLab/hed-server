@@ -15,7 +15,7 @@ CONTAINER_PORT=80
 # Directory paths
 GIT_HED_WEB_DIR="${DEPLOY_DIR}/hed-web"
 CODE_DEPLOY_DIR="${DEPLOY_DIR}/hedtools"
-SOURCE_DEPLOY_DIR="${GIT_HED_WEB_DIR}/deploy_hed_dev"
+SOURCE_DEPLOY_DIR="${GIT_HED_WEB_DIR}/deploy_hed"
 CONFIG_FILE="${CODE_DEPLOY_DIR}/config.py"
 
 # Source files
@@ -46,7 +46,7 @@ setup_web_directory() {
     cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}" || error_exit "Failed to copy base config file"
     cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/Dockerfile" || error_exit "Failed to copy Dockerfile"
     cp "${SOURCE_REQUIREMENTS_FILE}" "${DEPLOY_DIR}/requirements.txt" || error_exit "Failed to copy requirements.txt"
-    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" || error_exit "Failed to copy gunicorn-logrotate.conf"
+    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" || error_exit "Failed to copy ${LOGROTATE_CONF_FILE} to ${DEPLOY_DIR}/gunicorn-logrotate.conf"
     cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}" || error_exit "Failed to copy web code"
 }
 
