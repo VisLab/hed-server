@@ -13,6 +13,7 @@ from hed.tools.remodeling.remodeler_validator import RemodelerValidator
 from hed.tools.analysis.hed_tag_manager import HedTagManager
 from hed.tools.analysis.event_manager import EventManager
 from hed.tools.analysis.tabular_summary import TabularSummary
+from hed.tools.analysis.event_checker import EventsChecker
 from hedweb.constants import base_constants as bc
 from hedweb.base_operations import BaseOperations
 from hedweb.web_util import generate_filename, get_schema_versions
@@ -37,12 +38,14 @@ class EventOperations(BaseOperations):
         self.expand_defs = False
         self.include_context = False
         self.include_summaries = False
+        self.limit_errors = False
         self.queries = None
         self.query_names = None
         self.remodel_operations = None
         self.remove_types_on = False
         self.replace_defs = False
         self.sidecar = None
+        self.show_details = False
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -68,6 +71,8 @@ class EventOperations(BaseOperations):
             raise HedFileError('InvalidEventsFile', "An events file was not given or could not be read", "")
         if self.command == bc.COMMAND_VALIDATE:
             results = self.validate()
+        elif self.command == bc.COMMAND_CHECK_QUALITY:
+            results = self.check_quality()
         elif self.command == bc.COMMAND_SEARCH:
             results = self.search()
         elif self.command == bc.COMMAND_ASSEMBLE:
@@ -94,6 +99,7 @@ class EventOperations(BaseOperations):
         self.check_for_warnings = False
         results = self.validate()
         if results['data']:
+            results['data'] = results['data']
             return results
         hed_objs, definitions = self.get_hed_objs()
         data = [str(obj) if obj is not None else '' for obj in hed_objs]
@@ -111,6 +117,50 @@ class EventOperations(BaseOperations):
                 'definitions': DefinitionDict.get_as_strings(definitions),
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
+
+    def check_quality(self):
+        """ Check the quality of the HED annotations for an events file.
+
+        Returns:
+            dict: A dictionary of results in standard format including either the assembled events string or errors.
+
+        Notes: The options for this are
+            - limit_errors (bool):  If True, report at most 2 errors of each type
+            - show_details (bool): If True, a detailed breakdown of the event annotation is displayed with error.
+
+        """
+        # Make sure that the events file is actually valid before checking quality
+        self.check_for_warnings = False
+        display_name = self.events.name
+        results = self.validate()
+        if results['data']:
+            results['data'] = "Events file had validation issues, so quality check not performed...\n" + results['data']
+            return results
+
+        checker = EventsChecker(self.schema, self.events, display_name)
+        issues = checker.validate_event_tags()
+        file_name = generate_filename(display_name, name_suffix='_quality', extension='.txt', append_datetime=True)
+        if issues:
+            num_issues = str(len(issues))
+            title = "Annotation quality errors: Total issues: " + num_issues
+            if self.limit_errors:
+                issues, counts = ErrorHandler.filter_issues_by_count(issues, 2)
+                count_str = [f"{code}: {count}" for code, count in counts.items()]
+                title = title + " (Only 2 errors of each type displayed)\n" + "\n".join(count_str)
+            if self.show_details:
+                checker.insert_issue_details(issues)
+            data = get_printable_issue_string(issues, title=title, show_details=self.show_details)
+            msg_category = 'warning'
+            msg = f"File {display_name} had annotation {num_issues} quality issues"
+        else:
+            data = ''
+            file_name = display_name
+            msg_category = 'success'
+            msg = f"File {display_name} did not have HED annotation quality issues"
+
+        return {bc.COMMAND: bc.COMMAND_CHECK_QUALITY, bc.COMMAND_TARGET: 'events', 'data': data,
+                'output_display_name': file_name, 'msg_category': msg_category, 'msg': msg}
+
 
     def generate_sidecar(self):
         """ Generate a JSON sidecar template from a BIDS-style events file.
@@ -258,6 +308,13 @@ class EventOperations(BaseOperations):
     
         """
         display_name = self.events.name
+        if self.events.dataframe.empty:
+            return {bc.COMMAND: bc.COMMAND_CHECK_QUALITY,
+                    bc.COMMAND_TARGET: 'events',
+                    'data': "No tsv data to process",
+                    'output_display_name': display_name,
+                    'msg_category': 'warning',
+                    'msg': f"File {display_name} had no data to process"}
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         issues = []
         if self.sidecar:
@@ -265,16 +322,22 @@ class EventOperations(BaseOperations):
         if not check_for_any_errors(issues):
             issues += self.events.validate(self.schema, name=self.events.name, error_handler=error_handler)
         if issues:
-            data = get_printable_issue_string(issues, title="Event file errors:")
+            num_errors = len(issues)
+            title = f"File errors for {display_name}: {num_errors} Total errors"
+            if self.limit_errors:
+                issues, counts = ErrorHandler.filter_issues_by_count(issues, 2)
+                count_str = [f"{code}: {count}" for code, count in counts.items()]
+                title = title + " (Only 2 errors of each type displayed)\n" + "\n".join(count_str)
+            data = get_printable_issue_string(issues, title=title)
             file_name = generate_filename(display_name, name_suffix='_validation_issues',
                                           extension='.txt', append_datetime=True)
             category = 'warning'
-            msg = f"Events file {display_name} had validation issues"
+            msg = f"File {display_name} had  {num_errors} validation issues"
         else:
             data = ''
             file_name = display_name
             category = 'success'
-            msg = f"Events file {display_name} did not have validation issues"
+            msg = f"File {display_name} did not have validation issues"
     
         return {bc.COMMAND: bc.COMMAND_VALIDATE, bc.COMMAND_TARGET: 'events',
                 'data': data, "output_display_name": file_name,

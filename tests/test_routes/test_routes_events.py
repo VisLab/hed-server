@@ -44,6 +44,39 @@ class Test(TestRouteBase):
             self.assertTrue(response.data,
                             "The response data for invalid event assembly should have error messages")
 
+    def test_events_results_quality_checker_invalid(self):
+        data = ''
+        with self.app.app_context():
+            input_data = {bc.SCHEMA_VERSION: '8.3.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_CHECK_QUALITY,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.LIMIT_ERRORS: 'on',
+                          bc.SHOW_DETAILS: 'on'}
+            response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
+            self.assertEqual(200, response.status_code, 'Check quality of file has a response')
+            headers_dict = dict(response.headers)
+            self.assertEqual("warning", headers_dict["Category"],
+                             "The events file should have quality issues")
+            self.assertTrue(response.data, "The quality checker should have data.")
+            data = response.data
+
+        with self.app.app_context():
+            input_data = {bc.SCHEMA_VERSION: '8.3.0',
+                          bc.COMMAND_OPTION: bc.COMMAND_CHECK_QUALITY,
+                          bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                          bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
+                          bc.LIMIT_ERRORS: 'off',
+                          bc.SHOW_DETAILS: 'on'}
+            response = self.app.test.post('/events_submit', content_type='multipart/form-data', data=input_data)
+            self.assertEqual(200, response.status_code, 'Check quality of file has a response')
+            headers_dict = dict(response.headers)
+            self.assertEqual("warning", headers_dict["Category"],
+                             "The events file should have quality issues")
+            self.assertTrue(response.data, "The quality checker should have data.")
+        self.assertGreater(len(response.data), len(data),
+                           "The quality checker should have more data when limit_errors is off")
+
     def test_events_results_remodel_valid(self):
         with self.app.app_context():
             input_data = {bc.SCHEMA_VERSION: '8.2.0',

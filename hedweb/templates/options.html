@@ -1,5 +1,4 @@
-{% macro create_options(append_assembled=False,check_for_warnings=False,expand_defs=False,include_context=False,
-include_description_tags=False,include_summaries=False,replace_defs=False,remove_types_on=False) %}
+{% macro create_options(append_assembled=False,check_for_warnings=False,expand_defs=False,include_context=False,include_description_tags=False,include_summaries=False,limit_errors=False,replace_defs=False,remove_types_on=False,show_details=False) %}
     <fieldset id="options_section">
     <legend>Options:</legend>
         <div class="form-group" id="options">
@@ -13,6 +12,18 @@ include_description_tags=False,include_summaries=False,replace_defs=False,remove
                 <span class="form-check form-switch" id="check_for_warnings_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="check_for_warnings" id="check_for_warnings">
                     <label class="form-check-label" for="check_for_warnings">Check warnings</label>
+                </span> &nbsp;&nbsp;
+            {% endif %}
+            {% if show_details %}
+                <span class="form-check form-switch" id="show_details_option" style="display: inline-block;">
+                    <input class="form-check-input" type="checkbox" name="show_details" id="show_details">
+                    <label class="form-check-label" for="show_details">Show detailed errors</label>
+                </span> &nbsp;&nbsp;
+            {% endif %}
+            {% if limit_errors %}
+                <span class="form-check form-switch" id="limit_errors_option" style="display: inline-block;">
+                    <input class="form-check-input" type="checkbox" name="limit_errors" id="limit_errors">
+                    <label class="form-check-label" for="limit_errors">Limit errors reported</label>
                 </span> &nbsp;&nbsp;
             {% endif %}
             {% if expand_defs %}

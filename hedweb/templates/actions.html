@@ -1,6 +1,5 @@
-{% macro create_actions(title,assemble=False,convert_schema=False,generate_sidecar=False,
-extract_spreadsheet=False,merge_spreadsheet=False,remodel=False,search=False,to_long=False,
-to_short=False,validate=False,compare_schemas=False) %}
+{% macro create_actions(title,assemble=False,convert_schema=False,check_quality=False,extract_spreadsheet=False,generate_sidecar=False,
+merge_spreadsheet=False,remodel=False,search=False,to_long=False,to_short=False,validate=False,compare_schemas=False) %}
     
 
   <fieldset class="form-group">
@@ -9,6 +8,11 @@ to_short=False,validate=False,compare_schemas=False) %}
         {% if validate %}
             <option value="validate" aria-label="Validate the indicated file." 
                     aria-checked="true">Validate</option>
+        {% endif %}
+
+        {% if check_quality %}
+            <option value="check_quality" aria-label="Check quality of HED annotations."
+                    aria-checked="true">Check HED quality</option>
         {% endif %}
 
         {% if to_long %}
