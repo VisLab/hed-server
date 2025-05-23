@@ -127,11 +127,29 @@ function setOptions() {
         hideOption("expand_defs");
         hideOption("include_context");
         hideOption("include_summaries");
+        showOption('limit_errors')
         hideOption("remove_types_on");
         hideOption("replace_defs");
         hideOption("use_hed");
+        hideOption("show_details");
         showElement("options_section")
-        //$("#options_section").show();
+        $("#query_input_section").hide();
+        $("#schema_pulldown_section").show();
+        $("#remodel_input_section").hide();
+        $("#sidecar_input_section").show();
+        $("#show_events_section").show();
+    } else if (selectedElement.value === "check_quality") {
+        hideOption("append_assembled");
+        hideOption("check_for_warnings");
+        hideOption("expand_defs");
+        hideOption("include_context");
+        hideOption("include_summaries");
+        showOption("limit_errors");
+        hideOption("remove_types_on");
+        hideOption("replace_defs");
+        hideOption("use_hed");
+        showOption("show_details");
+        $("#options_section").show();
         $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
@@ -143,10 +161,12 @@ function setOptions() {
         hideOption("expand_defs");
         showOption("include_context", true);
         hideOption("include_summaries");
+        hideOption("limit_errors");
         showOption("remove_types_on", true);
         showOption("replace_defs", true);
         hideOption("use_hed");
-        $("#options_section").show();
+        hideOption("show_details");
+        showElement("options_section")
         $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
         $("#remodel_input_section").hide();
@@ -158,9 +178,11 @@ function setOptions() {
         hideOption("expand_defs");
         hideOption("include_context");
         hideOption("include_summaries");
+        hideOption("limit_errors");
         hideOption("remove_types_on");
         hideOption("replace_defs");
         hideOption("use_hed");
+        hideOption("show_details");
         $("#options_section").hide();
         $("#query_input_section").hide();
         $("#schema_pulldown_section").hide();
@@ -172,10 +194,12 @@ function setOptions() {
         hideOption("check_for_warnings");
         hideOption("expand_defs");
         hideOption("include_context");
-        showOption("include_summaries")
+        showOption("include_summaries");
+        hideOption("limit_errors");
         hideOption("remove_types_on")
         hideOption("replace_defs");
         hideOption("use_hed");
+        hideOption("show_details");
         $("#options_section").show();
         $("#query_input_section").hide();
         $("#schema_pulldown_section").show();
@@ -188,9 +212,11 @@ function setOptions() {
         hideOption("expand_defs");
         showOption("include_context", true);
         hideOption("include_summaries");
+        hideOption("limit_errors");
         showOption("remove_types_on", true);
         showOption("replace_defs", true);
         hideOption("use_hed");
+        hideOption("show_details");
         $("#options_section").show();
         $("#query_input_section").show();
         $("#schema_pulldown_section").show();

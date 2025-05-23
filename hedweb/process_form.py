@@ -39,8 +39,10 @@ class ProcessForm:
             bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
             bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, 'on'),
             bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, 'on'),
+            bc.LIMIT_ERRORS: form_has_option(request.form, bc.LIMIT_ERRORS, 'on'),
             bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, 'on'),
             bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, 'on'),
+            bc.SHOW_DETAILS: form_has_option(request.form, bc.SHOW_DETAILS, 'on'),
             bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION
         }
         value, skip = create_column_selections(request.form)

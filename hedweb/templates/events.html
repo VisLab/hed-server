@@ -11,8 +11,8 @@
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True) }}
-        {{ create_options(append_assembled=True,check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,replace_defs=True,remove_types_on=True) }}
+        {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True,check_quality=True) }}
+        {{ create_options(append_assembled=True,check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,limit_errors=True,replace_defs=True,remove_types_on=True,show_details=True) }}
         <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
