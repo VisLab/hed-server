@@ -5,11 +5,10 @@ import zipfile
 import base64
 from hedweb.web_util import get_exception_message
 from hed.scripts.script_util import validate_schema_object
-from flask import send_file
 
 
 from hed.errors import get_printable_issue_string, HedFileError
-from hed.schema.schema_compare import compare_differences
+from hed.schema.schema_comparer import SchemaComparer
 from hed import schema as hedschema
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
@@ -64,7 +63,8 @@ class SchemaOperations(BaseOperations):
         return results
 
     def compare(self):
-        data = compare_differences(self.schema, self.schema2)
+        comp = SchemaComparer(self.schema, self.schema2)
+        data = comp.compare_differences()
         output_name = self.schema.name + '_' + self.schema2.name + '_' + "differences.txt"
         msg_results = ''
         if not data:
