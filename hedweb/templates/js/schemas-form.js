@@ -50,6 +50,18 @@ $('#schema_folder').on('change', function () {
     }
 });
 
+$('#second_schema_folder').on('change', function () {
+    const files = this.files;
+    const label = $('#second_schema_folder_label');
+
+    if (files.length > 0) {
+        const folderName = files[0].webkitRelativePath.split('/')[0];
+        label.text(`Upload a HED schema folder: ${folderName}`);
+    } else {
+        label.text(UPLOAD_FILE_LABEL);
+    }
+});
+
 /**
  * Submit the form if a schema is specified.
  */
