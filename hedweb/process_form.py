@@ -133,8 +133,8 @@ class ProcessForm:
                 form_has_url(request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.values[bc.SCHEMA_URL])
         elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION) and \
-                'files[]' in request.files:
-            ProcessForm.set_tsv_schema(arguments, request)
+                'schema_folder[]' in request.files:
+            ProcessForm.set_tsv_schema(arguments, request, 'schema_folder[]', bc.SCHEMA1)
 
         if form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FILE_OPTION) and \
                 form_has_file(request.files, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
@@ -142,17 +142,25 @@ class ProcessForm:
         elif form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_URL_OPTION) and \
                 form_has_url(request.form, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.values[bc.SECOND_SCHEMA_URL])
+        elif form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FOLDER_OPTION) and \
+                'second_schema_folder[]' in request.files:
+            ProcessForm.set_tsv_schema(arguments, request,  'second_schema_folder[]', bc.SCHEMA2)
 
     @staticmethod
-    def set_tsv_schema(arguments, request):
-        files = request.files.getlist('files[]')
+    def set_tsv_schema(arguments, request, files_key, schema_key):
+        """ Set the schema from a folder of TSV files.
+        Parameters:
+            arguments (dict):  Dictionary of parameters to which the schema will be added.
+            request (Request): A Request object containing form data.
+            files_key (str): The key in the request.files dictionary that contains the TSV files.
+            schema_key (str): The key in the arguments dictionary where the schema will be stored.
+        """
+        files = request.files.getlist(files_key)
         with tempfile.TemporaryDirectory() as tmpdir:
             rel_path = ''
             for file in files:
                 rel_path = file.filename  # Preserves webkitRelativePath from the client
-                print(rel_path)
                 save_path = os.path.join(tmpdir, rel_path)
-                print(save_path)
                 # Create any needed subdirectories
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
@@ -163,8 +171,7 @@ class ProcessForm:
             dir_name = os.path.dirname(rel_path)
             base_name = filename.rsplit('_', 1)[0]
             save_path = os.path.join(tmpdir, dir_name, base_name + '.tsv')
-            print(base_name, save_path)
-            arguments[bc.SCHEMA] = hedschema.load_schema(save_path, name=base_name)
+            arguments[schema_key] = hedschema.load_schema(save_path, name=base_name)
         return
 
     @staticmethod
