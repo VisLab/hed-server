@@ -6,7 +6,7 @@ class BaseOperations(ABC):
         """ Sets the child class attributes based on input_dict.
             Only sets attributes that exist.
 
-        parameters:
+        Parameters:
             input_dict (dict): A dict object containing user data from a JSON service request.
         """
         # Only allowed to set variables from init, and also disallow private variables to avoid possible issues
