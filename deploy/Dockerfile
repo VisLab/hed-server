@@ -21,7 +21,7 @@ ARG CACHE_BUST
 RUN if [ "$HED_INSTALL_SOURCE" = "main" ]; then \
         pip3 install git+https://github.com/hed-standard/hed-python/@main; \
     else \
-        pip3 install hed-python; \
+        pip3 install hedtools; \
     fi
 
 # Create necessary directories and set permissions
