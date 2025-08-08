@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
 
 jobs:
   test:
@@ -47,7 +47,7 @@ jobs:
         fetch-depth: 0
 
     - name: Run Qtly Code Quality Analysis
-      uses: qtly-dev/qtly-action@v1
+      uses: qtly-dev/qtly-action@v2
       with:
         token: ${{ secrets.QTLY_TOKEN }}
         config-file: qtly.toml
