@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-slim-bullseye
 
 # Set the working directory inside the container
 WORKDIR /root
@@ -21,7 +21,7 @@ ARG CACHE_BUST
 RUN if [ "$HED_INSTALL_SOURCE" = "main" ]; then \
         pip3 install git+https://github.com/hed-standard/hed-python/@main; \
     else \
-        pip3 install hed-python; \
+        pip3 install hedtools; \
     fi
 
 # Create necessary directories and set permissions

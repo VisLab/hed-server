@@ -5,7 +5,7 @@
 # Environment can be 'prod' or 'dev' (defaults to 'prod')
 
 ##### Constants
-BRANCH="${1:-master}"
+BRANCH="${1:-main}"
 ENVIRONMENT="${2:-prod}"
 DEPLOY_DIR=$(pwd)
 
