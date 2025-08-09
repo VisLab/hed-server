@@ -99,7 +99,7 @@ config.py
 *.pot
 
 # Sphinx documentation
-docs/_build/
+docs_old/_build/
 
 #machine specific files
 .vimrc

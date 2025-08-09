@@ -109,3 +109,20 @@ pushed on any of the three branches. For example, the API documentation for the
 `latest` branch can be found on [hed-python.readthedocs.io/en/latest/](hed-python.readthedocs.io/en/latest/). 
 
 More information about using the webtools can be found at [https://www.hed-resources.org]([https://www.hed-resources.org]).
+
+### Building the docs locally
+
+To build and view the documentation locally:
+
+```code
+
+# Install mkdocs and the required plugins:
+pip install -r docs/requirements.txt
+
+
+mkdocs build
+
+# For live development with auto-reload:
+mkdocs serve
+```
+The documentation will be available at http://localhost:8000 when using mkdocs serve.

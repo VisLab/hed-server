@@ -1,8 +1,12 @@
+"""
+Utilities for handling web requests and responses in the HED web application.
+"""
 import io
 from datetime import datetime
 import json
 import os
 import zipfile
+from typing import Union
 from urllib.parse import urlparse
 from flask import Response, make_response, send_file
 from werkzeug.utils import secure_filename
@@ -16,7 +20,15 @@ from hedweb.constants import file_constants as fc
 TIME_FORMAT = '%Y_%m_%d_T_%H_%M_%S_%f'
 
 
-def convert_hed_versions(hed_info):
+def convert_hed_versions(hed_info) -> list:
+    """ Convert a hed_info dictionary to a list of HED version strings.
+
+    Parameters:
+        hed_info (dict): A dictionary with HED version strings, where keys are prefixes and values are lists of HED versions.
+
+    Returns:
+        list: A list of HED versions with prefixes applied.
+    """
     hed_list = []
     standard_list = hed_info.get(None, [])
     for key, key_list in hed_info.items():
@@ -25,7 +37,7 @@ def convert_hed_versions(hed_info):
     return standard_list + hed_list
 
 
-def file_extension_is_valid(filename, accepted_extensions=None):
+def file_extension_is_valid(filename, accepted_extensions=None) -> bool:
     """ Return True if the file extension is an accepted one.
 
     Parameters:
@@ -46,7 +58,7 @@ def filter_issues(issues, check_for_warnings):
     return issues
 
 
-def form_has_file(files, file_field, valid_extensions=None):
+def form_has_file(files, file_field, valid_extensions=None) -> bool:
     """ Return True if a file with valid extension is in the request.
 
     Parameters:
@@ -65,7 +77,7 @@ def form_has_file(files, file_field, valid_extensions=None):
         return False
 
 
-def form_has_option(form, option_name, target_value=None):
+def form_has_option(form, option_name, target_value=None) -> bool:
     """ Return True if given option has a specific value.
 
     Parameters:
@@ -90,7 +102,7 @@ def form_has_option(form, option_name, target_value=None):
     return False
 
 
-def form_has_url(form, url_field, valid_extensions=None):
+def form_has_url(form, url_field, valid_extensions=None) ->  bool:
     """ Return True if the url_field has a valid extension.
 
     Parameters:
@@ -108,11 +120,11 @@ def form_has_url(form, url_field, valid_extensions=None):
     return file_extension_is_valid(parsed_url.path, valid_extensions)
 
 
-def generate_download_file_from_text(results, file_header=None):
+def generate_download_file_from_text(results, file_header=None) -> Response:
     """ Generate a download file from text output.
 
     Parameters:
-        results: Text with newlines for iterating.
+        results (dict): Text with newlines for iterating.
         file_header (str): Optional header for download file blob.
 
     Returns:
@@ -145,7 +157,7 @@ def generate_download_file_from_text(results, file_header=None):
                              'Message': results[bc.MSG]})
 
 
-def generate_download_spreadsheet(results):
+def generate_download_spreadsheet(results) -> Response:
     """ Generate a download Excel file.
 
     Parameters:
@@ -174,7 +186,7 @@ def generate_download_spreadsheet(results):
     return response
 
 
-def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False):
+def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False) -> str:
     """ Generate a filename for the attachment.
 
     Parameters:
@@ -209,7 +221,7 @@ def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=N
     return secure_filename(filename)
 
 
-def generate_text_response(results):
+def generate_text_response(results) -> Response:
     """ Generate a download response.
 
     Parameters:
@@ -227,7 +239,7 @@ def generate_text_response(results):
     return Response(download_text, mimetype='text/plain charset=utf-8', headers=headers)
 
 
-def generate_download_zip_file(results):
+def generate_download_zip_file(results) -> Response:
     """ Generate a download response.
 
     Parameters:
@@ -252,7 +264,7 @@ def generate_download_zip_file(results):
     return response
 
 
-def get_hed_schema_from_pull_down(request):
+def get_hed_schema_from_pull_down(request) -> HedSchema:
     """ Create a HedSchema object from form pull-down box.
 
     Parameters:
@@ -276,30 +288,57 @@ def get_hed_schema_from_pull_down(request):
     return hed_schema
 
 
-def get_option(options, option_name, default_value):
+def get_option(options, option_name, default_value) -> str:
+    """ Get an option value from a dictionary of options.
+
+    Parameters:
+        options (dict): A dictionary of options.
+        option_name (str): The name of the option to retrieve.
+        default_value (str): The default value to return if the option is not found.
+
+    Returns:
+        str: The value of the option if found, otherwise the default value.
+    """
     option_value = default_value
     if options and option_name in options:
         option_value = options[option_name]
     return option_value
 
 
-def get_parsed_name(filename, is_url=False):
+def get_parsed_name(filename, is_url=False) -> tuple[str, str]:
+    """ Parse a filename or URL to extract the display name and file type.
+    Parameters:
+        filename (str): The name of the file or URL to be parsed.
+        is_url (bool): If True, treat the filename as a URL.
+    Returns:
+        tuple[str, str]: A tuple containing the display name and file type.
+    """
     if is_url:
         filename = urlparse(filename).path
     display_name, file_type = os.path.splitext(os.path.basename(filename))
     return display_name, file_type
 
 
-def get_schema_versions(hed_schema):
-    if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
-        return hed_schema.get_formatted_version()
+def get_schema_versions(hed_schema) -> str:
+    """ Get the formatted version of a HedSchema or HedSchemaGroup.
+
+    Parameters:
+        hed_schema (HedSchema or HedSchemaGroup or None): The schema or schema group to get the version from.
+
+    Returns:
+        str: The formatted version of the schema for display purposes.
+
+    Raises:
+        ValueError: If the provided hed_schema is not a HedSchema or HedSchemaGroup.
+    """
     if not hed_schema:
         return ''
-    else:
-        raise ValueError("InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group")
+    if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
+        return hed_schema.get_formatted_version()
+    raise ValueError("InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group")
 
 
-def handle_error(ex, hed_info=None, title=None, return_as_str=True):
+def handle_error(ex, hed_info=None, title=None, return_as_str=True)  -> Union[str, dict]:
     """ Handle an error by returning a dictionary or simple string.
 
     Parameters:
@@ -309,7 +348,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
         return_as_str (bool): If true return as string otherwise as dictionary.
 
     Returns:
-        str or dict: Contains error information.
+        Union[str, dict]: Contains error information.
 
     """
 
@@ -335,8 +374,8 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True):
         return hed_info
 
 
-def handle_http_error(ex):
-    """ Handle a http error.
+def handle_http_error(ex) -> Response:
+    """ Handle  http error.
 
     Parameters:
         ex (Exception): A class that extends python Exception class.
@@ -348,14 +387,14 @@ def handle_http_error(ex):
     return generate_text_response(get_exception_message(ex))
 
 
-def get_exception_message(ex):
+def get_exception_message(ex) -> dict:
     """ Extract a suitable message for exception as a dictionary
 
     Parameters:
         ex (Exception): A class that extends python Exception class.
 
     Returns:
-        Response: A response object indicating the field_type of error.
+        dict: A dict indicating the field_type of error.
 
     """
     if hasattr(ex, 'error_type'):
@@ -377,11 +416,14 @@ def get_exception_message(ex):
     return {'data': '', bc.MSG_CATEGORY: 'error', bc.MSG: error_message}
 
 
-def package_results(results):
+def package_results(results) -> Response:
     """Package a results dictionary into a standard form.
 
     Parameters:
-        results (dict): A dictionary with the results.
+         results (dict): A dictionary with the results.
+
+    Returns:
+        Response: A Response object containing the results in a standard format.
 
     """
 
@@ -395,8 +437,3 @@ def package_results(results):
         return generate_text_response(results)
     else:
         return generate_download_spreadsheet(results)
-
-    # if results.get(bc.FILE_LIST, None):
-    #     return generate_download_zip_file(results)
-    # if not results.get('data', None) and results.get('spreadsheet', None):
-    #     return generate_download_spreadsheet(results)
