@@ -5,7 +5,6 @@ This module contains the factory for creating the HEDTools application.
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 import importlib
-from config import Config
 
 
 class AppFactory:
@@ -50,5 +49,16 @@ class AppFactory:
                 config_module = importlib.import_module('default_config')
             else:
                 raise
-        config_class = getattr(config_module, config_class_name)
-        return getattr(config_class, Config.STATIC_URL_PATH_ATTRIBUTE_NAME, None)
+
+        config_class_obj = getattr(config_module, config_class_name)
+
+        # Get the STATIC_URL_PATH_ATTRIBUTE_NAME from the config class
+        # Try to get it from the config module first, then fallback to default
+        try:
+            from config import Config
+            static_url_path_attr = Config.STATIC_URL_PATH_ATTRIBUTE_NAME
+        except ImportError:
+            from default_config import Config
+            static_url_path_attr = Config.STATIC_URL_PATH_ATTRIBUTE_NAME
+
+        return getattr(config_class_obj, static_url_path_attr, None)
