@@ -39,9 +39,16 @@ def configure_app():
 
     """
     if CONFIG_ENVIRON_NAME in os.environ:
-        return AppFactory.create_app(os.environ.get(CONFIG_ENVIRON_NAME))
+        config_class = os.environ.get(CONFIG_ENVIRON_NAME)
     else:
-        return AppFactory.create_app('config.DevelopmentConfig')
+        # Try to use config.DevelopmentConfig, fallback to default_config if not available
+        try:
+            import config
+            config_class = 'config.DevelopmentConfig'
+        except ImportError:
+            config_class = 'default_config.DevelopmentConfig'
+
+    return AppFactory.create_app(config_class)
 
 
 def create_app_with_routes():

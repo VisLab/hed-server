@@ -14,7 +14,15 @@ class TestWebBase(unittest.TestCase):
     def setUpClass(cls):
         from hedweb.runserver import get_version_dict
         cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/upload')
-        app = AppFactory.create_app('config.TestConfig')
+
+        # Try to use config.TestConfig, fallback to default_config if not available
+        try:
+            import config
+            config_class = 'config.TestConfig'
+        except ImportError:
+            config_class = 'default_config.TestConfig'
+
+        app = AppFactory.create_app(config_class)
         with app.app_context():
             import hed.schema as hedschema
             hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])

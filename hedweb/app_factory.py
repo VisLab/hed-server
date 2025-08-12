@@ -42,6 +42,13 @@ class AppFactory:
             str: The static URL path.
         """
         config_module_name, config_class_name = config_class.split(".")
-        config_module = importlib.import_module(config_module_name)
+        try:
+            config_module = importlib.import_module(config_module_name)
+        except ImportError:
+            # Fallback to default_config if main config is not available (e.g., in CI)
+            if config_module_name == 'config':
+                config_module = importlib.import_module('default_config')
+            else:
+                raise
         config_class = getattr(config_module, config_class_name)
         return getattr(config_class, Config.STATIC_URL_PATH_ATTRIBUTE_NAME, None)
