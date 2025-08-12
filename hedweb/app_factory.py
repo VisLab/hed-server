@@ -19,32 +19,25 @@ class AppFactory:
         """Creates the Flask app and registers the blueprints.
 
         Args:
-            config_class (class): A class containing the configuration variables.
+            config_class (str or class): A string path to config class or the actual config class.
 
         Returns:
             Flask: The initialized Flask app.
         """
-        static_url_path = AppFactory.get_static_url_path(config_class)
+        # If config_class is a string, resolve it to the actual class
+        if isinstance(config_class, str):
+            config_class = AppFactory._resolve_config_class(config_class)
+
+        static_url_path = AppFactory._get_static_url_path_from_class(config_class)
         app = Flask(__name__, static_url_path=static_url_path)
         app.config.from_object(config_class)
         CSRFProtect(app)
         return app
 
     @staticmethod
-    def get_static_url_path(config_class) -> str:
-        """Gets the static URL path from the config class.
-
-        Args:
-            config_class (class): A class containing the configuration variables.
-
-        Returns:
-            str: The static URL path.
-        """
-        config_module_name, config_class_name = config_class.split(".")
-
-        # Try to import the config module and get the config class
-        config_module = None
-        config_class_obj = None
+    def _resolve_config_class(config_class_string):
+        """Resolve a config class string to the actual class object."""
+        config_module_name, config_class_name = config_class_string.split(".")
 
         try:
             config_module = importlib.import_module(config_module_name)
@@ -62,6 +55,11 @@ class AppFactory:
             else:
                 raise
 
+        return config_class_obj
+
+    @staticmethod
+    def _get_static_url_path_from_class(config_class_obj):
+        """Get static URL path from the actual config class object."""
         # Get the STATIC_URL_PATH_ATTRIBUTE_NAME from the config class
         # Try to get it from the config module first, then fallback to default
         try:
@@ -72,3 +70,20 @@ class AppFactory:
             static_url_path_attr = Config.STATIC_URL_PATH_ATTRIBUTE_NAME
 
         return getattr(config_class_obj, static_url_path_attr, None)
+
+    @staticmethod
+    def get_static_url_path(config_class) -> str:
+        """Gets the static URL path from the config class.
+
+        Args:
+            config_class (str): A string path to the config class.
+
+        Returns:
+            str: The static URL path.
+        """
+        # This method is kept for backward compatibility
+        if isinstance(config_class, str):
+            config_class_obj = AppFactory._resolve_config_class(config_class)
+            return AppFactory._get_static_url_path_from_class(config_class_obj)
+        else:
+            return AppFactory._get_static_url_path_from_class(config_class)
