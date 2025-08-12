@@ -77,6 +77,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#user-guide-for-hed-web-tools" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -404,6 +409,21 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -416,6 +436,151 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running locally
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running locally">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clone-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clone the repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtual-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Virtual environments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Virtual environments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-venv-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using venv (recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-conda-alternative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using conda (alternative)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the application
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-on-an-external-webserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment on an external webserver
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment on an external webserver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploying-the-docker-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploying the docker module
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branches-and-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Branches and versions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-the-docs-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building the docs locally
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -432,6 +597,8 @@
       
         
           
+        
+      
         
       
         
@@ -515,7 +682,7 @@
   
   
   <span class="md-ellipsis">
-    App Factory
+    App factory
     
   </span>
   
@@ -538,7 +705,7 @@
   
   
   <span class="md-ellipsis">
-    Base Operations
+    Base operations
     
   </span>
   
@@ -602,12 +769,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/process_form/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Process form
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/process_service/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Process
+    Process service
     
   </span>
   
@@ -782,9 +972,194 @@
   
 
 
-  <h1>User Guide</h1>
-
-
+<h1 id="user-guide-for-hed-web-tools">User Guide for HED Web Tools</h1>
+<h3 id="running-locally">Running locally</h3>
+<p>This project contains the web interface code for deploying HED tools as a web application running in a docker module.   </p>
+<h4 id="clone-the-repository">Clone the repository</h4>
+<p>To run the web application locally, you will need to clone the <code>hed-web</code> repository.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git clone https://github.com/hed-standard/hed-web
+</span></code></pre></div></p>
+<h4 id="setup-configuration">Setup configuration</h4>
+<p>You must have a <code>config.py</code> file in the root directory of your repository:</p>
+<ol>
+<li>Copy <code>config_template.py</code> to <code>config.py</code></li>
+<li>Change <code>BASE_DIRECTORY</code> in the <code>Config</code> class in <code>config.py</code> to point to the directory that
+       you want the application to use to temporarily store uploads and to cache the
+       HED schema.</li>
+</ol>
+<h4 id="virtual-environments">Virtual environments</h4>
+<p>It is recommended to use a virtual environment to avoid conflicts with other Python packages.</p>
+<h5 id="using-venv-recommended">Using venv (recommended)</h5>
+<ol>
+<li>
+<p>Create a virtual environment:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python -m venv .venv
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Activate the virtual environment:</p>
+</li>
+<li>On Windows:
+     <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>.venv\Scripts\activate
+</span></code></pre></div></li>
+<li>
+<p>On macOS/Linux:
+     <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>source .venv/bin/activate
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Install the required dependencies:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip install -r requirements.txt
+</span></code></pre></div></p>
+</li>
+</ol>
+<h5 id="using-conda-alternative">Using conda (alternative)</h5>
+<ol>
+<li>
+<p>Create a conda environment:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>conda create -n .venv python=3.10
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Activate the environment:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>conda activate .venv
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Install the required dependencies:
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip install -r requirements.txt
+</span></code></pre></div></p>
+</li>
+</ol>
+<h4 id="running-the-application">Running the application</h4>
+<p>Once this installation is complete, you can execute <code>runserver</code>.
+This call should bring up a Flask test server.
+Paste the indicated link into a web browser, and you are ready to go.</p>
+<h3 id="deployment-on-an-external-webserver">Deployment on an external webserver</h3>
+<h4 id="overview">Overview</h4>
+<p>The <code>deploy_hed</code> directory contains scripts and configuration files that are needed
+to deploy the application as a docker container.
+These instructions assume that you have a Linux server with apache2 and docker installed.  </p>
+<p>The current setup assumes that an apache web server runs inside a docker container
+using internal port 80.
+The docker container listens to requests on port 33000 from the local host IP
+(assumed to be 127.0.0.1) of the Linux server running the docker container.
+Docker forwards these requests and subsequent responses to and from its
+internal server running on port 80.</p>
+<p>If you are on the Linux server, you can run the online tools directly in a web 
+browser using the address http://127.0.0.1:33000/hed.
+In a production environment, the tools are meant to be run through an Apache web server with proxies.
+The description of how to set this up is described elsewhere.</p>
+<h4 id="deploying-the-docker-module">Deploying the docker module</h4>
+<p>The instructions assume that you are in your home directory on the Linux server.
+The deployment will use your home directory as a temporary staging area.
+The instructions assume that you have DOCKER installed.</p>
+<ol>
+<li>Make a deployment directory, say <code>deploy_hed</code>.</li>
+<li>Download the
+<a href="https://raw.githubusercontent.com/hed-standard/hed-web/master/deploy_hed/deploy.sh">hed-web deployment script</a>
+to your <code>deploy_hed</code> directory.</li>
+<li>Change to the <code>deploy_hed</code> directory:</li>
+</ol>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>   cd ~/deploy_hed
+</span></code></pre></div>
+4. Execute the <code>deploy.sh</code> script:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>   sudo bash deploy.sh [branch] [environment]
+</span></code></pre></div>
+<p><strong>Command line options:</strong>
+- <code>branch</code> (optional): Specifies which git branch to deploy from. Defaults to <code>main</code> if not specified.
+- <code>environment</code> (optional): Deployment environment, either <code>prod</code> or <code>dev</code>. Defaults to <code>prod</code> if not specified.</p>
+<p>The <code>prod</code> environment deploys to <code>/hed</code> and uses the <code>hedtools</code> container,
+while the <code>dev</code> environment deploys to <code>/hed_dev</code> and uses the <code>hedtools_dev</code> container.</p>
+<p><strong>Examples:</strong>
+- Deploy production environment from main branch (default):
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo bash deploy.sh
+</span></code></pre></div>
+- Deploy development environment:
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>sudo bash deploy.sh main dev
+</span></code></pre></div>
+- Deploy from a specific branch:
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo bash deploy.sh develop prod
+</span></code></pre></div>
+- Deploy development environment from develop branch:
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sudo bash deploy.sh develop dev
+</span></code></pre></div></p>
+<p><strong>Environment differences:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Production</th>
+<th>Development</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Port</td>
+<td>33000</td>
+<td>33004</td>
+</tr>
+<tr>
+<td>URL Prefix</td>
+<td><code>/hed</code></td>
+<td><code>/hed_dev</code></td>
+</tr>
+<tr>
+<td>HED package source</td>
+<td>PyPI hedtools package</td>
+<td>Main branch hedtools package</td>
+</tr>
+<tr>
+<td>Container name</td>
+<td><code>hedtools</code></td>
+<td><code>hedtools_dev</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="branches-and-versions">Branches and versions</h3>
+<p>The web tools are built on the <code>hedtools</code> package housed in the <code>hed-python</code>
+GitHub repository.
+The tools are related to the <code>hed-specification</code> and <code>hed-schemas</code> repositories.
+The branches correspond as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Meaning</th>
+<th>Synchronized with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stable</td>
+<td>Tagged as a released version - will not change.</td>
+<td><code>stable@hed-python</code><br/><code>stable@hed-specification</code><br/><code>stable@hed-examples</code></td>
+</tr>
+<tr>
+<td>master</td>
+<td>Most recent usable version.<br/><a href="https://hedtools/edu/hed">https://hedtools/edu/hed</a>.</td>
+<td><code>master@hed-python</code><br/><code>master@hed-specification</code><br/><code>main@hed-examples</code></td>
+</tr>
+<tr>
+<td>develop</td>
+<td>Experimental and evolving.<br/><a href="https://hedtools/edu/hed_dev">https://hedtools/edu/hed_dev</a>.</td>
+<td><code>develop@hed-python</code><br/><code>develop@hed-specification</code><br/><code>develop@hed-examples</code></td>
+</tr>
+</tbody>
+</table>
+<p>More information about using the webtools can be found at <a href="https://www.hed-resources.org">https://www.hed-resources.org</a>.</p>
+<h3 id="building-the-docs-locally">Building the docs locally</h3>
+<p>To build and view the documentation locally:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># Install mkdocs and the required plugins:
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>pip install -r docs/requirements.txt
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>mkdocs build
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a># For live development with auto-reload:
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>mkdocs serve
+</span></code></pre></div>
+The documentation will be available at http://localhost:8000 when using mkdocs serve.</p>
 
 
 

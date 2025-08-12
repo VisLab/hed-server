@@ -46,11 +46,12 @@ nav:
   - User Guide: user_guide.md
   - API Reference:
     - Overview: api/index.md
-    - App Factory: api/app_factory.md
-    - Base Operations: api/base_operations.md
+    - App factory: api/app_factory.md
+    - Base operations: api/base_operations.md
     - Columns: api/columns.md
     - Events: api/event_operations.md
-    - Process: api/process_service.md
+    - Process form: api/process_form.md
+    - Process service: api/process_service.md
     - Routes: api/routes.md
     - Schema: api/schema_operations.md
     - Sidecars: api/sidecar_operations.md

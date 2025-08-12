@@ -455,6 +455,8 @@
       
         
       
+        
+      
     
     
     
@@ -515,7 +517,7 @@
   
   
   <span class="md-ellipsis">
-    App Factory
+    App factory
     
   </span>
   
@@ -538,7 +540,7 @@
   
   
   <span class="md-ellipsis">
-    Base Operations
+    Base operations
     
   </span>
   
@@ -602,12 +604,35 @@
   
   
     <li class="md-nav__item">
+      <a href="process_form/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Process form
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="process_service/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Process
+    Process service
     
   </span>
   
@@ -785,7 +810,16 @@
 <h1 id="api-reference-overview">API Reference Overview</h1>
 <p>The HED Web Tools API provides a comprehensive set of modules for processing Hierarchical Event Descriptor (HED) data through web interfaces and programmatic access. The API is designed around a service-oriented architecture with clear separation of concerns.</p>
 <h2 id="architecture-overview">Architecture Overview</h2>
-<p>The HED Web Tools are organized into three main layers:</p>
+<h2 id="graph-td-dbrowser-aweb-interface-cflask-routes-bclient-drest-api-c-c-estringoperations-c-feventoperations-c-gschemaoperations-c-hsidecaroperations-c-ispreadsheetoperations"><pre class="mermaid"><code>graph TD
+    D[Browser] --&gt; A[Web Interface] --&gt; C{Flask Routes}
+    B[Client] --&gt; D[REST API] --&gt; C
+
+    C --&gt; E[StringOperations]
+    C --&gt; F[EventOperations]
+    C --&gt; G[SchemaOperations]
+    C --&gt; H[SidecarOperations]
+    C --&gt; I[SpreadsheetOperations]</code></pre></h2>
+<h2 id="module-structure">Module Structure</h2>
 <h3 id="1-application-layer">1. Application Layer</h3>
 <ul>
 <li><strong><a href="app_factory/">App Factory</a></strong> - Flask application configuration and initialization</li>
@@ -794,6 +828,7 @@
 <h3 id="2-service-layer">2. Service Layer</h3>
 <ul>
 <li><strong><a href="process_service/">Process Service</a></strong> - Core orchestration and business logic</li>
+<li><strong><a href="process_form/">Process Form</a></strong> - Form data extraction and validation</li>
 <li><strong><a href="base_operations/">Base Operations</a></strong> - Common base classes and shared functionality</li>
 </ul>
 <h3 id="3-operation-modules">3. Operation Modules</h3>
@@ -809,6 +844,7 @@
 <li><strong><a href="columns/">Columns</a></strong> - Column mapping and data structure utilities</li>
 <li><strong><a href="web_util/">Web Utils</a></strong> - Common web application helper functions</li>
 </ul>
+<hr />
 <h2 id="service-categories">Service Categories</h2>
 <h3 id="hed-schema-services">HED Schema Services</h3>
 <p>Handle HED schema files and validation:
@@ -948,9 +984,14 @@
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;hed_strings&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Sensory-event, Visual-presentation&quot;</span><span class="p">]</span>
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">})</span>
 </span></code></pre></div>
+<h3 id="matlab-integration">MATLAB Integration</h3>
+<p>See the web services examples in the <a href="https://github.com/hed-standard/hed-matlab">hed-matlab</a>
+GitHub repository for detailed examples of calling these services from MATLAB.</p>
 <h3 id="web-interface">Web Interface</h3>
-<p>Navigate to the appropriate section (Strings, Events, etc.) and use the form-based interface for interactive processing.</p>
-<p>For detailed information about each module's functions, classes, and parameters, see the individual module documentation pages.</p>
+<p>Navigate to the appropriate section (Strings, Events, etc.) and use the form-based interface 
+for interactive processing.</p>
+<p>For detailed information about each module's functions, classes, and parameters, 
+see the individual module documentation pages.</p>
 
 
 

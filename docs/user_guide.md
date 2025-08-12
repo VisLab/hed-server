@@ -152,7 +152,7 @@ The branches correspond as follows:
 | develop | Experimental and evolving.<br/>[https://hedtools/edu/hed_dev](https://hedtools/edu/hed_dev). | `develop@hed-python`<br/>`develop@hed-specification`<br/>`develop@hed-examples` |
 
 
-More information about using the webtools can be found at [https://www.hed-resources.org]([https://www.hed-resources.org]).
+More information about using the webtools can be found at [https://www.hed-resources.org](https://www.hed-resources.org).
 
 ### Building the docs locally
 

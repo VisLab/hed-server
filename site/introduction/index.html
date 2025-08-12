@@ -442,27 +442,27 @@
         <li class="md-nav__item">
   <a href="#hed-web-tools-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      HED Web Tools Overview
+      HED web tools overview
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="HED Web Tools Overview">
+    <nav class="md-nav" aria-label="HED web tools overview">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#key-components" class="md-nav__link">
     <span class="md-ellipsis">
-      Key Components
+      Key components
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Components">
+    <nav class="md-nav" aria-label="Key components">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#web-interface" class="md-nav__link">
     <span class="md-ellipsis">
-      Web Interface
+      Web interface
     </span>
   </a>
   
@@ -485,12 +485,30 @@
           <li class="md-nav__item">
   <a href="#supported-operations" class="md-nav__link">
     <span class="md-ellipsis">
-      Supported Operations
+      Supported operations
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Supported Operations">
+    <nav class="md-nav" aria-label="Supported operations">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processing-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Processing tables
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sidecar-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sidecar Operations
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#schema-operations" class="md-nav__link">
@@ -505,24 +523,6 @@
   <a href="#string-operations" class="md-nav__link">
     <span class="md-ellipsis">
       String Operations
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#event-processing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Event Processing
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sidecar-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Sidecar Operations
     </span>
   </a>
   
@@ -630,6 +630,8 @@
       
         
       
+        
+      
     
     
     
@@ -689,7 +691,7 @@
   
   
   <span class="md-ellipsis">
-    App Factory
+    App factory
     
   </span>
   
@@ -712,7 +714,7 @@
   
   
   <span class="md-ellipsis">
-    Base Operations
+    Base operations
     
   </span>
   
@@ -776,12 +778,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../api/process_form/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Process form
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api/process_service/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Process
+    Process service
     
   </span>
   
@@ -956,71 +981,77 @@
   
 
 
-<h1 id="introduction-to-hed-web-tools">Introduction to HED Web Tools</h1>
+<h1 id="introduction-to-hed-web-tools">Introduction to HED web tools</h1>
 <h2 id="what-is-hed">What is HED?</h2>
-<p>HED (Hierarchical Event Descriptor) is a system for describing events in machine-actionable form. HED tags are comma-separated path strings that describe what happened, when it happened, and other relevant properties of experimental events.</p>
+<p>HED (Hierarchical Event Descriptor) is a system for describing events in machine-actionable form.
+HED tags are comma-separated path strings that describe what happened, when it happened,
+and other relevant properties of experimental events.</p>
 <p>For example, a HED annotation might look like:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Sensory-event, Visual-presentation, (Image, Face), (Onset, Delay/2.3 s)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Sensory-event, Visual-presentation, (Image, Face)
 </span></code></pre></div></p>
-<h2 id="hed-web-tools-overview">HED Web Tools Overview</h2>
-<p>HED Web Tools provides a web-based interface for working with HED annotations and schemas. The application is built using Flask and offers both a user-friendly web interface and REST API endpoints for programmatic access.</p>
-<h3 id="key-components">Key Components</h3>
-<h4 id="web-interface">Web Interface</h4>
-<ul>
-<li><strong>Form-based operations</strong>: Easy-to-use forms for common HED tasks</li>
-<li><strong>File upload support</strong>: Handle various file formats (TSV, CSV, Excel, JSON)</li>
-<li><strong>Real-time validation</strong>: Immediate feedback on HED annotation validity</li>
-<li><strong>Download results</strong>: Get processed files and validation reports</li>
-</ul>
+<h2 id="hed-web-tools-overview">HED web tools overview</h2>
+<p>HED Web Tools provides a web-based interface for working with HED annotations and schemas.
+The application is built using Flask and offers both a user-friendly web interface
+and REST API endpoints for programmatic access.</p>
+<h3 id="key-components">Key components</h3>
+<h4 id="web-interface">Web interface</h4>
+<p>The web interface provides an intuitive way to interact with HED data:
+- <strong>Form-based operations</strong>: Easy-to-use forms for common HED tasks
+- <strong>File upload support</strong>: Handle various file formats (TSV, CSV, Excel, JSON)
+- <strong>Real-time validation</strong>: Immediate feedback on HED annotation validity
+- <strong>Download results</strong>: Get processed files and validation reports
+- 
+The web interface is deployed through a Docker container and two versions are available: <strong>hed</strong> and <strong>hed_dev</strong>.</p>
+<p>The <strong>hed</strong> version <a href="https://hedtools.org/hed">https://hedtools.org/hed</a> relies on the released version of
+the python HedTools on PyPi and the released version of the hed-web tools.</p>
+<p>The <strong>hed_dev</strong> version <a href="https://hedtools.org/hed_dev">https://hedtools.org/hed_dev</a> is based on the latest
+version of the HedTools on GitHub and a hed-web version on a specified branch.</p>
 <h4 id="rest-api">REST API</h4>
+<p>The REST API provides programmatic access to all HED operations:
+- <strong>Service endpoints</strong>: Programmatic access to all HED operations
+- <strong>JSON communication</strong>: Standard REST API with JSON request/response
+- <strong>Batch processing</strong>: Handle multiple files and operations efficiently
+- <strong>Integration ready</strong>: Easy to integrate with other tools and workflows</p>
+<p>An example of the use the REST API can be found in the <a href="https://github.com/hed-standard/hed-matlab">hed-matlab</a> repository.</p>
+<h3 id="supported-operations">Supported operations</h3>
+<h4 id="processing-tables">Processing tables</h4>
 <ul>
-<li><strong>Service endpoints</strong>: Programmatic access to all HED operations</li>
-<li><strong>JSON communication</strong>: Standard REST API with JSON request/response</li>
-<li><strong>Batch processing</strong>: Handle multiple files and operations efficiently</li>
-<li><strong>Integration ready</strong>: Easy to integrate with other tools and workflows</li>
-</ul>
-<h3 id="supported-operations">Supported Operations</h3>
-<h4 id="schema-operations">Schema Operations</h4>
-<ul>
-<li><strong>Validation</strong>: Check HED schema files for compliance</li>
-<li><strong>Conversion</strong>: Convert between different schema formats</li>
-<li><strong>Comparison</strong>: Compare different schema versions</li>
-<li><strong>Information</strong>: Extract metadata and statistics from schemas</li>
-</ul>
-<h4 id="string-operations">String Operations</h4>
-<ul>
-<li><strong>Validation</strong>: Validate individual HED annotation strings</li>
-<li><strong>Assembly</strong>: Combine HED strings with proper syntax</li>
-<li><strong>Conversion</strong>: Convert between different HED string formats</li>
-<li><strong>Search</strong>: Find specific tags or patterns in HED strings</li>
-</ul>
-<h4 id="event-processing">Event Processing</h4>
-<ul>
-<li><strong>File validation</strong>: Validate HED annotations in event files</li>
-<li><strong>Remodeling</strong>: Transform event structures using remodeling operations</li>
+<li><strong>File validation</strong>: Validate HED annotations in event and other tabular files</li>
+<li><strong>Remodeling</strong>: Transform or summarize tabular files  using remodeling operations</li>
 <li><strong>Assembly</strong>: Combine sidecar and event data into complete annotations</li>
-<li><strong>Search</strong>: Find events matching specific HED criteria</li>
+<li><strong>Search</strong>: Find rows of a tabular file matching specific HED criteria</li>
+<li><strong>Extraction</strong>: Extract a JSON template for HED annotations based on a tabular file.</li>
 </ul>
 <h4 id="sidecar-operations">Sidecar Operations</h4>
-<ul>
-<li><strong>BIDS support</strong>: Work with BIDS sidecar JSON files</li>
-<li><strong>Validation</strong>: Ensure sidecar files meet HED requirements</li>
-<li><strong>Extraction</strong>: Extract HED-related information from sidecars</li>
-<li><strong>Merging</strong>: Combine multiple sidecar files</li>
-</ul>
+<p>JSON files (called sidecars) contain HED annotations for BIDS datasets.
+- <strong>Validation</strong>: Ensure sidecar files meet HED requirements
+- <strong>Extraction</strong>: Extract a spreadsheet from a JSON file for easier annoation
+- <strong>Merging</strong>: Merge a spreadsheet into an existing JSON file.</p>
+<h4 id="schema-operations">Schema Operations</h4>
+<p>HED schemas define the structure and vocabularies for HED annotations.
+- <strong>Validation</strong>: Check HED schema files for compliance
+- <strong>Conversion</strong>: Convert between different schema formats (XML, MediaWiki, or TSV Folder)
+- <strong>Comparison</strong>: Compare different schema versions
+- <strong>Information</strong>: Extract metadata and statistics from schemas</p>
+<h4 id="string-operations">String Operations</h4>
+<p>HED strings are individual annotations that can be validated and processed.
+The string operations are useful for quick checks.
+- <strong>Validation</strong>: Validate individual HED annotation strings
+- <strong>Assembly</strong>: Combine HED strings with proper syntax
+- <strong>Conversion</strong>: Convert between different HED string formats
+- <strong>Search</strong>: Find specific tags or patterns in HED strings</p>
 <h4 id="spreadsheet-processing">Spreadsheet Processing</h4>
-<ul>
-<li><strong>Column mapping</strong>: Map spreadsheet columns to HED concepts</li>
-<li><strong>Validation</strong>: Validate HED data in spreadsheet format</li>
-<li><strong>Conversion</strong>: Convert between spreadsheet and other formats</li>
-<li><strong>Batch processing</strong>: Handle multiple spreadsheets simultaneously</li>
-</ul>
+<p>Spreadsheets provide a convenient way to manage HED annotations in tabular format.
+- <strong>Column mapping</strong>: Map spreadsheet columns to HED concepts
+- <strong>Validation</strong>: Validate HED data in spreadsheet format
+- <strong>Conversion</strong>: Convert between spreadsheet and other formats</p>
 <h2 id="architecture">Architecture</h2>
 <p>The HED Web Tools are organized into several key modules:</p>
 <ul>
 <li><strong>App Factory</strong> (<code>app_factory.py</code>): Flask application configuration and setup</li>
 <li><strong>Routes</strong> (<code>routes.py</code>): Web interface endpoints and request handling</li>
-<li><strong>Process Service</strong> (<code>process_service.py</code>): Core processing logic and service coordination</li>
+<li><strong>Process forms</strong> (<code>process_forms.py</code>): Handles form submissions and file uploads</li>
+<li><strong>Process Service</strong> (<code>process_service.py</code>): Core processing logic for service coordination</li>
 <li><strong>Operations Modules</strong>: Specialized modules for different types of HED operations</li>
 <li><strong>Web Utilities</strong> (<code>web_util.py</code>): Common utilities for web operations</li>
 </ul>

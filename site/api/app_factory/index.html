@@ -24,7 +24,7 @@
     
     
       
-        <title>App Factory - HED Web Tools</title>
+        <title>App factory - HED Web Tools</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              App Factory
+              App factory
             
           </span>
         </div>
@@ -455,6 +455,8 @@
       
         
       
+        
+      
     
     
     
@@ -524,7 +526,7 @@
   
   
   <span class="md-ellipsis">
-    App Factory
+    App factory
     
   </span>
   
@@ -537,7 +539,7 @@
   
   
   <span class="md-ellipsis">
-    App Factory
+    App factory
     
   </span>
   
@@ -566,6 +568,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label=" app_factory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hedweb.app_factory.AppFactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AppFactory
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" AppFactory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hedweb.app_factory.AppFactory.create_app" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;create_app
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hedweb.app_factory.AppFactory.get_static_url_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;get_static_url_path
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -589,7 +630,7 @@
   
   
   <span class="md-ellipsis">
-    Base Operations
+    Base operations
     
   </span>
   
@@ -653,12 +694,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../process_form/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Process form
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../process_service/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Process
+    Process service
     
   </span>
   
@@ -849,6 +913,8 @@
 
     <div class="doc doc-contents first">
 
+        <p>This module contains the factory for creating the HEDTools application.</p>
+
 
 
 
@@ -865,6 +931,207 @@
 
 
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="hedweb.app_factory.AppFactory" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">AppFactory</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>A factory for creating the HEDTools application.</p>
+<p>This factory is used to create a Flask application with the given configuration.
+It also sets up CSRF protection for the application.</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="hedweb.app_factory.AppFactory.create_app" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">create_app</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">create_app</span><span class="p">(</span><span class="n">config_class</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="flask.Flask">Flask</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Creates the Flask app and registers the blueprints.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config_class</code>
+            </td>
+            <td>
+                  <code>class</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A class containing the configuration variables.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>Flask</code></td>            <td>
+                  <code><span title="flask.Flask">Flask</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The initialized Flask app.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="hedweb.app_factory.AppFactory.get_static_url_path" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get_static_url_path</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_static_url_path</span><span class="p">(</span><span class="n">config_class</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Gets the static URL path from the config class.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config_class</code>
+            </td>
+            <td>
+                  <code>class</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A class containing the configuration variables.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The static URL path.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

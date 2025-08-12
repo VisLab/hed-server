@@ -4,7 +4,19 @@ The HED Web Tools API provides a comprehensive set of modules for processing Hie
 
 ## Architecture Overview
 
-The HED Web Tools are organized into three main layers:
+```mermaid
+graph TD
+    D[Browser] --> A[Web Interface] --> C{Flask Routes}
+    B[Client] --> D[REST API] --> C
+
+    C --> E[StringOperations]
+    C --> F[EventOperations]
+    C --> G[SchemaOperations]
+    C --> H[SidecarOperations]
+    C --> I[SpreadsheetOperations]
+```
+---
+## Module Structure
 
 ### 1. Application Layer
 - **[App Factory](app_factory.md)** - Flask application configuration and initialization
@@ -12,6 +24,7 @@ The HED Web Tools are organized into three main layers:
 
 ### 2. Service Layer  
 - **[Process Service](process_service.md)** - Core orchestration and business logic
+- **[Process Form](process_form.md)** - Form data extraction and validation
 - **[Base Operations](base_operations.md)** - Common base classes and shared functionality
 
 ### 3. Operation Modules
@@ -24,6 +37,8 @@ The HED Web Tools are organized into three main layers:
 ### 4. Utility Modules
 - **[Columns](columns.md)** - Column mapping and data structure utilities
 - **[Web Utils](web_util.md)** - Common web application helper functions
+
+---
 
 ## Service Categories
 
@@ -154,8 +169,14 @@ response = requests.post('http://localhost:5000/services/strings', json={
     "hed_strings": ["Sensory-event, Visual-presentation"]
 })
 ```
+### MATLAB Integration
+
+See the web services examples in the [hed-matlab](https://github.com/hed-standard/hed-matlab)
+GitHub repository for detailed examples of calling these services from MATLAB.
 
 ### Web Interface
-Navigate to the appropriate section (Strings, Events, etc.) and use the form-based interface for interactive processing.
+Navigate to the appropriate section (Strings, Events, etc.) and use the form-based interface 
+for interactive processing.
 
-For detailed information about each module's functions, classes, and parameters, see the individual module documentation pages.
+For detailed information about each module's functions, classes, and parameters, 
+see the individual module documentation pages.
