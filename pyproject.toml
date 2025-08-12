@@ -69,6 +69,3 @@ versionfile_build = "hedweb/_version.py"
 tag_prefix = ""
 parentdir_prefix = "hedweb-"
 
-[tool.codespell]
-skip = '*.git,*.pdf,*.xml,*.mediawiki,*.svg,versioneer.py,venv*,*.tsv,*.yaml,*.yml,*.json,*.rdf,*.jsonld,spec_tests,*.css,*.css.map'
-ignore-words-list = 'te,parms,cACE,assertIn'
