@@ -26,13 +26,12 @@ theme:
         name: Switch to light mode
   features:
     - navigation.tabs
-    - navigation.sections
     - navigation.expand
     - navigation.top
     - navigation.indexes
     - navigation.tracking
+    - navigation.instant
     - toc.follow
-    - toc.integrate
     - search.highlight
     - search.share
     - search.suggest
@@ -45,19 +44,28 @@ nav:
   - Introduction: introduction.md
   - User Guide: user_guide.md
   - API Reference:
-    - Overview: api/index.md
-    - App factory: api/app_factory.md
-    - Base operations: api/base_operations.md
-    - Columns: api/columns.md
-    - Events: api/event_operations.md
-    - Process form: api/process_form.md
-    - Process service: api/process_service.md
-    - Routes: api/routes.md
-    - Schema: api/schema_operations.md
-    - Sidecars: api/sidecar_operations.md
-    - Spreadsheets: api/spreadsheet_operations.md
-    - Strings: api/string_operations.md
-    - Web Utils: api/web_util.md
+      - Overview: api/index.md
+      - Architecture: api/architecture.md
+      - Service Categories: api/service_categories.md
+      - API Usage: api/api_usage.md
+      - Getting Started: api/getting_started.md
+      - Module Details:
+          - Application Layer:
+              - App Factory: api/app_factory.md
+              - Routes: api/routes.md
+          - Service Layer:
+              - Process Service: api/process_service.md
+              - Process Form: api/process_form.md
+              - Base Operations: api/base_operations.md
+          - Operation Modules:
+              - Event Operations: api/event_operations.md
+              - Schema Operations: api/schema_operations.md
+              - Sidecar Operations: api/sidecar_operations.md
+              - Spreadsheet Operations: api/spreadsheet_operations.md
+              - String Operations: api/string_operations.md
+          - Utilities:
+              - Columns: api/columns.md
+              - Web Utils: api/web_util.md
 
 plugins:
   - search:
@@ -94,6 +102,10 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - toc:
+      permalink: true
+      toc_depth: 2
+      baselevel: 1
   - pymdownx.details
   - pymdownx.superfences:
       custom_fences:

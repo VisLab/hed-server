@@ -17,7 +17,15 @@
          <lastmod>2025-08-12</lastmod>
     </url>
     <url>
+         <loc>https://hed-standard.github.io/hed-web/api/api_usage/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
          <loc>https://hed-standard.github.io/hed-web/api/app_factory/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://hed-standard.github.io/hed-web/api/architecture/</loc>
          <lastmod>2025-08-12</lastmod>
     </url>
     <url>
@@ -30,6 +38,10 @@
     </url>
     <url>
          <loc>https://hed-standard.github.io/hed-web/api/event_operations/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://hed-standard.github.io/hed-web/api/getting_started/</loc>
          <lastmod>2025-08-12</lastmod>
     </url>
     <url>
@@ -46,6 +58,10 @@
     </url>
     <url>
          <loc>https://hed-standard.github.io/hed-web/api/schema_operations/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://hed-standard.github.io/hed-web/api/service_categories/</loc>
          <lastmod>2025-08-12</lastmod>
     </url>
     <url>
