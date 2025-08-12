@@ -20,23 +20,46 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
-
 dependencies = [
-    "Flask",
-    "Flask-WTF",
-    "openpyxl",
-    "pandas",
-    "Werkzeug",
-    "requests"
+    "Flask>=3.1.1",
+    "Flask-WTF>=1.2.2",
+    "config>=0.5.1",
+    "hedtools>=0.6.0",
+    "openpyxl>=3.1.5",
+    "pandas>=2.3.1",
+    "Werkzeug>=3.1.3",
+    "requests>=2.32.4"
 ]
 
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.16",
+    "mkdocs-autorefs>=1.4.2",
+    "mkdocstrings>=0.30.0",
+    "mkdocstrings-python>=1.16.12"
+]
+dev = [
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "coverage>=7.0.0"
+]
+
+[project.scripts]
+hedweb = "hedweb.runserver:main"
+
 [project.urls]
-"Homepage" = "https://github.com/hed-standard/hed-web/"
-"Bug Tracker" = "https://github.com/hed-standard/hed-web/issues"
+Homepage = "https://github.com/hed-standard/hed-web"
+Documentation = "https://hed-web.readthedocs.io/"
+Repository = "https://github.com/hed-standard/hed-web.git"
+Issues = "https://github.com/hed-standard/hed-web/issues"
 
 [tool.setuptools.packages.find]
-namespaces = true
-include = ["hed*"]
+where = ["."]
+include = ["hedweb*"]
+
+[tool.setuptools.package-data]
+hedweb = ["templates/*", "static/*", "constants/*"]
 
 [tool.versioneer]
 VCS = "git"
