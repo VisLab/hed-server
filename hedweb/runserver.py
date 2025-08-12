@@ -44,19 +44,35 @@ def configure_app():
         return AppFactory.create_app('config.DevelopmentConfig')
 
 
-app = configure_app()
-with app.app_context():
-    from hedweb.routes import route_blueprint
+def create_app_with_routes():
+    """Create and configure the Flask app with routes registered."""
+    app = configure_app()
+    with app.app_context():
+        from hedweb.routes import route_blueprint
 
-    app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
+    return app
 
-    app.config['VERSIONS'] = get_version_dict()
-    print(f"Versions: {app.config['VERSIONS']}")
-    print(f"Using cache directory {app.config['HED_CACHE_FOLDER']}")
 
-    hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
-    setup_logging()
-
+# Only create the app if this module is being run directly
+app = None
 if __name__ == '__main__':
-    app.run()
+    app = create_app_with_routes()
+
+
+def main():
+    """Main entry point for the application."""
+    global app
+    if app is None:
+        app = create_app_with_routes()
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the HED web server")
+    parser.add_argument('--host', default='127.0.0.1', help='Host to run the server on')
+    parser.add_argument('--port', type=int, default=5000, help='Port to run the server on')
+    parser.add_argument('--debug', action='store_true', help='Run in debug mode')
+
+    args = parser.parse_args()
+
+    app.run(host=args.host, port=args.port, debug=args.debug)
