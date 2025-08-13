@@ -30,7 +30,7 @@ jobs:
       - name: Run deploy script (develop)
         run: | 
           cd deploy
-          ./deploy.sh dev "$BRANCH_NAME"
+          ./deploy.sh "$BRANCH_NAME" dev
           cd ..
 
       - name: Set up Python ${{ matrix.python-version }}
