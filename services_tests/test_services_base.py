@@ -4,10 +4,16 @@ import requests
 import re
 
 
-HED_SERVER_URL_KEY = "HED_SERVER_URL_KEY"
+HED_SERVER_URL_ENV_KEYS = ["HED_SERVER_URL_KEY", "HED_SERVER_URL"]
 
-#BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:33004/hed_dev")
-BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:5000")
+# Determine BASEURL from either env var, default to local dev server
+BASEURL = None
+for _key in HED_SERVER_URL_ENV_KEYS:
+    BASEURL = os.environ.get(_key)
+    if BASEURL:
+        break
+if not BASEURL:
+    BASEURL = "http://127.0.0.1:5000"
 
 
 class ServicesTest(unittest.TestCase):
@@ -15,7 +21,6 @@ class ServicesTest(unittest.TestCase):
     def setUpClass(cls):
         cls.data = cls.get_demo_data()
         cls.BASEURL = BASEURL
-        breakHEre = 3
 
     @staticmethod
     def get_demo_data():

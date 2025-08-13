@@ -43,11 +43,11 @@ def configure_app():
     else:
         # Try to use config.DevelopmentConfig, fallback to default_config if not available
         try:
-            import config
+            import config  # noqa: F401  # only to test availability
             config_class = 'config.DevelopmentConfig'
         except ImportError:
             config_class = 'default_config.DevelopmentConfig'
-    
+
     return AppFactory.create_app(config_class)
 
 
@@ -61,12 +61,12 @@ def create_app_with_routes():
     return app
 
 
+# Create a module-level app so Gunicorn can import hedtools.hedweb.runserver:app
+app = create_app_with_routes()
+
+
 def main():
     """Main entry point for the application."""
-    global app
-    if app is None:
-        app = create_app_with_routes()
-
     setup_logging()
     import argparse
 
@@ -80,7 +80,6 @@ def main():
     app.run(host=args.host, port=args.port, debug=args.debug)
 
 
-# Only create the app if this module is being run directly
+# Only run the server if executed directly
 if __name__ == '__main__':
-    app = create_app_with_routes()
     main()
