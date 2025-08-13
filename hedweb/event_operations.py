@@ -1,3 +1,6 @@
+"""
+Performs operations on tabular data files using metadata from relevant sidecars if available.
+"""
 import json
 from io import StringIO
 import pandas as pd
@@ -20,6 +23,7 @@ from hedweb.web_util import generate_filename, get_schema_versions
 
 
 class EventOperations(BaseOperations):
+    """ Class to perform operations on events files."""
 
     def __init__(self, arguments=None):
         """ Construct a ProcessEvents object to handle events form requests. 
@@ -49,13 +53,14 @@ class EventOperations(BaseOperations):
         if arguments:
             self.set_input_from_dict(arguments)
 
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested action for the events file and its sidecar.
     
         Returns:
             dict: A dictionary of results in the standard results format.
     
         Raises:
+            HedFileError: If the schema was not valid.
             HedFileError:  If the command was not found or the input arguments were not valid.
     
         """
@@ -85,7 +90,7 @@ class EventOperations(BaseOperations):
             raise HedFileError('UnknownEventsProcessingMethod', f'Command {self.command} is missing or invalid', '')
         return results 
     
-    def assemble(self):
+    def assemble(self) -> dict:
         """ Create a tabular file with the original positions in first column and a HED column.
   
     
@@ -118,7 +123,7 @@ class EventOperations(BaseOperations):
                 'schema_version': self.schema.get_formatted_version(),
                 'msg_category': 'success', 'msg': 'Events file successfully expanded'}
 
-    def check_quality(self):
+    def check_quality(self) -> dict:
         """ Check the quality of the HED annotations for an events file.
 
         Returns:
@@ -162,7 +167,7 @@ class EventOperations(BaseOperations):
                 'output_display_name': file_name, 'msg_category': msg_category, 'msg': msg}
 
 
-    def generate_sidecar(self):
+    def generate_sidecar(self) -> dict:
         """ Generate a JSON sidecar template from a BIDS-style events file.
   
         Returns:
@@ -191,8 +196,12 @@ class EventOperations(BaseOperations):
                 'output_display_name': file_name, 'msg_category': 'success',
                 'msg': 'JSON sidecar generation from event file complete'}
 
-    def get_hed_objs(self):
-        """ Return the assembled objects and applicable definitions. """
+    def get_hed_objs(self) -> tuple[list, DefinitionDict]:
+        """ Return the assembled objects and applicable definitions.
+
+        Returns:
+          tuple[list, DefinitionDict]: A tuple containing a list of HED objects and a DefinitionDict of definitions.
+        """
         definitions = self.events.get_def_dict(self.schema)
         event_manager = EventManager(self.events, self.schema)
         if self.remove_types_on:
@@ -203,12 +212,15 @@ class EventOperations(BaseOperations):
         hed_objs = tag_manager.get_hed_objs(self.include_context, self.replace_defs)
         return hed_objs, definitions
 
-    def remodel(self):
+    def remodel(self) -> dict:
         """ Remodel a given events file.
     
         Returns:
             dict: A dictionary pointing to results or errors.
-    
+
+        Raises:
+            HedFileError: If the remodeling operations were not valid.
+
         Notes: The options for this are
             - include_summaries (bool):  If true and summaries exist, package event file and summaries in a zip file.
     
@@ -256,7 +268,7 @@ class EventOperations(BaseOperations):
             response['data'] = data
         return response
     
-    def search(self):
+    def search(self) -> dict:
         """ Create a three-column tsv file with event number, matched string, and assembled strings for matched events.
     
         Returns:
@@ -297,7 +309,7 @@ class EventOperations(BaseOperations):
                 bc.MSG_CATEGORY: 'success',
                 bc.MSG: f"Successfully made {len(self.queries)} queries for {display_name}"}
 
-    def validate(self):
+    def validate(self) -> dict:
         """ Validate the events tabular input object and return the results.
     
         Returns:

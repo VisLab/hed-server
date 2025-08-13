@@ -57,6 +57,7 @@ lib/
 lib64/
 parts/
 sdist/
+site/
 var/
 *.egg-info/
 .installed.cfg
@@ -99,7 +100,7 @@ config.py
 *.pot
 
 # Sphinx documentation
-docs/_build/
+docs_old/_build/
 
 #machine specific files
 .vimrc

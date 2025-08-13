@@ -240,22 +240,22 @@ class Test(TestWebBase):
         schema_as_string = schema.get_as_xml_string()
 
         parameters = {bc.SCHEMA_STRING: schema_as_string}
-        result = ProcessServices.set_input_schema(parameters)
+        result = ProcessServices.get_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
         parameters = {
             bc.SCHEMA_URL:
                 'https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml'}
-        result = ProcessServices.set_input_schema(parameters)
+        result = ProcessServices.get_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
         parameters = {bc.SCHEMA_VERSION: '8.2.0'}
-        result = ProcessServices.set_input_schema(parameters)
+        result = ProcessServices.get_input_schema(parameters)
         self.assertIsInstance(result, HedSchema)
 
         parameters = {bc.SCHEMA_STRING: 'invalid_schema_string'}
         with self.assertRaises(HedFileError):
-            ProcessServices.set_input_schema(parameters)
+            ProcessServices.get_input_schema(parameters)
 
     def test_get_services_list(self):
         with self.app.app_context():

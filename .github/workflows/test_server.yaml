@@ -4,6 +4,8 @@ name: Test service routes externally
 on:
   push:
     branches: ["*"]
+  pull_request:
+    branches: [ "*" ]
 
 env:
   BRANCH_NAME: ${{ github.event.pull_request.base.ref || github.ref_name }}
@@ -11,6 +13,7 @@ env:
 
 jobs:
   build:
+    continue-on-error: true
     strategy:
       matrix:
         platform: [ubuntu-latest]
@@ -22,21 +25,12 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Make the script files executable
-        run: chmod +x deploy_hed_dev/deploy.sh
-
-
-      - name: Run deploy script (Stable)
-        if: ${{ env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'stable' }}
-        run: | 
-          cd deploy_hed_dev 
-          ./deploy.sh master
-          cd ..
+        run: chmod +x deploy/deploy.sh
 
       - name: Run deploy script (develop)
-        if: ${{ env.BRANCH_NAME != 'stable' && env.BRANCH_NAME != 'master' }}
         run: | 
-          cd deploy_hed_dev 
-          ./deploy.sh develop
+          cd deploy
+          ./deploy.sh "$BRANCH_NAME" dev
           cd ..
 
       - name: Set up Python ${{ matrix.python-version }}

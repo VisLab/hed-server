@@ -16,7 +16,7 @@ class BaseOperations(ABC):
             setattr(self, key, value)
 
     @abstractmethod
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested string processing action.
  
         Returns:

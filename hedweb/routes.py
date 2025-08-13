@@ -1,3 +1,6 @@
+"""
+Handles the routes for the HED web application.
+"""
 from flask import render_template, request, Blueprint, current_app, jsonify
 from werkzeug.utils import secure_filename
 import json
@@ -25,7 +28,11 @@ route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
 
 
 @route_blueprint.route('/columns_info_results', strict_slashes=False, methods=['POST'])
-def columns_info_results():
+def columns_info_results() -> str:
+    """ Process columns info request and return results as a JSON string.
+    Returns:
+        str: A serialized JSON string containing the columns information.
+    """
     try:
         if request.method == 'POST':
             columns_info = get_columns_request(request)
@@ -36,7 +43,7 @@ def columns_info_results():
 
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def events_results():
+def events_results() -> 'Response':
     """ Process events form submission and return results.
 
     Returns:
@@ -60,7 +67,7 @@ def events_results():
 
 
 @route_blueprint.route(route_constants.SCHEMAS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def schemas_results():
+def schemas_results() -> 'Response':
     """ Process schema form submission and return results.
 
     Returns:
@@ -83,11 +90,11 @@ def schemas_results():
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=['POST'])
-def schema_version_results():
+def schema_version_results() -> str:
     """ Return the version of the schema as a JSON string.
 
     Returns:
-        string: A serialized JSON string containing the version of the schema.
+        str: A serialized JSON string containing the version of the schema.
 
     """
 
@@ -105,7 +112,7 @@ def schema_version_results():
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=['GET'])
-def schema_versions_results():
+def schema_versions_results() -> str:
     """ Return serialized JSON string with HED versions.
 
     Returns:
@@ -127,7 +134,7 @@ def schema_versions_results():
 
 
 @route_blueprint.route(route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def services_results():
+def services_results() -> str:
     """ Perform the requested web service and return the results in JSON.
 
     Returns:
@@ -147,7 +154,7 @@ def services_results():
 
 
 @route_blueprint.route(route_constants.SIDECARS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def sidecars_results():
+def sidecars_results() -> 'Response':
     """ Process sidecar form submission and return results.
 
     Returns:
@@ -174,7 +181,7 @@ def sidecars_results():
 
 
 @route_blueprint.route(route_constants.SPREADSHEETS_SUBMIT_ROUTE, strict_slashes=False, methods=['POST'])
-def spreadsheets_results():
+def spreadsheets_results() -> 'Response':
     """ Process the spreadsheets in the form and return results.
 
     Returns:
@@ -197,7 +204,7 @@ def spreadsheets_results():
 
 
 @route_blueprint.route(route_constants.STRINGS_SUBMIT_ROUTE, strict_slashes=False, methods=['GET', 'POST'])
-def strings_results():
+def strings_results() -> str:
     """ Process string entered in a form text box.
 
     Returns:
@@ -219,11 +226,11 @@ def strings_results():
 
 
 @route_blueprint.route(route_constants.EVENTS_ROUTE, strict_slashes=False, methods=['GET'])
-def render_events_form():
+def render_events_form() -> str:
     """ Form for BIDS event file (with JSON sidecar) processing.
 
     Returns:
-        template: A rendered template for the events form.
+       str: A rendered template for the events form.
 
     """
     ver = app_config['VERSIONS']
@@ -233,11 +240,11 @@ def render_events_form():
 
 
 @route_blueprint.route(route_constants.HED_TOOLS_HOME_ROUTE, strict_slashes=False, methods=['GET'])
-def render_home_page():
+def render_home_page() -> str:
     """ The home page.
 
     Returns:
-        template: A rendered template for the home page.
+        str: A rendered template for the home page.
 
     """
     ver = app_config['VERSIONS']
@@ -247,11 +254,11 @@ def render_home_page():
 
 
 @route_blueprint.route(route_constants.SCHEMAS_ROUTE, strict_slashes=False, methods=['GET'])
-def render_schemas_form():
+def render_schemas_form() -> str:
     """ The schema processing form.
 
     Returns:
-        template: A rendered template for the schema processing form.
+        str: A rendered template for the schema processing form.
 
     """
     ver = app_config['VERSIONS']
@@ -261,11 +268,11 @@ def render_schemas_form():
 
 
 @route_blueprint.route(route_constants.SERVICES_ROUTE, strict_slashes=False, methods=['GET'])
-def render_services_form():
+def render_services_form() -> str:
     """ Landing page for HED hedweb services.
 
     Returns:
-        template: A dummy rendered template so that the service can get a csrf token.
+        str: A dummy rendered template so that the service can get a csrf token.
 
     """
     ver = app_config['VERSIONS']
@@ -275,11 +282,11 @@ def render_services_form():
 
 
 @route_blueprint.route(route_constants.SIDECARS_ROUTE, strict_slashes=False, methods=['GET'])
-def render_sidecars_form():
+def render_sidecars_form() -> str:
     """ The sidecar form.
 
     Returns:
-        template: A rendered template for the sidecar form.
+        str: A rendered template for the sidecar form.
 
     """
     ver = app_config['VERSIONS']
@@ -289,11 +296,11 @@ def render_sidecars_form():
 
 
 @route_blueprint.route(route_constants.SPREADSHEETS_ROUTE, strict_slashes=False, methods=['GET'])
-def render_spreadsheets_form():
+def render_spreadsheets_form() -> str:
     """ The spreadsheets form.
 
     Returns:
-        template: A rendered template for the spreadsheets form.
+        str: A rendered template for the spreadsheets form.
 
     """
     ver = app_config['VERSIONS']
@@ -303,11 +310,11 @@ def render_spreadsheets_form():
 
 
 @route_blueprint.route(route_constants.STRINGS_ROUTE, strict_slashes=False, methods=['GET'])
-def render_strings_form():
+def render_strings_form() -> str:
     """ The HED string form.
 
     Returns:
-        template: A rendered template for the HED string form.
+        str: A rendered template for the HED string form.
 
     """
     ver = app_config['VERSIONS']

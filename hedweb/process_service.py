@@ -1,3 +1,6 @@
+"""
+Handles processing of service requests in a standardized way.
+"""
 import os
 import io
 import json
@@ -10,6 +13,7 @@ from hed.errors import HedFileError
 from hed.tools.analysis.annotation_util import strs_to_sidecar
 from hed import schema as hedschema
 from hedweb.constants import base_constants as bc
+from hedweb.base_operations import BaseOperations
 from hedweb.event_operations import EventOperations
 from hedweb.schema_operations import SchemaOperations
 from hedweb.spreadsheet_operations import SpreadsheetOperations
@@ -18,12 +22,12 @@ from hedweb.string_operations import StringOperations
 
 
 class ProcessServices:
-
+    """ A class to process service requests and return results in a standard format."""
     def __init__(self):
         pass
 
     @staticmethod
-    def set_input_from_request(request):
+    def set_input_from_request(request) -> dict:
         """ Get a dictionary of input from a service request.
 
         Parameters:
@@ -36,7 +40,7 @@ class ProcessServices:
         form_string = form_data.decode()
         service_request = json.loads(form_string)
         arguments = ProcessServices.get_service_info(service_request)
-        arguments[bc.SCHEMA] = ProcessServices.set_input_schema(service_request)
+        arguments[bc.SCHEMA] = ProcessServices.get_input_schema(service_request)
         ProcessServices.set_parameters(arguments, service_request)
         ProcessServices.set_remodel_parameters(arguments, service_request)
         ProcessServices.set_definitions(arguments, service_request)
@@ -70,8 +74,16 @@ class ProcessServices:
         arguments[bc.INCLUDE_SUMMARIES] = params.get(bc.INCLUDE_SUMMARIES, False)
 
     @staticmethod
-    def get_list(name, params):
-        """ Return list of positions or names (as_str=True)  """
+    def get_list(name, params) -> list:
+        """ Return value in params associated with name as a list.
+
+        Parameters:
+            name (str): The name of the parameter to extract from the params dictionary.
+            params (dict): A dictionary of the service request values.
+
+        Returns:
+            list: A list of values associated with the name in the params dictionary.
+        """
         if name not in params or not params[name]:
             return []
         elif isinstance(params[name], str):
@@ -165,7 +177,7 @@ class ProcessServices:
                                                 'operations': json.loads(params[bc.REMODEL_STRING])}
 
     @staticmethod
-    def get_service_info(params):
+    def get_service_info(params) -> dict:
         """ Get a dictionary with the service request command information filled in.
 
         Parameters:
@@ -198,7 +210,7 @@ class ProcessServices:
                 }
 
     @staticmethod
-    def set_input_schema(parameters):
+    def get_input_schema(parameters):
         """ Get a HedSchema or HedSchemaGroup object from the parameters.
 
         Parameters:
@@ -218,14 +230,14 @@ class ProcessServices:
         return the_schema
 
     @staticmethod
-    def process(arguments):
+    def process(arguments) -> dict:
         """ Call the desired service processing function and return the results in a standard format.
 
         Parameters:
             arguments (dict): A dictionary of arguments for the processing resolved from the request.
 
         Returns:
-            dict: A dictionary of results in standard response format to be jsonified.
+            dict: A dictionary of results in standard response format to be JSONified.
 
         """
 
@@ -238,7 +250,7 @@ class ProcessServices:
             if not proc_obj:
                 response["error_type"] = 'HEDServiceInvalid'
                 response["error_msg"] = "Must specify a valid service"
-                return
+                return response
      
             proc_obj.set_input_from_dict(arguments)
             response["results"] = proc_obj.process()
@@ -249,14 +261,14 @@ class ProcessServices:
         return response
     
     @staticmethod
-    def get_process(target):
+    def get_process(target) -> 'BaseOperations':
         """ Return the BaseProcess object specific to the target string. 
         
         Parameters:
             target (str): Indicates what type of BaseProcess is needed. 
             
         Returns:
-            BaseProcess:  A processing object of class BaseProcess
+            BaseOperations:  A processing object of a subclass of BaseOperations.
         
         """
         if target == "events":
@@ -274,7 +286,7 @@ class ProcessServices:
         return proc_obj
 
     @staticmethod
-    def package_spreadsheet(results):
+    def package_spreadsheet(results) -> dict:
         """ Get the transformed results dictionary where spreadsheets are converted to strings.
 
         Parameters:
@@ -292,7 +304,7 @@ class ProcessServices:
         return results
 
     @staticmethod
-    def get_services_list():
+    def get_services_list() -> dict:
         """ Get a formatted string describing services using the resources/services.json file
 
          Returns:
@@ -338,7 +350,13 @@ class ProcessServices:
                 'msg': "List of available services and their meanings"}
 
     @staticmethod
-    def get_parameter_string(params):
+    def get_parameter_string(params) -> str:
+        """ Get a formatted string describing the parameters for a service.
+        Parameters:
+            params (list): A list of parameters for the service.
+        Returns:
+            str: A formatted string describing the parameters.
+        """
         if not params:
             return "\tParameters: []"
         param_list = []
