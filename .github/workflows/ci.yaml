@@ -36,8 +36,10 @@ jobs:
 
     - name: Run unit tests (with coverage)
       run: |
+        set -e
         python -m coverage run --data-file=.coverage.unit --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
-        # Raw data in .coverage.unit for merging later
+        # Fallback: if coverage wrote default file, rename it
+        if [ ! -f .coverage.unit ] && [ -f .coverage ]; then mv .coverage .coverage.unit; fi
         ls -la .coverage* || true
 
     - name: Upload coverage artifact (unit)
@@ -119,6 +121,8 @@ jobs:
         echo "Combining coverage data for this job..."
         # Explicitly write combined data to .coverage.service so artifact upload can find it
         python -m coverage combine -o .coverage.service || true
+        # Fallback: if default combined file exists, rename to expected
+        if [ ! -f .coverage.service ] && [ -f .coverage ]; then mv .coverage .coverage.service; fi
         ls -la .coverage* || true
 
         exit ${TEST_STATUS}
