@@ -44,4 +44,6 @@ jobs:
           pip install requests
 
       - name: Run service tests
+        env:
+          HED_SERVER_URL_KEY: "http://127.0.0.1:33004/hed_dev"
         run: python -m unittest discover services_tests
