@@ -1,16 +1,16 @@
 # User Guide for HED Web Tools
 
-### Running locally
+## Running locally
 
 This project contains the web interface code for deploying HED tools as a web application running in a docker module.   
 
-#### Clone the repository
+### Clone the repository
 To run the web application locally, you will need to clone the `hed-web` repository.
 ```
 git clone https://github.com/hed-standard/hed-web
 ```
 
-#### Setup configuration
+### Setup configuration
 You must have a `config.py` file in the root directory of your repository:
 
    1.  Copy `config_template.py` to `config.py`
@@ -18,11 +18,10 @@ You must have a `config.py` file in the root directory of your repository:
        you want the application to use to temporarily store uploads and to cache the
        HED schema.
 
-#### Virtual environments
+### Virtual environments
 
 It is recommended to use a virtual environment to avoid conflicts with other Python packages.
 
-##### Using venv (recommended)
 1. Create a virtual environment:
    ```
    python -m venv .venv
@@ -43,7 +42,7 @@ It is recommended to use a virtual environment to avoid conflicts with other Pyt
    pip install -r requirements.txt
    ```
 
-##### Using conda (alternative)
+### Using conda (alternative)
 1. Create a conda environment:
    ```
    conda create -n .venv python=3.10
@@ -59,14 +58,14 @@ It is recommended to use a virtual environment to avoid conflicts with other Pyt
    pip install -r requirements.txt
    ```
 
-#### Running the application
+### Running the application
 Once this installation is complete, you can execute `runserver`.
 This call should bring up a Flask test server.
 Paste the indicated link into a web browser, and you are ready to go.
 
-### Deployment on an external webserver
+## Deployment on an external webserver
 
-#### Overview
+### Overview
 The `deploy_hed` directory contains scripts and configuration files that are needed
 to deploy the application as a docker container.
 These instructions assume that you have a Linux server with apache2 and docker installed.  
@@ -83,7 +82,7 @@ browser using the address http://127.0.0.1:33000/hed.
 In a production environment, the tools are meant to be run through an Apache web server with proxies.
 The description of how to set this up is described elsewhere.
 
-#### Deploying the docker module
+### Deploying the docker module
 
 The instructions assume that you are in your home directory on the Linux server.
 The deployment will use your home directory as a temporary staging area.
@@ -138,7 +137,7 @@ while the `dev` environment deploys to `/hed_dev` and uses the `hedtools_dev` co
 | HED package source | PyPI hedtools package | Main branch hedtools package |
 | Container name     | `hedtools` | `hedtools_dev` |
 
-### Branches and versions
+## Branches and versions
 
 The web tools are built on the `hedtools` package housed in the `hed-python`
 GitHub repository.
@@ -154,7 +153,7 @@ The branches correspond as follows:
 
 More information about using the webtools can be found at [https://www.hed-resources.org](https://www.hed-resources.org).
 
-### Building the docs locally
+## Building the docs locally
 
 To build and view the documentation locally:
 

@@ -67,6 +67,7 @@ def main():
     if app is None:
         app = create_app_with_routes()
 
+    setup_logging()
     import argparse
 
     parser = argparse.ArgumentParser(description="Run the HED web server")
