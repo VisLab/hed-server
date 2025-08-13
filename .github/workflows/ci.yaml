@@ -61,11 +61,20 @@ jobs:
         pip install -r requirements.txt
         pip install coverage
 
+    - name: Create log directory
+      run: mkdir -p logs
+
     - name: Run Web Server
       run: |
         python hedweb/runserver.py &
         sleep 10
         curl --retry 10 --retry-delay 5 --retry-connrefused ${{ env.HED_SERVER_URL_KEY }}
+
+    - name: Show logs on failure
+      if: failure()
+      run: |
+        echo "Displaying logs..."
+        cat logs/hedtools.log
 
     - name: Run service tests
       run: |
