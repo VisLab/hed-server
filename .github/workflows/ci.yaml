@@ -35,15 +35,18 @@ jobs:
         pip install -e .
 
     - name: Run unit tests (with coverage)
+      env:
+        COVERAGE_FILE: .coverage.unit
       run: |
         python -m coverage run --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
-        # Keep raw data for merging; XML/LCOV will be generated in merge job
+        # Raw data in .coverage.unit for merging later
+        ls -la .coverage* || true
 
     - name: Upload coverage artifact (unit)
       uses: actions/upload-artifact@v4
       with:
         name: coverage-unit
-        path: .coverage
+        path: .coverage.unit
         if-no-files-found: error
 
   service-tests:
@@ -75,6 +78,8 @@ jobs:
 
     - name: Run server and service tests with coverage (produce raw data)
       shell: bash
+      env:
+        COVERAGE_FILE: .coverage.service
       run: |
         set -euo pipefail
         echo "Starting server under coverage..."
@@ -114,8 +119,9 @@ jobs:
         wait ${SERVER_PID} 2>/dev/null || true
 
         echo "Combining coverage data for this job..."
-        python -m coverage combine || true
-        # Keep raw combined .coverage for cross-job merge
+        # Explicitly write combined data to .coverage.service so artifact upload can find it
+        python -m coverage combine -o .coverage.service || true
+        ls -la .coverage* || true
 
         exit ${TEST_STATUS}
 
@@ -137,7 +143,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: coverage-service
-        path: .coverage
+        path: .coverage.service
         if-no-files-found: warn
 
   coverage-merge:
@@ -164,9 +170,9 @@ jobs:
         ls -R
         # Move and rename to .coverage.* so coverage can combine explicitly
         mkdir -p merged
-        cp coverage_artifacts/coverage-unit/.coverage merged/.coverage.unit
-        if [ -f coverage_artifacts/coverage-service/.coverage ]; then
-          cp coverage_artifacts/coverage-service/.coverage merged/.coverage.service
+        cp coverage_artifacts/coverage-unit/.coverage.unit merged/.coverage.unit
+        if [ -f coverage_artifacts/coverage-service/.coverage.service ]; then
+          cp coverage_artifacts/coverage-service/.coverage.service merged/.coverage.service
         fi
 
     - name: Install coverage tools
