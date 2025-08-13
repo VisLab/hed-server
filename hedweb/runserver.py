@@ -27,7 +27,7 @@ def setup_logging():
     """Sets up the current_application logging. If the log directory does not exist then there will be no logging.
 
     """
-    if not app.debug and os.path.exists(app.config['LOG_DIRECTORY']):
+    if os.path.exists(app.config['LOG_DIRECTORY']):
         file_handler = RotatingFileHandler(app.config['LOG_FILE'], maxBytes=10 * 1024 * 1024, backupCount=5)
         file_handler.setLevel(ERROR)
         app.logger.addHandler(file_handler)
@@ -43,11 +43,11 @@ def configure_app():
     else:
         # Try to use config.DevelopmentConfig, fallback to default_config if not available
         try:
-            import config
+            import config  # noqa: F401  # only to test availability
             config_class = 'config.DevelopmentConfig'
         except ImportError:
             config_class = 'default_config.DevelopmentConfig'
-    
+
     return AppFactory.create_app(config_class)
 
 
@@ -61,12 +61,13 @@ def create_app_with_routes():
     return app
 
 
+# Create a module-level app so Gunicorn can import hedtools.hedweb.runserver:app
+app = create_app_with_routes()
+
+
 def main():
     """Main entry point for the application."""
-    global app
-    if app is None:
-        app = create_app_with_routes()
-
+    setup_logging()
     import argparse
 
     parser = argparse.ArgumentParser(description="Run the HED web server")
@@ -79,7 +80,6 @@ def main():
     app.run(host=args.host, port=args.port, debug=args.debug)
 
 
-# Only create the app if this module is being run directly
+# Only run the server if executed directly
 if __name__ == '__main__':
-    app = create_app_with_routes()
     main()

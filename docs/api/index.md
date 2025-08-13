@@ -4,7 +4,7 @@ The HED Web Tools API provides a comprehensive set of modules for processing Hie
 
 ## Architecture Overview
 
-<div class="mermaid">
+```mermaid
 graph TD
     A[Web Interface] --> C{Flask Routes}
     B[Client] --> D[REST API] --> C
@@ -14,7 +14,7 @@ graph TD
     C --> G[SchemaOperations]
     C --> H[SidecarOperations]
     C --> I[SpreadsheetOperations]
-</div>
+```
 
 ---
 ## Module Structure
