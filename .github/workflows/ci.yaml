@@ -31,7 +31,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        python -m coverage run -m unittest discover -s tests/ -p 'test_*.py'
+        python -m coverage run --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
         python -m coverage xml
 
     - name: Upload coverage to Codecov
@@ -68,18 +68,18 @@ jobs:
         # Install package in editable mode so "python -m hedweb.runserver" works
         pip install -e .
 
-    - name: Run server and service tests
+    - name: Run server and service tests with coverage
       shell: bash
       run: |
         set -euo pipefail
-        echo "Starting server..."
-        # Run as a module so package imports resolve correctly
-        python -m hedweb.runserver &
+        echo "Starting server under coverage..."
+        # Run server under coverage so server-side code executed by requests is measured
+        python -m coverage run --parallel-mode --source=hedweb -m hedweb.runserver &
         SERVER_PID=$!
 
         # Wait for the server and verify it's reachable
         echo "Waiting for server to be ready at ${HED_SERVER_URL_KEY}..."
-        for i in {1..20}; do
+        for i in {1..30}; do
           if curl -fsS "${HED_SERVER_URL_KEY}" >/dev/null 2>&1; then
             echo "Server is up."
             break
@@ -89,23 +89,30 @@ jobs:
         # Final check with retries
         curl --retry 10 --retry-delay 3 --retry-connrefused "${HED_SERVER_URL_KEY}" -sS -o /dev/null
 
-        echo "Running service tests..."
+        echo "Running service tests under coverage..."
         set +e
-        python -m coverage run -m unittest discover -s services_tests/ -p 'test_*.py'
+        python -m coverage run --parallel-mode --source=hedweb -m unittest discover -s services_tests/ -p 'test_*.py'
         TEST_STATUS=$?
         set -e
 
         echo "Stopping server (PID: ${SERVER_PID})..."
-        kill ${SERVER_PID} || true
+        # Prefer SIGINT so coverage can finalize cleanly
+        kill -INT ${SERVER_PID} || true
+        # Wait briefly, then fall back to SIGTERM if needed
+        for i in {1..5}; do
+          if ! kill -0 ${SERVER_PID} 2>/dev/null; then
+            break
+          fi
+          sleep 1
+        done
+        kill ${SERVER_PID} 2>/dev/null || true
         wait ${SERVER_PID} 2>/dev/null || true
 
-        exit ${TEST_STATUS}
-
-    - name: Generate coverage XML
-      if: always()
-      run: |
-        # Coverage file is produced by previous step
+        echo "Combining coverage data and generating XML..."
+        python -m coverage combine || true
         python -m coverage xml || true
+
+        exit ${TEST_STATUS}
 
     - name: Show logs on failure
       if: failure()
