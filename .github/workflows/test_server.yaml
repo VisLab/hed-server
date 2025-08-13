@@ -33,6 +33,11 @@ jobs:
           ./deploy.sh "$BRANCH_NAME" dev
           cd ..
 
+      - name: Wait for server to be ready
+        run: |
+          sleep 10
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://127.0.0.1:33004/hed_dev
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
