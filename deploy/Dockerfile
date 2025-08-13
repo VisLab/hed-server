@@ -34,7 +34,7 @@ RUN mkdir -p /var/log/hedtools && \
 COPY ./hedtools /root/hedtools/
 COPY ./hedtools/hedweb /root/hedtools/hedweb/
 
-# Set the PYTHONPATH environment variable to include /root/hedtools
+# Ensure Python can import the application package
 ENV PYTHONPATH="/root/hedtools"
 
 # Set environment variables for the application
@@ -47,7 +47,8 @@ COPY gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
 EXPOSE 80
 
 # Run the Flask application with Gunicorn, binding to port 80
+# Import path matches PYTHONPATH layout (/root/hedtools contains the 'hedweb' package)
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "--forwarded-allow-ips=127.0.0.1", \
      "--access-logfile", "/var/log/hedtools/access.log", \
      "--error-logfile", "/var/log/hedtools/error.log",  "--capture-output",\
-     "--log-level", "info", "hedtools.hedweb.runserver:app"]
+     "--log-level", "info", "hedweb.runserver:app"]
