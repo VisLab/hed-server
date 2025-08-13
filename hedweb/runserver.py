@@ -27,7 +27,7 @@ def setup_logging():
     """Sets up the current_application logging. If the log directory does not exist then there will be no logging.
 
     """
-    if not app.debug and os.path.exists(app.config['LOG_DIRECTORY']):
+    if os.path.exists(app.config['LOG_DIRECTORY']):
         file_handler = RotatingFileHandler(app.config['LOG_FILE'], maxBytes=10 * 1024 * 1024, backupCount=5)
         file_handler.setLevel(ERROR)
         app.logger.addHandler(file_handler)
