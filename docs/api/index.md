@@ -97,7 +97,7 @@ All services are accessible via REST API endpoints under `/services/`:
 {
     "service": "service_name",
     "schema_version": "8.3.0",
-    "check_for_warnings": true,
+    "check_for_warnings": true
     // Service-specific parameters...
 }
 ```
@@ -110,7 +110,7 @@ All services are accessible via REST API endpoints under `/services/`:
     "results": {
         "data": "...",
         "output_display_name": "result.txt",
-        "schema_version": "8.3.0",
+        "schema_version": "8.3.0"
         // Service-specific results...
     }
 }

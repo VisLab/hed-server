@@ -68,4 +68,3 @@ versionfile_source = "hedweb/_version.py"
 versionfile_build = "hedweb/_version.py"
 tag_prefix = ""
 parentdir_prefix = "hedweb-"
-

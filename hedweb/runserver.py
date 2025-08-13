@@ -47,7 +47,7 @@ def configure_app():
             config_class = 'config.DevelopmentConfig'
         except ImportError:
             config_class = 'default_config.DevelopmentConfig'
-
+    
     return AppFactory.create_app(config_class)
 
 
@@ -59,12 +59,6 @@ def create_app_with_routes():
 
         app.register_blueprint(route_blueprint, url_prefix=app.config['URL_PREFIX'])
     return app
-
-
-# Only create the app if this module is being run directly
-app = None
-if __name__ == '__main__':
-    app = create_app_with_routes()
 
 
 def main():
@@ -83,3 +77,9 @@ def main():
     args = parser.parse_args()
 
     app.run(host=args.host, port=args.port, debug=args.debug)
+
+
+# Only create the app if this module is being run directly
+if __name__ == '__main__':
+    app = create_app_with_routes()
+    main()

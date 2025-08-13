@@ -11,10 +11,10 @@ class Config(object):
     LOG_DIRECTORY = os.path.join(BASE_DIRECTORY, 'log')
     LOG_FILE = os.path.join(LOG_DIRECTORY, 'error.log')
     os.makedirs(LOG_DIRECTORY, exist_ok=True)
-
+    
     # Generate a simple secret key for CI/testing
     SECRET_KEY = os.environ.get('SECRET_KEY', 'ci-test-key-not-secure')
-
+    
     STATIC_URL_PATH = None
     STATIC_URL_PATH_ATTRIBUTE_NAME = 'STATIC_URL_PATH'
     UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), 'hedtools_uploads')

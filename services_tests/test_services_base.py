@@ -7,7 +7,7 @@ import re
 HED_SERVER_URL_KEY = "HED_SERVER_URL_KEY"
 
 BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:33004/hed_dev")
-# BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:5000")
+# #BASEURL = os.environ.get(HED_SERVER_URL_KEY, "http://127.0.0.1:5000")
 
 
 class ServicesTest(unittest.TestCase):
