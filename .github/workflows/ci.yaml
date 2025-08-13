@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "*" ]
 
+# Minimal permissions required for Qlty upload
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -29,17 +34,17 @@ jobs:
         # Install package in editable mode so imports work consistently
         pip install -e .
 
-    - name: Run unit tests
+    - name: Run unit tests (with coverage)
       run: |
         python -m coverage run --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
-        python -m coverage xml
+        # Keep raw data for merging; XML/LCOV will be generated in merge job
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
+    - name: Upload coverage artifact (unit)
+      uses: actions/upload-artifact@v4
       with:
-        files: ./coverage.xml
-        flags: unittests
-        fail_ci_if_error: false
+        name: coverage-unit
+        path: .coverage
+        if-no-files-found: error
 
   service-tests:
     runs-on: ubuntu-latest
@@ -68,7 +73,7 @@ jobs:
         # Install package in editable mode so "python -m hedweb.runserver" works
         pip install -e .
 
-    - name: Run server and service tests with coverage
+    - name: Run server and service tests with coverage (produce raw data)
       shell: bash
       run: |
         set -euo pipefail
@@ -108,9 +113,9 @@ jobs:
         kill ${SERVER_PID} 2>/dev/null || true
         wait ${SERVER_PID} 2>/dev/null || true
 
-        echo "Combining coverage data and generating XML..."
+        echo "Combining coverage data for this job..."
         python -m coverage combine || true
-        python -m coverage xml || true
+        # Keep raw combined .coverage for cross-job merge
 
         exit ${TEST_STATUS}
 
@@ -127,9 +132,68 @@ jobs:
           ls -la "${HED_BASE_DIRECTORY}/log" || true
         fi
 
-    - name: Upload coverage to Codecov
+    - name: Upload coverage artifact (service)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-service
+        path: .coverage
+        if-no-files-found: warn
+
+  coverage-merge:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, service-tests]
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Download coverage artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: coverage-*
+        merge-multiple: false
+        path: coverage_artifacts
+
+    - name: Prepare coverage files for merge
+      run: |
+        ls -R
+        # Move and rename to .coverage.* so coverage can combine explicitly
+        mkdir -p merged
+        cp coverage_artifacts/coverage-unit/.coverage merged/.coverage.unit
+        if [ -f coverage_artifacts/coverage-service/.coverage ]; then
+          cp coverage_artifacts/coverage-service/.coverage merged/.coverage.service
+        fi
+
+    - name: Install coverage tools
+      run: |
+        python -m pip install --upgrade coverage coverage-lcov
+
+    - name: Merge coverage and generate reports
+      run: |
+        cd merged
+        if [ -f .coverage.service ]; then
+          python -m coverage combine .coverage.unit .coverage.service
+        else
+          python -m coverage combine .coverage.unit
+        fi
+        python -m coverage xml
+        mkdir -p target
+        python -m coverage lcov -o target/lcov.info
+        cd ..
+        # Place LCOV where qlty.toml expects it (repo-root/target)
+        mkdir -p target
+        cp merged/target/lcov.info target/lcov.info
+
+    - name: Upload coverage to Qlty (merged)
+      uses: qltysh/qlty-action/coverage@v2
+
+    - name: Upload coverage to Codecov (merged)
       uses: codecov/codecov-action@v5
       with:
-        files: ./coverage.xml
-        flags: servicetests
+        files: ./merged/coverage.xml
         fail_ci_if_error: false
