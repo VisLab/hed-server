@@ -26,6 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install coverage
+        # Install package in editable mode so imports work consistently
+        pip install -e .
 
     - name: Run unit tests
       run: |
@@ -43,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HED_SERVER_URL_KEY: "http://127.0.0.1:5000"
+      # Force CI-safe config and keep logs/cache inside the workspace
+      HEDTOOLS_CONFIG_CLASS: "default_config.DevelopmentConfig"
+      HED_BASE_DIRECTORY: ${{ github.workspace }}
     strategy:
       matrix:
         python-version: ["3.10"]
@@ -60,26 +65,60 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install coverage
+        # Install package in editable mode so "python -m hedweb.runserver" works
+        pip install -e .
 
-    - name: Create log directory
-      run: mkdir -p logs
-
-    - name: Run Web Server
+    - name: Run server and service tests
+      shell: bash
       run: |
-        python hedweb/runserver.py &
-        sleep 10
-        curl --retry 10 --retry-delay 5 --retry-connrefused ${{ env.HED_SERVER_URL_KEY }}
+        set -euo pipefail
+        echo "Starting server..."
+        # Run as a module so package imports resolve correctly
+        python -m hedweb.runserver &
+        SERVER_PID=$!
+
+        # Wait for the server and verify it's reachable
+        echo "Waiting for server to be ready at ${HED_SERVER_URL_KEY}..."
+        for i in {1..20}; do
+          if curl -fsS "${HED_SERVER_URL_KEY}" >/dev/null 2>&1; then
+            echo "Server is up."
+            break
+          fi
+          sleep 1
+        done
+        # Final check with retries
+        curl --retry 10 --retry-delay 3 --retry-connrefused "${HED_SERVER_URL_KEY}" -sS -o /dev/null
+
+        echo "Running service tests..."
+        set +e
+        python -m coverage run -m unittest discover -s services_tests/ -p 'test_*.py'
+        TEST_STATUS=$?
+        set -e
+
+        echo "Stopping server (PID: ${SERVER_PID})..."
+        kill ${SERVER_PID} || true
+        wait ${SERVER_PID} 2>/dev/null || true
+
+        exit ${TEST_STATUS}
+
+    - name: Generate coverage XML
+      if: always()
+      run: |
+        # Coverage file is produced by previous step
+        python -m coverage xml || true
 
     - name: Show logs on failure
       if: failure()
       run: |
         echo "Displaying logs..."
-        cat logs/hedtools.log
-
-    - name: Run service tests
-      run: |
-        python -m coverage run -m unittest discover -s services_tests/ -p 'test_*.py'
-        python -m coverage xml
+        LOG_FILE="${HED_BASE_DIRECTORY}/log/error.log"
+        if [ -f "$LOG_FILE" ]; then
+          echo "Found log file at $LOG_FILE"
+          tail -n 200 "$LOG_FILE"
+        else
+          echo "Log file not found at $LOG_FILE. Listing log directory:"
+          ls -la "${HED_BASE_DIRECTORY}/log" || true
+        fi
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
