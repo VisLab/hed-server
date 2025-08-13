@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v5
@@ -36,35 +36,54 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         files: ./coverage.xml
+        flags: unittests
         fail_ci_if_error: false
 
-#  service-tests:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        python-version: ["3.10", "3.11"]
-#
-#    steps:
-#    - uses: actions/checkout@v5
-#
-#    - name: Set up Python ${{ matrix.python-version }}
-#      uses: actions/setup-python@v5
-#      with:
-#        python-version: ${{ matrix.python-version }}
-#
-#    - name: Install dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install -r requirements.txt
-#        pip install coverage
-#
-#    - name: Run service tests
-#      run: |
-#        python -m coverage run -m unittest discover -s services_tests/ -p 'test_*.py'
-#        python -m coverage xml
-#
-#    - name: Upload coverage to Codecov
-#      uses: codecov/codecov-action@v5
-#      with:
-#        files: ./coverage.xml
-#        fail_ci_if_error: false
+  service-tests:
+    runs-on: ubuntu-latest
+    env:
+      HED_SERVER_URL_KEY: "http://127.0.0.1:5000"
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install coverage
+
+    - name: Create log directory
+      run: mkdir -p logs
+
+    - name: Run Web Server
+      run: |
+        python hedweb/runserver.py &
+        sleep 10
+        curl --retry 10 --retry-delay 5 --retry-connrefused ${{ env.HED_SERVER_URL_KEY }}
+
+    - name: Show logs on failure
+      if: failure()
+      run: |
+        echo "Displaying logs..."
+        cat logs/hedtools.log
+
+    - name: Run service tests
+      run: |
+        python -m coverage run -m unittest discover -s services_tests/ -p 'test_*.py'
+        python -m coverage xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: ./coverage.xml
+        flags: servicetests
+        fail_ci_if_error: false

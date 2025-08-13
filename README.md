@@ -1,6 +1,8 @@
 # HED Web Tools
 ![Python3](https://img.shields.io/badge/python->=3.10-blue.svg)
-[![Documentation Status](https://readthedocs.org/projects/hed-web/badge/?version=latest)](https://hed-web.readthedocs.io/en/latest/?badge=latest)
+[![Documentation](https://img.shields.io/badge/docs-hedtags.org-blue.svg)](https://www.hedtags.org/hed-web)
+[![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-web/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-web)
+[![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-web/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-web)
 
 ## What is HED?
 
