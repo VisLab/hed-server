@@ -35,10 +35,8 @@ jobs:
         pip install -e .
 
     - name: Run unit tests (with coverage)
-      env:
-        COVERAGE_FILE: .coverage.unit
       run: |
-        python -m coverage run --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
+        python -m coverage run --data-file=.coverage.unit --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
         # Raw data in .coverage.unit for merging later
         ls -la .coverage* || true
 
