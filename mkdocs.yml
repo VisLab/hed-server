@@ -1,0 +1,120 @@
+site_name: HED Web Tools
+site_description: Hierarchical Event Descriptor (HED) Web Tools Documentation
+site_url: https://hed-standard.github.io/hed-web/
+repo_url: https://github.com/hed-standard/hed-web
+repo_name: hed-standard/hed-web
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.instant
+    - toc.follow
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+nav:
+  - Home: index.md
+  - Introduction: introduction.md
+  - User Guide: user_guide.md
+  - API Reference:
+      - Overview: api/index.md
+      - Architecture: api/architecture.md
+      - Service Categories: api/service_categories.md
+      - API Usage: api/api_usage.md
+      - Getting Started: api/getting_started.md
+      - Module Details:
+          - Application Layer:
+              - App Factory: api/app_factory.md
+              - Routes: api/routes.md
+          - Service Layer:
+              - Process Service: api/process_service.md
+              - Process Form: api/process_form.md
+              - Base Operations: api/base_operations.md
+          - Operation Modules:
+              - Event Operations: api/event_operations.md
+              - Schema Operations: api/schema_operations.md
+              - Sidecar Operations: api/sidecar_operations.md
+              - Spreadsheet Operations: api/spreadsheet_operations.md
+              - String Operations: api/string_operations.md
+          - Utilities:
+              - Columns: api/columns.md
+              - Web Utils: api/web_util.md
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            separate_signature: true
+            filters: ["!^_", "!^__"]
+            heading_level: 2
+            show_bases: true
+            show_inheritance_diagram: false
+            group_by_category: true
+            docstring_section_style: table
+            members_order: source
+            show_submodules: false
+            show_if_no_docstring: false
+            inherited_members: false
+            signature_crossrefs: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            extra:
+              ignore_init_summary: true
+              merge_init_into_class: true
+              allow_inspection: true
+              preload_modules: [hedweb]
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+      toc_depth: 2
+      baselevel: 1
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets

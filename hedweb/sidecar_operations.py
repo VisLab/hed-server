@@ -1,3 +1,6 @@
+"""
+Performs operations on JSON sidecars, such as validation, conversion, extraction, and merging with spreadsheets.
+"""
 import json
 from hed.errors import ErrorHandler
 from hed import schema as hedschema
@@ -11,12 +14,13 @@ from hedweb.web_util import generate_filename, get_schema_versions
 
 
 class SidecarOperations(BaseOperations):
+    """ Class to perform operations on sidecars."""
 
     def __init__(self, arguments=None):
         """ Construct a SidecarOperations object to handle sidecar operations.
 
         Parameters:
-             arguments (dict): Dictionary with parameters extracted from form or service
+             arguments (dict or None): Dictionary with parameters extracted from form or service
 
         """
         self.schema = None
@@ -30,11 +34,17 @@ class SidecarOperations(BaseOperations):
         if arguments:
             self.set_input_from_dict(arguments)
 
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested action for the sidecar.
         
         Returns:
             dict: A dictionary of results in standard form.
+
+        Raises:
+            HedFileError: If the command was not found or the input arguments were not valid.
+            HedFileError: If the schema is not found or cannot be loaded.
+            HedFileError: If the sidecar is not found or cannot be loaded.
+            HedFileError: If a required spreadsheet is not found or cannot be loaded.
     
         """
         if not self.command:
@@ -59,7 +69,7 @@ class SidecarOperations(BaseOperations):
             raise HedFileError('UnknownProcessingMethod', f'Command {self.command} is missing or invalid', '')
         return results
        
-    def sidecar_convert(self):
+    def sidecar_convert(self) -> dict:
         """ Convert a sidecar from long to short form or short to long form.
     
         Returns:
@@ -103,7 +113,7 @@ class SidecarOperations(BaseOperations):
                 bc.SCHEMA_VERSION: get_schema_versions(self.schema),
                 'msg_category': category, 'msg': msg}
     
-    def sidecar_extract(self):
+    def sidecar_extract(self ) -> dict:
         """ Create a four-column spreadsheet with the HED portion of the JSON sidecar.
  
         Returns:
@@ -121,13 +131,15 @@ class SidecarOperations(BaseOperations):
                 'data': data, 'output_display_name': file_name,
                 'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully extracted'}
     
-    def sidecar_merge(self):
+    def sidecar_merge(self) -> dict:
         """ Merge an edited 4-column spreadsheet with JSON sidecar.
 
         Returns:
-            dict
-            A downloadable dictionary file or a file containing warnings
-    
+            dict: A downloadable dictionary file or a file containing warnings
+
+        Raises:
+            HedFileError: If the spreadsheet is not provided or cannot be loaded.
+
         Notes: The allowed option for merge is:
             include_description_tags (bool): If True, a Description tag is generated from Levels and included.
     
@@ -153,7 +165,7 @@ class SidecarOperations(BaseOperations):
                 'data': data, 'output_display_name': file_name,
                 'msg_category': 'success', 'msg': f'JSON sidecar {display_name} was successfully merged'}
     
-    def sidecar_validate(self):
+    def sidecar_validate(self) -> dict:
         """ Validate the sidecars and return the errors and/or a message in a dictionary.
  
         Returns:

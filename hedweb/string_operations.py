@@ -1,3 +1,7 @@
+"""
+Performs operations on strings, such as validation and conversion between long and short forms.
+"""
+
 from hed.errors import ErrorHandler, get_printable_issue_string, HedFileError
 from hed import schema as hedschema
 from hed import get_query_handlers, search_hed_objs
@@ -7,6 +11,7 @@ from hedweb.base_operations import BaseOperations
 
 
 class StringOperations(BaseOperations):
+    """ Class to perform operations on spreadsheets."""
 
     def __init__(self, arguments=None):
         """ Construct a StringOperations object to handle sidecar operations.
@@ -26,11 +31,16 @@ class StringOperations(BaseOperations):
         if arguments:
             self.set_input_from_dict(arguments)
 
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested string processing action.
  
         Returns:
             dict: The results in standard format.
+
+        Raises:
+            HedFileError: If the command was not found or the input arguments were not valid.
+            HedFileError: If the schema is not found or cannot be loaded.
+            HedFileError: If the string list is empty or not provided.
     
         """
         if not self.command:
@@ -49,7 +59,7 @@ class StringOperations(BaseOperations):
             raise HedFileError('UnknownProcessingMethod', f'Command {self.command} is missing or invalid', '')
         return results
 
-    def convert(self):
+    def convert(self) -> dict:
         """ Convert a list of strings from long to short or  from short to long.
     
         Returns:
@@ -68,13 +78,13 @@ class StringOperations(BaseOperations):
                 converted_string = hed_string_obj.get_as_form('short_tag')
             strings.append(converted_string)
     
-            return {bc.COMMAND: self.command,
-                    bc.COMMAND_TARGET: 'strings', 'data': strings,
-                    bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
-                    'msg_category': 'success',
-                    'msg': 'Strings converted successfully'}
+        return {bc.COMMAND: self.command,
+                bc.COMMAND_TARGET: 'strings', 'data': strings,
+                bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
+                'msg_category': 'success',
+                'msg': 'Strings converted successfully'}
 
-    def search(self):
+    def search(self) -> dict:
         """ Return a list or a boolean
 
         Returns:
@@ -118,7 +128,7 @@ class StringOperations(BaseOperations):
                 bc.MSG_CATEGORY: 'success',
                 bc.MSG: f"Successfully made queries"}
 
-    def validate(self):
+    def validate(self) -> dict:
         """ Validate a list of strings and returns a dictionary containing the issues or a no issues message.
 
         Returns:

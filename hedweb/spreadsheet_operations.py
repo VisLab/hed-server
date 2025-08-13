@@ -1,3 +1,6 @@
+"""
+Performs operations on spreadsheets, such as validation, conversion, and extraction.
+"""
 import os
 from werkzeug.utils import secure_filename
 from hed import schema as hedschema
@@ -11,6 +14,7 @@ from hedweb.web_util import filter_issues, generate_filename
 
 
 class SpreadsheetOperations(BaseOperations):
+    """ Class to perform operations on spreadsheets."""
 
     def __init__(self, arguments=None):
         """ Construct a ProcessSpreadsheet object to handle spreadsheet operations.
@@ -32,12 +36,16 @@ class SpreadsheetOperations(BaseOperations):
         if arguments:
             self.set_input_from_dict(arguments)
 
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested action for the spreadsheet.
  
         Returns:
             dict: A dictionary of results from spreadsheet processing in standard form.
-    
+
+        Raises:
+            HedFileError: If the command was not found or the input arguments were not valid.
+            HedFileError: If the schema is not found or cannot be loaded.
+            HedFileError: If the spreadsheet is not found or cannot be loaded.
         """
     
         if not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
@@ -53,7 +61,7 @@ class SpreadsheetOperations(BaseOperations):
                                f"Command {self.command} is missing or invalid", "")
         return results
     
-    def spreadsheet_convert(self):
+    def spreadsheet_convert(self) -> dict:
         """ Convert a spreadsheet long to short unless the command is not COMMAND_TO_LONG then converts to short
     
         Returns:
@@ -86,7 +94,7 @@ class SpreadsheetOperations(BaseOperations):
                 bc.MSG_CATEGORY: 'success',
                 bc.MSG: f'Spreadsheet {display_name} converted successfully'}
     
-    def spreadsheet_validate(self):
+    def spreadsheet_validate(self) -> dict:
         """ Validates the spreadsheet.
  
         Returns:

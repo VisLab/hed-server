@@ -1,3 +1,6 @@
+"""
+Performs operations on HED schemas, such as validation, comparison, and conversion.
+"""
 import os
 import io
 import tempfile
@@ -20,6 +23,7 @@ from hedweb.base_operations import BaseOperations
 
 
 class SchemaOperations(BaseOperations):
+    """ Class to perform operations on HED schemas."""
 
     def __init__(self, arguments=None):
         """ Construct a SchemaOperations object to handle sidecar operations.
@@ -36,7 +40,7 @@ class SchemaOperations(BaseOperations):
         if arguments:
             self.set_input_from_dict(arguments)
 
-    def process(self):
+    def process(self) -> dict:
         """ Perform the requested action for the schema.
     
         Returns:
@@ -44,6 +48,7 @@ class SchemaOperations(BaseOperations):
     
         Raises:
             HedFileError:  If the command was not found or the input arguments were not valid.
+            HedFileError: If the schema is not found or cannot be loaded.
     
         """
         if not self.command:
@@ -63,6 +68,11 @@ class SchemaOperations(BaseOperations):
         return results
 
     def compare(self):
+        """ Compare two schemas and return the differences.
+        Returns:
+            dict: A dictionary of results in the standard results format.
+        """
+
         comp = SchemaComparer(self.schema, self.schema2)
         data = comp.compare_differences()
         output_name = self.schema.name + '_' + self.schema2.name + '_' + "differences.txt"
@@ -78,7 +88,7 @@ class SchemaOperations(BaseOperations):
                 'msg_category': 'success',
                 'msg': 'Schemas were successfully compared' + msg_results}
 
-    def convert(self):
+    def convert(self) -> dict:
         """Convert schema to multiple formats, save to temp dir, zip, and return as base64-encoded data.
 
         Returns:
@@ -118,7 +128,7 @@ class SchemaOperations(BaseOperations):
                 'msg': 'Schema was successfully converted'
             }
 
-    def validate(self):
+    def validate(self) -> dict:
         """ Run schema compliance for HED-3G.
         
         Returns:
@@ -147,7 +157,16 @@ class SchemaOperations(BaseOperations):
                     'msg': 'Schema had no validation issues'}
 
     @staticmethod
-    def format_error(command, exception):
+    def format_error(command, exception) -> dict:
+        """ Format an error for a schema command.
+
+        Parameters:
+            command (str): The command that caused the error.
+            exception (HedFileError): The exception that was raised.
+
+        Returns:
+            dict: A dictionary of results in the standard results format.
+        """
         if isinstance(exception, HedFileError) and len(exception.issues) >= 1:
             issue_str = get_printable_issue_string(exception.issues, f"Schema issues for {exception.filename}:")
             file_name = generate_filename(exception.filename, name_suffix='_issues', extension='.txt')
@@ -163,13 +182,14 @@ class SchemaOperations(BaseOperations):
                 }
 
 
-def get_schema(schema_input=None, version=None, as_xml_string=None):
+def get_schema(schema_input=None, version=None, as_xml_string=None) -> hedschema.HedSchema:
     """ Return a HedSchema object from the given parameters.
 
     Parameters:
         schema_input (str or FileStorage or None): Input url or file
         version (str or None): A schema version string to load, e.g. "8.2.0" or "score_1.1.0"
         as_xml_string (str or None): A schema in xml string format
+
     Returns:
         HedSchema: Schema
 
