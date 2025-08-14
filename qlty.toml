@@ -57,6 +57,8 @@ paths = [
     "setup.cfg",
     "pyproject.toml",
     "versioneer.py",
+    "./versioneer.py",
+    "hedweb/_version.py",
     "**/_version.py",
     "MANIFEST.in",
     "mkdocs.yml",

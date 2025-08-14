@@ -201,10 +201,17 @@ jobs:
         oidc: true
         files: ./merged/coverage.xml
 
+    - name: Cleanup residual coverage data before Codecov
+      run: |
+        rm -rf coverage_artifacts || true
+
     - name: Upload coverage to Codecov (merged)
+      if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && secrets.CODECOV_TOKEN != '') }}
       uses: codecov/codecov-action@v5
       with:
         files: ./merged/coverage.xml
+        disable_search: true
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
 
     - name: Upload merged coverage XML artifact
