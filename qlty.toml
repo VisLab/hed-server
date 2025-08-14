@@ -1,23 +1,8 @@
 # Qlty configuration file
 # Simplified and corrected from original Code Climate migration
 
-[rules]
-# Complexity and maintainability checks
-argument-count = { enabled = true, threshold = 4 }
-complex-logic = { enabled = true, threshold = 4 }
-file-lines = { enabled = true, threshold = 300 }
-method-complexity = { enabled = true, threshold = 5 }
-method-count = { enabled = true, threshold = 20 }
-method-lines = { enabled = true, threshold = 50 }
-nested-control-flow = { enabled = true, threshold = 4 }
-return-statements = { enabled = true, threshold = 4 }
-similar-code = { enabled = true }
-identical-code = { enabled = true }
 
-[ignore]
-# Exclude non-source, generated, third-party, and test assets
-paths = [
-    # VCS / CI / virtual envs / caches
+exclude_patterns = [
     "**/.git/",
     "**/.github/",
     "**/.mypy_cache/",
@@ -29,30 +14,20 @@ paths = [
     "**/__pycache__/",
     "**/.eggs/",
     "**/*.egg-info/",
-
-    # Build and coverage artifacts
     "build/",
     "dist/",
     "target/",
     "coverage/",
     "coverage.*",
-
-    # Project non-source directories
     "deploy/",
     "docs/",
     "serve/",
     "examples/",
     "vendor/",
-
-    # Tests
     "tests/",
     "services_tests/",
-
-    # Static assets and templates
     "**/static/",
     "**/templates/",
-
-    # Config and packaging files
     "setup.py",
     "setup.cfg",
     "pyproject.toml",
@@ -65,8 +40,6 @@ paths = [
     "qlty.toml",
     ".coveragerc",
     "codespellrc",
-
-    # Documentation and text files
     "**/README*",
     "**/CHANGELOG*",
     "**/LICENSE*",
@@ -80,8 +53,6 @@ paths = [
     "**/*.yml",
     "**/*.yaml",
     "**/*.html",
-
-    # Repo-specific misc
     "config_template.py",
 ]
 
