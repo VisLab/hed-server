@@ -208,7 +208,7 @@ jobs:
         rm -rf coverage_artifacts || true
 
     - name: Upload coverage to Codecov (merged)
-      if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && secrets.CODECOV_TOKEN != '') }}
+      if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
       uses: codecov/codecov-action@v5
       with:
         files: ./merged/coverage.xml
