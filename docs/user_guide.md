@@ -195,19 +195,18 @@ The documentation will be available at: **http://localhost:8000**
 
 ---
 
-## Production Deployment
+## Docker Deployment on Ubuntu
 
-### Docker Deployment on Ubuntu
+This section covers deploying HED Web Tools using Docker on an Ubuntu server. 
+This approach is recommended for production environments.
 
-This section covers deploying HED Web Tools using Docker on an Ubuntu server. This approach is recommended for production environments.
-
-#### Prerequisites
+### Prerequisites
 
 - Ubuntu server with sudo access
 - Docker Engine installed
 - Internet connectivity
 
-#### Install Docker
+### Install Docker
 
 If Docker is not already installed:
 
@@ -219,7 +218,27 @@ sudo usermod -aG docker "$USER"
 # Log out and back in for group changes to take effect
 ```
 
-#### Automated Deployment
+### Before each deployment:
+
+- Ensure Docker is running:
+```bash
+sudo systemctl status docker
+```
+- Remove existing versions of the application: 
+```bash 
+# If installing a production version (prod option)
+sudo docker kill hedtools
+sudo docker rm hedtools
+sudo docker rmi hedtools
+
+# If installing a development version (dev option)
+sudo docker kill hedtools_dev
+sudo docker rm hedtools_dev
+sudo docker rmi hedtools_dev
+```
+- 
+
+### Automated deployment
 
 We provide a deployment script that handles the entire process:
 
@@ -233,7 +252,7 @@ curl -fsSL -o deploy.sh \
 chmod +x deploy.sh
 ```
 
-#### Deployment Options
+### Deployment options
 
 The deployment script accepts three parameters:
 
@@ -245,30 +264,27 @@ The deployment script accepts three parameters:
 - **environment**: `prod` or `dev` (default: `prod`)
 - **bind_address**: IP to bind host port (default: `0.0.0.0`)
 
-#### Common Deployment Scenarios
+### Common deployment scenarios
 
-**Production deployment (public access):**
+**Direct deployment (direct public access):**
 ```bash
+# Accessible at: http://SERVER_IP:33000/hed (uses pip version of hedtools)
 sudo ./deploy.sh main prod
-# Accessible at: http://SERVER_IP:33000/hed
-```
 
-**Production deployment (localhost only, for reverse proxy):**
-```bash
-sudo ./deploy.sh main prod 127.0.0.1
-# Accessible at: http://localhost:33000/hed
-```
-
-**Development deployment:**
-```bash
+# Accessible at: http://localhost:33000/hed_dev (uses GitHub version of hedtools)
 sudo ./deploy.sh main dev
-# Accessible at: http://SERVER_IP:33004/hed_dev
 ```
 
-**Deploy from development branch:**
+**Server deployment (localhost only, for reverse proxy):**
 ```bash
-sudo ./deploy.sh develop prod
+# Accessible at: http://localhost:33000/hed (uses pip version of hedtools)
+sudo ./deploy.sh main prod 127.0.0.1
+
+# Accessible at: http://localhost:33000/hed_dev (uses GitHub version of hedtools)
+sudo ./deploy.sh main dev 127.0.0.1
 ```
+
+
 
 #### What the Deployment Script Does
 
