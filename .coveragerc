@@ -1,19 +1,24 @@
 [run]
 branch = True
+# Measure only the project package. This keeps tests, docs, deploy, etc. out by default.
+source =
+    hedweb
 omit =
-        */__init__.py
-        **/__init__.py
-        ./deploy_hed/*
-        ./constants/*
-        */app_factory.py
-        ./venv/*
-        *tests/*
-        */venv/*
-        */tests/*
-        **/tests/
-        **/test/
-        */test*
+    # Low-value files within source
+    */__init__.py
+    */_version.py
+    # Non-code subtrees (safety; these usually contain no .py files anyway)
+    */static/*
+    */templates/*
 
+[paths]
+# Normalize package paths across Windows and Linux for combining coverage data
+source =
+    hedweb
+    */hed-web/hedweb
+    *\\hed-web\\hedweb
+    */site-packages/hedweb
+    *\\site-packages\\hedweb
 
 [report]
 skip_empty = true

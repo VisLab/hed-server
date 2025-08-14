@@ -1,5 +1,5 @@
 # Qlty configuration file
-# Migrated from .codeclimate.yml
+# Simplified and corrected from original Code Climate migration
 
 [rules]
 # Complexity and maintainability checks
@@ -15,50 +15,75 @@ similar-code = { enabled = true }
 identical-code = { enabled = true }
 
 [ignore]
-# Exclude patterns migrated from .codeclimate.yml
+# Exclude non-source, generated, third-party, and test assets
 paths = [
-    "config/",
-    "db/",
+    # VCS / CI / virtual envs / caches
+    "**/.git/",
+    "**/.github/",
+    "**/.mypy_cache/",
+    "**/.pytest_cache/",
+    "**/.tox/",
+    "**/.venv/",
+    "venv/",
+    "env/",
+    "**/__pycache__/",
+    "**/.eggs/",
+    "**/*.egg-info/",
+
+    # Build and coverage artifacts
+    "build/",
     "dist/",
-    "features/",
-    "**/node_modules/",
-    "script/",
-    "**/spec/",
-    "**/test/",
-    "**/tests/",
-    "**/spec_tests/",
-    "**/docs/",
-    "Tests/",
-    "**/vendor/",
-    "**/*_test.go",
-    "**/*.d.ts",
-    "**/*__init__.py",
-    "**/*setup.py",
-    "**/setup.cfg",
+    "target/",
+    "coverage/",
+    "coverage.*",
+
+    # Project non-source directories
+    "deploy/",
+    "docs/",
+    "serve/",
+    "examples/",
+    "vendor/",
+
+    # Tests
+    "tests/",
+    "services_tests/",
+
+    # Static assets and templates
     "**/static/",
-    "**/constants/",
-    "**/deploy_hed/",
+    "**/templates/",
+
+    # Config and packaging files
+    "setup.py",
+    "setup.cfg",
+    "pyproject.toml",
+    "versioneer.py",
+    "**/_version.py",
+    "MANIFEST.in",
+    "mkdocs.yml",
+    "qlty.toml",
+    ".coveragerc",
+    "codespellrc",
+
+    # Documentation and text files
     "**/README*",
-    "**/.gitignore",
-    "**/LICENSE",
-    "**/examples/",
-    "**/*.yml",
-    "**/*.yaml",
-    "**/config_template.py",
-    "**/*.txt",
-    "**/*.html",
-    "**/.coveragerc",
+    "**/CHANGELOG*",
+    "**/LICENSE*",
+    "**/CONTRIBUTING*",
+    "**/CODE_OF_CONDUCT*",
+    "**/CONTRIBUTORS*",
+    "**/AUTHORS*",
     "**/*.md",
     "**/*.rst",
-    "**/templates/",
-    "**/conf.py",
-    "**/deprecated/",
-    "**/versioneer.py",
-    "**/_version.py"
+    "**/*.txt",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/*.html",
+
+    # Repo-specific misc
+    "config_template.py",
 ]
 
 [coverage]
-# Coverage configuration for Python projects
-# This will be used by the qlty-action/coverage action
-formats = ["lcov"]
-paths = ["target/lcov.info"]
+# Python projects typically emit Cobertura XML via `coverage xml -o coverage.xml`
+formats = ["cobertura"]
+paths = ["coverage.xml"]
