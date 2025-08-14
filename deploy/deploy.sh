@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # deploy.sh - Script to build and deploy a Docker container for the HEDTools online validator
-# Usage: ./deploy.sh [branch] [environment]
+# Usage: ./deploy.sh [branch] [environment] [bind_address]
 # Environment can be 'prod' or 'dev' (defaults to 'prod')
+# bind_address can be an IP like 0.0.0.0 (default) or 127.0.0.1 to restrict to localhost
 
 ##### Constants
 BRANCH="${1:-main}"
 ENVIRONMENT="${2:-prod}"
+BIND_ADDRESS="${3:-0.0.0.0}"
 DEPLOY_DIR=$(pwd)
 
 # Set environment-specific variables
@@ -83,10 +85,10 @@ stop_existing_container() {
 
 # Run the Docker container
 run_docker_container() {
-    echo "Running Docker container ${CONTAINER_NAME} on port ${HOST_PORT}..."
+    echo "Running Docker container ${CONTAINER_NAME} on ${BIND_ADDRESS}:${HOST_PORT}..."
     docker run -d \
         --name "${CONTAINER_NAME}" \
-        -p "${HOST_PORT}:${CONTAINER_PORT}" \
+        -p "${BIND_ADDRESS}:${HOST_PORT}:${CONTAINER_PORT}" \
         -e HED_URL_PREFIX="${URL_PREFIX}" \
         -e HED_STATIC_URL_PATH="${STATIC_URL_PATH}" \
         "${IMAGE_NAME}" || error_exit "Failed to run Docker container"
@@ -104,6 +106,7 @@ echo "Branch: ${GIT_WEB_REPO_BRANCH}"
 echo "Image: ${IMAGE_NAME}"
 echo "Container: ${CONTAINER_NAME}"
 echo "Port: ${HOST_PORT}"
+echo "Bind address: ${BIND_ADDRESS}"
 
 clone_github_repos
 setup_web_directory

@@ -31,12 +31,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install coverage
-        # Install package in editable mode so imports work consistently
         pip install -e .
 
     - name: Run unit tests (with coverage)
       run: |
-        set -e
         python -m coverage run --data-file=.coverage.unit --source=hedweb -m unittest discover -s tests/ -p 'test_*.py'
         ls -la .coverage* || true
 
@@ -72,21 +70,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install coverage
-        # Install package in editable mode so "python -m hedweb.runserver" works
         pip install -e .
 
-    - name: Run server and service tests with coverage (produce raw data)
+    - name: Start server with coverage
       shell: bash
       env:
         COVERAGE_FILE: .coverage.service
       run: |
-        set -euo pipefail
         echo "Starting server under coverage..."
-        # Run server under coverage so server-side code executed by requests is measured
         python -m coverage run --parallel-mode --source=hedweb -m hedweb.runserver &
         SERVER_PID=$!
+        echo $SERVER_PID > server.pid
+        echo "Server PID: $SERVER_PID"
 
-        # Wait for the server and verify it's reachable
+    - name: Wait for server to be ready
+      run: |
         echo "Waiting for server to be ready at ${HED_SERVER_URL_KEY}..."
         for i in {1..30}; do
           if curl -fsS "${HED_SERVER_URL_KEY}" >/dev/null 2>&1; then
@@ -95,34 +93,39 @@ jobs:
           fi
           sleep 1
         done
-        # Final check with retries
         curl --retry 10 --retry-delay 3 --retry-connrefused "${HED_SERVER_URL_KEY}" -sS -o /dev/null
 
+    - name: Run service tests with coverage
+      shell: bash
+      env:
+        COVERAGE_FILE: .coverage.service
+      run: |
         echo "Running service tests under coverage..."
-        set +e
         python -m coverage run --parallel-mode --source=hedweb -m unittest discover -s services_tests/ -p 'test_*.py'
-        TEST_STATUS=$?
-        set -e
 
-        echo "Stopping server (PID: ${SERVER_PID})..."
-        # Prefer SIGINT so coverage can finalize cleanly
-        kill -INT ${SERVER_PID} || true
-        # Wait briefly, then fall back to SIGTERM if needed
-        for i in {1..5}; do
-          if ! kill -0 ${SERVER_PID} 2>/dev/null; then
-            break
-          fi
-          sleep 1
-        done
-        kill ${SERVER_PID} 2>/dev/null || true
-        wait ${SERVER_PID} 2>/dev/null || true
-
+    - name: Stop server and combine coverage
+      if: always()
+      shell: bash
+      env:
+        COVERAGE_FILE: .coverage.service
+      run: |
+        if [ -f server.pid ]; then
+          SERVER_PID=$(cat server.pid)
+          echo "Stopping server (PID: ${SERVER_PID})..."
+          kill -INT ${SERVER_PID} || true
+          for i in {1..5}; do
+            if ! kill -0 ${SERVER_PID} 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          kill ${SERVER_PID} 2>/dev/null || true
+          wait ${SERVER_PID} 2>/dev/null || true
+          rm -f server.pid
+        fi
         echo "Combining coverage data for this job..."
-        # With COVERAGE_FILE set, `coverage combine` writes to .coverage.service
         python -m coverage combine
         ls -la .coverage* || true
-
-        exit ${TEST_STATUS}
 
     - name: Show logs on failure
       if: failure()
@@ -171,7 +174,6 @@ jobs:
     - name: Prepare coverage files for merge
       run: |
         ls -R
-        # Move and rename to .coverage.* so coverage can combine explicitly
         mkdir -p merged
         cp coverage_artifacts/coverage-unit/.coverage.unit merged/.coverage.unit
         if [ -f coverage_artifacts/coverage-service/.coverage.service ]; then
@@ -201,10 +203,17 @@ jobs:
         oidc: true
         files: ./merged/coverage.xml
 
+    - name: Cleanup residual coverage data before Codecov
+      run: |
+        rm -rf coverage_artifacts || true
+
     - name: Upload coverage to Codecov (merged)
+      if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && secrets.CODECOV_TOKEN != '') }}
       uses: codecov/codecov-action@v5
       with:
         files: ./merged/coverage.xml
+        disable_search: true
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
 
     - name: Upload merged coverage XML artifact

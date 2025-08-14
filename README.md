@@ -27,6 +27,10 @@ These tools rely on are designed to be used in a web browser and can be deployed
 | **API Documentation** | [https://hed-web.readthedocs.io](https://hed-web.readthedocs.io/en/latest/) | Technical documentation |
 | **GitHub Repository** | [https://github.com/hed-standard/hed-web](https://github.com/hed-standard/hed-web) | Source code and issues |
 
+### User Guide
+- Quick start, local run, Docker deployment, and reverse proxy setup: see [docs/user_guide.md](docs/user_guide.md).
+- Deployment script now supports an optional third parameter to bind host ports (e.g., `127.0.0.1` for localhost-only): `./deploy.sh [branch] [environment] [bind_address]`.
+
 ### HED Tools Online
 
 ##
@@ -94,5 +98,3 @@ The stable version of the HED online tools is available for your use at:
 [**https://hedtools.org/hed**](https://hedtools.org/hed).
 An alternate version [**https://hedtools.org/hed_dev**](https://hedtools.org/hed_dev)
 has the latest features, some of which are experimental.
-
-

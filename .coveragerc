@@ -6,7 +6,12 @@ source =
 omit =
     # Low-value files within source
     */__init__.py
+    # Explicitly omit versioneer-generated module (robust patterns)
+    hedweb/_version.py
     */_version.py
+    **/_version.py
+    */versioneer.py
+    versioneer.py
     # Non-code subtrees (safety; these usually contain no .py files anyway)
     */static/*
     */templates/*
