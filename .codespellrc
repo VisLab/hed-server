@@ -1,4 +1,3 @@
 [codespell]
-skip = .git,*.pdf,*.svg,deprecated,*.xml,*.mediawiki,*.omn,site/,hedweb/static/,*.map,*.min.css,versioneer.py,venv*,*.tsv,*.yaml,*.yml,*.json
+skip = .git,*.pdf,*.svg,deprecated,*.xml,*.mediawiki,*.omn,./hedweb/static/,*.map,*.min.css,versioneer.py,venv*,*.tsv,*.yaml,*.yml,*.json,./docs/_build,./docs/_static
 ignore-words-list = covert,hed,recuse,disjointness,cace,parms,assertIn
-
