@@ -41,7 +41,7 @@ jobs:
           curl --retry 10 --retry-delay 5 --retry-connrefused ${{ env.HED_SERVER_URL }}
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
