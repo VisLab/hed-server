@@ -25,6 +25,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'myst_parser',  # For Markdown support
+    'sphinx_copybutton',  # Add copy button to code blocks
+    'sphinx_design',  # Add design elements
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -35,16 +37,29 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'furo'
+html_theme = 'sphinx_book_theme'
 html_title = 'HED Web Tools Documentation'
 
 html_theme_options = {
-    "sidebar_hide_name": False,
+    "repository_url": "https://github.com/hed-standard/hed-web",
+    "use_repository_button": True,
+    "use_edit_page_button": True,
+    "use_source_button": True,
+    "use_issues_button": True,
+    "use_download_button": True,
+    "path_to_docs": "docs/",
+    "repository_branch": "main",
+    "launch_buttons": {
+        "binderhub_url": "https://mybinder.org",
+        "colab_url": "https://colab.research.google.com"
+    },
     "navigation_with_keys": True,
-    "top_of_page_button": "edit",
-    "source_repository": "https://github.com/hed-standard/hed-web/",
-    "source_branch": "main",
-    "source_directory": "docs/",
+    "show_toc_level": 2,
+    "announcement": None,
+    "analytics": None,
+    "logo": {
+        "text": "HED Web Tools"
+    }
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

@@ -33,11 +33,12 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = [
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.6.16",
-    "mkdocs-autorefs>=1.4.2",
-    "mkdocstrings>=0.30.0",
-    "mkdocstrings-python>=1.16.12"
+    "sphinx>=6.0.0",
+    "sphinx-book-theme>=1.0.0",
+    "myst-parser>=2.0.0",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.0",
+    "sphinx-design>=0.5.0"
 ]
 dev = [
     "black>=22.0.0",

@@ -64,6 +64,7 @@ var/
 *.egg
 .idea/
 venv/
+.venv/
 ./config.py
 
 # Installer logs
@@ -101,6 +102,7 @@ config.py
 
 # Sphinx documentation
 docs_old/_build/
+docs/_build/
 
 #machine specific files
 .vimrc
@@ -118,6 +120,7 @@ Desktop.ini
 
 # GitHub Copilot instructions (excluded from version control)
 .github/copilot-instructions.md
+*copilot-instructions*
 
 # Status directory for development notes and summaries
 status/

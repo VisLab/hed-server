@@ -1,39 +1,69 @@
 HED Web Tools Documentation
 ============================
 
-Welcome to the HED Web Tools documentation. HED Web Tools is a web-based application for working with HED (Hierarchical Event Descriptors) data.
+Welcome to the HED Web Tools documentation! This comprehensive guide covers the HED web interface, REST API services, and development resources.
+
+HED (Hierarchical Event Descriptors) Web Tools provides a user-friendly interface for working with HED annotations and schemas through both web forms and programmatic API access.
+
+.. grid:: 2
+
+   .. grid-item-card:: 📚 Getting Started
+      :link: introduction
+      :link-type: doc
+
+      Learn about HED and get started with the web tools
+
+   .. grid-item-card:: 👤 User Guide  
+      :link: user_guide
+      :link-type: doc
+
+      Complete setup and usage instructions
+
+   .. grid-item-card:: 🔧 API Reference
+      :link: api/index
+      :link-type: doc
+
+      REST API documentation and examples
+
+   .. grid-item-card:: 🚀 Development
+      :link: api/getting_started
+      :link-type: doc
+
+      Development setup and contributing
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Documentation
 
    introduction
    user_guide
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: API & Development
+
    api/index
+   api/getting_started
+   api/architecture
+   api/api_usage
 
-Getting Started
----------------
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Reference
 
-Choose the option that best fits your needs:
-
-🚀 **Local Development** - Perfect for trying out the application or contributing to development
-
-🐳 **Production Deployment** - Ideal for production servers with Docker support
-
-📚 **Documentation Development** - For working on documentation
-
-Quick Links
------------
-
-* :doc:`introduction` - Learn about HED and the web tools
-* :doc:`user_guide` - Complete setup and usage guide
-* :doc:`api/index` - API reference and technical documentation
-* `GitHub Repository <https://github.com/hed-standard/hed-web>`_
-* `HED Standard <https://www.hedtags.org/>`_
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   api/routes
+   api/service_categories
+   api/base_operations
+   api/string_operations
+   api/schema_operations
+   api/sidecar_operations
+   api/spreadsheet_operations
+   api/event_operations
+   api/columns
+   api/process_form
+   api/process_service
+   api/web_util
+   api/app_factory
