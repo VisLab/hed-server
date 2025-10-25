@@ -25,13 +25,23 @@ comment:
   require_head: true
 
 # Ignore paths that don't need coverage
+# Aligned with .coveragerc configuration
 ignore:
   - "tests/**/*"
   - "services_tests/**/*"
   - "docs/**/*"
   - "deploy/**/*"
+  # Versioneer-generated files (using patterns from .coveragerc)
   - "versioneer.py"
+  - "*/versioneer.py"
+  - "*/_version.py"
+  - "**/_version.py"
   - "hedweb/_version.py"
-  - "**/templates/**/*"
+  # Static and template files
+  - "*/static/*"
+  - "*/templates/*"
   - "**/static/**/*"
+  - "**/templates/**/*"
+  # Init files (as per .coveragerc)
   - "**/__init__.py"
+  - "*/__init__.py"
