@@ -132,14 +132,14 @@ class Test(TestWebBase):
 
         form_dict = {
             "column_1_use": "on",
-            "column_1_name": "balony",
+            "column_1_name": "baloney",
             "column_2_use": "off",
             "column_3_use": "on",
             "another_field": "value",
         }
         result = get_tag_columns(form_dict)
         self.assertIsInstance(result, list)
-        self.assertEqual(result, ["balony"])
+        self.assertEqual(result, ["baloney"])
 
         form_dict = {
             "column_1_check": "off",
