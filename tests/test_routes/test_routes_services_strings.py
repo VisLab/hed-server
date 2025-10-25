@@ -30,7 +30,6 @@ class Test(TestRouteBase):
 
             response = self.app.test.post('/services_submit', content_type='application/json',
                                           data=json.dumps(json_data))
-            x = response.data
             json_data2 = json.loads(response.data)
             results = json_data2['results']
             self.assertTrue(isinstance(results, dict), "should return a dictionary when validation errors")

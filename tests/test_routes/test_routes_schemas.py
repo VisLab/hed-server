@@ -166,7 +166,6 @@ def test_schemas_results_validate_xml_url_valid(self):
                           'check_for_warnings': 'on'}
             results = self.app.test.post('/schemas_submit', content_type='multipart/form-data', data=input_data)
             self.assertEqual(200, results.status_code, 'Validation of a valid xml url has a response')
-            headers_dict = dict(results.headers)
             response = json.loads(results.data.decode('utf-8'))
             self.assertEqual("success", response['msg_category'], 'An valid schema')
             self.assertFalse(response["data"], "The response data for valid schema is not empty")

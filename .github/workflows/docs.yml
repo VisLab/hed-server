@@ -47,10 +47,9 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
 
-    - name: Build documentation with Sphinx
+    - name: Build documentation with build script
       run: |
-        cd docs
-        sphinx-build -b html . _build/html
+        python build_docs.py
 
     - name: Setup Pages
       uses: actions/configure-pages@v5

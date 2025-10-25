@@ -40,16 +40,14 @@ class Test(TestWebBase):
     def test_set_input_from_spreadsheets_form(self):
         with self.app.test:
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
-            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.2.0.xml')
             with open(spreadsheet_path, 'rb') as fp:
-                with open(schema_path, 'rb') as sp:
-                    environ = create_environ(data={bc.SPREADSHEET_FILE: fp,
-                                                   bc.SCHEMA_VERSION: '8.2.0',
-                                                   'column_4_use': 'on',
-                                                   'column_4_name': 'HED tags',
-                                                   bc.WORKSHEET_NAME: 'LKT 8HED3',
-                                                   bc.HAS_COLUMN_NAMES: 'on',
-                                                   bc.COMMAND_OPTION: bc.COMMAND_VALIDATE})
+                environ = create_environ(data={bc.SPREADSHEET_FILE: fp,
+                                               bc.SCHEMA_VERSION: '8.2.0',
+                                               'column_4_use': 'on',
+                                               'column_4_name': 'HED tags',
+                                               bc.WORKSHEET_NAME: 'LKT 8HED3',
+                                               bc.HAS_COLUMN_NAMES: 'on',
+                                               bc.COMMAND_OPTION: bc.COMMAND_VALIDATE})
 
             request = Request(environ)
             parameters = ProcessForm.get_input_from_form(request)

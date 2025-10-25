@@ -18,10 +18,10 @@ class TestWebBase(unittest.TestCase):
         cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/upload')
 
         # Try to use config.TestConfig, fallback to default_config if not available
-        try:
-            import config
+        import importlib.util
+        if importlib.util.find_spec('config'):
             config_class = 'config.TestConfig'
-        except ImportError:
+        else:
             config_class = 'default_config.TestConfig'
 
         app = AppFactory.create_app(config_class)
