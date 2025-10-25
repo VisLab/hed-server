@@ -6,13 +6,14 @@ import sys
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath(".."))
 
+from hedweb import _version
+
 # -- Project information -----------------------------------------------------
 project = "HED Web Tools"
 copyright = "2024, HED Standard Group"
 author = "HED Standard Group"
 
 # The version info
-from hedweb import _version
 
 version = _version.get_versions()["version"]
 release = version

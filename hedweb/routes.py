@@ -4,7 +4,7 @@ Handles the routes for the HED web application.
 
 import json
 
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import Blueprint, Response, current_app, jsonify, render_template, request
 from hed import schema as hedschema
 from werkzeug.utils import secure_filename
 

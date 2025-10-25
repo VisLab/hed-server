@@ -5,7 +5,7 @@ import unittest
 
 from hedweb.app_factory import AppFactory
 
-sys.path.append('hedtools')
+sys.path.append("hedtools")
 
 
 class TestWebBase(unittest.TestCase):
@@ -15,29 +15,35 @@ class TestWebBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from hedweb.runserver import get_version_dict
-        cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/upload')
+
+        cls.upload_directory = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "data/upload"
+        )
 
         # Try to use config.TestConfig, fallback to default_config if not available
         import importlib.util
-        if importlib.util.find_spec('config'):
-            config_class = 'config.TestConfig'
+
+        if importlib.util.find_spec("config"):
+            config_class = "config.TestConfig"
         else:
-            config_class = 'default_config.TestConfig'
+            config_class = "default_config.TestConfig"
 
         app = AppFactory.create_app(config_class)
         with app.app_context():
             import hed.schema as hedschema
-            hedschema.set_cache_directory(app.config['HED_CACHE_FOLDER'])
+
+            hedschema.set_cache_directory(app.config["HED_CACHE_FOLDER"])
 
             if cls.cache_schemas:
                 hedschema.cache_xml_versions()
             from hedweb.routes import route_blueprint
+
             app.register_blueprint(route_blueprint)
             if not os.path.exists(cls.upload_directory):
                 os.mkdir(cls.upload_directory)
-            app.config['UPLOAD_FOLDER'] = cls.upload_directory
-            app.config['WTF_CSRF_ENABLED'] = cls.enable_csrf
-            app.config['VERSIONS'] = get_version_dict()
+            app.config["UPLOAD_FOLDER"] = cls.upload_directory
+            app.config["WTF_CSRF_ENABLED"] = cls.enable_csrf
+            app.config["VERSIONS"] = get_version_dict()
             cls.app = app
             cls.app.test = app.test_client()
 

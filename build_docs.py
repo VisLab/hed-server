@@ -14,9 +14,9 @@ The script automatically detects the platform and uses appropriate commands.
 """
 
 import os
+import platform
 import subprocess
 import sys
-import platform
 
 
 def main():

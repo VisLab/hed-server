@@ -80,7 +80,7 @@ class StringOperations(BaseOperations):
         if results["data"]:
             return results
         strings = []
-        for pos, hed_string_obj in enumerate(self.string_list, start=1):
+        for _pos, hed_string_obj in enumerate(self.string_list, start=1):
             if self.command == bc.COMMAND_TO_LONG:
                 converted_string = hed_string_obj.get_as_form("long_tag")
             else:

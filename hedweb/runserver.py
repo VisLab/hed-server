@@ -8,10 +8,10 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-from hed import _version as vr
+from hed import _version as vr  # noqa: E402
 
-from hedweb._version import get_versions
-from hedweb.app_factory import AppFactory
+from hedweb._version import get_versions  # noqa: E402
+from hedweb.app_factory import AppFactory  # noqa: E402
 
 CONFIG_ENVIRON_NAME = "HEDTOOLS_CONFIG_CLASS"
 

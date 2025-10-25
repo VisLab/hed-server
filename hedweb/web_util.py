@@ -151,12 +151,10 @@ def generate_download_file_from_text(results, file_header=None) -> Response:
             yield file_header
         if isinstance(download_text, list):
             # If download_text is a list, yield from its iterator
-            for item in download_text:
-                yield item
+            yield from download_text
         else:
             # Otherwise, process it as a string
-            for issue in download_text.splitlines(True):
-                yield issue
+            yield from download_text.splitlines(True)
 
     return Response(
         generate(),
