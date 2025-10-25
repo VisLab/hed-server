@@ -1,8 +1,3 @@
-import os
-import requests
-import re
-from services_tests.test_services_base import ServicesTest
-
 # class TestLibraryServices(ServicesTest):
 #     # Json library doesn't exist so disabling these for now
 #     def test_validate_valid_events_file_with_versions(self):

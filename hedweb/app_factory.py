@@ -2,9 +2,10 @@
 This module contains the factory for creating the HEDTools application.
 """
 
+import importlib
+
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
-import importlib
 
 
 class AppFactory:
@@ -32,7 +33,8 @@ class AppFactory:
         app = Flask(__name__, static_url_path=static_url_path)
         app.config.from_object(config_class)
         from hedweb.runserver import get_version_dict
-        app.config['VERSIONS'] = get_version_dict()
+
+        app.config["VERSIONS"] = get_version_dict()
         CSRFProtect(app)
         return app
 
@@ -47,12 +49,14 @@ class AppFactory:
 
             # If the class doesn't exist in the module, treat it as if the module import failed
             if config_class_obj is None:
-                raise AttributeError(f"module '{config_module_name}' has no attribute '{config_class_name}'")
+                raise AttributeError(
+                    f"module '{config_module_name}' has no attribute '{config_class_name}'"
+                )
 
         except (ImportError, AttributeError):
             # Fallback to default_config if main config is not available or doesn't have the class
-            if config_module_name == 'config':
-                config_module = importlib.import_module('default_config')
+            if config_module_name == "config":
+                config_module = importlib.import_module("default_config")
                 config_class_obj = getattr(config_module, config_class_name)
             else:
                 raise
@@ -66,9 +70,11 @@ class AppFactory:
         # Try to get it from the config module first, then fallback to default
         try:
             from config import Config
+
             static_url_path_attr = Config.STATIC_URL_PATH_ATTRIBUTE_NAME
         except (ImportError, AttributeError):
             from default_config import Config
+
             static_url_path_attr = Config.STATIC_URL_PATH_ATTRIBUTE_NAME
 
         return getattr(config_class_obj, static_url_path_attr, None)

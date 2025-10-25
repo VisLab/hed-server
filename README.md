@@ -23,8 +23,8 @@ These tools rely on are designed to be used in a web browser and can be deployed
 |-----------------------|-----|-------------|
 | **HED Tools (PyPI)**  | [https://hedtools.org/hed](https://hedtools.org/hed) | Production version of HED online tools |
 | **HED Tools (main)**  | [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev) | Latest features, some experimental |
-| **HED Resources**     | [https://www.hed-resources.org](https://www.hed-resources.org) | Documentation and tutorials |
-| **API Documentation** | [https://hed-web.readthedocs.io](https://hed-web.readthedocs.io/en/latest/) | Technical documentation |
+| **HED Resources**     | [https://www.hedtags.org/hed-resources](https://www.hedtags.org/hed-resources) | Documentation and tutorials |
+| **API Documentation** | [https://www.hedtags.org/hed-web](https://www.hedtags.org/hed-web) | Technical documentation |
 | **GitHub Repository** | [https://github.com/hed-standard/hed-web](https://github.com/hed-standard/hed-web) | Source code and issues |
 
 ### User Guide
@@ -41,26 +41,26 @@ The following table summarizes the available online tools. The tools are organiz
 
 | Data type | Action | Description |
 |-----------|--------|-------------|
-| **Events** | [Validate](https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-an-events-file) | Validate HED in a tabular file and its sidecar. |
-|  | [Assemble HED annotations](https://www.hed-resources.org/en/latest/HedOnlineTools.html#assemble-annotations) | Return a list of the assembled HED strings for a tabular file. |
-|  | [Search HED strings](https://www.hed-resources.org/en/latest/HedOnlineTools.html#search-annotations) | Return a vector of 0's and 1's based on a HED search query of HED annotation strings extracted from an event file. |
-|  | [Generate JSON sidecar template](https://www.hed-resources.org/en/latest/HedOnlineTools.html#generate-sidecar-template) | Create a sidecar template from a tabular file. |
-|  | [Execute remodel script](https://www.hed-resources.org/en/latest/HedOnlineTools.html#execute-remodel-script) | Execute JSON script of [HED remodeling commands](https://www.hed-resources.org/en/latest/FileRemodelingTools.html). |
-| **Sidecars** | [Validate](https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-sidecar) | Validate HED in a BIDS JSON sidecar. |
-|  | [Convert to long](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-sidecar-to-long) | Convert HED tags in a sidecar to full paths. |
-|  | [Convert to short](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-sidecar-to-short) | Convert HED tags in a sidecar to single tags. |
-|  | [Extract HED spreadsheet](https://www.hed-resources.org/en/latest/HedOnlineTools.html#extract-spreadsheet-from-sidecar) | Create a 4-column spreadsheet from HED in a sidecar. |
-|  | [Merge HED spreadsheet](https://www.hed-resources.org/en/latest/HedOnlineTools.html#merge-a-spreadsheet-with-a-sidecar) | Merge HED from spreadsheet into a JSON sidecar. |
-| **Spreadsheets** | [Validate](https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-spreadsheet) | Validate HED in a spreadsheet (.xlsx or .tsv). |
-|  | [Convert to long](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-spreadsheet-to-long) | Convert HED tags in a spreadsheet to full paths. |
-|  | [Convert to short](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-spreadsheet-to-short) | Convert HED tags in a spreadsheet to single tags. |
-| **Strings** | [Validate](https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-string) | Validate a HED string. |
-|  | [Convert to long](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-string-to-long) | Convert a HED string to full paths. |
-|  | [Convert to short](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-string-to-short) | Convert a HED string to single tags. |
-|  | [Search HED strings](https://www.hed-resources.org/en/latest/HedOnlineTools.html#search-a-hed-string) | Search a HED string based on a HED search query. |
-| **Schemas** | [Validate](https://www.hed-resources.org/en/latest/HedOnlineTools.html#validate-a-hed-schema) | Validate a HED schema. |
-|  | [Convert schema](https://www.hed-resources.org/en/latest/HedOnlineTools.html#convert-a-hed-schema) | Convert a HED schema to other format. |
-|  | [Compare HED schemas](https://www.hed-resources.org/en/latest/HedOnlineTools.html#compare-hed-schemas) | Show differences between two HED schemas. |
+| **Events** | [Validate](https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-an-events-file) | Validate HED in a tabular file and its sidecar. |
+|  | [Assemble HED annotations](https://www.hedtags.org/hed-resources/HedOnlineTools.html#assemble-annotations) | Return a list of the assembled HED strings for a tabular file. |
+|  | [Search HED strings](https://www.hedtags.org/hed-resources/HedOnlineTools.html#search-annotations) | Return a vector of 0's and 1's based on a HED search query of HED annotation strings extracted from an event file. |
+|  | [Generate JSON sidecar template](https://www.hedtags.org/hed-resources/HedOnlineTools.html#generate-sidecar-template) | Create a sidecar template from a tabular file. |
+|  | [Execute remodel script](https://www.hedtags.org/hed-resources/HedOnlineTools.html#execute-remodel-script) | Execute JSON script of [HED remodeling commands](https://www.hedtags.org/hed-resources/FileRemodelingTools.html). |
+| **Sidecars** | [Validate](https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-a-sidecar) | Validate HED in a BIDS JSON sidecar. |
+|  | [Convert to long](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-sidecar-to-long) | Convert HED tags in a sidecar to full paths. |
+|  | [Convert to short](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-sidecar-to-short) | Convert HED tags in a sidecar to single tags. |
+|  | [Extract HED spreadsheet](https://www.hedtags.org/hed-resources/HedOnlineTools.html#extract-spreadsheet-from-sidecar) | Create a 4-column spreadsheet from HED in a sidecar. |
+|  | [Merge HED spreadsheet](https://www.hedtags.org/hed-resources/HedOnlineTools.html#merge-a-spreadsheet-with-a-sidecar) | Merge HED from spreadsheet into a JSON sidecar. |
+| **Spreadsheets** | [Validate](https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-a-spreadsheet) | Validate HED in a spreadsheet (.xlsx or .tsv). |
+|  | [Convert to long](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-spreadsheet-to-long) | Convert HED tags in a spreadsheet to full paths. |
+|  | [Convert to short](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-spreadsheet-to-short) | Convert HED tags in a spreadsheet to single tags. |
+| **Strings** | [Validate](https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-a-hed-string) | Validate a HED string. |
+|  | [Convert to long](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-a-hed-string-to-long) | Convert a HED string to full paths. |
+|  | [Convert to short](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-a-hed-string-to-short) | Convert a HED string to single tags. |
+|  | [Search HED strings](https://www.hedtags.org/hed-resources/HedOnlineTools.html#search-a-hed-string) | Search a HED string based on a HED search query. |
+| **Schemas** | [Validate](https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-a-hed-schema) | Validate a HED schema. |
+|  | [Convert schema](https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-a-hed-schema) | Convert a HED schema to other format. |
+|  | [Compare HED schemas](https://www.hedtags.org/hed-resources/HedOnlineTools.html#compare-hed-schemas) | Show differences between two HED schemas. |
 
 **Events files** are tabular (tab-separated) files. The first row of an events file contains column names. 
 Each subsequent row corresponds to an event marker at a specified time in the corresponding data file.
@@ -77,18 +77,18 @@ They are used for convenience in assigning HED tags to event codes.
 
 **Schemas** refer to HED schema vocabularies, which may be either in .mediawiki or .xml format. These tools are used by schema developers creating the HED vocabularies and are not of interest to annotators or analysts.
 
-More detailed help on using these online tools is available in the [**HED online tools**](https://www.hed-resources.org/en/latest/HedOnlineTools.html#) documentation.
+More detailed help on using these online tools is available in the [**HED online tools**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#) documentation.
 
 #### HED REST services
 
-The HED online tools are also available as callable web services. More detailed help on calling these services is available at: [**HED RESTful services**](https://www.hed-resources.org/en/latest/HedOnlineTools.html#hed-restful-services) Downloadable examples of calling these services from a MATLAB program can be found in the [GitHub MATLAB web service examples](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos).
+The HED online tools are also available as callable web services. More detailed help on calling these services is available at: [**HED RESTful services**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#hed-restful-services) Downloadable examples of calling these services from a MATLAB program can be found in the [GitHub MATLAB web service examples](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos).
 
 #### Where to find out more?
 
 - The [HED standards home page](https://www.hedtags.org) has links to all things HED.
 - The [HED standards GitHub organization](https://github.com/hed-standard) contains the source for code and docs for HED.
 - The [HED schema viewer](https://www.hedtags.org/display_hed.html) allows you to browse HED vocabularies, both released and under development.
-- The [HED resources page](https://www.hed-resources.org) has links to all HED documentation.
+- The [HED resources page](https://www.hedtags.org/hed-resources) has links to all HED documentation.
 
 
 

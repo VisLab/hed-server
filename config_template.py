@@ -9,26 +9,26 @@ import os
 import tempfile
 
 
-class Config(object):
+class Config:
     BASE_DIRECTORY = os.getcwd()
     # Folder the program stores hed cache, log, etc.  Make sure the program has access to this directory.
     # BASE_DIRECTORY = '/path/to/base/folder'
-    LOG_DIRECTORY = os.path.join(BASE_DIRECTORY, 'log')
+    LOG_DIRECTORY = os.path.join(BASE_DIRECTORY, "log")
     os.makedirs(LOG_DIRECTORY, exist_ok=True)
-    LOG_FILE = os.path.join(LOG_DIRECTORY, 'error.log')
-    KEY_FILE = os.path.join(LOG_DIRECTORY, 'tmp.txt')
+    LOG_FILE = os.path.join(LOG_DIRECTORY, "error.log")
+    KEY_FILE = os.path.join(LOG_DIRECTORY, "tmp.txt")
     if not os.path.exists(KEY_FILE):
-        f = open(KEY_FILE, 'w+')
+        f = open(KEY_FILE, "w+")
         f.write(str(os.urandom(24)))
         f.close()
-    f = open(KEY_FILE, 'r')
+    f = open(KEY_FILE)
     SECRET_KEY = f.read()  # os.getenv('SECRET_KEY') # os.urandom(24)
     f.close()
     STATIC_URL_PATH = None
-    STATIC_URL_PATH_ATTRIBUTE_NAME = 'STATIC_URL_PATH'
-    UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), 'hedtools_uploads')
+    STATIC_URL_PATH_ATTRIBUTE_NAME = "STATIC_URL_PATH"
+    UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "hedtools_uploads")
     URL_PREFIX = None
-    HED_CACHE_FOLDER = os.path.join(BASE_DIRECTORY, 'schema_cache')
+    HED_CACHE_FOLDER = os.path.join(BASE_DIRECTORY, "schema_cache")
 
 
 class DevelopmentConfig(Config):

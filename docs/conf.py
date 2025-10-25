@@ -4,52 +4,67 @@ import os
 import sys
 
 # Add the project root to the path
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
+
+from hedweb import _version
 
 # -- Project information -----------------------------------------------------
-project = 'HED Web Tools'
-copyright = '2024, HED Standard Group'
-author = 'HED Standard Group'
+project = "HED Web Tools"
+copyright = "2024, HED Standard Group"
+author = "HED Standard Group"
 
 # The version info
-from hedweb import _version
-version = _version.get_versions()['version']
+
+version = _version.get_versions()["version"]
 release = version
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'myst_parser',  # For Markdown support
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "myst_parser",  # For Markdown support
+    "sphinx_copybutton",  # Add copy button to code blocks
+    "sphinx_design",  # Add design elements
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'furo'
-html_title = 'HED Web Tools Documentation'
+html_theme = "sphinx_book_theme"
+html_title = "HED Web Tools Documentation"
 
 html_theme_options = {
-    "sidebar_hide_name": False,
+    "repository_url": "https://github.com/hed-standard/hed-web",
+    "use_repository_button": True,
+    "use_edit_page_button": True,
+    "use_source_button": True,
+    "use_issues_button": True,
+    "use_download_button": True,
+    "path_to_docs": "docs/",
+    "repository_branch": "main",
+    "launch_buttons": {
+        "binderhub_url": "https://mybinder.org",
+        "colab_url": "https://colab.research.google.com",
+    },
     "navigation_with_keys": True,
-    "top_of_page_button": "edit",
-    "source_repository": "https://github.com/hed-standard/hed-web/",
-    "source_branch": "main",
-    "source_directory": "docs/",
+    "show_toc_level": 2,
+    "announcement": None,
+    "analytics": None,
+    "logo": {"text": "HED Web Tools"},
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # -- Extension configuration -------------------------------------------------
 
@@ -83,8 +98,8 @@ napoleon_use_rtype = True
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'flask': ('https://flask.palletsprojects.com/en/2.3.x/', None),
+    "python": ("https://docs.python.org/3", None),
+    "flask": ("https://flask.palletsprojects.com/en/2.3.x/", None),
 }
 
 # Todo extension

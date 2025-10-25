@@ -1,18 +1,21 @@
 """
 Extracts column information from a file and provides utilities for working with columns in a web form.
 """
-import openpyxl
+
 import os
-from pandas import DataFrame, read_csv
+
+import openpyxl
 from hed.errors import HedFileError
 from hed.tools.analysis.tabular_summary import TabularSummary
+from pandas import DataFrame, read_csv
+
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
 from hedweb.web_util import form_has_file, form_has_option
 
 
 def create_column_selections(form_dict) -> tuple[list[str], list[str]]:
-    """ Return a tag prefix dictionary from a form dictionary.
+    """Return a tag prefix dictionary from a form dictionary.
 
     Parameters:
         form_dict (dict): The column prefix table returned from a form.
@@ -26,14 +29,14 @@ def create_column_selections(form_dict) -> tuple[list[str], list[str]]:
     columns_categorical = []
     keys = form_dict.keys()
     for key in keys:
-        if not key.startswith('column_') or not key.endswith('_name'):
+        if not key.startswith("column_") or not key.endswith("_name"):
             continue
-        pieces = key.split('_')
+        pieces = key.split("_")
         col_name = form_dict[key]
         columns.append(col_name)
-        if 'column_' + pieces[1] + '_use' in keys:
+        if "column_" + pieces[1] + "_use" in keys:
             columns_selected.append(col_name)
-        if 'column_' + pieces[1] + '_category' in keys:
+        if "column_" + pieces[1] + "_category" in keys:
             columns_categorical.append(col_name)
     columns_value = list(set(columns_selected).difference(set(columns_categorical)))
     columns_skip = list(set(columns).difference(set(columns_selected)))
@@ -41,7 +44,7 @@ def create_column_selections(form_dict) -> tuple[list[str], list[str]]:
 
 
 def get_tag_columns(form_dict) -> list[str]:
-    """ Return the tag column names selected from a form.
+    """Return the tag column names selected from a form.
 
     Parameters:
         form_dict (dict): The column names table.
@@ -53,17 +56,17 @@ def get_tag_columns(form_dict) -> list[str]:
     tag_columns = []
     keys = form_dict.keys()
     for key in keys:
-        if not key.startswith('column_') or not key.endswith('_use'):
+        if not key.startswith("column_") or not key.endswith("_use"):
             continue
-        pieces = key.split('_')
-        column_name_key = 'column_' + pieces[1] + '_name'
+        pieces = key.split("_")
+        column_name_key = "column_" + pieces[1] + "_name"
         if column_name_key in keys and form_dict[column_name_key]:
             tag_columns.append(form_dict[column_name_key])
     return tag_columns
 
 
 def _create_columns_info(columns_file, has_column_names=True, sheet_name=None) -> dict:
-    """ Create a dictionary of column information from a spreadsheet.
+    """Create a dictionary of column information from a spreadsheet.
 
     Parameters:
         columns_file (File-like): File to create the dictionary for.
@@ -89,22 +92,29 @@ def _create_columns_info(columns_file, has_column_names=True, sheet_name=None) -
         dataframe = dataframe_from_worksheet(worksheet, has_column_names)
         sheet_name = worksheet.title
     elif file_ext in fc.TEXT_FILE_EXTENSIONS:
-        dataframe = read_csv(columns_file, delimiter='\t', header=header)
+        dataframe = read_csv(columns_file, delimiter="\t", header=header)
     else:
-        raise HedFileError('BadFileExtension',
-                           f'File {filename} extension does not correspond to an Excel or tsv file', '')
+        raise HedFileError(
+            "BadFileExtension",
+            f"File {filename} extension does not correspond to an Excel or tsv file",
+            "",
+        )
     col_list = list(dataframe.columns)
     col_dict = TabularSummary()
     col_dict.update(dataframe)
     col_counts = col_dict.get_number_unique()
-    columns_info = {bc.COLUMNS_FILE: filename, bc.COLUMN_LIST: col_list,
-                    bc.COLUMN_COUNTS: col_counts,
-                    bc.WORKSHEET_SELECTED: sheet_name, bc.WORKSHEET_NAMES: sheet_names}
+    columns_info = {
+        bc.COLUMNS_FILE: filename,
+        bc.COLUMN_LIST: col_list,
+        bc.COLUMN_COUNTS: col_counts,
+        bc.WORKSHEET_SELECTED: sheet_name,
+        bc.WORKSHEET_NAMES: sheet_names,
+    }
     return columns_info
 
 
 def dataframe_from_worksheet(worksheet, has_column_names) -> DataFrame:
-    """ Return a pandas data frame from an Excel worksheet.
+    """Return a pandas data frame from an Excel worksheet.
 
     Parameters:
         worksheet (Worksheet): A single worksheet of an Excel file.
@@ -126,7 +136,7 @@ def dataframe_from_worksheet(worksheet, has_column_names) -> DataFrame:
 
 
 def get_columns_request(request) -> dict:
-    """ Create a columns info dictionary based on the request.
+    """Create a columns info dictionary based on the request.
 
     Parameters:
         request (Request): The Request object from which to extract the information.
@@ -140,29 +150,29 @@ def get_columns_request(request) -> dict:
 
     """
     if not form_has_file(request.files, bc.COLUMNS_FILE):
-        raise HedFileError('MissingFile', 'An uploadable file was not provided', None)
-    columns_file = request.files.get(bc.COLUMNS_FILE, '')
-    has_column_names = form_has_option(request.form, 'has_column_names', 'on')
+        raise HedFileError("MissingFile", "An uploadable file was not provided", None)
+    columns_file = request.files.get(bc.COLUMNS_FILE, "")
+    has_column_names = form_has_option(request.form, "has_column_names", "on")
     sheet_name = request.form.get(bc.WORKSHEET_SELECTED, None)
     return _create_columns_info(columns_file, has_column_names, sheet_name)
 
 
 def get_column_numbers(form_dict) -> list:
-    """ Return a tag prefix dictionary from a form dictionary.
+    """Return a tag prefix dictionary from a form dictionary.
 
     Parameters:
         form_dict (dict): The dictionary returned from a form that contains a column table.
 
     Returns:
         list: List of selected columns.
-        
+
     Note: The form counts columns starting from 1.
     """
     tag_columns = []
     keys = form_dict.keys()
     for key in keys:
-        index_check = key.rfind('_check')
-        if index_check == -1 or form_dict[key] != 'on':
+        index_check = key.rfind("_check")
+        if index_check == -1 or form_dict[key] != "on":
             continue
         pieces = key.split("_")
         column_number = int(pieces[1])
@@ -170,8 +180,10 @@ def get_column_numbers(form_dict) -> list:
     return tag_columns
 
 
-def _get_worksheet(excel_file, sheet_name) ->tuple[openpyxl.worksheet.worksheet.Worksheet, list[str]]:
-    """ Return a Worksheet and a list of sheet names from an Excel file.
+def _get_worksheet(
+    excel_file, sheet_name
+) -> tuple[openpyxl.worksheet.worksheet.Worksheet, list[str]]:
+    """Return a Worksheet and a list of sheet names from an Excel file.
 
     Parameters:
         excel_file (str): Name of the Excel file to use.
@@ -187,9 +199,11 @@ def _get_worksheet(excel_file, sheet_name) ->tuple[openpyxl.worksheet.worksheet.
     wb = openpyxl.load_workbook(excel_file, read_only=True)
     sheet_names = wb.sheetnames
     if not sheet_names:
-        raise HedFileError('BadExcelFile', 'Excel files must have worksheets', None)
+        raise HedFileError("BadExcelFile", "Excel files must have worksheets", None)
     if sheet_name and sheet_name not in sheet_names:
-        raise HedFileError('BadWorksheetName', f'Worksheet {sheet_name} not in Excel file', '')
+        raise HedFileError(
+            "BadWorksheetName", f"Worksheet {sheet_name} not in Excel file", ""
+        )
     if sheet_name:
         worksheet = wb[sheet_name]
     else:

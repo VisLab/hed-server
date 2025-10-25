@@ -1,6 +1,4 @@
-# HED Web Tools — User Guide
-
-## Overview
+# HED Web Tools User Guide
 
 HED Web Tools is a comprehensive web-based application for working with HED (Hierarchical Event Descriptors) data. This guide provides complete instructions for setting up, configuring, and deploying the application in various environments.
 
@@ -19,26 +17,47 @@ This guide covers both development and production setups. Choose the section tha
 
 Choose the setup method that best fits your needs:
 
-### 🚀 Local Development Setup
+````{grid} 1 1 2 2
+```{grid-item-card} 🚀 Local Development Setup
+:class-header: bg-light
+
 **Best for:** Trying out the application, contributing to development, or testing
 
 **Time required:** ~5 minutes
 
 **Prerequisites:** Python 3.10+, Git
+```
 
-### 🐳 Production Docker Deployment  
+```{grid-item-card} 🐳 Production Docker Deployment  
+:class-header: bg-light
+
 **Best for:** Production servers with Docker support
 
 **Time required:** ~10 minutes
 
 **Prerequisites:** Ubuntu Server, Docker, sudo access
+```
 
-### 📚 Documentation Development
+```{grid-item-card} 📚 Documentation Development
+:class-header: bg-light
+
 **Best for:** Contributing to documentation or building docs locally
 
 **Time required:** ~3 minutes
 
 **Prerequisites:** Python 3.10+
+```
+
+```{grid-item-card} 🔧 API Development
+:class-header: bg-light
+
+**Best for:** Programmatic access to HED services
+
+**Time required:** ~2 minutes
+
+**Prerequisites:** Python environment with requests library
+```
+````
 
 ---
 
