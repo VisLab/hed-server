@@ -1,8 +1,6 @@
 
 import json
 
-from hed.schema import load_schema_version, from_string
-
 from hedweb.constants import base_constants as bc
 from tests.test_routes.test_routes_base import TestRouteBase
 

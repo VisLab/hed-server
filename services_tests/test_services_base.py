@@ -1,8 +1,8 @@
 import os
-import unittest
-import requests
 import re
+import unittest
 
+import requests
 
 HED_SERVER_URL_ENV_KEYS = ["HED_SERVER_URL_KEY", "HED_SERVER_URL"]
 
@@ -50,13 +50,13 @@ class ServicesTest(unittest.TestCase):
         events_file = os.path.join('sub-002', 'ses-1', 'eeg', 'sub-002_ses-1_task-FacePerception_run-1_events.tsv')
 
         # Reading files and assigning contents to the respective keys in the data dictionary
-        with open(os.path.join(demo_path, 'task-FacePerception_events.json'), 'r') as file:
+        with open(os.path.join(demo_path, 'task-FacePerception_events.json')) as file:
             data['jsonText'] = file.read()
 
-        with open(os.path.join(demo_path, events_file), 'r') as file:
+        with open(os.path.join(demo_path, events_file)) as file:
             data['eventsText'] = file.read()
 
-        with open(os.path.join(data_path, 'schema_data', 'HED8.2.0.xml'), 'r') as file:
+        with open(os.path.join(data_path, 'schema_data', 'HED8.2.0.xml')) as file:
             data['schemaText'] = file.read()
 
         # Repeat the above pattern to read other files
@@ -73,7 +73,7 @@ class ServicesTest(unittest.TestCase):
 
         for key, filename in files_to_read.items():
             file_path = os.path.join(data_path, 'other_data', filename)
-            with open(file_path, 'r') as file:
+            with open(file_path) as file:
                 data[key] = file.read()
 
         return data

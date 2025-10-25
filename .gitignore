@@ -115,3 +115,12 @@ Thumbs.db
 
 # Folder config file
 Desktop.ini
+
+# GitHub Copilot instructions (excluded from version control)
+.github/copilot-instructions.md
+
+# Status directory for development notes and summaries
+status/
+
+# VS Code settings (user-specific)
+.vscode/

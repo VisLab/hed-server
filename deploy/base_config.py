@@ -6,14 +6,14 @@ import os
 import tempfile
 
 
-class Config(object):
+class Config:
     LOG_DIRECTORY = '/var/log/hedtools'
     LOG_FILE = os.path.join(LOG_DIRECTORY, 'error.log')
     if not os.path.exists('/var/log/hedtools/tmp.txt'):
         f = open('/var/log/hedtools/tmp.txt', 'w+')
         f.write(str(os.urandom(24)))
         f.close()
-    f = open('/var/log/hedtools/tmp.txt', 'r')
+    f = open('/var/log/hedtools/tmp.txt')
     SECRET_KEY = f.read()  # os.getenv('SECRET_KEY') # os.urandom(24)
     f.close()
     STATIC_URL_PATH = None

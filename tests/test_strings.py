@@ -1,13 +1,14 @@
 import unittest
+
+from hed.errors.exceptions import HedFileError
+from hed.models import HedString
+from hed.schema import HedSchema, load_schema_version
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
-from tests.test_web_base import TestWebBase
-from hed.schema import HedSchema, load_schema_version
-from hed.models import HedString
-from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants as bc
 from hedweb.process_form import ProcessForm
+from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):

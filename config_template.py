@@ -9,7 +9,7 @@ import os
 import tempfile
 
 
-class Config(object):
+class Config:
     BASE_DIRECTORY = os.getcwd()
     # Folder the program stores hed cache, log, etc.  Make sure the program has access to this directory.
     # BASE_DIRECTORY = '/path/to/base/folder'
@@ -21,7 +21,7 @@ class Config(object):
         f = open(KEY_FILE, 'w+')
         f.write(str(os.urandom(24)))
         f.close()
-    f = open(KEY_FILE, 'r')
+    f = open(KEY_FILE)
     SECRET_KEY = f.read()  # os.getenv('SECRET_KEY') # os.urandom(24)
     f.close()
     STATIC_URL_PATH = None

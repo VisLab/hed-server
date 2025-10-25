@@ -1,12 +1,13 @@
 """
 Handles processing of web form posts in a standardized way.
 """
-import os
+
 import json
+import os
 import tempfile
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage
-from hed.schema import load_schema_version, from_string
+
+# Import for type hints
+from typing import TYPE_CHECKING
 
 import hed.schema as hs
 from hed.errors import HedFileError
@@ -14,13 +15,20 @@ from hed.models.hed_string import HedString
 from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.tabular_input import TabularInput
+from hed.schema import from_string, load_schema_version
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
+
+from hedweb.columns import create_column_selections, get_tag_columns
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
-from hedweb.columns import create_column_selections, get_tag_columns
-from hedweb.web_util import form_has_file, form_has_option, form_has_url, get_parsed_name
+from hedweb.web_util import (
+    form_has_file,
+    form_has_option,
+    form_has_url,
+    get_parsed_name,
+)
 
-# Import for type hints
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from hed.schema import HedSchema
 
@@ -28,7 +36,7 @@ if TYPE_CHECKING:
 class ProcessForm:
     @staticmethod
     def get_input_from_form(request) -> dict:
-        """ Get a dictionary of input from a service request.
+        """Get a dictionary of input from a service request.
 
         Parameters:
             request (Request): A Request object containing user data for the service request.
@@ -39,18 +47,26 @@ class ProcessForm:
 
         arguments = {
             bc.REQUEST_TYPE: bc.FROM_FORM,
-            bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ''),
-            bc.APPEND_ASSEMBLED: form_has_option(request.form, bc.APPEND_ASSEMBLED, 'on'),
-            bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, 'on'),
-            bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, 'on'),
-            bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, 'on'),
-            bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, 'on'),
-            bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, 'on'),
-            bc.LIMIT_ERRORS: form_has_option(request.form, bc.LIMIT_ERRORS, 'on'),
-            bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, 'on'),
-            bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, 'on'),
-            bc.SHOW_DETAILS: form_has_option(request.form, bc.SHOW_DETAILS, 'on'),
-            bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION
+            bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ""),
+            bc.APPEND_ASSEMBLED: form_has_option(
+                request.form, bc.APPEND_ASSEMBLED, "on"
+            ),
+            bc.CHECK_FOR_WARNINGS: form_has_option(
+                request.form, bc.CHECK_FOR_WARNINGS, "on"
+            ),
+            bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, "on"),
+            bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, "on"),
+            bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(
+                request.form, bc.INCLUDE_DESCRIPTION_TAGS, "on"
+            ),
+            bc.INCLUDE_SUMMARIES: form_has_option(
+                request.form, bc.INCLUDE_SUMMARIES, "on"
+            ),
+            bc.LIMIT_ERRORS: form_has_option(request.form, bc.LIMIT_ERRORS, "on"),
+            bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, "on"),
+            bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, "on"),
+            bc.SHOW_DETAILS: form_has_option(request.form, bc.SHOW_DETAILS, "on"),
+            bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION,
         }
         value, skip = create_column_selections(request.form)
         arguments[bc.COLUMNS_SKIP] = skip
@@ -64,7 +80,7 @@ class ProcessForm:
 
     @staticmethod
     def set_input_objects(arguments, request):
-        """ Extract and set input objects from the request form data.
+        """Extract and set input objects from the request form data.
 
         This method processes uploaded files and form data to create appropriate
         input objects (TabularInput, HedString, SpreadsheetInput) and adds them
@@ -76,32 +92,46 @@ class ProcessForm:
         """
         if bc.EVENTS_FILE in request.files and request.files[bc.EVENTS_FILE]:
             f = request.files[bc.EVENTS_FILE]
-            arguments[bc.EVENTS] = TabularInput(file=f, sidecar=arguments.get(bc.SIDECAR, None),
-                                                name=secure_filename(f.filename))
+            arguments[bc.EVENTS] = TabularInput(
+                file=f,
+                sidecar=arguments.get(bc.SIDECAR, None),
+                name=secure_filename(f.filename),
+            )
         if bc.STRING_INPUT in request.form and request.form[bc.STRING_INPUT]:
-            arguments[bc.STRING_LIST] = [HedString(request.form[bc.STRING_INPUT], arguments[bc.SCHEMA])]
-        if bc.SPREADSHEET_FILE in request.files and request.files[bc.SPREADSHEET_FILE].filename:
+            arguments[bc.STRING_LIST] = [
+                HedString(request.form[bc.STRING_INPUT], arguments[bc.SCHEMA])
+            ]
+        if (
+            bc.SPREADSHEET_FILE in request.files
+            and request.files[bc.SPREADSHEET_FILE].filename
+        ):
             arguments[bc.WORKSHEET] = request.form.get(bc.WORKSHEET_NAME, None)
             filename = request.files[bc.SPREADSHEET_FILE].filename
             file_ext = os.path.splitext(filename)[1]
             if file_ext.lower() in fc.EXCEL_FILE_EXTENSIONS:
                 arguments[bc.SPREADSHEET_TYPE] = fc.EXCEL_EXTENSION
-                arguments[bc.SPREADSHEET] = SpreadsheetInput(file=request.files[bc.SPREADSHEET_FILE],
-                                                             file_type=fc.EXCEL_EXTENSION,
-                                                             worksheet_name=arguments[bc.WORKSHEET],
-                                                             tag_columns=arguments[bc.TAG_COLUMNS],
-                                                             has_column_names=True, name=filename)
+                arguments[bc.SPREADSHEET] = SpreadsheetInput(
+                    file=request.files[bc.SPREADSHEET_FILE],
+                    file_type=fc.EXCEL_EXTENSION,
+                    worksheet_name=arguments[bc.WORKSHEET],
+                    tag_columns=arguments[bc.TAG_COLUMNS],
+                    has_column_names=True,
+                    name=filename,
+                )
             elif file_ext.lower() in fc.TEXT_FILE_EXTENSIONS:
                 arguments[bc.SPREADSHEET_TYPE] = fc.TSV_EXTENSION
-                arguments[bc.SPREADSHEET] = SpreadsheetInput(file=request.files[bc.SPREADSHEET_FILE],
-                                                             file_type=fc.TSV_EXTENSION,
-                                                             worksheet_name=arguments[bc.WORKSHEET],
-                                                             tag_columns=arguments[bc.TAG_COLUMNS],
-                                                             has_column_names=True, name=filename)
+                arguments[bc.SPREADSHEET] = SpreadsheetInput(
+                    file=request.files[bc.SPREADSHEET_FILE],
+                    file_type=fc.TSV_EXTENSION,
+                    worksheet_name=arguments[bc.WORKSHEET],
+                    tag_columns=arguments[bc.TAG_COLUMNS],
+                    has_column_names=True,
+                    name=filename,
+                )
 
     @staticmethod
     def set_json_files(arguments, request):
-        """ Extract and set JSON files from the request form data.
+        """Extract and set JSON files from the request form data.
 
         This method processes uploaded JSON files (sidecars, remodel files, definition files)
         and creates appropriate objects from them, adding them to the arguments dictionary.
@@ -116,16 +146,21 @@ class ProcessForm:
         if bc.REMODEL_FILE in request.files and request.files[bc.REMODEL_FILE]:
             f = request.files[bc.REMODEL_FILE]
             name = secure_filename(f.filename)
-            arguments[bc.REMODEL_OPERATIONS] = {'name': name, 'operations': json.load(f)}
+            arguments[bc.REMODEL_OPERATIONS] = {
+                "name": name,
+                "operations": json.load(f),
+            }
         if bc.DEFINITION_FILE in request.files and request.files[bc.DEFINITION_FILE]:
             f = request.files[bc.DEFINITION_FILE]
             sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-            arguments[bc.DEFINITIONS] = sidecar.get_def_dict(arguments[bc.SCHEMA], extra_def_dicts=None)
+            arguments[bc.DEFINITIONS] = sidecar.get_def_dict(
+                arguments[bc.SCHEMA], extra_def_dicts=None
+            )
 
     @staticmethod
     def set_queries(arguments, request):
-        """ Update arguments with lists of string queries
-        
+        """Update arguments with lists of string queries
+
         Parameters:
             arguments (dict):  A dictionary with the extracted parameters that are to be processed.
             request (Request): A Request object containing form data.
@@ -138,7 +173,7 @@ class ProcessForm:
 
     @staticmethod
     def set_schema_from_request(arguments, request):
-        """ Create a HedSchema object from form pull-down box and set schema in arguments.
+        """Create a HedSchema object from form pull-down box and set schema in arguments.
 
         Parameters:
             arguments (dict):   Dictionary of parameters to which the schema will be added.
@@ -150,29 +185,51 @@ class ProcessForm:
             return
 
         # The schemas section only
-        if form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION) and \
-                form_has_file(request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
+        if form_has_option(
+            request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION
+        ) and form_has_file(request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_FILE])
-        elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION) and \
-                form_has_url(request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
+        elif form_has_option(
+            request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION
+        ) and form_has_url(request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.values[bc.SCHEMA_URL])
-        elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION) and \
-                'schema_folder[]' in request.files:
-            ProcessForm.set_tsv_schema(arguments, request, 'schema_folder[]', bc.SCHEMA1)
+        elif (
+            form_has_option(
+                request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION
+            )
+            and "schema_folder[]" in request.files
+        ):
+            ProcessForm.set_tsv_schema(
+                arguments, request, "schema_folder[]", bc.SCHEMA1
+            )
 
-        if form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FILE_OPTION) and \
-                form_has_file(request.files, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
-            arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.files[bc.SECOND_SCHEMA_FILE])
-        elif form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_URL_OPTION) and \
-                form_has_url(request.form, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
-            arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.values[bc.SECOND_SCHEMA_URL])
-        elif form_has_option(request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FOLDER_OPTION) and \
-                'second_schema_folder[]' in request.files:
-            ProcessForm.set_tsv_schema(arguments, request,  'second_schema_folder[]', bc.SCHEMA2)
+        if form_has_option(
+            request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FILE_OPTION
+        ) and form_has_file(request.files, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
+            arguments[bc.SCHEMA2] = ProcessForm.get_schema(
+                request.files[bc.SECOND_SCHEMA_FILE]
+            )
+        elif form_has_option(
+            request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_URL_OPTION
+        ) and form_has_url(request.form, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
+            arguments[bc.SCHEMA2] = ProcessForm.get_schema(
+                request.values[bc.SECOND_SCHEMA_URL]
+            )
+        elif (
+            form_has_option(
+                request.form,
+                bc.SECOND_SCHEMA_UPLOAD_OPTIONS,
+                bc.SECOND_SCHEMA_FOLDER_OPTION,
+            )
+            and "second_schema_folder[]" in request.files
+        ):
+            ProcessForm.set_tsv_schema(
+                arguments, request, "second_schema_folder[]", bc.SCHEMA2
+            )
 
     @staticmethod
     def set_tsv_schema(arguments, request, files_key, schema_key):
-        """ Set the schema in arguments from a folder of TSV files.
+        """Set the schema in arguments from a folder of TSV files.
 
         This method handles uploaded TSV schema files that are uploaded as a folder structure,
         saves them to a temporary directory, and loads the schema from the appropriate file.
@@ -185,7 +242,7 @@ class ProcessForm:
         """
         files = request.files.getlist(files_key)
         with tempfile.TemporaryDirectory() as tmpdir:
-            rel_path = ''
+            rel_path = ""
             for file in files:
                 rel_path = file.filename  # Preserves webkitRelativePath from the client
                 save_path = os.path.join(tmpdir, rel_path)
@@ -197,14 +254,14 @@ class ProcessForm:
 
             filename = os.path.splitext(os.path.basename(rel_path))[0]
             dir_name = os.path.dirname(rel_path)
-            base_name = filename.rsplit('_', 1)[0]
-            save_path = os.path.join(tmpdir, dir_name, base_name + '.tsv')
+            base_name = filename.rsplit("_", 1)[0]
+            save_path = os.path.join(tmpdir, dir_name, base_name + ".tsv")
             arguments[schema_key] = hs.load_schema(save_path, name=base_name)
         return
 
     @staticmethod
     def set_schema_from_version(arguments, request):
-        """ Set the schema field in arguments from a version string or uploaded file.
+        """Set the schema field in arguments from a version string or uploaded file.
 
         This method handles schema selection from a version dropdown or from an uploaded
         schema file when "other" version is selected.
@@ -217,14 +274,16 @@ class ProcessForm:
             arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
         elif form_has_file(request.files, bc.SCHEMA_PATH):
             f = request.files[bc.SCHEMA_PATH]
-            arguments[bc.SCHEMA] = \
-                from_string(f.read(fc.BYTE_LIMIT).decode('utf-8'), schema_format=secure_filename(f.filename))
+            arguments[bc.SCHEMA] = from_string(
+                f.read(fc.BYTE_LIMIT).decode("utf-8"),
+                schema_format=secure_filename(f.filename),
+            )
         else:
             arguments[bc.SCHEMA] = None
 
     @staticmethod
-    def get_schema(schema_input=None, version=None, as_xml_string=None) -> 'HedSchema':
-        """ Return a HedSchema object from the given parameters.
+    def get_schema(schema_input=None, version=None, as_xml_string=None) -> "HedSchema":
+        """Return a HedSchema object from the given parameters.
 
         Parameters:
             schema_input (str or FileStorage or None): Input url or file.
@@ -239,9 +298,11 @@ class ProcessForm:
         """
         if isinstance(schema_input, FileStorage):
             name, extension = get_parsed_name(secure_filename(schema_input.filename))
-            hed_schema = hs.from_string(schema_input.read(fc.BYTE_LIMIT).decode('utf-8'),
-                                               schema_format=extension,
-                                               name=name)
+            hed_schema = hs.from_string(
+                schema_input.read(fc.BYTE_LIMIT).decode("utf-8"),
+                schema_format=extension,
+                name=name,
+            )
         elif isinstance(schema_input, str):
             name, extension = get_parsed_name(schema_input, is_url=True)
             hed_schema = hs.load_schema(schema_input, name=name)

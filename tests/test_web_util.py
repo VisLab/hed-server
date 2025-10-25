@@ -1,7 +1,9 @@
 import os
 import unittest
+
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request, Response
+
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants
 from tests.test_web_base import TestWebBase
@@ -81,6 +83,7 @@ class Test(TestWebBase):
     def test_generate_download_spreadsheet_excel(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
+
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
@@ -104,6 +107,7 @@ class Test(TestWebBase):
     def test_generate_download_spreadsheet_excel_code(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
+
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/ExcelOneSheet.xlsx')
 
@@ -127,6 +131,7 @@ class Test(TestWebBase):
     def test_generate_download_spreadsheet_tsv(self):
         with self.app.test_request_context():
             from hed.models import SpreadsheetInput
+
             from hedweb.web_util import generate_download_spreadsheet
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                             'data/LKTEventCodesHED3.tsv')
@@ -256,6 +261,7 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_version(self):
         from hed.schema import HedSchema
+
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
             environ = create_environ(data={bc.SCHEMA_VERSION: '8.0.0'})
@@ -266,6 +272,7 @@ class Test(TestWebBase):
 
     def test_get_hed_schema_from_pull_down_other(self):
         from hed.schema import HedSchema
+
         from hedweb.web_util import get_hed_schema_from_pull_down
         with self.app.test:
             schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/HED8.0.0.xml')
@@ -278,7 +285,8 @@ class Test(TestWebBase):
                                   "get_hed_schema_from_pull_down should return a HedSchema object")
 
     def test_handle_error(self):
-        from hed.errors.exceptions import HedFileError, HedExceptions
+        from hed.errors.exceptions import HedExceptions, HedFileError
+
         from hedweb.web_util import handle_error
         ex = HedFileError(HedExceptions.BAD_PARAMETERS, "This had bad parameters", 'my.file')
         output = handle_error(ex)
@@ -290,7 +298,8 @@ class Test(TestWebBase):
         self.assertTrue('mykey' in output2, "handle_error dict should include passed dictionary")
 
     def test_handle_http_error(self):
-        from hed.errors.exceptions import HedFileError, HedExceptions
+        from hed.errors.exceptions import HedExceptions, HedFileError
+
         from hedweb.web_util import handle_http_error
         with self.app.test_request_context():
             ex = HedFileError(HedExceptions.BAD_PARAMETERS, "This had bad parameters", 'my.file')

@@ -1,6 +1,8 @@
 import json
 import unittest
+
 from werkzeug.datastructures import FileStorage
+
 from tests.test_routes.test_routes_base import TestRouteBase
 
 

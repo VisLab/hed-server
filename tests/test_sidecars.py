@@ -1,14 +1,16 @@
 import os
 import unittest
-from werkzeug.test import create_environ
-from werkzeug.wrappers import Request
-from tests.test_web_base import TestWebBase
+
 from hed.models import Sidecar
 from hed.schema import HedSchema
 from hed.schema.hed_schema_io import load_schema_version
+from werkzeug.test import create_environ
+from werkzeug.wrappers import Request
+
 from hedweb.constants import base_constants
-from hedweb.sidecar_operations import SidecarOperations
 from hedweb.process_form import ProcessForm
+from hedweb.sidecar_operations import SidecarOperations
+from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):

@@ -1,15 +1,17 @@
-import os
 import io
 import json
+import os
 import unittest
+
+from hed.errors.exceptions import HedFileError
+from hed.models import Sidecar
+from hed.schema import HedSchema, load_schema_version
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
-from tests.test_web_base import TestWebBase
-from hed.schema import HedSchema, load_schema_version
-from hed.models import Sidecar
-from hed.errors.exceptions import HedFileError
+
 from hedweb.constants import base_constants as bc
 from hedweb.process_service import ProcessServices
+from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):
@@ -133,10 +135,10 @@ class Test(TestWebBase):
 
         events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    'data/sub-002_task-FacePerception_run-1_events.tsv')
-        with open(events_path, 'r') as fp:
+        with open(events_path) as fp:
             events_data = fp.read()
 
-        from hed import TabularInput, SpreadsheetInput, HedString
+        from hed import HedString, SpreadsheetInput, TabularInput
         arguments = {
             bc.SCHEMA: load_schema_version("8.2.0"),
             bc.SIDECAR: sidecar,
@@ -179,7 +181,7 @@ class Test(TestWebBase):
     def test_set_remodel_parameters(self):
         remodel_file = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                      'data/simple_reorder_rmdl.json'))
-        with open(remodel_file, 'r') as fp:
+        with open(remodel_file) as fp:
             json_obj = json.load(fp)
         params = {'remodel_string': json.dumps(json_obj)}
         arguments = {}
@@ -235,7 +237,7 @@ class Test(TestWebBase):
         self.assertEqual(result, expected_result)
 
     def test_set_input_schema(self):
-        from hed.schema import load_schema_version, HedSchema
+        from hed.schema import HedSchema, load_schema_version
         schema = load_schema_version("8.2.0")
         schema_as_string = schema.get_as_xml_string()
 

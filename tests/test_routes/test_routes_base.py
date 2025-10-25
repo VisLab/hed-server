@@ -1,7 +1,7 @@
-from tests.test_web_base import TestWebBase
 import io
 import os
 
+from tests.test_web_base import TestWebBase
 
 # from tests.test_routes.test_routes_base import TestRouteBase
 

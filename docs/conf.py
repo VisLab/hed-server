@@ -13,6 +13,7 @@ author = 'HED Standard Group'
 
 # The version info
 from hedweb import _version
+
 version = _version.get_versions()['version']
 release = version
 

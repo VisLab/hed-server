@@ -1,13 +1,15 @@
-import unittest
-from tests.test_web_base import TestWebBase
 import io
 import os
-from hedweb.constants import base_constants as bc
+import unittest
+
 import openpyxl
 from pandas import DataFrame
 from werkzeug.datastructures import FileStorage
-from werkzeug.wrappers import Request
 from werkzeug.test import create_environ
+from werkzeug.wrappers import Request
+
+from hedweb.constants import base_constants as bc
+from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):

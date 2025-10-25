@@ -1,18 +1,19 @@
-import os
-from io import StringIO
 import json
-import pandas as pd
+import os
 import unittest
+from io import StringIO
+
+import pandas as pd
+from hed.errors.exceptions import HedFileError
+from hed.models import Sidecar, TabularInput
+from hed.schema import HedSchema, load_schema
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
-from tests.test_web_base import TestWebBase
-from hed.schema import HedSchema, load_schema
-from hed.models import Sidecar, TabularInput
-from hed.errors.exceptions import HedFileError
 from hedweb.constants import base_constants as bc
-from hedweb.process_form import ProcessForm
 from hedweb.event_operations import EventOperations
+from hedweb.process_form import ProcessForm
+from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):

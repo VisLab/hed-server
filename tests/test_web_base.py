@@ -1,8 +1,10 @@
 import os
 import shutil
-import unittest
-from hedweb.app_factory import AppFactory
 import sys
+import unittest
+
+from hedweb.app_factory import AppFactory
+
 sys.path.append('hedtools')
 
 

@@ -3,9 +3,10 @@
 Script to build the HED Web Tools documentation locally.
 """
 
+import os
 import subprocess
 import sys
-import os
+
 
 def main():
     """Build the documentation using MkDocs."""
