@@ -1,0 +1,37 @@
+# Codecov configuration for hed-web
+# Documentation: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  status:
+    project:
+      default:
+        # Project coverage can drop by up to 2% and still pass
+        target: auto
+        threshold: 2%
+        informational: false
+    patch:
+      default:
+        # New code should be reasonably well-tested
+        target: 70%
+        threshold: 5%
+        informational: false
+
+# Comment configuration
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+# Ignore paths that don't need coverage
+ignore:
+  - "tests/**/*"
+  - "services_tests/**/*"
+  - "docs/**/*"
+  - "deploy/**/*"
+  - "versioneer.py"
+  - "hedweb/_version.py"
+  - "**/templates/**/*"
+  - "**/static/**/*"
+  - "**/__init__.py"
