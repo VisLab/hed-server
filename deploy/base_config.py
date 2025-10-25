@@ -7,20 +7,20 @@ import tempfile
 
 
 class Config:
-    LOG_DIRECTORY = '/var/log/hedtools'
-    LOG_FILE = os.path.join(LOG_DIRECTORY, 'error.log')
-    if not os.path.exists('/var/log/hedtools/tmp.txt'):
-        f = open('/var/log/hedtools/tmp.txt', 'w+')
+    LOG_DIRECTORY = "/var/log/hedtools"
+    LOG_FILE = os.path.join(LOG_DIRECTORY, "error.log")
+    if not os.path.exists("/var/log/hedtools/tmp.txt"):
+        f = open("/var/log/hedtools/tmp.txt", "w+")
         f.write(str(os.urandom(24)))
         f.close()
-    f = open('/var/log/hedtools/tmp.txt')
+    f = open("/var/log/hedtools/tmp.txt")
     SECRET_KEY = f.read()  # os.getenv('SECRET_KEY') # os.urandom(24)
     f.close()
     STATIC_URL_PATH = None
-    STATIC_URL_PATH_ATTRIBUTE_NAME = 'STATIC_URL_PATH'
-    UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), 'hedtools_uploads')
+    STATIC_URL_PATH_ATTRIBUTE_NAME = "STATIC_URL_PATH"
+    UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "hedtools_uploads")
     URL_PREFIX = None
-    HED_CACHE_FOLDER = '/var/cache/schema_cache'
+    HED_CACHE_FOLDER = "/var/cache/schema_cache"
 
 
 class DevelopmentConfig(Config):
@@ -32,15 +32,15 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     # Default to production values, can be overridden by environment variables
-    URL_PREFIX = os.getenv('HED_URL_PREFIX', '/hed')
-    STATIC_URL_PATH = os.getenv('HED_STATIC_URL_PATH', '/hed/hedweb/static')
+    URL_PREFIX = os.getenv("HED_URL_PREFIX", "/hed")
+    STATIC_URL_PATH = os.getenv("HED_STATIC_URL_PATH", "/hed/hedweb/static")
 
 
 class ProductionDevConfig(Config):
     DEBUG = False
     TESTING = False
-    URL_PREFIX = '/hed_dev'
-    STATIC_URL_PATH = '/hed_dev/hedweb/static'
+    URL_PREFIX = "/hed_dev"
+    STATIC_URL_PATH = "/hed_dev/hedweb/static"
 
 
 class TestConfig(Config):

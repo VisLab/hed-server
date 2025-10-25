@@ -25,67 +25,74 @@ class ServicesTest(unittest.TestCase):
     @staticmethod
     def get_demo_data():
         data = {
-            'descPrefix': 'Property/Informational-property/Description/',
-            'eventsText': '',
-            'jsonBadText': '',
-            'jsonText': '',
-            'labelPrefix': 'Property/Informational-property/Label/',
-            'schemaUrl': 'https://raw.githubusercontent.com/hed-standard/hed-schemas/master/standard_schema/hedxml/HED8.2.0.xml',
-            'schemaText': '',
-            'spreadsheetText': '',
-            'spreadsheetTextInvalid': '',
-            'remodelRemoveColumnsText': '',
-            'remodelSummarizeColumnsText': '',
-            'remodelSummarizeTypesText': '',
-            'remodelFactorTypesText': '',
-            'spreadsheetTextExtracted': '',
-            'goodStrings': ['Red,Blue', 'Green', 'White, (Black, Image)'],
-            'badStrings': ['Red, Blue, Blech', 'Green', 'White, Black, Binge'],
+            "descPrefix": "Property/Informational-property/Description/",
+            "eventsText": "",
+            "jsonBadText": "",
+            "jsonText": "",
+            "labelPrefix": "Property/Informational-property/Label/",
+            "schemaUrl": "https://raw.githubusercontent.com/hed-standard/hed-schemas/master/standard_schema/hedxml/HED8.2.0.xml",
+            "schemaText": "",
+            "spreadsheetText": "",
+            "spreadsheetTextInvalid": "",
+            "remodelRemoveColumnsText": "",
+            "remodelSummarizeColumnsText": "",
+            "remodelSummarizeTypesText": "",
+            "remodelFactorTypesText": "",
+            "spreadsheetTextExtracted": "",
+            "goodStrings": ["Red,Blue", "Green", "White, (Black, Image)"],
+            "badStrings": ["Red, Blue, Blech", "Green", "White, Black, Binge"],
         }
 
         cur_dir = os.path.dirname(os.path.abspath(__file__))
-        data_path = os.path.join(cur_dir, 'data')
+        data_path = os.path.join(cur_dir, "data")
 
-        demo_path = os.path.join(data_path, 'eeg_ds003645s_hed_demo')
-        events_file = os.path.join('sub-002', 'ses-1', 'eeg', 'sub-002_ses-1_task-FacePerception_run-1_events.tsv')
+        demo_path = os.path.join(data_path, "eeg_ds003645s_hed_demo")
+        events_file = os.path.join(
+            "sub-002",
+            "ses-1",
+            "eeg",
+            "sub-002_ses-1_task-FacePerception_run-1_events.tsv",
+        )
 
         # Reading files and assigning contents to the respective keys in the data dictionary
-        with open(os.path.join(demo_path, 'task-FacePerception_events.json')) as file:
-            data['jsonText'] = file.read()
+        with open(os.path.join(demo_path, "task-FacePerception_events.json")) as file:
+            data["jsonText"] = file.read()
 
         with open(os.path.join(demo_path, events_file)) as file:
-            data['eventsText'] = file.read()
+            data["eventsText"] = file.read()
 
-        with open(os.path.join(data_path, 'schema_data', 'HED8.2.0.xml')) as file:
-            data['schemaText'] = file.read()
+        with open(os.path.join(data_path, "schema_data", "HED8.2.0.xml")) as file:
+            data["schemaText"] = file.read()
 
         # Repeat the above pattern to read other files
         files_to_read = {
-            'remodelRemoveColumnsText': 'remove_extra_rmdl.json',
-            'remodelSummarizeColumnsText': 'summarize_columns_rmdl.json',
-            'remodelSummarizeTypesText': 'summarize_hed_types_rmdl.json',
-            'remodelFactorTypesText': 'factor_hed_types_rmdl.json',
-            'jsonBadText': 'both_types_events_errors.json',
-            'spreadsheetText': 'LKTEventCodesHED3.tsv',
-            'spreadsheetTextExtracted': 'task-FacePerception_events_extracted.tsv',
-            'spreadsheetTextInvalid': 'LKTEventCodesHED2.tsv',
+            "remodelRemoveColumnsText": "remove_extra_rmdl.json",
+            "remodelSummarizeColumnsText": "summarize_columns_rmdl.json",
+            "remodelSummarizeTypesText": "summarize_hed_types_rmdl.json",
+            "remodelFactorTypesText": "factor_hed_types_rmdl.json",
+            "jsonBadText": "both_types_events_errors.json",
+            "spreadsheetText": "LKTEventCodesHED3.tsv",
+            "spreadsheetTextExtracted": "task-FacePerception_events_extracted.tsv",
+            "spreadsheetTextInvalid": "LKTEventCodesHED2.tsv",
         }
 
         for key, filename in files_to_read.items():
-            file_path = os.path.join(data_path, 'other_data', filename)
+            file_path = os.path.join(data_path, "other_data", filename)
             with open(file_path) as file:
                 data[key] = file.read()
 
         return data
 
     def _get_path(self, filename):
-        filename_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../tests/data/")
+        filename_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../tests/data/"
+        )
         return os.path.join(filename_path, filename)
 
     def _get_file_string(self, filename):
         filename = self._get_path(filename)
-        with open(filename, 'rb') as fp:
-            filename_string = fp.read().decode('utf-8')
+        with open(filename, "rb") as fp:
+            filename_string = fp.read().decode("utf-8")
 
         return filename_string
 
@@ -103,10 +110,7 @@ class ServicesTest(unittest.TestCase):
 
     def _get_headers(self):
         cookie, csrf_token = self._get_csrf_token()
-        headers = {
-            'X-CSRFToken': csrf_token,
-            'Cookie': cookie
-        }
+        headers = {"X-CSRFToken": csrf_token, "Cookie": cookie}
         return headers
 
     # def test_submit_service_sidecar_route(self):

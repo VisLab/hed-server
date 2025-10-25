@@ -15,7 +15,6 @@ from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):
-
     @staticmethod
     def get_spread_proc(
         spread_file, schema_version="8.2.0", worksheet=None, tag_columns=None
