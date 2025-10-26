@@ -29,11 +29,12 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r docs/requirements.txt
+          pip install -e .
 
-      - name: Build documentation with Sphinx
+      - name: Build documentation with build script
         run: |
-          cd docs
-          sphinx-build -b html source _build/html
+          python build_docs.py
 
       - name: Link Checker on built documentation
         id: lychee
