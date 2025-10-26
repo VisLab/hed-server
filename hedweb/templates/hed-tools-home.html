@@ -11,16 +11,13 @@
         HED has been adopted as part of the BIDS (<a href="https://bids.neuroimaging.io"><b>https://bids.neuroimaging.io</b></a>)
         standard for brain imaging.</p>
 
-
-
+   
     <h4>HED online tools summary</h4>
     <p> 
     The following table summarizes the available online tools. The tools are organized around the
         types of data that the tools handle. The Actions refer to the types of actions that can be performed on the
     data through the online tools. Each action is linked to its corresponding documentation to provide additional
-        information. <strong>NEW: an experimental <a href="http://ctagger.hed.tools">CTagger</a>
-        online annotation tool is now available</strong>.</p>
-
+        information.
 
     
     <table class="table table-striped table-hover">
@@ -77,11 +74,8 @@
             <td><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-a-hed-string-to-long">Convert to long</a></td>
             <td>Convert a HED string to full paths.</td></tr> 
          <tr class="table-active"><td> </td>
-            <td><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-a-hed-string-to-short">Convert to short</a></td>
+            <td><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#convert-hed-string-to-short">Convert to short</a></td>
             <td>Convert a HED string to single tags.</td></tr> 
-         <tr class="table-active"><td> </td>
-            <td><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#search-a-hed-string">Search HED strings</a></td>
-            <td>Search a HED string based on a HED search query.</td></tr> 
         <tr class="table-active">
             <td><a href="{{ url_for('route_blueprint.render_schemas_form') }}"><strong>Schemas</strong></a></td>
             <td><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#validate-a-hed-schema">Validate</a></td>
@@ -117,6 +111,21 @@
         <a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html#"><b>HED online tools</b></a> documentation.
     </p>
 
+    <h4>Online server versus browser-based tools</h4>
+    <p>
+    HED supports two types of "online" tools.  The tools at this site 
+    <a href="https://hedtools.org/hed"><b>https://hedtools.org/hed</b></a> are server based,meaning
+   that data is uploaded to a server, processed, and the results returned. This server offers a complete set of
+   processing tools, but is restricted to processing individual files. 
+   The server-based tools also support programmatic access through a REST API.
+   </p>
+
+   HED also supports HED validation of a complete BIDS dataset through a browser-based tool 
+   available at <a href="https://www.hedtags.org/hed-javascript"><b>https://www.hedtags.org/hed-javascript</b></a>.
+   This implementation runs entirely in the browser without uploading data to a server.
+   Validation is the only operation available in the browser-based tool at this time.
+   </p>
+
    <h4>HED REST services</h4>
     <p>
         The HED online tools are also available as callable web services. More detailed help on calling these
@@ -127,7 +136,7 @@
             GitHub MATLAB web service examples</a>.
      </p>
     
-        <h4>Where to find out more?</h4>
+    <h4>Where to find out more?</h4>
     <ul>
         <li>The <a href="https://www.hedtags.org">HED standards home page</a> has links to all things HED.</li>
         <li> The<a href="https://github.com/hed-standard">HED standards GitHub organization</a> 
