@@ -32,7 +32,11 @@ def main():
 
     try:
         # Install requirements
-        print("Installing documentation requirements...")
+        print("Installing main and documentation requirements...")
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"],
+            check=True,
+        )
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "-r", "docs/requirements.txt"],
             check=True,
