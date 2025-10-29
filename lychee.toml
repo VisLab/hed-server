@@ -1,67 +1,32 @@
 # Lychee link checker configuration
-# https://lychee.cli.rs/#/configuration
+# This file configures how lychee validates links in the repository
+#
+# For more information about lychee configuration, see:
+# https://github.com/lycheeverse/lychee#configuration
+#
+# This configuration addresses false positive errors from the link checker:
+# - 403 Forbidden: Some sites (npmjs.com, mathworks.com, doi.org) block automated 
+#   requests but work fine in browsers
+# - 429 Too Many Requests: Rate limiting doesn't mean the link is broken
+# - See .lycheeignore for sites/patterns that are completely excluded
 
-# Base directory for the checker
-base = "."
-
-# Maximum number of redirects to follow
-max_redirects = 10
-
-# Show progress bars (disabled for CI)
-no_progress = true
-
-# Verbose output
-verbose = true
-
-# Set of patterns to exclude from checking
-exclude = [
-    # Skip localhost and local addresses
-    "http://localhost.*",
-    "http://127.0.0.1.*",
-    "https://localhost.*",
-    "https://127.0.0.1.*",
-    
-    # Skip file:// URLs (local files)
-    "file://.*",
-    
-    # Skip mail links
-    "mailto:.*",
-    
-    # Skip common placeholder/example domains
-    "http://example.com.*",
-    "https://example.com.*",
-    
-    # Skip anchor links and fragments with specific patterns
-    ".*(_anchor|-anchor).*",
-    
-    # Skip internal documentation anchors that might not exist yet
-    ".*#.*"
-]
-
-# Exclude patterns from file (if exists)
-exclude_file = [".lycheeignore"]
-
-# Accepted status codes (in addition to 200-299)
-accept = [
-    # Accept all successful status codes
-    200,
-    # Accept found/redirects
-    301, 302, 307, 308,
-    # Accept some client errors for external sites
-    403,  # Forbidden (some sites block crawlers)
-    429,  # Too Many Requests (rate limiting)
-]
-
-# User agent string
-user_agent = "lychee/hed-web-docs"
+# Accept these HTTP status codes as valid
+# 200: OK (standard success)
+# 204: No Content (valid response with no body)
+# 206: Partial Content (valid for range requests)
+# 403: Forbidden (some sites block automated requests but links work in browsers)
+# 429: Too Many Requests (rate limiting, link may be valid)
+accept = [200, 204, 206, 403, 429]
 
 # Timeout for requests (in seconds)
 timeout = 30
 
-# Number of retry attempts
+# Maximum number of retries per link
 max_retries = 3
 
-# Headers to send with requests
-headers = [
-    "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-]
+# Maximum number of concurrent network requests
+max_concurrency = 8
+
+# User agent string to use for requests
+# Some sites require a browser-like user agent to avoid blocking
+user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0"
