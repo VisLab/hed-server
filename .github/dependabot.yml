@@ -10,9 +10,8 @@ updates:
     target-branch: "main"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: gitsubmodule
-    schedule:
-        interval: "daily"
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
     target-branch: "main"
-    directory: /
+    schedule:
+      interval: "daily"
