@@ -75,6 +75,25 @@ class Test(TestWebBase):
             results = proc_schemas.process()
             self.assertFalse(results["data"], "HED8.2.0 is HED-3G compliant")
 
+    def test_schemas_check_8_4_0(self):
+        """Test validation of HED 8.4.0 schema."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_VALIDATE
+            proc_schemas.schema = load_schema_version("8.4.0")
+            results = proc_schemas.process()
+            self.assertFalse(results["data"], "HED 8.4.0 is HED-3G compliant")
+
+            # Test using set_input_from_dict method
+            input_dict = {
+                bc.COMMAND: bc.COMMAND_VALIDATE,
+                bc.SCHEMA1: load_schema_version("8.4.0"),
+            }
+            proc_schemas = SchemaOperations()
+            proc_schemas.set_input_from_dict(input_dict)
+            results = proc_schemas.process()
+            self.assertFalse(results["data"], "HED 8.4.0 is HED-3G compliant")
+
     def test_schemas_convert_valid(self):
         schema_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "data/HED8.2.0.mediawiki"
@@ -154,6 +173,51 @@ class Test(TestWebBase):
             results = proc_schemas.process()
             self.assertFalse(
                 results["data"], "HED 8.2.0/8.2.0 can be compared, but are identical"
+            )
+
+    def test_schemas_compare_8_3_to_8_4(self):
+        """Test comparison between HED 8.3.0 and 8.4.0 schemas."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_COMPARE_SCHEMAS
+            proc_schemas.schema = load_schema_version("8.3.0")
+            proc_schemas.schema2 = load_schema_version("8.4.0")
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "HED 8.3.0/8.4.0 can be compared")
+            self.assertTrue("Differences between 8.3.0 and 8.4.0" in results["data"])
+
+            # Test using set_input_from_dict method
+            input_dict = {
+                bc.COMMAND: bc.COMMAND_COMPARE_SCHEMAS,
+                bc.SCHEMA1: load_schema_version("8.3.0"),
+                bc.SCHEMA2: load_schema_version("8.4.0"),
+            }
+            proc_schemas = SchemaOperations()
+            proc_schemas.set_input_from_dict(input_dict)
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "HED 8.3.0/8.4.0 can be compared")
+
+    def test_schemas_compare_8_2_to_8_4(self):
+        """Test comparison between HED 8.2.0 and 8.4.0 schemas (larger gap)."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_COMPARE_SCHEMAS
+            proc_schemas.schema = load_schema_version("8.2.0")
+            proc_schemas.schema2 = load_schema_version("8.4.0")
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "HED 8.2.0/8.4.0 can be compared")
+            self.assertTrue("Differences between 8.2.0 and 8.4.0" in results["data"])
+
+    def test_schemas_compare_8_4_identical(self):
+        """Test comparison of HED 8.4.0 with itself."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_COMPARE_SCHEMAS
+            proc_schemas.schema = load_schema_version("8.4.0")
+            proc_schemas.schema2 = load_schema_version("8.4.0")
+            results = proc_schemas.process()
+            self.assertFalse(
+                results["data"], "HED 8.4.0/8.4.0 can be compared, but are identical"
             )
 
     def test_schemas_compare_invalid(self):
