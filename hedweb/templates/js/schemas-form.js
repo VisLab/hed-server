@@ -262,7 +262,7 @@ function updateFlash(type) {
      }
      let hasValidExtension = fileHasValidExtension(filename, SCHEMA_EXTENSIONS);
      if (!hasValidExtension) {
-         flashMessageOnScreen('Please choose a valid schema file or url (.xml, .mediawiki)', 'error',
+         flashMessageOnScreen('Please choose a valid schema file or url (.xml, .mediawiki, .json)', 'error',
         'schema_flash');
      }
 }

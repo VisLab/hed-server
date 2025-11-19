@@ -77,20 +77,18 @@ They are used for convenience in assigning HED tags to event codes.
 
 **Schemas** refer to HED schema vocabularies, which may be either in .mediawiki or .xml format. These tools are used by schema developers creating the HED vocabularies and are not of interest to annotators or analysts.
 
-More detailed help on using these online tools is available in the [**HED online tools**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#) documentation.
+More detailed help on using these online tools is available in the HED online tools [**User guide**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#).
 
 #### HED REST services
 
-The HED online tools are also available as callable web services. More detailed help on calling these services is available at: [**HED RESTful services**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#hed-restful-services) Downloadable examples of calling these services from a MATLAB program can be found in the [GitHub MATLAB web service examples](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos).
+The HED online tools are also available as callable web services. More detailed help on calling these services is available at: [**HED RESTful services**](https://www.hedtags.org/hed-resources/HedOnlineTools.html#hed-restful-services) Downloadable examples of calling these services from a MATLAB program can be found in the GitHub MATLAB [**Web service demos**](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos).
 
 #### Where to find out more?
 
-- The [HED standards home page](https://www.hedtags.org) has links to all things HED.
-- The [HED standards GitHub organization](https://github.com/hed-standard) contains the source for code and docs for HED.
-- The [HED schema viewer](https://www.hedtags.org/display_hed.html) allows you to browse HED vocabularies, both released and under development.
-- The [HED resources page](https://www.hedtags.org/hed-resources) has links to all HED documentation.
-
-
+- The [**HED home page**](https://www.hedtags.org) has links to all things HED.
+- The [**HED GitHub organization**](https://github.com/hed-standard) contains the source for code and docs for HED.
+- The [**HED schema viewer**](https://www.hedtags.org/hed-schema_browser) allows you to browse HED vocabularies, both released and under development.
+- The [**HED resources**](https://www.hedtags.org/hed-resources) has links to all HED documentation.
 
 
 ### Online deployment

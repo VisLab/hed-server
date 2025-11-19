@@ -11,7 +11,7 @@ import zipfile
 from hed import schema as hedschema
 from hed.errors import HedFileError, get_printable_issue_string
 from hed.schema.schema_comparer import SchemaComparer
-from hed.scripts.script_util import validate_schema_object
+from hed.scripts.hed_script_util import validate_schema_object
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
@@ -111,6 +111,7 @@ class SchemaOperations(BaseOperations):
             self.schema.save_as_mediawiki(
                 os.path.join(base_dir, schema_name + ".mediawiki")
             )
+            self.schema.save_as_json(os.path.join(base_dir, schema_name + ".json"))
             self.schema.save_as_dataframes(
                 os.path.join(base_dir, "hedtsv", schema_name, schema_name + ".tsv")
             )
