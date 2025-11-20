@@ -1,35 +1,36 @@
-HED Web Tools Documentation
+HED web tools documentation
 ============================
 
-Welcome to the HED Web Tools documentation. HED Web Tools is a web-based application for working with HED (Hierarchical Event Descriptors) data.
+.. image:: _static/images/croppedWideLogo.png
+   :width: 220px
+   :alt: HED Logo
+
+.. sidebar:: **Links**
+   
+   * `HED homepage <https://www.hedtags.org/>`_ 
+
+   * `HED web tools user guide <https://www.hedtags.org/hed-resources/HedOnlineTools.md>`_ 
+
+   * `HED vocabularies <https://www.hedtags.org/hed-schema-browser>`_
+
+   * `HED online tools deployed <https://hedtools.org/hed/>`_
+
+   * `HED browser-based tools <https://www.hedtags.org/hed-javascript>`_
+
+   * `HED organization source code <https://github.com/hed-standard/>`_  
+
+   * `HED specification <https://www.hedtags.org/hed-specification>`_ 
+
+Welcome to the HED Web Tools documentation. This package provides web-based interfaces
+and REST API services for working with Hierarchical Event Descriptors (HED).
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    introduction
-   user_guide
+   installation
    api/index
-
-Getting Started
----------------
-
-Choose the option that best fits your needs:
-
-🚀 **Local Development** - Perfect for trying out the application or contributing to development
-
-🐳 **Production Deployment** - Ideal for production servers with Docker support
-
-📚 **Documentation Development** - For working on documentation
-
-Quick Links
------------
-
-* :doc:`introduction` - Learn about HED and the web tools
-* :doc:`user_guide` - Complete setup and usage guide
-* :doc:`api/index` - API reference and technical documentation
-* `GitHub Repository <https://github.com/hed-standard/hed-web>`_
-* `HED Standard <https://www.hedtags.org/>`_
 
 Indices and tables
 ==================

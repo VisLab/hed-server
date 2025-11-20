@@ -1,0 +1,12 @@
+/* Custom CSS for HED Web Tools documentation */
+
+/* Make the sidebar logo smaller */
+.sidebar-brand img {
+    max-width: 150px !important;
+    height: auto !important;
+}
+
+/* Adjust spacing around the logo */
+.sidebar-brand {
+    margin: 1rem auto !important;
+}

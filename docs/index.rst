@@ -1,69 +1,40 @@
-HED Web Tools Documentation
+HED web tools documentation
 ============================
 
-Welcome to the HED Web Tools documentation! This comprehensive guide covers the HED web interface, REST API services, and development resources.
+.. image:: _static/images/croppedWideLogo.png
+   :width: 220px
+   :alt: HED Logo
 
-HED (Hierarchical Event Descriptors) Web Tools provides a user-friendly interface for working with HED annotations and schemas through both web forms and programmatic API access.
+.. sidebar:: **Links**
+   
+   * `HED homepage <https://www.hedtags.org/>`_ 
 
-.. grid:: 2
+   * `HED web tools user guide <https://www.hedtags.org/hed-resources/HedOnlineTools.md>`_ 
 
-   .. grid-item-card:: 📚 Getting Started
-      :link: introduction
-      :link-type: doc
+   * `HED vocabularies <https://www.hedtags.org/hed-schema-browser>`_
 
-      Learn about HED and get started with the web tools
+   * `HED online tools deployed <https://hedtools.org/hed/>`_
 
-   .. grid-item-card:: 👤 User Guide  
-      :link: user_guide
-      :link-type: doc
+   * `HED browser-based tools <https://www.hedtags.org/hed-javascript>`_
 
-      Complete setup and usage instructions
+   * `HED organization source code <https://github.com/hed-standard/>`_  
 
-   .. grid-item-card:: 🔧 API Reference
-      :link: api/index
-      :link-type: doc
+   * `HED specification <https://www.hedtags.org/hed-specification>`_ 
 
-      REST API documentation and examples
-
-   .. grid-item-card:: 🚀 Development
-      :link: api/getting_started
-      :link-type: doc
-
-      Development setup and contributing
+Welcome to the HED Web Tools documentation. This package provides web-based interfaces
+and REST API services for working with Hierarchical Event Descriptors (HED).
 
 .. toctree::
-   :hidden:
    :maxdepth: 2
-   :caption: User Documentation
+   :caption: Contents:
 
    introduction
-   user_guide
-
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: API & Development
-
+   installation
    api/index
-   api/getting_started
-   api/architecture
-   api/api_usage
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Reference
+Indices and tables
+==================
 
-   api/routes
-   api/service_categories
-   api/base_operations
-   api/string_operations
-   api/schema_operations
-   api/sidecar_operations
-   api/spreadsheet_operations
-   api/event_operations
-   api/columns
-   api/process_form
-   api/process_service
-   api/web_util
-   api/app_factory
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

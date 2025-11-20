@@ -1,4 +1,7 @@
 # Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os
 import sys
@@ -9,81 +12,70 @@ sys.path.insert(0, os.path.abspath(".."))
 from hedweb import _version
 
 # -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
 project = "HED Web Tools"
-copyright = "2024, HED Standard Group"
-author = "HED Standard Group"
+copyright = "2024, HED Standard"
+author = "HED Standard"
 
-# The version info
-
+# The full version, including alpha/beta/rc tags
 version = _version.get_versions()["version"]
 release = version
 
 # -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.viewcode",
+    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "myst_parser",  # For Markdown support
-    "sphinx_copybutton",  # Add copy button to code blocks
-    "sphinx_design",  # Add design elements
+    "myst_parser",
+    "sphinx_copybutton",
 ]
 
-# Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# -- Options for HTML output -------------------------------------------------
-html_theme = "sphinx_book_theme"
-html_title = "HED Web Tools Documentation"
+# Mock imports for modules that need Flask application context
+# This prevents import errors during documentation build
+autodoc_mock_imports = ["flask", "werkzeug", "flask_wtf"]
 
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = "furo"
+html_static_path = ["_static"]
+
+# Furo theme options
 html_theme_options = {
-    "repository_url": "https://github.com/hed-standard/hed-web",
-    "use_repository_button": True,
-    "use_edit_page_button": True,
-    "use_source_button": True,
-    "use_issues_button": True,
-    "use_download_button": True,
-    "path_to_docs": "docs/",
-    "repository_branch": "main",
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org",
-        "colab_url": "https://colab.research.google.com",
+    "sidebar_hide_name": False,
+    "light_css_variables": {
+        "color-brand-primary": "#0969da",
+        "color-brand-content": "#0969da",
     },
-    "navigation_with_keys": True,
-    "show_toc_level": 2,
-    "announcement": None,
-    "analytics": None,
-    "logo": {"text": "HED Web Tools"},
+    "dark_css_variables": {
+        "color-brand-primary": "#58a6ff",
+        "color-brand-content": "#58a6ff",
+    },
+    "source_repository": "https://github.com/hed-standard/hed-web/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "light_logo": "images/croppedWideLogo.png",
+    "dark_logo": "images/croppedWideLogo.png",
 }
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_title = "HED web tools"
+
+# Custom CSS for logo sizing
+html_css_files = [
+    "custom.css",
+]
 
 # -- Extension configuration -------------------------------------------------
 
-# MyST configuration for Markdown
-myst_enable_extensions = [
-    "colon_fence",
-    "deflist",
-    "fieldlist",
-    "html_admonition",
-    "html_image",
-    "linkify",
-    "replacements",
-    "smartquotes",
-    "strikethrough",
-    "substitution",
-    "tasklist",
-]
-
-# Napoleon settings
+# Napoleon settings for Google/NumPy style docstrings
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
@@ -96,11 +88,32 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 
-# Intersphinx mapping
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "flask": ("https://flask.palletsprojects.com/en/2.3.x/", None),
+# Autodoc settings
+autodoc_default_options = {
+    "members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
 }
 
-# Todo extension
-todo_include_todos = True
+# Autosummary settings
+autosummary_generate = True
+
+# Intersphinx mapping
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "flask": ("https://flask.palletsprojects.com/en/3.0.x/", None),
+}
+
+# MyST parser settings
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "tasklist",
+]
