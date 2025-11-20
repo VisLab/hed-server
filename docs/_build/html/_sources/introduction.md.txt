@@ -1,4 +1,4 @@
-# Introduction to HED web tools
+# Introduction
 
 ## What is HED?
 

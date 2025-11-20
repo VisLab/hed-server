@@ -1,24 +1,13 @@
-# HED Web Tools - User guide
+# Installation
 
 This guide provides step-by-step instructions for deploying and using HED Web Tools in various environments, from local development to production Docker deployments.
 
 ## Quick links
 
-- 📚 [API Reference](api/index.md)
+- 📚 [API Reference](api/index.rst)
 - 🐛 [GitHub Issues](https://github.com/hed-standard/hed-web/issues)
 - 📖 [HED Specification](https://hed-specification.readthedocs.io/)
 - 🌐 [Online Tools](https://hedtools.org)
-
-## Table of contents
-
-1. [Installation](#installation)
-2. [Local development setup](#local-development-setup)
-3. [Docker deployment](#docker-deployment)
-4. [Production deployment](#production-deployment)
-5. [Configuration](#configuration)
-6. [Using the web interface](#using-the-web-interface)
-7. [REST API access](#rest-api-access)
-8. [Troubleshooting](#troubleshooting)
 
 ## Installation
 
@@ -497,9 +486,7 @@ All API responses follow this JSON structure:
 
 ### Complete API documentation
 
-For complete API documentation including all available endpoints, parameters, and response formats, see:
-- [API Usage Guide](api/api_usage.md)
-- [Service Categories](api/service_categories.md)
+For complete API documentation including all available endpoints, parameters, and response formats, see the [API Reference](api/index.rst).
 
 ## Troubleshooting
 
