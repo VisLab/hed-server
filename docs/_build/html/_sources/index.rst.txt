@@ -1,23 +1,19 @@
 HED web tools documentation
 ============================
 
-.. image:: _static/images/croppedWideLogo.png
-   :width: 220px
-   :alt: HED Logo
-
 .. sidebar:: **Links**
    
    * `HED homepage <https://www.hedtags.org/>`_ 
 
-   * `HED web tools user guide <https://www.hedtags.org/hed-resources/HedOnlineTools.md>`_ 
+   * `Web user guide <https://www.hedtags.org/hed-resources/HedOnlineTools.html>`_ 
 
    * `HED vocabularies <https://www.hedtags.org/hed-schema-browser>`_
 
-   * `HED online tools deployed <https://hedtools.org/hed/>`_
+   * `HED online tools <https://hedtools.org/hed/>`_
 
-   * `HED browser-based tools <https://www.hedtags.org/hed-javascript>`_
+   * `HED browser tools <https://www.hedtags.org/hed-javascript>`_
 
-   * `HED organization source code <https://github.com/hed-standard/>`_  
+   * `HED organization <https://github.com/hed-standard/>`_  
 
    * `HED specification <https://www.hedtags.org/hed-specification>`_ 
 

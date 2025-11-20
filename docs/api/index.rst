@@ -1,4 +1,4 @@
-API Reference
+API reference
 =============
 
 This section contains the complete API reference for HED Web Tools.
@@ -10,7 +10,7 @@ This section contains the complete API reference for HED Web Tools.
    operations
    utilities
 
-Core Modules Overview
+Core modules overview
 ---------------------
 
 The HED Web Tools package is organized into several key areas:

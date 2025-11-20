@@ -64,9 +64,30 @@ html_theme_options = {
     "source_directory": "docs/",
     "light_logo": "images/croppedWideLogo.png",
     "dark_logo": "images/croppedWideLogo.png",
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/hed-standard/hed-web",
+            "html": "",
+            "class": "",
+        },
+    ],
 }
 
 html_title = "HED web tools"
+
+# Sidebar links
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "custom-links.html",
+        "sidebar/scroll-end.html",
+        "sidebar/variant-selector.html",
+    ]
+}
 
 # Custom CSS for logo sizing
 html_css_files = [
