@@ -15,7 +15,7 @@ Core modules overview
 
 The HED Web Tools package is organized into several key areas:
 
-* **Web Application**: Flask application factory, routes, and request handling
+* **Web application**: Flask application factory, routes, and request handling
 * **Operations**: Core service modules for processing HED data (events, schemas, sidecars, spreadsheets, strings)
 * **Utilities**: Helper functions and shared functionality
 

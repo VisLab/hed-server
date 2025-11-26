@@ -13,7 +13,7 @@ Common base classes and shared functionality for all operations.
    :undoc-members:
    :show-inheritance:
 
-Event Operations
+Event operations
 ----------------
 
 Process event files with HED annotations.
@@ -23,7 +23,7 @@ Process event files with HED annotations.
    :undoc-members:
    :show-inheritance:
 
-Schema Operations
+Schema operations
 -----------------
 
 Validate and manipulate HED schemas.
@@ -33,7 +33,7 @@ Validate and manipulate HED schemas.
    :undoc-members:
    :show-inheritance:
 
-Sidecar Operations
+Sidecar operations
 ------------------
 
 Handle BIDS sidecar JSON files.
@@ -43,7 +43,7 @@ Handle BIDS sidecar JSON files.
    :undoc-members:
    :show-inheritance:
 
-Spreadsheet Operations
+Spreadsheet operations
 ----------------------
 
 Process tabular data with HED columns.
@@ -53,7 +53,7 @@ Process tabular data with HED columns.
    :undoc-members:
    :show-inheritance:
 
-String Operations
+String operations
 -----------------
 
 Validate and manipulate HED strings.
