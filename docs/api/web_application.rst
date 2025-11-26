@@ -3,7 +3,7 @@ Web Application
 
 Core web application modules for the Flask-based HED Web Tools.
 
-Application Factory
+Application factory
 -------------------
 
 The application factory pattern for creating Flask instances.
@@ -23,7 +23,7 @@ Web interface routes and HTTP endpoint handlers.
    :undoc-members:
    :show-inheritance:
 
-Process Form
+Process form
 ------------
 
 Form data extraction and validation for web requests.
@@ -33,7 +33,7 @@ Form data extraction and validation for web requests.
    :undoc-members:
    :show-inheritance:
 
-Process Service
+Process service
 ---------------
 
 Core orchestration and business logic for REST services.
@@ -43,7 +43,7 @@ Core orchestration and business logic for REST services.
    :undoc-members:
    :show-inheritance:
 
-Web Utilities
+Web utilities
 -------------
 
 Common web application helper functions.

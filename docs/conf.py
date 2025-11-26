@@ -47,6 +47,8 @@ autodoc_mock_imports = ["flask", "werkzeug", "flask_wtf"]
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_js_files = ["gh_icon_fix.js"]
 
 # Furo theme options
 html_theme_options = {
@@ -88,11 +90,6 @@ html_sidebars = {
         "sidebar/variant-selector.html",
     ]
 }
-
-# Custom CSS for logo sizing
-html_css_files = [
-    "custom.css",
-]
 
 # -- Extension configuration -------------------------------------------------
 

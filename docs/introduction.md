@@ -55,7 +55,7 @@ An example of the use the REST API can be found in the
 - **Search**: Find rows of a tabular file matching specific HED criteria.
 - **Extraction**: Extract a JSON template for HED annotations based on a tabular file.
 
-### Sidecar Operations
+### Sidecar operations
 
 - **Validation**: Ensure sidecar files meet HED requirements.
 - **Extraction**: Extract a spreadsheet from a JSON file for easier annotation.
@@ -63,7 +63,7 @@ An example of the use the REST API can be found in the
 
 JSON files (called sidecars) contain HED annotations for BIDS datasets.  
 
-### Schema Operations
+### Schema operations
 
 - **Validation**: Check HED schema files for compliance.
 - **Conversion**: Convert between different schema formats (XML, MediaWiki, or TSV Folder).
@@ -72,7 +72,7 @@ JSON files (called sidecars) contain HED annotations for BIDS datasets.
 
 HED schemas define the structure and vocabularies for HED annotations.  
 
-### String Operations
+### String operations
 
 - **Validation**: Validate individual HED annotation strings.
 - **Assembly**: Combine HED strings with proper syntax.
@@ -82,7 +82,7 @@ HED schemas define the structure and vocabularies for HED annotations.
 HED strings are individual annotations that can be validated and processed.
 The string operations are useful for quick checks.  
 
-### Spreadsheet Processing
+### Spreadsheet processing
 
 - **Column mapping**: Map spreadsheet columns to HED concepts.
 - **Validation**: Validate HED data in spreadsheet format.
