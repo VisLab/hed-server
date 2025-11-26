@@ -87,7 +87,7 @@ The HED online tools are also available as callable web services. More detailed 
 
 - The [**HED home page**](https://www.hedtags.org) has links to all things HED.
 - The [**HED GitHub organization**](https://github.com/hed-standard) contains the source for code and docs for HED.
-- The [**HED schema viewer**](https://www.hedtags.org/hed-schema_browser) allows you to browse HED vocabularies, both released and under development.
+- The [**HED schema viewer**](https://www.hedtags.org/hed-schema-browser) allows you to browse HED vocabularies, both released and under development.
 - The [**HED resources**](https://www.hedtags.org/hed-resources) has links to all HED documentation.
 
 
