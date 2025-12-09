@@ -1,4 +1,4 @@
-Web Application
+Web application
 ===============
 
 Core web application modules for the Flask-based HED Web Tools.

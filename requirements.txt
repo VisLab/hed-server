@@ -1,7 +1,7 @@
 Flask>=3.1.1
 Flask-WTF>=1.2.2
 config>=0.5.1
-hedtools>=0.7.1
+hedtools>=0.8.1
 openpyxl>=3.1.5
 pandas>=2.3.1
 Werkzeug>=3.1.3
