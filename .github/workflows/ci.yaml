@@ -39,7 +39,7 @@ jobs:
         ls -la .coverage* || true
 
     - name: Upload coverage artifact (unit)
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-unit
         path: ${{ github.workspace }}/.coverage.unit
@@ -142,7 +142,7 @@ jobs:
 
     - name: Upload coverage artifact (service)
       if: always()
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-service
         path: ${{ github.workspace }}/.coverage.service
@@ -217,7 +217,7 @@ jobs:
         fail_ci_if_error: false
 
     - name: Upload merged coverage XML artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: coverage-xml
         path: merged/coverage.xml
