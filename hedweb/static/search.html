@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Search HED Documentation</title>
     
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="./img/hedlogo-01.ico">
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     
     <style>
         body {
@@ -91,17 +96,18 @@
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <a href="/" class="back-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                        </svg>
+                    <a href="https://www.hedtags.org/hed-web/" class="back-link">
+                        <i class="bi bi-arrow-left"></i>
                         Back to HED Tools
                     </a>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <h1 class="text-center mb-4">Search HED Documentation</h1>
+                    <h1 class="text-center mb-4">
+                        <i class="bi bi-search"></i>
+                        Search HED documentation
+                    </h1>
                     <div class="search-box">
                         <form onsubmit="handleSearchSubmit(event)">
                             <div class="input-group input-group-lg">
@@ -112,9 +118,7 @@
                                        autocomplete="off"
                                        autofocus>
                                 <button class="btn btn-light" type="submit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                    </svg>
+                                    <i class="bi bi-search"></i>
                                     Search
                                 </button>
                             </div>
@@ -172,7 +176,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/search-config.js"></script>
-    <script src="js/hed-search.js"></script>
+    <script src="./js/search-config.js"></script>
+    <script src="./js/hed-search.js"></script>
 </body>
 </html>

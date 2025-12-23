@@ -19,10 +19,16 @@ class HEDSearch {
         const promises = this.config.sources.map(async (source) => {
             this.loadingStatus[source.name] = 'loading';
             try {
-                // Fetch the searchindex.js file
-                const response = await fetch(source.searchIndex);
+                // Fetch the searchindex.js file with mode: 'cors' and credentials
+                const response = await fetch(source.searchIndex, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'default',
+                    credentials: 'omit'  // Don't send credentials to avoid tracking issues
+                });
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 // Extract the Search.setIndex() call from the JS file
@@ -44,8 +50,15 @@ class HEDSearch {
                 return { source: source.name, status: 'success' };
             } catch (error) {
                 console.error(`Failed to load index for ${source.name}:`, error);
+                
+                // Provide specific error messages for common issues
+                let errorMsg = error.message;
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    errorMsg = 'Network error or CORS/Tracking prevention blocked';
+                }
+                
                 this.loadingStatus[source.name] = 'error';
-                return { source: source.name, status: 'error', error: error.message };
+                return { source: source.name, status: 'error', error: errorMsg };
             }
         });
 
