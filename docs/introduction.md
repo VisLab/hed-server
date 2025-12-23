@@ -12,8 +12,8 @@ Sensory-event, Visual-presentation, (Image, Face)
 
 HED is integrated into major neuroimaging standards:
 
-* [BIDS](https://bids.neuroimaging.io/) (Brain Imaging Data Structure)
-* [NWB](https://www.nwb.org/) (Neurodata Without Borders)
+- [BIDS](https://bids.neuroimaging.io/) (Brain Imaging Data Structure)
+- [NWB](https://www.nwb.org/) (Neurodata Without Borders)
 
 ## What are HED web tools?
 
