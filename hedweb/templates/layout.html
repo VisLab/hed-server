@@ -112,8 +112,8 @@
         function searchDoc(event) {
             event.preventDefault();
             let searchQuery = document.getElementById('searchInput').value;
-            let search_endpoint = "https://www.hedtags.org/hed-resources/search.html?q=";
-            let loc = search_endpoint + encodeURIComponent(searchQuery) + "&check_keywords=yes&area=default";
+            // Use new multi-repository search
+            let loc = "{{ url_for('static', filename='search.html') }}?q=" + encodeURIComponent(searchQuery);
             window.location.href = loc;
         }
 </script>
