@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cross-platform script to build the HED Web Tools documentation locally using Sphinx.
+Cross-platform script to build the HED web tools documentation locally using Sphinx.
 
 Usage:
     python build_docs.py
@@ -21,7 +21,7 @@ import sys
 
 def main():
     """Build the documentation using Sphinx."""
-    print(f"Building HED Web Tools documentation with Sphinx on {platform.system()}...")
+    print(f"Building HED web tools documentation with Sphinx on {platform.system()}...")
 
     # Check if we're in the right directory
     if not os.path.exists("docs/conf.py"):

@@ -1,7 +1,7 @@
 Web application
 ===============
 
-Core web application modules for the Flask-based HED Web Tools.
+Core web application modules for the Flask-based HED web tools.
 
 Application factory
 -------------------

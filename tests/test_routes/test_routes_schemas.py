@@ -35,7 +35,7 @@ class Test(TestRouteBase):
                 "/schemas_submit", content_type="multipart/form-data", data=input_data
             )
             self.assertEqual(
-                200, result.status_code, "Convert of a invalid mediawiki has a response"
+                200, result.status_code, "Convert of a invalid MEDIAWIKI has a response"
             )
             headers_dict = dict(result.headers)
             self.assertTrue(headers_dict, "The error message still has a header")
@@ -59,7 +59,7 @@ class Test(TestRouteBase):
                 "/schemas_submit", content_type="multipart/form-data", data=input_data
             )
             self.assertEqual(
-                200, result.status_code, "Convert of a valid mediawiki has a response"
+                200, result.status_code, "Convert of a valid MEDIAWIKI has a response"
             )
             headers_dict = dict(result.headers)
             self.assertTrue(headers_dict, "A successful conversion has a header")
@@ -158,7 +158,7 @@ class Test(TestRouteBase):
             self.assertEqual(
                 200,
                 results.status_code,
-                "Validation of a invalid mediawiki has a response",
+                "Validation of a invalid MEDIAWIKI has a response",
             )
             headers_dict = dict(results.headers)
             self.assertTrue(headers_dict, "An unsuccessful validation has a header")
@@ -185,7 +185,7 @@ class Test(TestRouteBase):
             self.assertEqual(
                 200,
                 results.status_code,
-                "Validation of a valid mediawiki has a response",
+                "Validation of a valid MEDIAWIKI has a response",
             )
             headers_dict = dict(results.headers)
             self.assertTrue(headers_dict, "A successful validation has a header")

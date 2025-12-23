@@ -124,6 +124,7 @@ Desktop.ini
 
 # Status directory for development notes and summaries
 status/
+.status/
 
 # VS Code settings (user-specific)
 .vscode/

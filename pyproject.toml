@@ -43,7 +43,10 @@ docs = [
 dev = [
     "black>=22.0.0",
     "ruff>=0.1.0",
-    "coverage>=7.0.0"
+    "coverage>=7.0.0",
+    "mdformat==0.7.22",
+    "mdformat-myst==0.2.2",
+    "mdformat-tables==1.0.0"
 ]
 
 [project.scripts]
