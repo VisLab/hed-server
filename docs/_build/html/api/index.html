@@ -3,9 +3,8 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Web Application" href="web_application.html"><link rel="prev" title="Installation" href="../installation.html">
-        <link rel="prefetch" href="../_static/images/croppedWideLogo.png" as="image">
-        <link rel="prefetch" href="../_static/images/croppedWideLogo.png" as="image">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Web application" href="web_application.html"><link rel="prev" title="Installation" href="../installation.html">
+        <link rel="prefetch" href="../_static/croppedWideLogo.png" as="image">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.09.25 -->
         <title>API reference - HED web tools</title>
@@ -13,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=4fed6cf4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=01fc26ca" />
     
     
 
@@ -191,25 +190,32 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../_static/images/croppedWideLogo.png" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../_static/images/croppedWideLogo.png" alt="Dark Logo"/>
+    <img class="sidebar-logo" src="../_static/croppedWideLogo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">HED web tools</span>
   
+<div class="sidebar-brand-text">HED web tools</div>
+
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<ul class="current">
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API reference</a><input aria-label="Toggle navigation of API reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="web_application.html">Web Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="web_application.html">Web application</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utilities.html">Utilities</a></li>
 </ul>
@@ -217,16 +223,17 @@
 </ul>
 
 </div><div class="sidebar-quicklinks">
-    <h3>Quick Links</h3>
+    <h3>Quick links</h3>
     <ul>
-        <li><a href="https://www.hedtags.org/hed-resources/HedOnlineTools.html" target="_blank">Web user guide</a></li>
         <li><a href="https://www.hedtags.org/" target="_blank">HED homepage</a></li>
-        <li><a href="https://hedtools.org/hed/" target="_blank">HED online tools</a></li>
-        <li><a href="https://hed-specification.readthedocs.io/" target="_blank">HED specification</a></li>
+        <li><a href="https://www.hedtags.org/hed-resources" target="_blank">HED resources</a></li>
         <li><a href="https://www.hedtags.org/hed-schema-browser" target="_blank">HED schema browser</a></li>
+        <li><a href="https://www.hedtags.org/hed-specification" target="_blank">HED specification</a></li>
+        <li><a href="https://hedtools.org/hed" target="_blank">HED online tools</a></li>
+        <li><a href="https://www.hedtags.org/table-remodeler" target="_blank">Table-remodeler</a></li>
     </ul>
-</div></div>
-
+</div>
+</div>
       </div>
       
     </div>
@@ -266,10 +273,10 @@
         <article role="main" id="furo-main-content">
           <section id="api-reference">
 <h1>API reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
-<p>This section contains the complete API reference for HED Web Tools.</p>
+<p>This section contains the complete API reference for HED web tools.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="web_application.html">Web Application</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="web_application.html">Web application</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="web_application.html#application-factory">Application factory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="web_application.html#routes">Routes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="web_application.html#process-form">Process form</a></li>
@@ -294,7 +301,7 @@
 </div>
 <section id="core-modules-overview">
 <h2>Core modules overview<a class="headerlink" href="#core-modules-overview" title="Link to this heading">¶</a></h2>
-<p>The HED Web Tools package is organized into several key areas:</p>
+<p>The HED web tools package is organized into several key areas:</p>
 <ul class="simple">
 <li><p><strong>Web application</strong>: Flask application factory, routes, and request handling</p></li>
 <li><p><strong>Operations</strong>: Core service modules for processing HED data (events, schemas, sidecars, spreadsheets, strings)</p></li>
@@ -314,7 +321,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Web Application</div>
+                <div class="title">Web application</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -341,10 +348,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              <a class="muted-link " href="https://github.com/hed-standard/hed-web" aria-label="GitHub"></a>
-              
-            </div>
+            
           </div>
         </div>
         

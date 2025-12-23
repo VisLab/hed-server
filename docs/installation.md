@@ -1,6 +1,6 @@
 # Installation
 
-This guide provides step-by-step instructions for deploying and using HED Web Tools in various environments, from local development to production Docker deployments.
+This guide provides step-by-step instructions for deploying and using HED web tools in various environments, from local development to production Docker deployments.
 
 ## Quick links
 
@@ -17,6 +17,7 @@ This guide provides step-by-step instructions for deploying and using HED Web To
 - **Git** — [Download Git](https://git-scm.com/downloads/)
 
 For Docker deployment:
+
 - **Docker** — [Get Docker](https://docs.docker.com/get-docker/)
 - **Ubuntu Server** (recommended for production)
 
@@ -32,12 +33,14 @@ cd hed-web
 ### 1. Create and activate virtual environment
 
 **Windows (PowerShell):**
+
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
 **macOS/Linux:**
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
@@ -58,11 +61,13 @@ pip install -r requirements.txt
 Copy the configuration template:
 
 **Windows:**
+
 ```powershell
 Copy-Item config_template.py config.py
 ```
 
 **macOS/Linux:**
+
 ```bash
 cp config_template.py config.py
 ```
@@ -136,12 +141,14 @@ The `deploy.sh` script accepts three optional parameters:
 ### Environment-specific configurations
 
 **Production environment (`prod`):**
+
 - Container name: `hedtools`
 - Host port: `33000`
 - URL prefix: `/hed`
 - HED source: PyPI release (`hedtools` package)
 
 **Development environment (`dev`):**
+
 - Container name: `hedtools_dev`
 - Host port: `33004`
 - URL prefix: `/hed_dev`
@@ -327,12 +334,12 @@ class DevelopmentConfig(Config):
 
 The application recognizes these environment variables:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use | `config.ProductionConfig` |
-| `HED_URL_PREFIX` | URL prefix for the application | `/hed` |
-| `HED_STATIC_URL_PATH` | Path to static files | `/hed/hedweb/static` |
-| `SECRET_KEY` | Flask secret key for sessions | Generated |
+| Variable                | Description                    | Default                   |
+| ----------------------- | ------------------------------ | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use     | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix for the application | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Path to static files           | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key for sessions  | Generated                 |
 
 ### Docker environment variables
 
@@ -351,9 +358,10 @@ docker run -d \
 
 ### Available tools
 
-The HED Web Tools interface provides several categories of operations:
+The HED web tools interface provides several categories of operations:
 
 **Events operations:**
+
 - Validate HED annotations in event files
 - Assemble HED strings from tabular data
 - Search HED annotations with query syntax
@@ -361,6 +369,7 @@ The HED Web Tools interface provides several categories of operations:
 - Execute remodeling scripts
 
 **Sidecar operations:**
+
 - Validate BIDS JSON sidecars
 - Convert HED tags to long form
 - Convert HED tags to short form
@@ -368,14 +377,17 @@ The HED Web Tools interface provides several categories of operations:
 - Merge spreadsheet data into sidecars
 
 **Spreadsheet operations:**
+
 - Validate HED in spreadsheet files
 - Convert spreadsheets to long/short form
 
 **String operations:**
+
 - Validate individual HED strings
 - Convert strings to long/short form
 
 **Schema operations:**
+
 - Validate HED schema files
 - Convert schema formats
 - Check for schema issues
@@ -409,6 +421,7 @@ POST /services/<operation_category>/<operation_name>
 ```
 
 Examples:
+
 - `/services/events/validate`
 - `/services/sidecars/validate`
 - `/services/strings/validate`
@@ -497,6 +510,7 @@ For complete API documentation including all available endpoints, parameters, an
 **Symptoms:** Import errors or module not found
 
 **Solutions:**
+
 1. Verify Python version: `python --version` (must be 3.10+)
 2. Ensure virtual environment is activated
 3. Reinstall dependencies: `pip install -r requirements.txt`
@@ -509,6 +523,7 @@ For complete API documentation including all available endpoints, parameters, an
 **Solutions:**
 
 **Windows (PowerShell):**
+
 ```powershell
 # Find process using port 5000
 netstat -ano | findstr :5000
@@ -518,6 +533,7 @@ taskkill /PID <PID> /F
 ```
 
 **Linux/macOS:**
+
 ```bash
 # Find and kill process
 lsof -ti:5000 | xargs kill -9
@@ -528,6 +544,7 @@ lsof -ti:5000 | xargs kill -9
 **Symptoms:** Container starts but immediately stops
 
 **Solutions:**
+
 1. Check container logs:
    ```bash
    docker logs hedtools
@@ -544,6 +561,7 @@ lsof -ti:5000 | xargs kill -9
 **Symptoms:** "Could not load HED schema" errors
 
 **Solutions:**
+
 1. Check internet connectivity (schemas are fetched from GitHub)
 2. Verify schema version exists
 3. Use a local schema file if network is unavailable
@@ -554,6 +572,7 @@ lsof -ti:5000 | xargs kill -9
 **Symptoms:** 413 Request Entity Too Large or upload timeout
 
 **Solutions:**
+
 1. Check file size (default limit: 16MB)
 2. Increase `MAX_CONTENT_LENGTH` in config:
    ```python
@@ -567,6 +586,7 @@ lsof -ti:5000 | xargs kill -9
 #### Slow validation
 
 **Causes and solutions:**
+
 - **Large files**: Process in batches or increase timeout
 - **Complex schemas**: Use schema caching
 - **Network issues**: Use local schema files
@@ -574,6 +594,7 @@ lsof -ti:5000 | xargs kill -9
 #### High memory usage
 
 **Solutions:**
+
 1. Limit concurrent requests
 2. Increase Docker container memory:
    ```bash
@@ -586,6 +607,7 @@ lsof -ti:5000 | xargs kill -9
 If you encounter issues not covered here:
 
 1. **Check logs**:
+
    - Development: Console output
    - Docker: `docker logs hedtools`
    - Production: Check `/var/log/hedtools/`
@@ -593,6 +615,7 @@ If you encounter issues not covered here:
 2. **Search GitHub Issues**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
 
 3. **Create a new issue** with:
+
    - Detailed problem description
    - Steps to reproduce
    - Error messages and logs
@@ -658,6 +681,7 @@ If you encounter issues not covered here:
 ### Command reference
 
 **Local development:**
+
 ```bash
 # Activate virtual environment (Windows)
 .venv\Scripts\Activate.ps1
@@ -674,6 +698,7 @@ python -m hedweb.runserver --port 5000 --debug
 ```
 
 **Docker deployment:**
+
 ```bash
 # Quick deployment
 ./deploy.sh main prod
@@ -694,6 +719,7 @@ docker restart hedtools
 ```
 
 **Testing:**
+
 ```bash
 # Run all tests
 python -m unittest discover
@@ -708,48 +734,81 @@ coverage report
 ```
 
 **Documentation:**
+
 ```bash
 # Build documentation
 cd docs
-sphinx-build -b html . _build/html
+python -m sphinx -b html . _build/html
 
-# Serve with auto-reload
-sphinx-autobuild . _build/html
+# Serve with auto-reload (if sphinx-autobuild is installed)
+python -m sphinx_autobuild . _build/html
 ```
 
 ### File locations
 
 **Configuration:**
+
 - Template: `config_template.py`
 - Local: `config.py` (create from template)
 - Docker: `/root/hedtools/config.py`
 
 **Logs (Docker):**
+
 - Application: `/var/log/hedtools/`
 - Gunicorn: `/var/log/hedtools/gunicorn.log`
 
 **Cache:**
+
 - Local: `/tmp/hed_cache` or configured location
 - Docker: `/var/cache/schema_cache`
 
 **Static files:**
+
 - Source: `hedweb/static/`
 - URL: `/hed/hedweb/static/` (in production)
 
 ### Port reference
 
-| Deployment | Container Port | Host Port | URL Prefix |
-|------------|---------------|-----------|------------|
-| Production | 80 | 33000 | /hed |
-| Development | 80 | 33004 | /hed_dev |
-| Local dev | - | 5000 | / |
+| Deployment  | Container Port | Host Port | URL Prefix |
+| ----------- | -------------- | --------- | ---------- |
+| Production  | 80             | 33000     | /hed       |
+| Development | 80             | 33004     | /hed_dev   |
+| Local dev   | -              | 5000      | /          |
 
 ### Environment variables reference
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `HEDTOOLS_CONFIG_CLASS` | Config class | `config.ProductionConfig` |
-| `HED_URL_PREFIX` | URL prefix | `/hed` |
-| `HED_STATIC_URL_PATH` | Static files path | `/hed/hedweb/static` |
-| `SECRET_KEY` | Flask secret key | Auto-generated |
-| `HED_INSTALL_SOURCE` | Docker HED source | `pypi` or `main` |
+| Variable                | Purpose           | Default                   |
+| ----------------------- | ----------------- | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Config class      | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix        | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Static files path | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key  | Auto-generated            |
+| `HED_INSTALL_SOURCE`    | Docker HED source | `pypi` or `main`          |
+
+**Cache:**
+
+- Local: `/tmp/hed_cache` or configured location
+- Docker: `/var/cache/schema_cache`
+
+**Static files:**
+
+- Source: `hedweb/static/`
+- URL: `/hed/hedweb/static/` (in production)
+
+### Port reference
+
+| Deployment  | Container Port | Host Port | URL Prefix |
+| ----------- | -------------- | --------- | ---------- |
+| Production  | 80             | 33000     | /hed       |
+| Development | 80             | 33004     | /hed_dev   |
+| Local dev   | -              | 5000      | /          |
+
+### Environment variables reference
+
+| Variable                | Purpose           | Default                   |
+| ----------------------- | ----------------- | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Config class      | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix        | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Static files path | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key  | Auto-generated            |
+| `HED_INSTALL_SOURCE`    | Docker HED source | `pypi` or `main`          |

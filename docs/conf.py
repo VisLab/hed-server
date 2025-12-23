@@ -14,7 +14,7 @@ from hedweb import _version
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "HED Web Tools"
+project = "HED web tools"
 copyright = "2024, HED Standard"
 author = "HED Standard"
 
@@ -50,9 +50,12 @@ html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_js_files = ["gh_icon_fix.js"]
 
+# Add logo
+html_logo = "_static/images/croppedWideLogo.png"
+
 # Furo theme options
 html_theme_options = {
-    "sidebar_hide_name": False,
+    "sidebar_hide_name": True,
     "light_css_variables": {
         "color-brand-primary": "#0969da",
         "color-brand-content": "#0969da",
@@ -64,30 +67,20 @@ html_theme_options = {
     "source_repository": "https://github.com/hed-standard/hed-web/",
     "source_branch": "main",
     "source_directory": "docs/",
-    "light_logo": "images/croppedWideLogo.png",
-    "dark_logo": "images/croppedWideLogo.png",
-    "footer_icons": [
-        {
-            "name": "GitHub",
-            "url": "https://github.com/hed-standard/hed-web",
-            "html": "",
-            "class": "",
-        },
-    ],
 }
 
 html_title = "HED web tools"
 
-# Sidebar links
+# Configure sidebar to show logo, search, navigation, and quick links
 html_sidebars = {
     "**": [
         "sidebar/brand.html",
         "sidebar/search.html",
         "sidebar/scroll-start.html",
         "sidebar/navigation.html",
-        "custom-links.html",
+        "quicklinks.html",
+        "sidebar/ethical-ads.html",
         "sidebar/scroll-end.html",
-        "sidebar/variant-selector.html",
     ]
 }
 
@@ -121,7 +114,8 @@ autosummary_generate = True
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "flask": ("https://flask.palletsprojects.com/en/3.0.x/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
 }
 
 # MyST parser settings

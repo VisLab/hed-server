@@ -1,15 +1,15 @@
-# The HED Online Tools user guide
+# The HED web tools user guide
 
 This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
 
 ## Quick links
 
-- 📚 [API Reference](api/index.html)
-- 🌐 [HED Online Tools](https://hedtools.org/hed)
-- 🐛 [GitHub Issues](https://github.com/hed-standard/hed-web/issues)
-- 🎓 [HED Resources](https://www.hedtags.org/hed-resources)
-- 📖 [HED Specification](https://www.hedtags.org/hed-specification)
-- 🐍 [Python Tools](https://hed-python.readthedocs.io/)
+- 🌐 [HED online tools](https://hedtools.org/hed)
+- 📚 [API reference](api/index.html)
+- 🐛 [GitHub issues](https://github.com/hed-standard/hed-web/issues)
+- 🎓 [HED resources](https://www.hedtags.org/hed-resources)
+- 📖 [HED tpecification](https://www.hedtags.org/hed-specification)
+- 🐍 [Python HEDTools](https://www.hedtags.org/hed-python)
 
 ## Table of contents
 
@@ -25,11 +25,9 @@ This guide provides comprehensive instructions for using the HED web-based tools
 
 ## Getting started
 
-### Accessing HED Online Tools
+### Accessing HED online tools
 
-HED web-based tools are available directly through a browser at [https://hedtools.org/hed](https://hedtools.org/hed). These tools are free to use and don't require a login.
-
-Two versions are available:
+HED web-based tools are available directly through a browser at [https://hedtools.org/hed](https://hedtools.org/hed). These tools are free to use and don't require a login. Two versions are available:
 
 - **Production**: [https://hedtools.org/hed](https://hedtools.org/hed) - Stable release version
 - **Development**: [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev) - Latest development features
@@ -40,7 +38,7 @@ The HED browser-based tools are organized into the following pages:
 
 | Tool | URL | Description |
 |------|-----|-------------|
-| **Events** | [link](https://hedtools.org/hed/events) | Validation, summary, search, and generation tools for BIDS events files |
+| **Events** | [link](https://hedtools.org/hed/events) | Validation, summary, search, and generation tools for tabular (.tsv) files |
 | **Sidecars** | [link](https://hedtools.org/hed/sidecars) | Validation, transformation, extraction, and merging tools for JSON sidecars |
 | **Spreadsheets** | [link](https://hedtools.org/hed/spreadsheets) | Validation and transformation tools for spreadsheet files |
 | **Strings** | [link](https://hedtools.org/hed/strings) | Quick validation and transformation of individual HED strings |
@@ -451,7 +449,7 @@ All services return JSON with:
 ### For schema development
 
 1. **Validate before converting**: Always validate schemas before format conversion
-2. **Use mediawiki for editing**: Easier to read and modify than XML
+2. **Use MEDIAWIKI for editing**: Easier to read and modify than other formats
 3. **Compare versions**: Use comparison tool to track changes between versions
 4. **Check warnings**: Schema warnings can indicate potential issues
 

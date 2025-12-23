@@ -1,4 +1,4 @@
-# HED Web Tools
+# HED web tools
 ![Python3](https://img.shields.io/badge/python->=3.10-blue.svg)
 [![Documentation](https://img.shields.io/badge/docs-hedtags.org-blue.svg)](https://www.hedtags.org/hed-web)
 [![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-web/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-web)

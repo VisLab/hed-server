@@ -1,7 +1,7 @@
 API reference
 =============
 
-This section contains the complete API reference for HED Web Tools.
+This section contains the complete API reference for HED web tools.
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +13,7 @@ This section contains the complete API reference for HED Web Tools.
 Core modules overview
 ---------------------
 
-The HED Web Tools package is organized into several key areas:
+The HED web tools package is organized into several key areas:
 
 * **Web application**: Flask application factory, routes, and request handling
 * **Operations**: Core service modules for processing HED data (events, schemas, sidecars, spreadsheets, strings)
