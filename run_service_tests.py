@@ -23,8 +23,9 @@ import os
 import sys
 import time
 import unittest
-import requests
 from contextlib import contextmanager
+
+import requests
 
 
 def run_server(port, verbose):

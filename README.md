@@ -101,7 +101,7 @@ python -m unittest discover -s tests -p "test*.py" -v
 
 Service tests validate the REST API endpoints by making HTTP requests to a running HED web server.
 
-**Option 1: Automatic (Recommended)**  
+**Option 1: Automatic (Recommended)**\
 Use the provided script that starts the server, runs tests, and cleans up automatically:
 
 ```powershell
@@ -112,26 +112,28 @@ Use the provided script that starts the server, runs tests, and cleans up automa
 python run_service_tests.py
 ```
 
-**Option 2: VS Code Task**  
+**Option 2: VS Code Task**\
 Use the integrated task runner:
+
 1. Press `Ctrl+Shift+P`
 2. Type "Tasks: Run Task"
 3. Select "Run Service Tests (with local server)"
 
-**Option 3: Manual Server Management**  
+**Option 3: Manual Server Management**\
 Start the server in one terminal and run tests in another:
 
 Terminal 1 - Start server:
+
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python hedweb/runserver.py
 ```
 
 Terminal 2 - Run tests:
+
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m unittest discover services_tests
 ```
 
 For more details, see [.status/running-service-tests-locally.md](.status/running-service-tests-locally.md).
-
