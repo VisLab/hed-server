@@ -7,7 +7,7 @@
         <link rel="prefetch" href="_static/croppedWideLogo.png" as="image">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.09.25 -->
-        <title>The HED Online Tools user guide - HED web tools</title>
+        <title>The HED web tools user guide - HED web tools</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -271,18 +271,18 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="the-hed-online-tools-user-guide">
-<h1>The HED Online Tools user guide<a class="headerlink" href="#the-hed-online-tools-user-guide" title="Link to this heading">¶</a></h1>
+          <section id="the-hed-web-tools-user-guide">
+<h1>The HED web tools user guide<a class="headerlink" href="#the-hed-web-tools-user-guide" title="Link to this heading">¶</a></h1>
 <p>This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.</p>
 <section id="quick-links">
 <h2>Quick links<a class="headerlink" href="#quick-links" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>📚 <a class="reference internal" href="#api/index.html"><span class="xref myst">API Reference</span></a></p></li>
-<li><p>🌐 <a class="reference external" href="https://hedtools.org/hed">HED Online Tools</a></p></li>
-<li><p>🐛 <a class="reference external" href="https://github.com/hed-standard/hed-web/issues">GitHub Issues</a></p></li>
-<li><p>🎓 <a class="reference external" href="https://www.hedtags.org/hed-resources">HED Resources</a></p></li>
-<li><p>📖 <a class="reference external" href="https://www.hedtags.org/hed-specification">HED Specification</a></p></li>
-<li><p>🐍 <a class="reference external" href="https://hed-python.readthedocs.io/">Python Tools</a></p></li>
+<li><p>🌐 <a class="reference external" href="https://hedtools.org/hed">HED online tools</a></p></li>
+<li><p>📚 <a class="reference internal" href="#api/index.html"><span class="xref myst">API reference</span></a></p></li>
+<li><p>🐛 <a class="reference external" href="https://github.com/hed-standard/hed-web/issues">GitHub issues</a></p></li>
+<li><p>🎓 <a class="reference external" href="https://www.hedtags.org/hed-resources">HED resources</a></p></li>
+<li><p>📖 <a class="reference external" href="https://www.hedtags.org/hed-specification">HED tpecification</a></p></li>
+<li><p>🐍 <a class="reference external" href="https://www.hedtags.org/hed-python">Python HEDTools</a></p></li>
 </ul>
 </section>
 <section id="table-of-contents">
@@ -302,9 +302,8 @@
 <section id="getting-started">
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
 <section id="accessing-hed-online-tools">
-<h3>Accessing HED Online Tools<a class="headerlink" href="#accessing-hed-online-tools" title="Link to this heading">¶</a></h3>
-<p>HED web-based tools are available directly through a browser at <a class="reference external" href="https://hedtools.org/hed">https://hedtools.org/hed</a>. These tools are free to use and don’t require a login.</p>
-<p>Two versions are available:</p>
+<h3>Accessing HED online tools<a class="headerlink" href="#accessing-hed-online-tools" title="Link to this heading">¶</a></h3>
+<p>HED web-based tools are available directly through a browser at <a class="reference external" href="https://hedtools.org/hed">https://hedtools.org/hed</a>. These tools are free to use and don’t require a login. Two versions are available:</p>
 <ul class="simple">
 <li><p><strong>Production</strong>: <a class="reference external" href="https://hedtools.org/hed">https://hedtools.org/hed</a> - Stable release version</p></li>
 <li><p><strong>Development</strong>: <a class="reference external" href="https://hedtools.org/hed_dev">https://hedtools.org/hed_dev</a> - Latest development features</p></li>
@@ -324,7 +323,7 @@
 <tbody>
 <tr class="row-even"><td><p><strong>Events</strong></p></td>
 <td><p><a class="reference external" href="https://hedtools.org/hed/events">link</a></p></td>
-<td><p>Validation, summary, search, and generation tools for BIDS events files</p></td>
+<td><p>Validation, summary, search, and generation tools for tabular (.tsv) files</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Sidecars</strong></p></td>
 <td><p><a class="reference external" href="https://hedtools.org/hed/sidecars">link</a></p></td>
@@ -784,7 +783,7 @@
 <h3>For schema development<a class="headerlink" href="#for-schema-development" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><strong>Validate before converting</strong>: Always validate schemas before format conversion</p></li>
-<li><p><strong>Use mediawiki for editing</strong>: Easier to read and modify than XML</p></li>
+<li><p><strong>Use MEDIAWIKI for editing</strong>: Easier to read and modify than other formats</p></li>
 <li><p><strong>Compare versions</strong>: Use comparison tool to track changes between versions</p></li>
 <li><p><strong>Check warnings</strong>: Schema warnings can indicate potential issues</p></li>
 </ol>
@@ -931,11 +930,11 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">The HED Online Tools user guide</a><ul>
+<li><a class="reference internal" href="#">The HED web tools user guide</a><ul>
 <li><a class="reference internal" href="#quick-links">Quick links</a></li>
 <li><a class="reference internal" href="#table-of-contents">Table of contents</a></li>
 <li><a class="reference internal" href="#getting-started">Getting started</a><ul>
-<li><a class="reference internal" href="#accessing-hed-online-tools">Accessing HED Online Tools</a></li>
+<li><a class="reference internal" href="#accessing-hed-online-tools">Accessing HED online tools</a></li>
 <li><a class="reference internal" href="#tool-organization">Tool organization</a></li>
 <li><a class="reference internal" href="#common-features">Common features</a><ul>
 <li><a class="reference internal" href="#schema-selection">Schema selection</a></li>

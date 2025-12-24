@@ -1,15 +1,15 @@
-# The HED Online Tools user guide
+# The HED web tools user guide
 
 This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
 
 ## Quick links
 
-- 📚 [API Reference](api/index.html)
-- 🌐 [HED Online Tools](https://hedtools.org/hed)
-- 🐛 [GitHub Issues](https://github.com/hed-standard/hed-web/issues)
-- 🎓 [HED Resources](https://www.hedtags.org/hed-resources)
-- 📖 [HED Specification](https://www.hedtags.org/hed-specification)
-- 🐍 [Python Tools](https://hed-python.readthedocs.io/)
+- 🌐 [HED online tools](https://hedtools.org/hed)
+- 📚 [API reference](api/index.html)
+- 🐛 [GitHub issues](https://github.com/hed-standard/hed-web/issues)
+- 🎓 [HED resources](https://www.hedtags.org/hed-resources)
+- 📖 [HED tpecification](https://www.hedtags.org/hed-specification)
+- 🐍 [Python HEDTools](https://www.hedtags.org/hed-python)
 
 ## Table of contents
 
@@ -25,11 +25,9 @@ This guide provides comprehensive instructions for using the HED web-based tools
 
 ## Getting started
 
-### Accessing HED Online Tools
+### Accessing HED online tools
 
-HED web-based tools are available directly through a browser at [https://hedtools.org/hed](https://hedtools.org/hed). These tools are free to use and don't require a login.
-
-Two versions are available:
+HED web-based tools are available directly through a browser at [https://hedtools.org/hed](https://hedtools.org/hed). These tools are free to use and don't require a login. Two versions are available:
 
 - **Production**: [https://hedtools.org/hed](https://hedtools.org/hed) - Stable release version
 - **Development**: [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev) - Latest development features
@@ -38,13 +36,13 @@ Two versions are available:
 
 The HED browser-based tools are organized into the following pages:
 
-| Tool | URL | Description |
-|------|-----|-------------|
-| **Events** | [link](https://hedtools.org/hed/events) | Validation, summary, search, and generation tools for BIDS events files |
-| **Sidecars** | [link](https://hedtools.org/hed/sidecars) | Validation, transformation, extraction, and merging tools for JSON sidecars |
-| **Spreadsheets** | [link](https://hedtools.org/hed/spreadsheets) | Validation and transformation tools for spreadsheet files |
-| **Strings** | [link](https://hedtools.org/hed/strings) | Quick validation and transformation of individual HED strings |
-| **Schemas** | [link](https://hedtools.org/hed/schemas) | Validation, conversion, and comparison tools for HED schemas |
+| Tool             | URL                                           | Description                                                                 |
+| ---------------- | --------------------------------------------- | --------------------------------------------------------------------------- |
+| **Events**       | [link](https://hedtools.org/hed/events)       | Validation, summary, search, and generation tools for tabular (.tsv) files  |
+| **Sidecars**     | [link](https://hedtools.org/hed/sidecars)     | Validation, transformation, extraction, and merging tools for JSON sidecars |
+| **Spreadsheets** | [link](https://hedtools.org/hed/spreadsheets) | Validation and transformation tools for spreadsheet files                   |
+| **Strings**      | [link](https://hedtools.org/hed/strings)      | Quick validation and transformation of individual HED strings               |
+| **Schemas**      | [link](https://hedtools.org/hed/schemas)      | Validation, conversion, and comparison tools for HED schemas                |
 
 ### Common features
 
@@ -80,6 +78,7 @@ Events files are BIDS-style tab-separated value (TSV) files with a header line g
 Validates HED annotations in a BIDS events file, useful for debugging during annotation development.
 
 **Steps:**
+
 1. Select the `Validate` action
 2. Toggle `Check for warnings` if you want to include warnings
 3. Select the HED version
@@ -96,6 +95,7 @@ Validates HED annotations in a BIDS events file, useful for debugging during ann
 Produces a file with fully assembled HED annotations for each event, combining sidecar and column values.
 
 **Steps:**
+
 1. Select the `Assemble annotations` action
 2. Toggle `Expand defs` if you want expanded definitions
 3. Select the HED version
@@ -110,6 +110,7 @@ Produces a file with fully assembled HED annotations for each event, combining s
 Search for events matching specific HED criteria within an events file.
 
 **Steps:**
+
 1. Select the `Search annotations` action
 2. Enter your search query using HED tags
 3. Select the HED version
@@ -124,6 +125,7 @@ Search for events matching specific HED criteria within an events file.
 Creates a JSON sidecar template from an events file, ready to be filled with HED annotations.
 
 **Steps:**
+
 1. Select the `Generate sidecar template` action
 2. Upload the events file (`.tsv`)
 3. Review the column list that appears
@@ -140,6 +142,7 @@ Creates a JSON sidecar template from an events file, ready to be filled with HED
 Apply table remodeling operations to transform or summarize events files without programming.
 
 **Steps:**
+
 1. Select the `Execute remodel script` action
 2. Toggle `Include summaries` if you want summary output
 3. Select the HED version
@@ -161,6 +164,7 @@ BIDS JSON sidecars (files ending in `events.json`) contain metadata and HED anno
 Validates HED annotations in a JSON sidecar file.
 
 **Steps:**
+
 1. Select the `Validate` action
 2. Toggle `Check for warnings` if you want warnings
 3. Select the HED version
@@ -176,6 +180,7 @@ Validates HED annotations in a JSON sidecar file.
 Converts all HED tags in a sidecar to long form (full paths).
 
 **Steps:**
+
 1. Select the `Convert to long` action
 2. Toggle `Expand defs` if you want expanded definitions
 3. Select the HED version
@@ -189,6 +194,7 @@ Converts all HED tags in a sidecar to long form (full paths).
 Converts all HED tags in a sidecar to short form (leaf nodes only).
 
 **Steps:**
+
 1. Select the `Convert to short` action
 2. Toggle `Expand defs` if you want expanded definitions
 3. Select the HED version
@@ -202,6 +208,7 @@ Converts all HED tags in a sidecar to short form (leaf nodes only).
 Exports sidecar content to a 4-column spreadsheet for easier editing.
 
 **Steps:**
+
 1. Select the `Extract HED spreadsheet` action
 2. Upload the JSON sidecar file (`.json`)
 3. Click the `Process` button
@@ -215,6 +222,7 @@ See the [BIDS Annotation Quickstart](https://www.hedtags.org/hed-resources/BidsA
 Imports HED annotations from a 4-column spreadsheet back into a JSON sidecar.
 
 **Steps:**
+
 1. Select the `Merge HED spreadsheet` action
 2. Toggle `Include Description tags` to include descriptions as HED tags
 3. Upload the target JSON sidecar file (`.json`)
@@ -232,6 +240,7 @@ Spreadsheet tools support general-purpose HED annotation in Excel (`.xlsx`) or t
 Validates HED tags in spreadsheet columns.
 
 **Steps:**
+
 1. Select the `Validate` action
 2. Toggle `Check for warnings` if you want warnings
 3. Select the HED version
@@ -248,6 +257,7 @@ Validates HED tags in spreadsheet columns.
 Converts all HED tags in selected columns to long form.
 
 **Steps:**
+
 1. Select the `Convert to long` action
 2. Select the HED version
 3. Upload a spreadsheet file (`.tsv` or `.xlsx`)
@@ -262,6 +272,7 @@ Converts all HED tags in selected columns to long form.
 Converts all HED tags in selected columns to short form.
 
 **Steps:**
+
 1. Select the `Convert to short` action
 2. Select the HED version
 3. Upload a spreadsheet file (`.tsv` or `.xlsx`)
@@ -280,6 +291,7 @@ String tools provide quick validation and conversion for individual HED annotati
 Validates a single HED string containing tags and groups.
 
 **Steps:**
+
 1. Select the `Validate` action
 2. Toggle `Check for warnings` if you want warnings
 3. Select the HED version
@@ -293,6 +305,7 @@ Validates a single HED string containing tags and groups.
 Converts a HED string to long form (full paths).
 
 **Steps:**
+
 1. Select the `Convert to long` action
 2. Select the HED version
 3. Type or paste your HED string into the text box
@@ -305,6 +318,7 @@ Converts a HED string to long form (full paths).
 Converts a HED string to short form (leaf nodes only).
 
 **Steps:**
+
 1. Select the `Convert to short` action
 2. Select the HED version
 3. Type or paste your HED string into the text box
@@ -323,6 +337,7 @@ View standard schemas using the [HED Schema Browser](https://www.hedtags.org/hed
 Checks schema syntax and HED-3G compliance.
 
 **Steps:**
+
 1. Select the `Validate` action
 2. Toggle `Check for warnings` if you want warnings
 3. Enter a schema URL or upload a schema file (`.xml` or `.mediawiki`)
@@ -335,6 +350,7 @@ Checks schema syntax and HED-3G compliance.
 Converts between `.mediawiki` and `.xml` formats.
 
 **Steps:**
+
 1. Select the `Convert schema` action
 2. Enter a schema URL or upload a schema file (`.xml` or `.mediawiki`)
 3. Click the `Process` button
@@ -348,6 +364,7 @@ Converts between `.mediawiki` and `.xml` formats.
 Shows differences between two schema versions.
 
 **Steps:**
+
 1. Select the `Compare schemas` action
 2. Enter URL or upload file for first schema
 3. Enter URL or upload file for second schema
@@ -384,21 +401,21 @@ All requests are JSON dictionaries with a `service` parameter and additional par
 
 ### Available services
 
-| Service | Description |
-|---------|-------------|
-| `get_services` | Returns list of available services |
-| `events_validate` | Validate BIDS events file |
-| `events_assemble` | Assemble HED annotations |
-| `events_extract` | Extract sidecar template |
-| `sidecar_validate` | Validate JSON sidecar |
-| `sidecar_to_long` | Convert sidecar to long form |
-| `sidecar_to_short` | Convert sidecar to short form |
-| `spreadsheet_validate` | Validate spreadsheet |
-| `spreadsheet_to_long` | Convert spreadsheet to long form |
-| `spreadsheet_to_short` | Convert spreadsheet to short form |
-| `strings_validate` | Validate HED strings |
-| `strings_to_long` | Convert strings to long form |
-| `strings_to_short` | Convert strings to short form |
+| Service                | Description                        |
+| ---------------------- | ---------------------------------- |
+| `get_services`         | Returns list of available services |
+| `events_validate`      | Validate BIDS events file          |
+| `events_assemble`      | Assemble HED annotations           |
+| `events_extract`       | Extract sidecar template           |
+| `sidecar_validate`     | Validate JSON sidecar              |
+| `sidecar_to_long`      | Convert sidecar to long form       |
+| `sidecar_to_short`     | Convert sidecar to short form      |
+| `spreadsheet_validate` | Validate spreadsheet               |
+| `spreadsheet_to_long`  | Convert spreadsheet to long form   |
+| `spreadsheet_to_short` | Convert spreadsheet to short form  |
+| `strings_validate`     | Validate HED strings               |
+| `strings_to_long`      | Convert strings to long form       |
+| `strings_to_short`     | Convert strings to short form      |
 
 ### Service parameters
 
@@ -451,7 +468,7 @@ All services return JSON with:
 ### For schema development
 
 1. **Validate before converting**: Always validate schemas before format conversion
-2. **Use mediawiki for editing**: Easier to read and modify than XML
+2. **Use MEDIAWIKI for editing**: Easier to read and modify than other formats
 3. **Compare versions**: Use comparison tool to track changes between versions
 4. **Check warnings**: Schema warnings can indicate potential issues
 
@@ -467,37 +484,44 @@ All services return JSON with:
 ### Common validation errors
 
 **"Invalid HED tag"**
+
 - Tag not found in specified schema version
 - Check for typos in tag names
 - Verify you're using the correct schema version
 
 **"Required tag missing"**
+
 - Certain HED constructs require specific tags
 - Check HED specification for requirements
 
 **"Comma errors"**
+
 - Missing or extra commas in HED string
 - Tags in a group should be comma-separated
 - Groups should be comma-separated
 
 **"Placeholder errors"**
+
 - Definition placeholders not properly filled
 - Use correct syntax: `Def/MyDef/value`
 
 ### File format issues
 
 **"Cannot parse file"**
+
 - Ensure TSV files use tabs, not spaces
 - Check for proper UTF-8 encoding
 - Verify JSON files are valid JSON
 
 **"Column not found"**
+
 - Column names in sidecar must match events file exactly
 - Column names are case-sensitive
 
 ### Schema issues
 
 **"Cannot load schema"**
+
 - Check internet connection for downloading standard schemas
 - For custom schemas, verify XML/mediawiki format
 - Ensure schema file is complete and well-formed
@@ -505,11 +529,13 @@ All services return JSON with:
 ### Service issues
 
 **"CSRF token error"**
+
 - Obtain fresh token from services endpoint
 - Include token in request headers
 - Check that cookie is preserved across requests
 
 **"Service timeout"**
+
 - Large files may timeout on web interface
 - Consider using Python tools for large datasets
 - Break operations into smaller batches
