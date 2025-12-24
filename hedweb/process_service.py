@@ -135,7 +135,7 @@ class ProcessServices:
         if definition_string:
             def_file = io.StringIO(definition_string)
 
-        arguments[bc.DEFINITIONS] = Sidecar(files=def_file).extract_definitions(
+        arguments[bc.DEFINITIONS] = Sidecar(files=def_file).get_def_dict(
             arguments[bc.SCHEMA]
         )
 

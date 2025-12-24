@@ -82,3 +82,56 @@ The HED online tools are also available as callable web services. More detailed 
 ### Online deployment
 
 The stable version of the HED online tools is available for your use at: [**https://hedtools.org/hed**](https://hedtools.org/hed). An alternate version [**https://hedtools.org/hed_dev**](https://hedtools.org/hed_dev) has the latest features, some of which are experimental.
+
+## Testing
+
+### Unit Tests
+
+Run the main test suite without requiring external services:
+
+```powershell
+# Activate virtual environment
+.\.venv\Scripts\Activate.ps1
+
+# Run all unit tests
+python -m unittest discover -s tests -p "test*.py" -v
+```
+
+### Service Tests (Integration Tests)
+
+Service tests validate the REST API endpoints by making HTTP requests to a running HED web server.
+
+**Option 1: Automatic (Recommended)**  
+Use the provided script that starts the server, runs tests, and cleans up automatically:
+
+```powershell
+# Activate virtual environment
+.\.venv\Scripts\Activate.ps1
+
+# Run service tests with automatic server management
+python run_service_tests.py
+```
+
+**Option 2: VS Code Task**  
+Use the integrated task runner:
+1. Press `Ctrl+Shift+P`
+2. Type "Tasks: Run Task"
+3. Select "Run Service Tests (with local server)"
+
+**Option 3: Manual Server Management**  
+Start the server in one terminal and run tests in another:
+
+Terminal 1 - Start server:
+```powershell
+.\.venv\Scripts\Activate.ps1
+python hedweb/runserver.py
+```
+
+Terminal 2 - Run tests:
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m unittest discover services_tests
+```
+
+For more details, see [.status/running-service-tests-locally.md](.status/running-service-tests-locally.md).
+

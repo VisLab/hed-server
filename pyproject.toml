@@ -108,3 +108,15 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["hedweb"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "services_tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+# Separate markers for different test types
+markers = [
+    "unit: Unit tests that don't require external services",
+    "service: Service tests that require a running HED web server",
+]

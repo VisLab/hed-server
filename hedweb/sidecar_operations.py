@@ -100,7 +100,7 @@ class SidecarOperations(BaseOperations):
             return results
         display_name = self.sidecar.name
         if self.expand_defs:
-            def_dicts = self.sidecar.extract_definitions(hed_schema=self.schema)
+            def_dicts = self.sidecar.get_def_dict(hed_schema=self.schema)
         else:
             def_dicts = None
         if self.command == bc.COMMAND_TO_LONG:

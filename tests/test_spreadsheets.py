@@ -244,9 +244,7 @@ class Test(TestWebBase):
         sidecar_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "data/def_test.json"
         )
-        spread_proc.definitions = Sidecar(sidecar_path).extract_definitions(
-            spread_proc.schema
-        )
+        spread_proc.definitions = Sidecar(sidecar_path).get_def_dict(spread_proc.schema)
         spread_proc.command = bc.COMMAND_VALIDATE
         results = spread_proc.process()
         self.assertFalse(results["data"], "should have empty data when no errors")
