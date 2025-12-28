@@ -1,4 +1,4 @@
-# The HED web tools user guide
+# HED online tools user guide
 
 This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
 

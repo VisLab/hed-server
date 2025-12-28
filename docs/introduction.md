@@ -15,9 +15,9 @@ HED is integrated into major neuroimaging standards:
 - [BIDS](https://bids.neuroimaging.io/) (Brain Imaging Data Structure)
 - [NWB](https://www.nwb.org/) (Neurodata Without Borders)
 
-## What are HED web tools?
+## What are HED online tools?
 
-HED web tools provide both a web-based interface and REST API services for working with HED annotations and schemas. The application is built using Flask and offers easy access to HED operations without requiring programming knowledge.
+HED online tools provide both a web-based interface and REST API services for working with HED annotations and schemas. The application is built using Flask and offers easy access to HED operations without requiring programming knowledge.
 
 ### Web interface
 
@@ -121,7 +121,7 @@ HED schemas define the structure and vocabularies for HED annotations.
 
 ## Getting started
 
-Ready to start using HED web tools? Check out:
+Ready to start using HED online tools? Check out:
 
 - [User guide](user_guide.md) - Comprehensive guide to all features
 - [Installation](installation.md) - Deploy your own instance

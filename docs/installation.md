@@ -1,13 +1,13 @@
 # Installation
 
-This guide provides step-by-step instructions for deploying and using HED web tools in various environments, from local development to production Docker deployments.
+This guide provides step-by-step instructions for deploying and using HED online tools in various environments, from local development to production Docker deployments.
 
 ## Quick links
 
-- 📚 [API Reference](api/index.rst)
-- 🐛 [GitHub Issues](https://github.com/hed-standard/hed-web/issues)
-- 📖 [HED Specification](https://hed-specification.readthedocs.io/)
-- 🌐 [Online Tools](https://hedtools.org)
+- 📚 [API reference](api/index.rst)
+- 🐛 [GitHub issues](https://github.com/hed-standard/hed-web/issues)
+- 📖 [HED specification](https://hed-specification.readthedocs.io/)
+- 🌐 [Online tools](https://hedtools.org/hed)
 
 ## Installation
 
@@ -358,7 +358,7 @@ docker run -d \
 
 ### Available tools
 
-The HED web tools interface provides several categories of operations:
+The HED online interface provides several categories of operations:
 
 **Events operations:**
 

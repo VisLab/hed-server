@@ -1,4 +1,4 @@
-# HED web tools
+# HED online tools
 
 ![Python3](https://img.shields.io/badge/python-%3E=3.10-blue.svg) [![Documentation](https://img.shields.io/badge/docs-hedtags.org-blue.svg)](https://www.hedtags.org/hed-web) [![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-web/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-web) [![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-web/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-web)
 
@@ -6,9 +6,9 @@
 
 HED (Hierarchical Event Descriptors) is a framework for systematically describing both laboratory and real-world events. HED tags are comma-separated path strings. The goal of HED is to describe precisely the nature of the events of interest occurring in an experiment using a common structured vocabulary and standardized tools. The HED framework has been developed for neurological imaging data (e.g., EEG, MEG, iEEG, fMRI), physiological (e.g., ECG, EMG, GSR) as well as multimodal experiment (e.g., mobile brain/body imaging). HED has been adopted as part of the BIDS ([**https://bids.neuroimaging.io**](https://bids.neuroimaging.io)) standard for brain imaging and accepted as a standard by the INCF ([**https://www.incf.org**](https://www.incf.org)).
 
-## HED web tools
+## HED online tools
 
-The HED web tools are a set of web-based applications for validating and analyzing Hierarchical Event Descriptors (HED) annotations. These tools rely on are designed to be used in a web browser and can be deployed locally or from a DOCKER container.
+The HED online tools are a set of web-based applications for validating and analyzing Hierarchical Event Descriptors (HED) annotations. These tools rely on are designed to be used in a web browser and can be deployed locally or from a DOCKER container.
 
 | Resource              | URL                                                                                | Description                            |
 | --------------------- | ---------------------------------------------------------------------------------- | -------------------------------------- |
