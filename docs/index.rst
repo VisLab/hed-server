@@ -1,5 +1,5 @@
-HED web tools
-=============
+HED online tools
+================
 
 
 .. sidebar:: Quick links
@@ -16,7 +16,7 @@ HED web tools
 
    * `Python HEDTools <https://hed-python.readthedocs.io/>`_ 
 
-Welcome to the HED web tools documentation! This package provides web-based interfaces and REST API services for working with **Hierarchical Event Descriptors (HED)** - a standardized framework for annotating events and experimental metadata in neuroscience and beyond.
+Welcome to the HED online tools documentation! This package provides web-based interfaces and REST API services for working with **Hierarchical Event Descriptors (HED)** - a standardized framework for annotating events and experimental metadata in neuroscience and beyond.
 
 What is HED?
 ------------
@@ -46,8 +46,8 @@ Getting started
 
    Introduction <introduction>
 
-Using HED web tools
--------------------
+Using HED online tools
+----------------------
 
 .. toctree::
    :maxdepth: 2

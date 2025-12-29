@@ -14,7 +14,7 @@ from hedweb import _version
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "HED web tools"
+project = "HED online tools"
 copyright = "2024, HED Standard"
 author = "HED Standard"
 
@@ -69,7 +69,7 @@ html_theme_options = {
     "source_directory": "docs/",
 }
 
-html_title = "HED web tools"
+html_title = "HED online tools"
 
 # Configure sidebar to show logo, search, navigation, and quick links
 html_sidebars = {
