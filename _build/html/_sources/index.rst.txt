@@ -5,9 +5,7 @@ HED online tools
 .. sidebar:: Quick links
    
    * `HED online tools <https://hedtools.org/hed>`_
-
    * `HED homepage <https://www.hedtags.org/>`_ 
-   
    * `HED resources <https://www.hedtags.org/hed-resources>`_
 
    * `HED schema browser <https://www.hedtags.org/hed-schema-browser>`_

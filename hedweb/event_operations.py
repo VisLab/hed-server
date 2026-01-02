@@ -16,8 +16,8 @@ from hed.tools.analysis.event_checker import EventsChecker
 from hed.tools.analysis.event_manager import EventManager
 from hed.tools.analysis.hed_tag_manager import HedTagManager
 from hed.tools.analysis.tabular_summary import TabularSummary
-from hed.tools.remodeling.dispatcher import Dispatcher
-from hed.tools.remodeling.remodeler_validator import RemodelerValidator
+from remodeler.dispatcher import Dispatcher
+from remodeler.remodeler_validator import RemodelerValidator
 
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
