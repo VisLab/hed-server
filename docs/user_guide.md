@@ -70,7 +70,8 @@ All HED tools handle any combination of these formats. The short form is recomme
 Many tools have an `Expand defs` option that replaces `Def/xxx` tags with expanded definitions in the form `(Def-expand/xxx, yyy)` where `yyy` is the actual definition content.
 
 #### Tabular formats
-Tabular files are BIDS-style tab-separated value (.tsv) files with a header line giving column names. These columns map to metadata in accompanying JSON sidecars. HED handles two types of tabular files -- files that have an `onset` column (timeline files) and those that don't (descriptive files). The BIDS `_events.tsv` files are the most common timeline files. An example of a descriptive file is the BIDS `participants.tsv` file. 
+
+Tabular files are BIDS-style tab-separated value (.tsv) files with a header line giving column names. These columns map to metadata in accompanying JSON sidecars. HED handles two types of tabular files -- files that have an `onset` column (timeline files) and those that don't (descriptive files). The BIDS `_events.tsv` files are the most common timeline files. An example of a descriptive file is the BIDS `participants.tsv` file.
 
 #### Limiting errors
 
@@ -96,11 +97,11 @@ Validates HED annotations in a BIDS events file or other tabular file. An excell
 
 **Returns:** A downloadable `.txt` file of error messages if errors are found.
 
-**Note:** This tool validates a single tabular file. For full BIDS dataset validation with inherited sidecars and library schemas, use the [JavaScript HEDTools](https://www.hedtags.org/hed-javascript) which has a browser-based validator that works on the entire dataset.  However, from a practical viewpoint, it is better to debug a single file first.
+**Note:** This tool validates a single tabular file. For full BIDS dataset validation with inherited sidecars and library schemas, use the [JavaScript HEDTools](https://www.hedtags.org/hed-javascript) which has a browser-based validator that works on the entire dataset. However, from a practical viewpoint, it is better to debug a single file first.
 
 ### Check HED quality
 
-Evaluates the HED annotations in a BIDS events file or other tabular file for correct semantic usage. 
+Evaluates the HED annotations in a BIDS events file or other tabular file for correct semantic usage.
 
 **Steps:**
 
@@ -122,7 +123,7 @@ Produces a file with fully assembled HED annotations for each event, combining s
 
 1. Select the `Assemble HED annotations` action
 2. Enable `Append assembled` if you want a HEDAssembled column added to the tabular file.
-3. Enable `Include context` if you want the `Event-context group with ongoing events included
+3. Enable `Include context` if you want the \`Event-context group with ongoing events included
 4. Enable `Replace defs` if you to replace the definitions with their contents
 5. Enable `Remove condition and task` if you want condition variables and task groups removed.
 6. Upload a tabular file (`.tsv`)
@@ -138,15 +139,15 @@ Search for events matching specific HED criteria within an events file.
 
 **Steps:**
 
-1. Select the `Search HED` action
-2. Enable `Append assembled` if you want a HEDAssembled column added to the tabular file.
-3. Enable `Include context` if you want the `Event-context group with ongoing events included
-4. Enable `Replace defs` if you to replace the definitions with their contents
-5. Enable `Remove condition and task` if you want condition variables and task groups removed.
-6. Upload a tabular file (`.tsv`)
-7. Optionally upload a JSON sidecar file (`.json`)
-8. Enter the search query
-9. Select the HED version
+01. Select the `Search HED` action
+02. Enable `Append assembled` if you want a HEDAssembled column added to the tabular file.
+03. Enable `Include context` if you want the \`Event-context group with ongoing events included
+04. Enable `Replace defs` if you to replace the definitions with their contents
+05. Enable `Remove condition and task` if you want condition variables and task groups removed.
+06. Upload a tabular file (`.tsv`)
+07. Optionally upload a JSON sidecar file (`.json`)
+08. Enter the search query
+09. Select the HED version
 10. Click the `Process` button
 
 **Returns:** A downloadable `.tsv` file containing only the rows matching your search criteria.
@@ -300,7 +301,6 @@ Converts all HED tags in selected columns to long form.
 7. Select the HED version
 8. Click the `Process` button
 
-
 **Returns:** A downloadable spreadsheet with converted HED tags.
 
 ### Convert spreadsheet to short
@@ -374,8 +374,8 @@ Search a HED string.
 1. Select the `Search a HED string` action
 2. Type or paste your HED string into the HED string box
 3. Type or paste your query into the HED search query box
-2. Select the HED version
-4. Click the `Process` button
+4. Select the HED version
+5. Click the `Process` button
 
 **Returns:** Converted string or error messages in the Results box.
 
@@ -435,7 +435,7 @@ HED provides REST API services for programmatic access to all tools.
 2. Extract CSRF token and cookie from response
 3. Send HTTP `POST` requests with token to: `https://hedtools.org/hed/services_submit`
 
-See the  [web services demos](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos) in the MATLAB HEDTools for implementation examples.
+See the [web services demos](https://github.com/hed-standard/hed-matlab/tree/main/hedmat/web_services_demos) in the MATLAB HEDTools for implementation examples.
 
 ### Request format
 
