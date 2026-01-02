@@ -673,7 +673,7 @@ If you encounter issues not covered here:
 ### Community
 
 - **Issue tracker**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
-- **HED maintainters email**: [hed.maintainers@gmail.com](mailto:hed.maintainers@gmail.com)
+- **HED maintainers email**: [hed.maintainers@gmail.com](mailto:hed.maintainers@gmail.com)
 
 ## Appendix: Quick reference
 

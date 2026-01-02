@@ -130,7 +130,7 @@ Produces a file with fully assembled HED annotations for each event, combining s
 8. Select the HED version
 9. Click the `Process` button
 
-**Returns:** A downloadable `.tsv` file with two columns: onset times and assembled HED strings (unless the `Append assembed` option is selected).
+**Returns:** A downloadable `.tsv` file with two columns: onset times and assembled HED strings (unless the `Append assembled` option is selected).
 
 ### Search HED
 
@@ -166,7 +166,7 @@ Creates a JSON sidecar template from tabular file, ready to be filled with HED a
 
 **Returns:** A downloadable `.json` sidecar template file.
 
-**Tip:** This action generates a template for an individual tabular file. This is sufficient for most datasets, provided their tabular files are similarly structured. The Python HEDTools [`hedpy extract-sidecar`](https://www.hedtags.org/hed-python/user_guide.html#available-commands) command line tool and the [`extract_json_template.ipynb`]https://github.com/hed-standard/hed-python/blob/main/examples/extract_json_template.ipynb) Jupyter notebook for generating a consolidated template from all of the tabular files of a particular type.
+**Tip:** This action generates a template for an individual tabular file. This is sufficient for most datasets, provided their tabular files are similarly structured. The Python HEDTools [`hedpy extract-sidecar`](https://www.hedtags.org/hed-python/user_guide.html#available-commands) command line tool and the [`extract_json_template.ipynb`](https://github.com/hed-standard/hed-python/blob/main/examples/extract_json_template.ipynb) Jupyter notebook for generating a consolidated template from all of the tabular files of a particular type.
 
 ### Execute remodel script
 
