@@ -360,19 +360,18 @@ docker run -d \
 
 The HED online interface provides several categories of operations:
 
-**Events operations:**
+**Events operations (for tabular files):**
 
-- Validate HED annotations in event files
+- Validate HED annotations in tabular files
 - Assemble HED strings from tabular data
 - Search HED annotations with query syntax
-- Generate sidecar templates from event files
+- Generate sidecar templates from tabular files
 - Execute remodeling scripts
 
 **Sidecar operations:**
 
 - Validate BIDS JSON sidecars
-- Convert HED tags to long form
-- Convert HED tags to short form
+- Convert HED tags to long/short form
 - Extract spreadsheet templates from sidecars
 - Merge spreadsheet data into sidecars
 
@@ -385,6 +384,7 @@ The HED online interface provides several categories of operations:
 
 - Validate individual HED strings
 - Convert strings to long/short form
+- Search
 
 **Schema operations:**
 
@@ -395,13 +395,13 @@ The HED online interface provides several categories of operations:
 ### File upload guidelines
 
 - **Maximum file size**: 16MB (configurable)
-- **Supported formats**: TSV, CSV, Excel (.xlsx, .xls), JSON
+- **Supported formats**: TSV, Excel (.xlsx, .xls), JSON
 - **Encoding**: UTF-8 recommended
 
 ### Workflow example
 
 1. Navigate to **Events** > **Validate events file**
-2. Upload your events file (TSV/CSV)
+2. Upload your tabular file (`.tsv`)
 3. Optionally upload a JSON sidecar
 4. Select HED schema version
 5. Click **Validate**
@@ -562,7 +562,7 @@ lsof -ti:5000 | xargs kill -9
 
 **Solutions:**
 
-1. Check internet connectivity (schemas are fetched from GitHub)
+1. Check internet connectivity (some schemas are fetched from GitHub)
 2. Verify schema version exists
 3. Use a local schema file if network is unavailable
 4. Check cache directory permissions
@@ -600,7 +600,6 @@ lsof -ti:5000 | xargs kill -9
    ```bash
    docker run -d --memory="2g" --name hedtools hedtools:latest
    ```
-3. Process files in streaming mode if available
 
 ### Getting help
 
@@ -612,7 +611,7 @@ If you encounter issues not covered here:
    - Docker: `docker logs hedtools`
    - Production: Check `/var/log/hedtools/`
 
-2. **Search GitHub Issues**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
+2. **Search GitHub issues**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
 
 3. **Create a new issue** with:
 
@@ -662,19 +661,19 @@ If you encounter issues not covered here:
 
 - **HED Standard**: [https://www.hedtags.org/](https://www.hedtags.org/)
 - **HED Specification**: [https://hed-specification.readthedocs.io/](https://hed-specification.readthedocs.io/)
-- **HED Python Tools**: [https://github.com/hed-standard/hed-python](https://github.com/hed-standard/hed-python)
-- **HED Schemas**: [https://github.com/hed-standard/hed-schemas](https://github.com/hed-standard/hed-schemas)
+- **Python HEDTools**: [https://github.com/hed-standard/hed-python](https://github.com/hed-standard/hed-python)
+- **HED schemas**: [https://github.com/hed-standard/hed-schemas](https://github.com/hed-standard/hed-schemas)
 
 ### Tools
 
-- **HED Online Tools (Production)**: [https://hedtools.org/hed](https://hedtools.org/hed)
-- **HED Online Tools (Development)**: [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev)
+- **HED online tools (production)**: [https://hedtools.org/hed](https://hedtools.org/hed)
+- **HED online tools (Development)**: [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev)
 - **CTagger**: [http://ctagger.hed.tools](http://ctagger.hed.tools)
 
 ### Community
 
-- **GitHub Discussions**: [hed-standard discussions](https://github.com/orgs/hed-standard/discussions)
-- **Issue Tracker**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
+- **Issue tracker**: [hed-web issues](https://github.com/hed-standard/hed-web/issues)
+- **HED maintainers email**: [hed.maintainers@gmail.com](mailto:hed.maintainers@gmail.com)
 
 ## Appendix: Quick reference
 

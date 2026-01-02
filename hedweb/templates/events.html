@@ -7,7 +7,7 @@
 {% from "query.html" import create_query %}
 
 {% block content %}
-    <h3>BIDS-style event (tsv) file:</h3>
+    <h3>BIDS-style events or other tabular file:</h3>
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -16,13 +16,13 @@
         <p>&nbsp;</p>
         <fieldset class="form-group">
             <legend>Input:</legend>
-            {{ create_file_input('Upload events (tsv file):', 'events_file', 'events_file_flash') }}
+            {{ create_file_input('Upload tabular (.tsv file):', 'events_file', 'events_file_flash') }}
             <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
             {{ create_column_info('show_events') }}
-            {{ create_file_input('Upload sidecar (JSON file) if needed', 'sidecar_file', 
+            {{ create_file_input('Upload sidecar (.json file) if needed', 'sidecar_file', 
                                  flash_id='', div_id='sidecar_input_section') }}
             {{ create_query('Enter HED search query') }}
-            {{ create_file_input('Upload remodel instructions (JSON file)', 'remodel_file',
+            {{ create_file_input('Upload remodel instructions (.json file)', 'remodel_file',
                                  flash_id='', div_id='remodel_input_section') }}
         </fieldset>
         <p>&nbsp;</p>

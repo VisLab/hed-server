@@ -4,17 +4,19 @@ HED online tools
 
 .. sidebar:: Quick links
    
-   * `HED homepage <https://www.hedtags.org/>`_ 
+   * `HED online tools <https://hedtools.org/hed>`_
 
+   * `HED homepage <https://www.hedtags.org/>`_ 
+   
    * `HED resources <https://www.hedtags.org/hed-resources>`_
 
    * `HED schema browser <https://www.hedtags.org/hed-schema-browser>`_
 
    * `HED specification <https://www.hedtags.org/hed-specification>`_ 
 
-   * `HED organization <https://github.com/hed-standard/>`_  
-
    * `Python HEDTools <https://hed-python.readthedocs.io/>`_ 
+
+   * `Table-remodeler <https://www.hedtags.org/table-remodeler>`_
 
 Welcome to the HED online tools documentation! This package provides web-based interfaces and REST API services for working with **Hierarchical Event Descriptors (HED)** - a standardized framework for annotating events and experimental metadata in neuroscience and beyond.
 

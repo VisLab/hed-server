@@ -103,6 +103,7 @@ config.py
 # Sphinx documentation
 docs_old/_build/
 docs/_build/
+_build
 
 #machine specific files
 .vimrc
