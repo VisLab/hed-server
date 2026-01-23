@@ -13,7 +13,6 @@ env:
 
 jobs:
   build:
-    continue-on-error: true
     env:
       HED_SERVER_URL: "http://127.0.0.1:33004/hed_dev"
     strategy:
