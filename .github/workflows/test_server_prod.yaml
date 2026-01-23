@@ -1,6 +1,5 @@
-name: Test service routes externally
+name: Test service routes (production)
 
-# Todo: May want to tweak what branches this runs on
 on:
   push:
     branches: ["*"]
@@ -13,9 +12,8 @@ env:
 
 jobs:
   build:
-    continue-on-error: true
     env:
-      HED_SERVER_URL: "http://127.0.0.1:33004/hed_dev"
+      HED_SERVER_URL: "http://127.0.0.1:33000/hed"
     strategy:
       matrix:
         platform: [ubuntu-latest]
@@ -29,10 +27,10 @@ jobs:
       - name: Make the script files executable
         run: chmod +x deploy/deploy.sh
 
-      - name: Run deploy script (develop)
+      - name: Run deploy script (production)
         run: | 
           cd deploy
-          ./deploy.sh "$BRANCH_NAME" dev
+          ./deploy.sh "$BRANCH_NAME" prod
           cd ..
 
       - name: Show deploy status
@@ -67,4 +65,4 @@ jobs:
         if: failure()
         run: |
           echo "Displaying Docker logs..."
-          docker logs hedtools_dev
+          docker logs hedtools
