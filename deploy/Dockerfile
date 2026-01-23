@@ -3,8 +3,11 @@ FROM python:3.10-slim-bullseye
 # Set the working directory inside the container
 WORKDIR /root
 
-# Copy the requirements file and install system dependencies
-COPY . .
+# Copy project metadata files needed for pip install
+COPY pyproject.toml README.md ./
+COPY setup.py* ./
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     git \
@@ -12,8 +15,13 @@ RUN apt-get update && apt-get install -y \
     logrotate \
     libxslt-dev \
     libxml2-dev && \
-    pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt
+    pip3 install --upgrade pip
+
+# Copy the hedtools directory (which contains hedweb package)
+COPY ./hedtools ./hedtools/
+
+# Install the package with production dependencies (gunicorn)
+RUN pip3 install .[prod]
 
 # Install HEDTools based on the environment
 ARG HED_INSTALL_SOURCE=pypi

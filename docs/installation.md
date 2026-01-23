@@ -52,8 +52,16 @@ You'll need to activate the virtual environment every time you work on the proje
 
 ### 2. Install dependencies
 
+Install the package with development dependencies:
+
 ```bash
-pip install -r requirements.txt
+pip install -e .[dev]
+```
+
+For documentation building:
+
+```bash
+pip install -e .[docs]
 ```
 
 ### 3. Create configuration file
@@ -513,7 +521,7 @@ For complete API documentation including all available endpoints, parameters, an
 
 1. Verify Python version: `python --version` (must be 3.10+)
 2. Ensure virtual environment is activated
-3. Reinstall dependencies: `pip install -r requirements.txt`
+3. Reinstall dependencies: `pip install -e .[dev]`
 4. Check for conflicting packages: `pip list`
 
 #### Port already in use
@@ -689,7 +697,7 @@ If you encounter issues not covered here:
 source .venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .[dev]
 
 # Run development server
 python hedweb/runserver.py
