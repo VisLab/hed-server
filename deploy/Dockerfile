@@ -3,7 +3,7 @@ FROM python:3.10-slim-bullseye
 # Set the working directory inside the container
 WORKDIR /root
 
-# Copy the requirements file and install system dependencies
+# Copy project files and install system dependencies
 COPY . .
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     libxslt-dev \
     libxml2-dev && \
     pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt
+    pip3 install .[prod]
 
 # Install HEDTools based on the environment
 ARG HED_INSTALL_SOURCE=pypi

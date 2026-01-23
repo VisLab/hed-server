@@ -83,6 +83,46 @@ The HED online tools are also available as callable web services. More detailed 
 
 The stable version of the HED online tools is available for your use at: [**https://hedtools.org/hed**](https://hedtools.org/hed). An alternate version [**https://hedtools.org/hed_dev**](https://hedtools.org/hed_dev) has the latest features, some of which are experimental.
 
+## Installation
+
+### Local Development Setup
+
+The project uses `pyproject.toml` for dependency management. Install the package with optional dependency groups based on your needs:
+
+**Basic runtime installation** (Flask app + HED tools):
+```powershell
+pip install -e .
+```
+
+**Development installation** (includes code formatting, linting, and testing tools):
+```powershell
+pip install -e .[dev]
+```
+
+**Documentation building**:
+```powershell
+pip install -e .[docs]
+```
+
+**Production deployment** (adds gunicorn for production server):
+```powershell
+pip install -e .[prod]
+```
+
+**Multiple extras** (combine as needed):
+```powershell
+pip install -e .[dev,docs]
+```
+
+### Dependency Groups
+
+- **Base dependencies**: Flask, hedtools, pandas, openpyxl, etc. (required for all installations)
+- **`[dev]`**: black, ruff, coverage, codespell, mdformat (for development only)
+- **`[prod]`**: gunicorn (for production deployment, not needed for local development)
+- **`[docs]`**: sphinx, furo, myst-parser (for building documentation)
+
+**Note**: For local development, you only need `[dev]`. The Flask development server (`python hedweb/runserver.py`) is used instead of gunicorn.
+
 ## Testing
 
 ### Unit Tests

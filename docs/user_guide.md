@@ -535,41 +535,39 @@ All services return JSON with:
 
 ### Common validation errors
 
-**"Invalid HED tag"**
+- **Invalid HED tag**
 
-- Tag not found in specified schema version
-- Check for typos in tag names
-- Verify you're using the correct schema version
+  - Tag not found in specified schema version
+  - Check for typos in tag names
+  - Verify you're using the correct schema version
 
-**"Comma and parentheses errors"**
+- **Comma and parentheses errors**
 
-- Missing or extra commas in HED string
-- Tags in a group must be comma-separated
-- Groups must be comma-separated
-- Parentheses must match
+  - Missing or extra commas in HED string
+  - Tags in a group must be comma-separated
+  - Groups must be comma-separated
+  - Parentheses must match
 
-**"Placeholder errors"**
+- **Placeholder errors**
 
-- Placeholder can only be used in sidecars and definitions
-- Only one placeholder per string
+  - Placeholder can only be used in sidecars and definitions
+  - Only one placeholder per string
 
 ### File format issues
 
-**"Cannot parse file"**
+- **Cannot parse file**
 
-- Ensure TSV files use tabs, not spaces or commas
-- Check for proper UTF-8 encoding
-- Verify JSON files are valid JSON
+  - Ensure TSV files use tabs, not spaces or commas
+  - Check for proper UTF-8 encoding
+  - Verify JSON files are valid JSON
 
-**"Column not found"**
+- **Column not found**
 
-- A sidecar can have annotations for columns that are not in the .`tsv`
-- A `.tsv` file that has a column not deliberately skipped and is not defined in the sidecar generates a warning
-- Column names are case-sensitive
+  - A sidecar can have annotations for columns that are not in the .`tsv`
+  - A `.tsv` file that has a column not deliberately skipped and not defined in the sidecar generates a warning
+  - Column names are case-sensitive
 
-### Schema issues
-
-**"Cannot load schema"**
+### Schema loading issues
 
 - Check internet connection for downloading standard schemas
 - For custom schemas, verify XML/mediawiki format
@@ -577,21 +575,21 @@ All services return JSON with:
 
 ### Service issues
 
-**"CSRF token error"**
+- **CSRF token error**
 
-- Obtain fresh token from services endpoint
-- Include token in request headers
-- Check that cookie is preserved across requests
+  - Obtain fresh token from services endpoint
+  - Include token in request headers
+  - Check that cookie is preserved across requests
 
-**"Service timeout"**
+- **Service timeout**
 
-- Large files may timeout on web interface
-- Consider using Python HEDTools for large datasets ir the JavaScript HEDTools for browser-based validation
-- Break operations into smaller batches
+  - Large files may timeout on web interface
+  - Use Python HEDTools CLI for large datasets or the JavaScript HEDTools for browser-based validation
+  - Break operations into smaller batches
 
 ### Getting help
 
-- 📖 [HED Specification](https://www.hedtags.org/hed-specification)
-- � [HED Resources](https://www.hedtags.org/hed-resources)
-- �🐛 [Report Issues](https://github.com/hed-standard/hed-web/issues)
-- 📧 [Contact HED Team](mailto:hed.maintainers@gmail.com)
+- 📖 [HED specification](https://www.hedtags.org/hed-specification)
+- � [HED resources](https://www.hedtags.org/hed-resources)
+- 🐛 [Report issues](https://github.com/hed-standard/hed-web/issues)
+- 📧 [Contact HED team](mailto:hed.maintainers@gmail.com)
