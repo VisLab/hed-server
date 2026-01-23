@@ -4,7 +4,8 @@ FROM python:3.10-slim-bullseye
 WORKDIR /root
 
 # Copy project metadata files needed for pip install
-COPY ./hed-web/pyproject.toml ./hed-web/setup.py* ./hed-web/README.md ./hed-web/LICENSE* ./
+COPY pyproject.toml README.md ./
+COPY setup.py* ./
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -15,6 +16,9 @@ RUN apt-get update && apt-get install -y \
     libxslt-dev \
     libxml2-dev && \
     pip3 install --upgrade pip
+
+# Copy the hedtools directory (which contains hedweb package)
+COPY ./hedtools ./hedtools/
 
 # Install the package with production dependencies (gunicorn)
 RUN pip3 install .[prod]
