@@ -1,4 +1,4 @@
-name: Test service routes externally
+name: Test service routes (development)
 
 # Todo: May want to tweak what branches this runs on
 on:
