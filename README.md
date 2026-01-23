@@ -90,26 +90,31 @@ The stable version of the HED online tools is available for your use at: [**http
 The project uses `pyproject.toml` for dependency management. Install the package with optional dependency groups based on your needs:
 
 **Basic runtime installation** (Flask app + HED tools):
+
 ```powershell
 pip install -e .
 ```
 
 **Development installation** (includes code formatting, linting, and testing tools):
+
 ```powershell
 pip install -e .[dev]
 ```
 
 **Documentation building**:
+
 ```powershell
 pip install -e .[docs]
 ```
 
 **Production deployment** (adds gunicorn for production server):
+
 ```powershell
 pip install -e .[prod]
 ```
 
 **Multiple extras** (combine as needed):
+
 ```powershell
 pip install -e .[dev,docs]
 ```

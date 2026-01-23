@@ -35,6 +35,14 @@ jobs:
           ./deploy.sh "$BRANCH_NAME" dev
           cd ..
 
+      - name: Show deploy status
+        if: always()
+        run: |
+          echo "Checking Docker containers..."
+          docker ps -a
+          echo "Checking Docker images..."
+          docker images
+
       - name: Wait for server to be ready
         run: |
           sleep 10
