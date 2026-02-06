@@ -64,6 +64,7 @@ HAS_COLUMN_NAMES = "has_column_names"
 INCLUDE_CONTEXT = "include_context"
 INCLUDE_DEFINITION_TAGS = "include_definition_tags"
 INCLUDE_DESCRIPTION_TAGS = "include_description_tags"
+INCLUDE_PRERELEASES = "include_prereleases"
 INCLUDE_SUMMARIES = "include_summaries"
 ISSUE_STRING = "issue_string"
 

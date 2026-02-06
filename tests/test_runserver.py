@@ -8,6 +8,6 @@ class Test(unittest.TestCase):
         ver_dict = get_version_dict()
         self.assertIsInstance(ver_dict, dict, "get_version_dict returns a dictionary")
         self.assertIn("tool_ver", ver_dict, "get_version_dict has a tool_ver key")
-        self.assertIn("tool_date", ver_dict, "get_version_dict has a tool_date key")
+        self.assertIn("tool_commit", ver_dict, "get_version_dict has a tool_commit key")
         self.assertIn("web_ver", ver_dict, "get_version_dict has a web_ver key")
         self.assertIn("web_date", ver_dict, "get_version_dict has a t]web_date key")

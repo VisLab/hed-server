@@ -27,9 +27,11 @@ RUN pip3 install .[prod]
 ARG HED_INSTALL_SOURCE=pypi
 ARG CACHE_BUST
 RUN if [ "$HED_INSTALL_SOURCE" = "main" ]; then \
-        pip3 install git+https://github.com/hed-standard/hed-python/@main; \
+        echo "Installing hedtools from GitHub main branch..."; \
+        pip3 install --no-cache-dir git+https://github.com/hed-standard/hed-python.git@main || exit 1; \
     else \
-        pip3 install hedtools; \
+        echo "Installing hedtools from PyPI..."; \
+        pip3 install --no-cache-dir hedtools || exit 1; \
     fi
 
 # Create necessary directories and set permissions
@@ -37,10 +39,6 @@ RUN mkdir -p /var/log/hedtools && \
     chown -R www-data:www-data /var/log/hedtools && \
     mkdir -p /var/cache/schema_cache && \
     chown -R www-data:www-data /var/cache/schema_cache
-
-# Copy the application code into the container
-COPY ./hedtools /root/hedtools/
-COPY ./hedtools/hedweb /root/hedtools/hedweb/
 
 # Ensure Python can import the application package
 ENV PYTHONPATH="/root/hedtools"

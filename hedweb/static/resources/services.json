@@ -248,6 +248,7 @@
         "hed_strings": "List of HED strings to be processed.",
         "include_context": "If true include the event context in the assembled HED strings.",
         "include_description_tag": "Include the Description/XXX tag in the tag string",
+        "include_prereleases": "If true, schema versions that are prereleases will be included in the options for schema version.",
         "include_summaries": "Return any summaries in addition to the events file when remodeling.",
         "queries": "A single string or a list of query strings for searching.",
         "remodel_string": "JSON remodel commands as a string",

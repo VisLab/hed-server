@@ -269,7 +269,7 @@ def render_events_form() -> str:
     return render_template(
         page_constants.EVENTS_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -289,7 +289,7 @@ def render_home_page() -> str:
     return render_template(
         page_constants.HED_TOOLS_HOME_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -309,7 +309,7 @@ def render_schemas_form() -> str:
     return render_template(
         page_constants.SCHEMAS_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -329,7 +329,7 @@ def render_services_form() -> str:
     return render_template(
         page_constants.SERVICES_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -349,7 +349,7 @@ def render_sidecars_form() -> str:
     return render_template(
         page_constants.SIDECARS_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -369,7 +369,7 @@ def render_spreadsheets_form() -> str:
     return render_template(
         page_constants.SPREADSHEETS_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )
@@ -389,7 +389,7 @@ def render_strings_form() -> str:
     return render_template(
         page_constants.STRINGS_PAGE,
         tool_ver=ver["tool_ver"],
-        tool_date=ver["tool_date"],
+        tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
         web_date=ver["web_date"],
     )

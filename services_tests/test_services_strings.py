@@ -57,3 +57,35 @@ class TestStringServices(ServicesTest):
         response_data = response.json()
         self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
+
+    def test_validate_with_prereleases_false(self):
+        """Test validation with include_prereleases=false."""
+        url = f"{self.BASEURL}/services_submit"
+        json_data = {
+            "service": "strings_validate",
+            "schema_version": "8.2.0",
+            "string_list": self.data["goodStrings"],
+            "include_prereleases": False,
+            "check_for_warnings": True,
+        }
+        response = requests.post(url, json=json_data, headers=self._get_headers())
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertFalse(response_data.get("error_type"))
+        self.assertEqual(response_data["results"]["msg_category"], "success")
+
+    def test_validate_with_prereleases_true(self):
+        """Test validation with include_prereleases=true."""
+        url = f"{self.BASEURL}/services_submit"
+        json_data = {
+            "service": "strings_validate",
+            "schema_version": "8.2.0",
+            "string_list": self.data["goodStrings"],
+            "include_prereleases": True,
+            "check_for_warnings": True,
+        }
+        response = requests.post(url, json=json_data, headers=self._get_headers())
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertFalse(response_data.get("error_type"))
+        self.assertEqual(response_data["results"]["msg_category"], "success")

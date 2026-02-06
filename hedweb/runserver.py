@@ -17,18 +17,20 @@ CONFIG_ENVIRON_NAME = "HEDTOOLS_CONFIG_CLASS"
 
 
 def get_version_dict():
-    """Create a dictionary of versions and dates.
+    """Create a dictionary of versions and related metadata.
 
     Returns:
-        dict: Keys are tools_ver, tools_date, web_ver, web_date
+        dict: Keys are tool_ver, tool_commit, web_ver, web_date.
 
     """
 
     web_dict = get_versions()
-    tools_dict = vr.get_versions()
+    # New hedtools version uses __version__ attribute instead of get_versions()
+    tools_version = getattr(vr, "__version__", "unknown")
+    tools_commit = getattr(vr, "__commit_id__", "")
     return {
-        "tool_ver": tools_dict["version"],
-        "tool_date": tools_dict["date"],
+        "tool_ver": tools_version,
+        "tool_commit": tools_commit,
         "web_ver": web_dict["version"],
         "web_date": web_dict["date"],
     }

@@ -39,6 +39,47 @@ class Test(TestRouteBase):
                 "The HED version should be returned",
             )
 
+    def test_schema_versions_without_prereleases(self):
+        """Test schema_versions endpoint without include_prereleases parameter."""
+        with self.app.app_context():
+            response = self.app.test.get("/schema_versions")
+            self.assertEqual(200, response.status_code)
+            v_dict = json.loads(response.data)
+            v_list = v_dict["schema_version_list"]
+            # Check that no prerelease versions are included
+            for version in v_list:
+                self.assertNotIn(
+                    "(prerelease)",
+                    version,
+                    "Should not include prerelease versions by default",
+                )
+
+    def test_schema_versions_with_prereleases_false(self):
+        """Test schema_versions endpoint with include_prereleases=false."""
+        with self.app.app_context():
+            response = self.app.test.get("/schema_versions?include_prereleases=false")
+            self.assertEqual(200, response.status_code)
+            v_dict = json.loads(response.data)
+            v_list = v_dict["schema_version_list"]
+            # Check that no prerelease versions are included
+            for version in v_list:
+                self.assertNotIn(
+                    "(prerelease)",
+                    version,
+                    "Should not include prerelease versions when false",
+                )
+
+    def test_schema_versions_with_prereleases_true(self):
+        """Test schema_versions endpoint with include_prereleases=true."""
+        with self.app.app_context():
+            response = self.app.test.get("/schema_versions?include_prereleases=true")
+            self.assertEqual(200, response.status_code)
+            v_dict = json.loads(response.data)
+            v_list = v_dict["schema_version_list"]
+            self.assertIsInstance(v_list, list, "Should return a list of versions")
+            # The list should include all versions (stable + prerelease if any exist)
+            # We can't assert that prereleases exist, but the endpoint should work
+
 
 if __name__ == "__main__":
     unittest.main()

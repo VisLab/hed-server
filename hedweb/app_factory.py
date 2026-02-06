@@ -35,6 +35,18 @@ class AppFactory:
         from hedweb.runserver import get_version_dict
 
         app.config["VERSIONS"] = get_version_dict()
+
+        # Configure hedtools to use the specified cache directory
+        if "HED_CACHE_FOLDER" in app.config:
+            import hed.schema as hedschema
+
+            if hasattr(hedschema, "set_cache_directory"):
+                hedschema.set_cache_directory(app.config["HED_CACHE_FOLDER"])
+            else:
+                app.logger.warning(
+                    "HED_CACHE_FOLDER configured but hedtools version does not support set_cache_directory()"
+                )
+
         CSRFProtect(app)
         return app
 

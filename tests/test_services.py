@@ -36,6 +36,7 @@ class Test(TestWebBase):
             "expand_defs": False,
             "include_summaries": False,
             "replace_defs": False,
+            "include_prereleases": False,
         }
 
     def test_set_input_from_service_request_empty(self):
@@ -263,6 +264,7 @@ class Test(TestWebBase):
             bc.CHECK_FOR_WARNINGS: False,
             bc.EXPAND_DEFS: True,
             bc.INCLUDE_DESCRIPTION_TAGS: True,
+            bc.INCLUDE_PRERELEASES: False,
             bc.REQUEST_TYPE: bc.FROM_SERVICE,
         }
 
@@ -279,6 +281,7 @@ class Test(TestWebBase):
             bc.CHECK_FOR_WARNINGS: True,
             bc.EXPAND_DEFS: False,
             bc.INCLUDE_DESCRIPTION_TAGS: True,
+            bc.INCLUDE_PRERELEASES: False,
             bc.REQUEST_TYPE: bc.FROM_SERVICE,
         }
 
