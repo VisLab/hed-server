@@ -30,7 +30,8 @@ def get_version_dict():
     tools_commit = getattr(vr, "__commit_id__", "")
     return {
         "tool_ver": tools_version,
-        "tool_date": tools_commit,
+        "tool_date": "",  # No date available in new version format
+        "tool_commit": tools_commit,
         "web_ver": web_dict["version"],
         "web_date": web_dict["date"],
     }

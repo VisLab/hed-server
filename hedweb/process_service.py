@@ -24,6 +24,27 @@ from hedweb.spreadsheet_operations import SpreadsheetOperations
 from hedweb.string_operations import StringOperations
 
 
+def normalize_boolean(value, default=False):
+    """Convert various representations of boolean values to actual booleans.
+
+    Parameters:
+        value: The value to normalize (can be bool, str, int, etc.)
+        default: The default value if value is None or cannot be converted
+
+    Returns:
+        bool: The normalized boolean value
+    """
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() in ("true", "on", "1", "yes")
+    if isinstance(value, int):
+        return bool(value)
+    return default
+
+
 class ProcessServices:
     """A class to process service requests and return results in a standard format."""
 
@@ -216,7 +237,9 @@ class ProcessServices:
         expand_defs = params.get(bc.EXPAND_DEFS, False)
         check_for_warnings = params.get(bc.CHECK_FOR_WARNINGS, True)
         include_description_tags = params.get(bc.INCLUDE_DESCRIPTION_TAGS, True)
-        include_prereleases = params.get(bc.INCLUDE_PRERELEASES, False)
+        include_prereleases = normalize_boolean(
+            params.get(bc.INCLUDE_PRERELEASES, False)
+        )
 
         return {
             bc.SERVICE: service,
@@ -245,8 +268,10 @@ class ProcessServices:
         elif bc.SCHEMA_URL in parameters and parameters[bc.SCHEMA_URL]:
             the_schema = hedschema.load_schema(parameters[bc.SCHEMA_URL])
         elif bc.SCHEMA_VERSION in parameters and parameters[bc.SCHEMA_VERSION]:
-            # Check if include_prereleases parameter is present
-            include_prereleases = parameters.get(bc.INCLUDE_PRERELEASES, False)
+            # Check if include_prereleases parameter is present and normalize to boolean
+            include_prereleases = normalize_boolean(
+                parameters.get(bc.INCLUDE_PRERELEASES, False)
+            )
             the_schema = hedschema.load_schema_version(
                 parameters[bc.SCHEMA_VERSION], check_prerelease=include_prereleases
             )
@@ -352,8 +377,9 @@ class ProcessServices:
         results = service_info["results"]
 
         ver = current_app.config["VERSIONS"]
+        commit_info = f" Commit: {ver['tool_commit']}" if ver.get("tool_commit") else ""
         services_string = (
-            f"\nServices:\n\tHEDTools version: {ver['tool_ver']} Date: {ver['tool_date']}\n"
+            f"\nServices:\n\tHEDTools version: {ver['tool_ver']}{commit_info}\n"
             f"\tHEDServices version: {ver['web_ver']} Date: {ver['web_date']}"
         )
         for service, info in services.items():

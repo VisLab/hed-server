@@ -65,7 +65,7 @@ class TestStringServices(ServicesTest):
             "service": "strings_validate",
             "schema_version": "8.2.0",
             "string_list": self.data["goodStrings"],
-            "include_prereleases": "false",
+            "include_prereleases": False,
             "check_for_warnings": True,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
@@ -81,7 +81,7 @@ class TestStringServices(ServicesTest):
             "service": "strings_validate",
             "schema_version": "8.2.0",
             "string_list": self.data["goodStrings"],
-            "include_prereleases": "true",
+            "include_prereleases": True,
             "check_for_warnings": True,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())

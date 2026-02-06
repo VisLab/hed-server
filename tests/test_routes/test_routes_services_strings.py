@@ -92,7 +92,7 @@ class Test(TestRouteBase):
                 bc.CHECK_FOR_WARNINGS: "on",
                 bc.SCHEMA_VERSION: "8.2.0",
                 bc.STRING_LIST: ["Event"],
-                "include_prereleases": "false",
+                bc.INCLUDE_PRERELEASES: False,
                 bc.SERVICE: "strings_validate",
             }
 
@@ -115,7 +115,7 @@ class Test(TestRouteBase):
                 bc.CHECK_FOR_WARNINGS: "on",
                 bc.SCHEMA_VERSION: "8.2.0",
                 bc.STRING_LIST: ["Event"],
-                "include_prereleases": "true",
+                bc.INCLUDE_PRERELEASES: True,
                 bc.SERVICE: "strings_validate",
             }
 

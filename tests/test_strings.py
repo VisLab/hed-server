@@ -58,7 +58,7 @@ class Test(TestWebBase):
                 data={
                     bc.STRING_INPUT: "Red,Blue",
                     bc.SCHEMA_VERSION: "8.2.0",
-                    "include_prereleases": "false",
+                    bc.INCLUDE_PRERELEASES: False,
                     bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
                 }
             )
@@ -80,7 +80,7 @@ class Test(TestWebBase):
                 data={
                     bc.STRING_INPUT: "Red,Blue",
                     bc.SCHEMA_VERSION: "8.2.0",
-                    "include_prereleases": "true",
+                    bc.INCLUDE_PRERELEASES: True,
                     bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
                 }
             )

@@ -28,6 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
+          pip install --upgrade git+https://github.com/hed-standard/hed-python.git
           pip install -e .[docs]
 
       - name: Build documentation with Sphinx

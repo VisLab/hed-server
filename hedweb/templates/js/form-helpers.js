@@ -101,13 +101,6 @@ function prepareSubmitForm(type) {
     const selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value);
     formData.append('csrf_token', "{{ csrf_token() }}");
-    
-    // Include the prereleases checkbox state (unchecked checkboxes aren't included by FormData)
-    const prereleasesCheckbox = document.getElementById('include_prereleases');
-    if (prereleasesCheckbox) {
-        formData.append('include_prereleases', prereleasesCheckbox.checked ? 'true' : 'false');
-    }
-    
     const fileDesignator=  $(`#${type}_file`)[0];
     let defaultName = "default_processed"
     if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {
