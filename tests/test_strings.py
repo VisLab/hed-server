@@ -58,12 +58,16 @@ class Test(TestWebBase):
                 data={
                     bc.STRING_INPUT: "Red,Blue",
                     bc.SCHEMA_VERSION: "8.2.0",
-                    bc.INCLUDE_PRERELEASES: False,
+                    # INCLUDE_PRERELEASES omitted (unchecked checkbox)
                     bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
                 }
             )
             request = Request(environ)
             arguments = ProcessForm.get_input_from_form(request)
+            self.assertFalse(
+                arguments[bc.INCLUDE_PRERELEASES],
+                "should be False when checkbox unchecked",
+            )
             proc_strings = StringOperations(arguments)
             self.assertIsInstance(
                 proc_strings.schema, HedSchema, "should have a HED schema"
@@ -80,12 +84,16 @@ class Test(TestWebBase):
                 data={
                     bc.STRING_INPUT: "Red,Blue",
                     bc.SCHEMA_VERSION: "8.2.0",
-                    bc.INCLUDE_PRERELEASES: True,
+                    bc.INCLUDE_PRERELEASES: "on",  # Checkbox checked
                     bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
                 }
             )
             request = Request(environ)
             arguments = ProcessForm.get_input_from_form(request)
+            self.assertTrue(
+                arguments[bc.INCLUDE_PRERELEASES],
+                "should be True when checkbox checked",
+            )
             proc_strings = StringOperations(arguments)
             self.assertIsInstance(
                 proc_strings.schema, HedSchema, "should have a HED schema"

@@ -40,7 +40,12 @@ class AppFactory:
         if "HED_CACHE_FOLDER" in app.config:
             import hed.schema as hedschema
 
-            hedschema.set_cache_directory(app.config["HED_CACHE_FOLDER"])
+            if hasattr(hedschema, "set_cache_directory"):
+                hedschema.set_cache_directory(app.config["HED_CACHE_FOLDER"])
+            else:
+                app.logger.warning(
+                    "HED_CACHE_FOLDER configured but hedtools version does not support set_cache_directory()"
+                )
 
         CSRFProtect(app)
         return app
