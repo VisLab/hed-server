@@ -31,8 +31,17 @@ jobs:
       - name: Run deploy script (develop)
         run: | 
           cd deploy
-          ./deploy.sh "$BRANCH_NAME" dev
-          cd ..
+          bash ./deploy.sh "$BRANCH_NAME" dev
+          echo "\nVerifying container is running..."
+          if ! docker ps | grep -q hedtools_dev; then
+            echo "ERROR: Container hedtools_dev is not running!"
+            echo "\nContainer status:"
+            docker ps -a | grep hedtools_dev || echo "Container not found"
+            echo "\nContainer logs:"
+            docker logs hedtools_dev 2>&1 || echo "Could not get logs"
+            exit 1
+          fi
+          echo "Container hedtools_dev is running successfully"
 
       - name: Show deploy status
         if: always()
