@@ -130,14 +130,13 @@ pip install -e .[dev,docs]
 
 ## Testing
 
+**Note**: The following instructions assume you are running in an activated virtual environment.
+
 ### Unit Tests
 
 Run the main test suite without requiring external services:
 
 ```powershell
-# Activate virtual environment
-.\.venv\Scripts\Activate.ps1
-
 # Run all unit tests
 python -m unittest discover -s tests -p "test*.py" -v
 ```
@@ -150,34 +149,24 @@ Service tests validate the REST API endpoints by making HTTP requests to a runni
 Use the provided script that starts the server, runs tests, and cleans up automatically:
 
 ```powershell
-# Activate virtual environment
-.\.venv\Scripts\Activate.ps1
-
 # Run service tests with automatic server management
 python run_service_tests.py
 ```
 
-**Option 2: VS Code Task**\
-Use the integrated task runner:
-
-1. Press `Ctrl+Shift+P`
-2. Type "Tasks: Run Task"
-3. Select "Run Service Tests (with local server)"
-
-**Option 3: Manual Server Management**\
+**Option 2: Manual Server Management**\
 Start the server in one terminal and run tests in another:
 
 Terminal 1 - Start server:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+# Run the server at http://127.0.0.1:5000
 python hedweb/runserver.py
 ```
 
 Terminal 2 - Run tests:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+# Run the tests exercising the server
 python -m unittest discover services_tests
 ```
 
