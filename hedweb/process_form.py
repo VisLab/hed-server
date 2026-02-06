@@ -54,6 +54,9 @@ class ProcessForm:
             bc.CHECK_FOR_WARNINGS: form_has_option(
                 request.form, bc.CHECK_FOR_WARNINGS, "on"
             ),
+            bc.INCLUDE_PRERELEASES: form_has_option(
+                request.form, bc.INCLUDE_PRERELEASES, "on"
+            ),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, "on"),
             bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, "on"),
             bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(
@@ -271,7 +274,10 @@ class ProcessForm:
             request (Request): A Request object containing form data.
         """
         if request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
-            arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
+            arguments[bc.SCHEMA] = load_schema_version(
+                request.form[bc.SCHEMA_VERSION],
+                check_prerelease=arguments[bc.INCLUDE_PRERELEASES],
+            )
         elif form_has_file(request.files, bc.SCHEMA_PATH):
             f = request.files[bc.SCHEMA_PATH]
             arguments[bc.SCHEMA] = from_string(

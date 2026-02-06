@@ -216,6 +216,7 @@ class ProcessServices:
         expand_defs = params.get(bc.EXPAND_DEFS, False)
         check_for_warnings = params.get(bc.CHECK_FOR_WARNINGS, True)
         include_description_tags = params.get(bc.INCLUDE_DESCRIPTION_TAGS, True)
+        include_prereleases = params.get(bc.INCLUDE_PRERELEASES, False)
 
         return {
             bc.SERVICE: service,
@@ -225,6 +226,7 @@ class ProcessServices:
             bc.CHECK_FOR_WARNINGS: check_for_warnings,
             bc.EXPAND_DEFS: expand_defs,
             bc.INCLUDE_DESCRIPTION_TAGS: include_description_tags,
+            bc.INCLUDE_PRERELEASES: include_prereleases,
             bc.REQUEST_TYPE: bc.FROM_SERVICE,
         }
 
@@ -241,11 +243,13 @@ class ProcessServices:
         if bc.SCHEMA_STRING in parameters and parameters[bc.SCHEMA_STRING]:
             the_schema = hedschema.from_string(parameters[bc.SCHEMA_STRING])
         elif bc.SCHEMA_URL in parameters and parameters[bc.SCHEMA_URL]:
-            schema_url = parameters[bc.SCHEMA_URL]
-            the_schema = hedschema.load_schema(schema_url)
+            the_schema = hedschema.load_schema(parameters[bc.SCHEMA_URL])
         elif bc.SCHEMA_VERSION in parameters and parameters[bc.SCHEMA_VERSION]:
-            versions = parameters[bc.SCHEMA_VERSION]
-            the_schema = hedschema.load_schema_version(versions)
+            # Check if include_prereleases parameter is present
+            include_prereleases = parameters.get(bc.INCLUDE_PRERELEASES, False)
+            the_schema = hedschema.load_schema_version(
+                parameters[bc.SCHEMA_VERSION], check_prerelease=include_prereleases
+            )
         return the_schema
 
     @staticmethod

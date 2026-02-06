@@ -49,6 +49,50 @@ class Test(TestWebBase):
                 "should have check_warnings true when on",
             )
 
+    def test_set_input_with_include_prereleases_false(self):
+        """Test form processing with include_prereleases=false."""
+        from hedweb.string_operations import StringOperations
+
+        with self.app.test:
+            environ = create_environ(
+                data={
+                    bc.STRING_INPUT: "Red,Blue",
+                    bc.SCHEMA_VERSION: "8.2.0",
+                    "include_prereleases": "false",
+                    bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                }
+            )
+            request = Request(environ)
+            arguments = ProcessForm.get_input_from_form(request)
+            proc_strings = StringOperations(arguments)
+            self.assertIsInstance(
+                proc_strings.schema, HedSchema, "should have a HED schema"
+            )
+            # Schema should be loaded successfully
+            self.assertIsNotNone(proc_strings.schema)
+
+    def test_set_input_with_include_prereleases_true(self):
+        """Test form processing with include_prereleases=true."""
+        from hedweb.string_operations import StringOperations
+
+        with self.app.test:
+            environ = create_environ(
+                data={
+                    bc.STRING_INPUT: "Red,Blue",
+                    bc.SCHEMA_VERSION: "8.2.0",
+                    "include_prereleases": "true",
+                    bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                }
+            )
+            request = Request(environ)
+            arguments = ProcessForm.get_input_from_form(request)
+            proc_strings = StringOperations(arguments)
+            self.assertIsInstance(
+                proc_strings.schema, HedSchema, "should have a HED schema"
+            )
+            # Schema should be loaded successfully
+            self.assertIsNotNone(proc_strings.schema)
+
     def test_string_process(self):
         from hedweb.string_operations import StringOperations
 
