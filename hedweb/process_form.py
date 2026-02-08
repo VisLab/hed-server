@@ -15,7 +15,7 @@ from hed.models.hed_string import HedString
 from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.tabular_input import TabularInput
-from hed.schema import from_string, load_schema_version
+from hed.schema import load_schema_version
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
@@ -279,11 +279,7 @@ class ProcessForm:
                 check_prerelease=arguments[bc.INCLUDE_PRERELEASES],
             )
         elif form_has_file(request.files, bc.SCHEMA_PATH):
-            f = request.files[bc.SCHEMA_PATH]
-            arguments[bc.SCHEMA] = from_string(
-                f.read(fc.BYTE_LIMIT).decode("utf-8"),
-                schema_format=secure_filename(f.filename),
-            )
+            arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_PATH])
         else:
             arguments[bc.SCHEMA] = None
 
