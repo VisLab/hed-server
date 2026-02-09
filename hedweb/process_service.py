@@ -378,9 +378,10 @@ class ProcessServices:
 
         ver = current_app.config["VERSIONS"]
         commit_info = f" Commit: {ver['tool_commit']}" if ver.get("tool_commit") else ""
+        date_info = f" Date: {ver['web_date']}" if ver.get("web_date") else ""
         services_string = (
             f"\nServices:\n\tHEDTools version: {ver['tool_ver']}{commit_info}\n"
-            f"\tHEDServices version: {ver['web_ver']} Date: {ver['web_date']}"
+            f"\tHEDServices version: {ver['web_ver']}{date_info}"
         )
         for service, info in services.items():
             description = info["Description"]

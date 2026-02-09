@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=61", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "hedweb"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Web interface, REST services, and Docker deployment for HED tools."
 readme = "README.md"
 authors = [
@@ -68,6 +68,11 @@ include = ["hedweb*"]
 
 [tool.setuptools.package-data]
 hedweb = ["templates/*", "static/*", "constants/*"]
+
+[tool.setuptools_scm]
+write_to = "hedweb/_version.py"
+version_scheme = "post-release"
+local_scheme = "no-local-version"
 
 [tool.black]
 line-length = 88
