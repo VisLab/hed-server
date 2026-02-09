@@ -10,7 +10,11 @@ if parent_dir not in sys.path:
 
 from hed import _version as vr  # noqa: E402
 
-from hedweb._version import get_versions  # noqa: E402
+try:
+    from hedweb._version import __version__ as web_version  # noqa: E402
+except ImportError:
+    web_version = "unknown"
+
 from hedweb.app_factory import AppFactory  # noqa: E402
 
 CONFIG_ENVIRON_NAME = "HEDTOOLS_CONFIG_CLASS"
@@ -24,15 +28,14 @@ def get_version_dict():
 
     """
 
-    web_dict = get_versions()
     # New hedtools version uses __version__ attribute instead of get_versions()
     tools_version = getattr(vr, "__version__", "unknown")
     tools_commit = getattr(vr, "__commit_id__", "")
     return {
         "tool_ver": tools_version,
         "tool_commit": tools_commit,
-        "web_ver": web_dict["version"],
-        "web_date": web_dict["date"],
+        "web_ver": web_version,
+        "web_date": "",  # setuptools-scm doesn't provide build date
     }
 
 
