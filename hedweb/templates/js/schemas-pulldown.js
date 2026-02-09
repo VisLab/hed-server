@@ -24,9 +24,8 @@ $('#schema_version').on('change',function () {
 $('#schema_path').on('change', function () {
     let hedSchema = $('#schema_path');
     let hedPath = hedSchema.val();
-    let hedFile = hedSchema[0].files[0];
     if (fileHasValidExtension(hedPath, XML_FILE_EXTENSIONS)) {
-        getVersionFromSchemaFile(hedFile);
+        clearSchemaSelectFlashMessages();
         updateFileLabel(hedPath, '#schema_display_name');
     } else {
         flashMessageOnScreen('Please upload a valid schema file (.xml)', 'error',
@@ -77,43 +76,6 @@ async function getSchemaVersions() {
         console.error('Fetch error:', error);
     }
 }
-
-/**
- * Gets the version from the HED file that the user uploaded.
- * @param {Object} hedXMLFile - A HED XML file.
- */
-async function getVersionFromSchemaFile(hedXMLFile) {
-    let formData = new FormData();
-    formData.append('schema_path', hedXMLFile);
-    formData.append('csrf_token', "{{ csrf_token() }}");
-    try {
-        const submitUrl = "{{ url_for('route_blueprint.schema_version_results', _external=True)}}";
-        const response = await fetch(submitUrl, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const hedInfo = await response.json();  // Parse JSON response
-
-        if (hedInfo['schema_version']) {
-            flashMessageOnScreen('Using HED version ' + hedInfo['schema_version'], 'success', 'schema_select_flash');
-        } else if (hedInfo['message']) {
-            flashMessageOnScreen(hedInfo['message'], 'error', 'schema_select_flash');
-        } else {
-            flashMessageOnScreen('Server could not retrieve HED versions. Please provide your own.',
-                'error', 'schema_select_flash');
-        }
-
-    } catch (error) {
-        flashMessageOnScreen('Could not get version number from HED XML file.', 'error', 'schema_select_flash');
-        console.error('Fetch error:', error);
-    }
-}
-
 
 /**
  * Checks to see if a HED XML file is specified when the HED drop-down is set to "Other".
