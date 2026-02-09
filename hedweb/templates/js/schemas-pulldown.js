@@ -24,8 +24,8 @@ $('#schema_version').on('change',function () {
 $('#schema_path').on('change', function () {
     let hedSchema = $('#schema_path');
     let hedPath = hedSchema.val();
-    let hedFile = hedSchema[0].files[0];
     if (fileHasValidExtension(hedPath, XML_FILE_EXTENSIONS)) {
+        clearSchemaSelectFlashMessages();
         updateFileLabel(hedPath, '#schema_display_name');
     } else {
         flashMessageOnScreen('Please upload a valid schema file (.xml)', 'error',
