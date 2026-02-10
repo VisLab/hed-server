@@ -23,6 +23,14 @@ The HED online tools are a set of web-based applications for validating and anal
 - Quick start, local run, Docker deployment, and reverse proxy setup: see [docs/user_guide.md](docs/user_guide.md).
 - Deployment script now supports an optional third parameter to bind host ports (e.g., `127.0.0.1` for localhost-only): `./deploy.sh [branch] [environment] [bind_address]`.
 
+### HED Assistant Widget
+
+The HED online tools include an AI assistant widget powered by the Open Science Assistant (OSA). The widget script is self-hosted at `hedweb/static/js/osa-chat-widget.js`.
+
+- **Source**: https://osa-demo.pages.dev/osa-chat-widget.js
+- **Last updated**: 2026-02-10
+- **Maintenance**: Check periodically for updates or contact the OSA team
+
 ### HED Tools Online
 
 ## 

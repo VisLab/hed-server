@@ -6,7 +6,6 @@ WORKDIR /root
 # Copy project metadata files needed for pip install
 COPY pyproject.toml README.md ./
 COPY setup.py* ./
-COPY .git ./.git/
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,7 +18,11 @@ RUN apt-get update && apt-get install -y \
     pip3 install --upgrade pip
 
 # Copy the hedweb package to match pyproject.toml structure
+# This includes the committed _version.py file for version detection
 COPY ./hedtools/hedweb ./hedweb/
+
+# Copy configuration file for the application (created by deploy.sh)
+COPY ./hedtools/config.py ./config.py
 
 # Install the package with production dependencies (gunicorn)
 RUN pip3 install .[prod]

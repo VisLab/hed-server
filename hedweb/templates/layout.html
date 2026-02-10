@@ -130,14 +130,16 @@
 </script>
 
 <!-- HED Assistant Widget -->
-<script src="https://osa-demo.pages.dev/osa-chat-widget.js"></script>
+<script src="{{ url_for('static', filename='js/osa-chat-widget.js') }}"></script>
 <script>
-  OSAChatWidget.setConfig({
-    communityId: 'hed',
-    {% block widget_instructions %}
-    // Default: no specific instructions, let widget use community defaults
-    {% endblock %}
-  });
+  // Check if widget loaded successfully before configuring
+  if (typeof OSAChatWidget !== 'undefined') {
+    OSAChatWidget.setConfig({
+      communityId: 'hed'{% block widget_instructions %}
+      // Default: no specific instructions, let widget use community defaults
+      {% endblock %}
+    });
+  }
 </script>
 </body>
 </html>
