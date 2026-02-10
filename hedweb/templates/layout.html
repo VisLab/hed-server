@@ -128,5 +128,18 @@
     });
   });
 </script>
+
+<!-- HED Assistant Widget -->
+<script src="{{ url_for('static', filename='js/osa-chat-widget.js') }}"></script>
+<script>
+  // Check if widget loaded successfully before configuring
+  if (typeof OSAChatWidget !== 'undefined') {
+    OSAChatWidget.setConfig({
+      communityId: 'hed'{% block widget_instructions %}
+      // Default: no specific instructions, let widget use community defaults
+      {% endblock %}
+    });
+  }
+</script>
 </body>
 </html>

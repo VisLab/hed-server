@@ -17,8 +17,12 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev && \
     pip3 install --upgrade pip
 
-# Copy the hedtools directory (which contains hedweb package)
-COPY ./hedtools ./hedtools/
+# Copy the hedweb package to match pyproject.toml structure
+# This includes the committed _version.py file for version detection
+COPY ./hedtools/hedweb ./hedweb/
+
+# Copy configuration file for the application (created by deploy.sh)
+COPY ./hedtools/config.py ./config.py
 
 # Install the package with production dependencies (gunicorn)
 RUN pip3 install .[prod]
@@ -41,7 +45,7 @@ RUN mkdir -p /var/log/hedtools && \
     chown -R www-data:www-data /var/cache/schema_cache
 
 # Ensure Python can import the application package
-ENV PYTHONPATH="/root/hedtools"
+ENV PYTHONPATH="/root"
 
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
@@ -53,7 +57,7 @@ COPY gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
 EXPOSE 80
 
 # Run the Flask application with Gunicorn, binding to port 80
-# Import path matches PYTHONPATH layout (/root/hedtools contains the 'hedweb' package)
+# Import path matches PYTHONPATH layout (/root contains the 'hedweb' package)
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "--forwarded-allow-ips=127.0.0.1", \
      "--access-logfile", "/var/log/hedtools/access.log", \
      "--error-logfile", "/var/log/hedtools/error.log",  "--capture-output",\

@@ -67,12 +67,13 @@ where = ["."]
 include = ["hedweb*"]
 
 [tool.setuptools.package-data]
-hedweb = ["templates/*", "static/*", "constants/*"]
+hedweb = ["templates/*", "static/**/*", "constants/*"]
 
 [tool.setuptools_scm]
 write_to = "hedweb/_version.py"
 version_scheme = "post-release"
 local_scheme = "no-local-version"
+fallback_version = "0.0.0"
 
 [tool.black]
 line-length = 88
