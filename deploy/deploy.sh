@@ -69,6 +69,8 @@ setup_web_directory() {
     cp "${GIT_HED_WEB_DIR}/setup.py" "${DEPLOY_DIR}/setup.py" 2>/dev/null || echo "No setup.py found (optional)"
     cp "${GIT_HED_WEB_DIR}/README.md" "${DEPLOY_DIR}/README.md" || error_exit "Failed to copy README.md"
     cp -r "${WEB_CODE_DIR}" "${CODE_DEPLOY_DIR}" || error_exit "Failed to copy web code"
+    # Copy .git directory for setuptools-scm version detection
+    cp -r "${GIT_HED_WEB_DIR}/.git" "${DEPLOY_DIR}/.git" || error_exit "Failed to copy .git directory"
 }
 
 # Build the Docker image
@@ -98,7 +100,7 @@ run_docker_container() {
 # Clean up deployment files
 cleanup() {
     echo "Cleaning up deployment files..."
-    rm -rf "${GIT_HED_WEB_DIR}" "${CODE_DEPLOY_DIR}" "Dockerfile" "gunicorn-logrotate.conf" "pyproject.toml" "setup.py" "README.md"
+    rm -rf "${GIT_HED_WEB_DIR}" "${CODE_DEPLOY_DIR}" "Dockerfile" "gunicorn-logrotate.conf" "pyproject.toml" "setup.py" "README.md" ".git"
 }
 
 ##### Main execution

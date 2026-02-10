@@ -6,6 +6,7 @@ WORKDIR /root
 # Copy project metadata files needed for pip install
 COPY pyproject.toml README.md ./
 COPY setup.py* ./
+COPY .git ./.git/
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
