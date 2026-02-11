@@ -1,15 +1,6 @@
 # HED online tools user guide
 
-This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
-
-## Quick links
-
-- 🌐 [HED online tools](https://hedtools.org/hed)
-- 📚 [API reference](api/index.html)
-- 🐛 [GitHub issues](https://github.com/hed-standard/hed-web/issues)
-- 🎓 [HED resources](https://www.hedtags.org/hed-resources)
-- 📖 [HED tpecification](https://www.hedtags.org/hed-specification)
-- 🐍 [Python HEDTools](https://www.hedtags.org/hed-python)
+This guide provides instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
 
 ## Table of contents
 

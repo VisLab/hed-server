@@ -12,25 +12,27 @@
   <script src="https://osa-demo.pages.dev/osa-chat-widget.js"
           crossorigin="anonymous"
           defer></script>
-  <script defer>
-    // Initialize widget after script loads (defer ensures non-blocking)
-    if (window.OSAChatWidget) {
-      OSAChatWidget.setConfig({
-        communityId: 'hed',
-        title: 'HED Assistant',
-        initialMessage: 'Hi! I can help with using the HED online tools. What would you like to know?',
-        placeholder: 'Ask about HED...',
-        suggestedQuestions: [
-          'How do I create a BIDS JSON sidecar?',
-          'How do I validate a HED string using the HED online tools?',
-          'Explain the spreadsheet format for HED annotations.',
-          'What online tools are available?'
-        ],
-        widgetInstructions: 'User is on the HED online tools documentation most likely looking for how to use these tools',
-        showExperimentalBadge: true,
-        allowPageContext: true,
-        pageContextDefaultEnabled: true
-      });
-    }
+  <script>
+    // Wait for external script to load before configuring
+    window.addEventListener('load', function() {
+      if (window.OSAChatWidget) {
+        OSAChatWidget.setConfig({
+          communityId: 'hed',
+          title: 'HED Assistant',
+          initialMessage: 'Hi! I can help with using the HED online tools. What would you like to know?',
+          placeholder: 'Ask about HED...',
+          suggestedQuestions: [
+            'How do I create a BIDS JSON sidecar?',
+            'How do I validate a HED string using the HED online tools?',
+            'Explain the spreadsheet format for HED annotations.',
+            'What online tools are available?'
+          ],
+          widgetInstructions: 'User is on the HED online tools documentation most likely looking for how to use these tools',
+          showExperimentalBadge: true,
+          allowPageContext: true,
+          pageContextDefaultEnabled: true
+        });
+      }
+    });
   </script>
 {%- endblock scripts %}
