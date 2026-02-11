@@ -14,16 +14,14 @@ HED online tools
 
    * `HED specification <https://www.hedtags.org/hed-specification>`_ 
 
-   * `Python HEDTools <https://hed-python.readthedocs.io/>`_ 
+   * `Python HEDTools <https://www.hedtags.org/hed-python>`_ 
 
    * `Table-remodeler <https://www.hedtags.org/table-remodeler>`_
 
-Welcome to the HED online tools documentation! This package provides web-based interfaces and REST API services for working with **Hierarchical Event Descriptors (HED)** - a standardized framework for annotating events and experimental metadata in neuroscience and beyond.
-
-What is HED?
-------------
-
-HED is a standardized vocabulary and annotation framework designed to systematically describe events in experimental data, particularly neuroimaging and behavioral data. It's integrated into major neuroimaging standards:
+Welcome to the HED online tools documentation! This package provides web-based
+interfaces and REST API services for working with **Hierarchical Event Descriptors (HED)**
+- a standardized framework for annotating events and experimental metadata in neuroscience and beyond.
+HED is integrated into major neuroimaging standards:
 
 * `BIDS <https://bids.neuroimaging.io/>`_ (Brain Imaging Data Structure)
 * `NWB <https://www.nwb.org/>`_ (Neurodata Without Borders)
@@ -40,14 +38,6 @@ Key features
 * **Schema operations**: Validate, convert, and compare HED schemas
 * **Docker support**: Easy local deployment with Docker containers
 
-Getting started
----------------
-
-.. toctree::
-   :maxdepth: 2
-
-   Introduction <introduction>
-
 Using HED online tools
 ----------------------
 
@@ -62,7 +52,7 @@ Local deployment
 .. toctree::
    :maxdepth: 2
 
-   Installation <installation>
+   Deployment <deployment>
 
 API documentation
 -----------------
@@ -77,5 +67,3 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -1,13 +1,6 @@
-# Installation
+# HEDTools online deploymet
 
 This guide provides step-by-step instructions for deploying and using HED online tools in various environments, from local development to production Docker deployments.
-
-## Quick links
-
-- 📚 [API reference](api/index.rst)
-- 🐛 [GitHub issues](https://github.com/hed-standard/hed-web/issues)
-- 📖 [HED specification](https://hed-specification.readthedocs.io/)
-- 🌐 [Online tools](https://hedtools.org/hed)
 
 ## Installation
 
