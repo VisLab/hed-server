@@ -1,4 +1,4 @@
-# HEDTools online deploymet
+# HEDTools online deployment
 
 This guide provides step-by-step instructions for deploying and using HED online tools in various environments, from local development to production Docker deployments.
 
