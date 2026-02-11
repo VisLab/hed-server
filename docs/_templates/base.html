@@ -1,0 +1,36 @@
+{% extends "!base.html" %}
+
+{%- block scripts %}
+  {{ super() }}
+  
+  <!-- OSA Chat Widget (HED Assistant)
+       Privacy Note: This widget sends page content to an external AI service when
+       allowPageContext is enabled. The widget provides contextual help for HEDTools documentation.
+       Data sent: Page text content, user questions
+       Service: OSA Chat Widget (osa-demo.pages.dev)
+  -->
+  <script src="https://osa-demo.pages.dev/osa-chat-widget.js"
+          crossorigin="anonymous"
+          defer></script>
+  <script defer>
+    // Initialize widget after script loads (defer ensures non-blocking)
+    if (window.OSAChatWidget) {
+      OSAChatWidget.setConfig({
+        communityId: 'hed',
+        title: 'HED Assistant',
+        initialMessage: 'Hi! I can help with using the HED online tools. What would you like to know?',
+        placeholder: 'Ask about HED...',
+        suggestedQuestions: [
+          'How do I create a BIDS JSON sidecar?',
+          'How do I validate a HED string using the HED online tools?',
+          'Explain the spreadsheet format for HED annotations.',
+          'What online tools are available?'
+        ],
+        widgetInstructions: 'User is on the HED online tools documentation most likely looking for how to use these tools',
+        showExperimentalBadge: true,
+        allowPageContext: true,
+        pageContextDefaultEnabled: true
+      });
+    }
+  </script>
+{%- endblock scripts %}
