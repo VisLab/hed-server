@@ -8,7 +8,7 @@ HED (Hierarchical Event Descriptors) is a framework for systematically describin
 
 ## HED online tools
 
-The HED online tools are a set of web-based applications for validating and analyzing Hierarchical Event Descriptors (HED) annotations. These tools rely on are designed to be used in a web browser and can be deployed locally or from a DOCKER container.
+The HED online tools are a set of web-based applications for validating and analyzing Hierarchical Event Descriptors (HED) annotations. These tools rely on are designed to be used in a web browser and can be deployed locally or from a Docker container.
 
 | Resource              | URL                                                                                | Description                            |
 | --------------------- | ---------------------------------------------------------------------------------- | -------------------------------------- |

@@ -129,17 +129,34 @@
   });
 </script>
 
-<!-- HED Assistant Widget -->
-<script src="{{ url_for('static', filename='js/osa-chat-widget.js') }}"></script>
+<!-- OSA Chat Widget (HED Assistant)
+     Privacy Note: This widget sends page content to an external AI service when
+     allowPageContext is enabled. The widget provides contextual help for HED online tools.
+     Data sent: Page text content, user questions
+     Service: OSA Chat Widget (osa-demo.pages.dev)
+-->
 <script>
-  // Check if widget loaded successfully before configuring
-  if (typeof OSAChatWidget !== 'undefined') {
-    OSAChatWidget.setConfig({
-      communityId: 'hed'{% block widget_instructions %}
-      // Default: no specific instructions, let widget use community defaults
-      {% endblock %}
-    });
-  }
+  // Define config before the widget script loads
+  window.osaChatConfig = {
+    communityId: 'hed',
+    title: 'HED Assistant',
+    initialMessage: 'Hi! I can help with the HED online tools. What would you like to know?',
+    placeholder: 'Questions about HED online tools?',
+    suggestedQuestions: [
+      'How do I create a BIDS JSON sidecar?',
+      'How do I validate a HED string using the HED online tools?',
+      'Explain the spreadsheet format for HED annotations.',
+      'What online tools are available?'
+    ],
+    widgetInstructions: 'User is on the HED online tools web interface most likely looking for how to use these tools',
+    showExperimentalBadge: true,
+    allowPageContext: true,
+    pageContextDefaultEnabled: true
+  };
 </script>
+<script src="https://osa-demo.pages.dev/osa-chat-widget.js"
+        crossorigin="anonymous"
+        defer
+        onload="window.OSAChatWidget && window.OSAChatWidget.setConfig(window.osaChatConfig)"></script>
 </body>
 </html>

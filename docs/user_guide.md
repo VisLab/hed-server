@@ -34,7 +34,7 @@ HED is integrated into major neuroimaging standards:
 
 ### What are HED online tools?
 
-HED online tools provide both a web-based interface and REST API services for working with HED annotations and schemas. The application is built using Flask and offers easy access to HED operations without requiring programming knowledge. The application is deployed via a docker container.
+HED online tools provide both a web-based interface and REST API services for working with HED annotations and schemas. The application is built using Flask and offers easy access to HED operations without requiring programming knowledge. The application is deployed via a Docker container.
 
 #### Web interface
 
@@ -76,7 +76,7 @@ Example implementations are available in the [hed-matlab](https://github.com/hed
 
 - **Validation**: Ensure sidecar files meet HED requirements
 - **Conversion**: Convert between short and long tag forms
-- **Spreadsheet extraction**: Export to 4-column spread sheet for easier editing
+- **Spreadsheet extraction**: Export to 4-column spreadsheet for easier editing
 - **Spreadsheet merging**: Import annotations from spreadsheets back to JSON
 
 JSON sidecars contain HED annotations and metadata for BIDS datasets.
