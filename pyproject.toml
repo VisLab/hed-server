@@ -123,6 +123,10 @@ known-first-party = ["hedweb"]
 wrap = "no"
 number = false
 
+[tool.codespell]
+skip = ".git,*.pdf,*.svg,deprecated,*.xml,*.mediawiki,*.omn,./hedweb/static/,*.map,*.min.css,versioneer.py,venv*,*.tsv,*.yaml,*.yml,*.json,./docs/_build,./_build,./docs/_static,**/searchindex.js"
+ignore-words-list = "covert,hed,recuse,disjointness,cace,parms,assertIn"
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "services_tests"]
 python_files = ["test_*.py"]
