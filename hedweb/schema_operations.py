@@ -107,14 +107,14 @@ class SchemaOperations(BaseOperations):
             base_dir = os.path.join(tmpdir, f"{schema_name}_converted")
             os.makedirs(base_dir, exist_ok=True)
             # Write all the formats to the temp directory.
-            self.schema.save_as_xml(os.path.join(base_dir, schema_name + ".xml"))
+            self.schema.save_as_xml(
+                os.path.join(base_dir, schema_name + ".xml"), save_merged=False)
             self.schema.save_as_mediawiki(
-                os.path.join(base_dir, schema_name + ".mediawiki")
-            )
-            self.schema.save_as_json(os.path.join(base_dir, schema_name + ".json"))
+                os.path.join(base_dir, schema_name + ".mediawiki"), save_merged=False)
+            self.schema.save_as_json(
+                os.path.join(base_dir, schema_name + ".json"), save_merged=False)
             self.schema.save_as_dataframes(
-                os.path.join(base_dir, "hedtsv", schema_name, schema_name + ".tsv")
-            )
+                os.path.join(base_dir, "hedtsv", schema_name, schema_name + ".tsv"), save_merged=False)
 
             # Create zip archive in memory
             zip_buffer = io.BytesIO()
