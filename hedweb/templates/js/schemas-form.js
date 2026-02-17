@@ -44,7 +44,7 @@ $('#schema_folder').on('change', function () {
 
     if (files.length > 0) {
         const folderName = files[0].webkitRelativePath.split('/')[0];
-        label.text(`Upload a HED schema folder: ${folderName}`);
+        label.text(`Schema folder: ${folderName}`);
     } else {
         label.text(UPLOAD_FILE_LABEL);
     }
@@ -56,7 +56,7 @@ $('#second_schema_folder').on('change', function () {
 
     if (files.length > 0) {
         const folderName = files[0].webkitRelativePath.split('/')[0];
-        label.text(`Upload a HED schema folder: ${folderName}`);
+        label.text(`Schema folder: ${folderName}`);
     } else {
         label.text(UPLOAD_FILE_LABEL);
     }

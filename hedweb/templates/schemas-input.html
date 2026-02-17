@@ -1,79 +1,109 @@
 {% macro create_schemas_input(title1, title2) %}
-        <fieldset class="form-group">
-          <!-- ✅ Option 1: URL input -->
-          <legend class="mt-4">{{ title1 }}</legend>
-          <div class="form-check" id="schema_url_group">
-          <input class="form-check-input" type="radio" name="schema_upload_options"
-                 id="schema_url_option" value="schema_url_option" 
-                 aria-label="Select this button for HED schema URL" checked="">
-          <label class="form-check-label" for="schema_url_option">Enter HED schema URL:</label>
-          <input class="form-control" type="url" id="schema_url"  name="schema_url"
-                 aria-label="Enter schema URL here">
+        <div class="card card-body bg-light my-5">
+          <h5 class="card-title mb-3">{{ title1 }}</h5>
+          
+          <!-- Option 1: URL input -->
+          <div class="row g-2 mb-3" id="schema_url_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="schema_upload_options"
+                       id="schema_url_option" value="schema_url_option" 
+                       aria-label="Select this button for HED schema URL" checked="">
+                <label class="form-check-label" for="schema_url_option">Schema URL:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
+              <input class="form-control" type="url" id="schema_url" name="schema_url"
+                     aria-label="Enter schema URL here">
+            </div>
           </div>
-          <p></p>
 
-          <!-- ✅ Option 2: File upload -->
-          <div class="form-check" id="schema_file_group">
-            <input class="form-check-input" type="radio" name="schema_upload_options" 
-                   id="schema_file_option" value="schema_file_option"
-                   aria-label="Select this button for HED schema file">
-            <label class="form-check-label" for="schema_file_option">
-              HED schema file to upload:
-            </label>
+          <!-- Option 2: File upload -->
+          <div class="row g-2 mb-3" id="schema_file_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="schema_upload_options" 
+                       id="schema_file_option" value="schema_file_option"
+                       aria-label="Select this button for HED schema file">
+                <label class="form-check-label" for="schema_file_option">Schema file:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
               <input class="form-control" type="file" id="schema_file" name="schema_file"
-                      aria-label="Enter schema file to upload here">
+                     aria-label="Enter schema file to upload here">
+            </div>
           </div>
-          <p></p>
 
-          <!-- ✅ Option 3: Folder upload -->
-          <div class="form-check" id="schema_folder_group">
-            <input class="form-check-input" type="radio" name="schema_upload_options"
-                   id="schema_folder_option" value="schema_folder_option"
-                   aria-label="Select this button to upload a HED schema folder">
-            <label class="form-check-label" for="schema_folder_option" id="schema_folder_label">
-              Upload a HED schema folder:
-            </label>
-            <input class="form-control" type="file" id="schema_folder" name="schema_folder[]"
-                   webkitdirectory directory multiple
-                   aria-label="Select a folder to upload">
+          <!-- Option 3: Folder upload -->
+          <div class="row g-2 mb-3" id="schema_folder_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="schema_upload_options"
+                       id="schema_folder_option" value="schema_folder_option"
+                       aria-label="Select this button to upload a HED schema folder">
+                <label class="form-check-label" for="schema_folder_option" id="schema_folder_label">Schema folder:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
+              <input class="form-control" type="file" id="schema_folder" name="schema_folder[]"
+                     webkitdirectory directory multiple
+                     aria-label="Select a folder to upload">
+            </div>
           </div>
-        </fieldset>
+        </div>
+        
     <div id="second_schema_section">
-    <fieldset class="form-group">
-        <legend class="mt-4">{{ title2 }}</legend>
-        <div class="form-check" id="second_schema_url_group">
-            <input class="form-check-input" type="radio" name="second_schema_upload_options"
-                   id="second_schema_url_option" value="second_schema_url_option"
-                   aria-label="Select this button for HED schema URL" checked="">
-            <label class="form-check-label" for="second_schema_url_option">Enter HED schema URL:</label>
-            <input class="form-control" type="url" id="second_schema_url" name="second_schema_url"
-                   aria-label="Enter schema URL here">
-        </div>
-        <p></p>
-        <!-- ✅ Option 2: File upload -->
-        <div class="form-check" id="second_schema_file_group">
-            <input class="form-check-input" type="radio" name="second_schema_upload_options"
-                   id="second_schema_file_option" value="second_schema_file_option"
-                   aria-label="Select this button to upload a second HED schema file">
-            <label class="form-check-label" for="second_schema_file_option">
-                HED schema file to upload:
-            </label>
-            <input class="form-control" type="file" id="second_schema_file" name="second_schema_file"
-                   aria-label="Enter schema file to upload here">
-        </div>
-        <p></p>
-        <!-- ✅ Option 3: Folder upload -->
-          <div class="form-check" id="second_schema_folder_group">
-            <input class="form-check-input" type="radio" name="second_schema_upload_options"
-                   id="second_schema_folder_option" value="second_schema_folder_option"
-                   aria-label="Select this button to upload a second HED schema folder">
-            <label class="form-check-label" for="second_schema_folder_option" id="second_schema_folder_label">
-              Upload a HED schema folder:
-            </label>
-            <input class="form-control" type="file" id="second_schema_folder" name="second_schema_folder[]"
-                   webkitdirectory directory multiple
-                   aria-label="Select a folder to upload">
+        <div class="card card-body bg-light my-5">
+          <h5 class="card-title mb-3">{{ title2 }}</h5>
+          
+          <!-- Option 1: URL input -->
+          <div class="row g-2 mb-3" id="second_schema_url_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="second_schema_upload_options"
+                       id="second_schema_url_option" value="second_schema_url_option"
+                       aria-label="Select this button for HED schema URL" checked="">
+                <label class="form-check-label" for="second_schema_url_option">Schema URL:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
+              <input class="form-control" type="url" id="second_schema_url" name="second_schema_url"
+                     aria-label="Enter schema URL here">
+            </div>
           </div>
-    </fieldset>
+
+          <!-- Option 2: File upload -->
+          <div class="row g-2 mb-3" id="second_schema_file_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="second_schema_upload_options"
+                       id="second_schema_file_option" value="second_schema_file_option"
+                       aria-label="Select this button to upload a second HED schema file">
+                <label class="form-check-label" for="second_schema_file_option">Schema file:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
+              <input class="form-control" type="file" id="second_schema_file" name="second_schema_file"
+                     aria-label="Enter schema file to upload here">
+            </div>
+          </div>
+
+          <!-- Option 3: Folder upload -->
+          <div class="row g-2 mb-3" id="second_schema_folder_group">
+            <div class="col-sm-auto col-12 form-label-col">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="second_schema_upload_options"
+                       id="second_schema_folder_option" value="second_schema_folder_option"
+                       aria-label="Select this button to upload a second HED schema folder">
+                <label class="form-check-label" for="second_schema_folder_option" id="second_schema_folder_label">Schema folder:</label>
+              </div>
+            </div>
+            <div class="col-sm col-12">
+              <input class="form-control" type="file" id="second_schema_folder" name="second_schema_folder[]"
+                     webkitdirectory directory multiple
+                     aria-label="Select a folder to upload">
+            </div>
+          </div>
+        </div>
     </div>
 {% endmacro %}
