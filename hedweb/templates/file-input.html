@@ -1,9 +1,16 @@
-{% macro create_file_input(title, file_id, flash_id="", div_id="" ) %}
+{% macro create_file_input(title, file_id, flash_id="", div_id="", inline=False ) %}
    {% if div_id|string != '' %}
       <div id={{ div_id }}>
    {% endif %}
-        <label for="{{ file_id }}" class="form-label mt-4">{{ title }}</label>
+   {% if inline %}
+        <div style="display: flex; align-items: center; gap: 0.625rem;">
+            <label for="{{ file_id }}" class="form-label" style="margin: 0; white-space: nowrap;">{{ title }}</label>
+            <input class="form-control" type="file" id={{ file_id }} name={{ file_id }} style="flex: 1;">
+        </div>
+   {% else %}
+        <label for="{{ file_id }}" class="form-label">{{ title }}</label>
         <input class="form-control" type="file" id={{ file_id }} name={{ file_id }}>
+   {% endif %}
         {% if flash_id|string != '' %}
              <p class="flash" id={{ flash_id }}></p>
         {% endif %}

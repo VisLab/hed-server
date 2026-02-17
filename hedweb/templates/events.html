@@ -7,25 +7,33 @@
 {% from "query.html" import create_query %}
 
 {% block content %}
-    <h3>BIDS-style events or other tabular file:</h3>
+    <h3>Tabular file (.tsv) files:</h3>
     <div class="form-group">
     <form id="events_form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {{ create_actions(assemble=True,generate_sidecar=True,validate=True,remodel=True,search=True,check_quality=True) }}
         {{ create_options(append_assembled=True,check_for_warnings=True,expand_defs=True,include_context=True,include_summaries=True,limit_errors=True,replace_defs=True,remove_types_on=True,show_details=True) }}
-        <p>&nbsp;</p>
-        <fieldset class="form-group">
-            <legend>Input:</legend>
-            {{ create_file_input('Upload tabular (.tsv file):', 'events_file', 'events_file_flash') }}
+
+        <div class="form-group p-3 my-5" style="border: 1px solid #ccc; background-color: #f8f9fa; border-radius: 0.3rem;">
+            {{ create_file_input('Tabular (.tsv):   ', 'events_file', 'events_file_flash', inline=True) }}
             <input type="hidden" id="has_column_names" name="has_column_names" value="on"/>
-            {{ create_column_info('show_events') }}
-            {{ create_file_input('Upload sidecar (.json file) if needed', 'sidecar_file', 
-                                 flash_id='', div_id='sidecar_input_section') }}
-            {{ create_query('Enter HED search query') }}
-            {{ create_file_input('Upload remodel instructions (.json file)', 'remodel_file',
-                                 flash_id='', div_id='remodel_input_section') }}
-        </fieldset>
-        <p>&nbsp;</p>
+            <div class="mt-2">
+                {{ create_column_info('show_events') }}
+            </div>
+            <div class="mt-2">
+                {{ create_file_input('Sidecar (.json):', 'sidecar_file', 
+                                     flash_id='', div_id='sidecar_input_section', inline=True) }}
+            </div>
+            <div class="mt-3">
+                {{ create_file_input('Remodel (.json):', 'remodel_file',
+                                     flash_id='', div_id='remodel_input_section', inline=True) }}
+            </div>
+            <div class="mt-3">
+                {{ create_query('HED query:') }}
+            </div>
+       
+        </div>
+
         {{ create_schemas_pulldown() }}
         <fieldset>
         <button id="events_submit" type="button" class="btn btn-primary btn-large">Process</button>

@@ -1,64 +1,64 @@
 {% macro create_options(append_assembled=False,check_for_warnings=False,expand_defs=False,include_context=False,include_description_tags=False,include_summaries=False,limit_errors=False,replace_defs=False,remove_types_on=False,show_details=False) %}
-    <fieldset id="options_section" style="margin-top: 12px;">
+    <fieldset id="options_section" class="mt-2">
         <div class="form-group" id="options">
             {% if append_assembled %}
                 <span class="form-check form-switch" id="append_assembled_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="append_assembled" id="append_assembled">
-                    <label class="form-check-label" for="append_assembled">Append assembled</label>
+                    <label class="form-check-label" for="append_assembled">Append assembled &nbsp;&nbsp;</label>
                 </span> &nbsp;&nbsp;
             {% endif %}
             {% if check_for_warnings %}
                 <span class="form-check form-switch" id="check_for_warnings_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="check_for_warnings" id="check_for_warnings">
-                    <label class="form-check-label" for="check_for_warnings">Check warnings</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="check_for_warnings">Check warnings &nbsp;&nbsp;</label>
+                </span> 
             {% endif %}
             {% if show_details %}
                 <span class="form-check form-switch" id="show_details_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="show_details" id="show_details">
-                    <label class="form-check-label" for="show_details">Show detailed errors</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="show_details">Show error details &nbsp;&nbsp;</label>
+                </span> 
             {% endif %}
             {% if limit_errors %}
                 <span class="form-check form-switch" id="limit_errors_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="limit_errors" id="limit_errors">
-                    <label class="form-check-label" for="limit_errors">Limit errors reported</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="limit_errors">Limit errors &nbsp;&nbsp;</label>
+                </span> 
             {% endif %}
             {% if expand_defs %}
                 <span class="form-check form-switch" id="expand_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="expand_defs" id="expand_defs">
                     <label class="form-check-label" for="expand_defs">Expand defs</label>
-                </span> &nbsp;&nbsp;
+                </span>
             {% endif %}
             {% if include_context %}
                 <span class="form-check form-switch" id="include_context_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_context" id="include_context">
-                    <label class="form-check-label" for="include_context">Include context</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="include_context">Include context &nbsp;&nbsp;</label>
+                </span>
             {% endif %}
             {% if include_description_tags %}
                 <span class="form-check form-switch" id="include_description_tags_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_description_tags" id="include_description_tags">
-                    <label class="form-check-label" for="include_description_tags">Include description</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="include_description_tags">Include description &nbsp;&nbsp;</label>
+                </span>
             {% endif %}
             {% if include_summaries %}
                 <span class="form-check form-switch" id="include_summaries_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="include_summaries" id="include_summaries">
-                    <label class="form-check-label" for="include_summaries">Include summaries</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="include_summaries">Include summaries &nbsp;&nbsp;</label>
+                </span>
             {% endif %}
             {% if replace_defs %}
                 <span class="form-check form-switch" id="replace_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="replace_defs" id="replace_defs">
-                    <label class="form-check-label" for="replace_defs">Replace defs</label>
-                </span> &nbsp;&nbsp;
+                    <label class="form-check-label" for="replace_defs">Replace defs &nbsp;&nbsp;</label>
+                </span>
             {% endif %}
             {% if remove_types_on %}
                 <span class="form-check form-switch" id="remove_types_on_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="remove_types_on" id="remove_types_on">
-                    <label class="form-check-label" for="remove_types_on">Remove condition and task</label>
+                    <label class="form-check-label" for="remove_types_on">No condition or task</label>
                 </span>
             {% endif %}
         </div>

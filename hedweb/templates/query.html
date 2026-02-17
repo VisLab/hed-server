@@ -1,6 +1,6 @@
 {% macro create_query(title) %}
-    <div id="query_input_section" >
-       <label for="query_input" class="form-label mt-4">{{ title }}</label>
-       <input class="form-control" maxlength="25000" name="query_input" id="query_input"></input>
+    <div id="query_input_section" style="display: flex; align-items: center; gap: 0.625rem;">
+       <label for="query_input" class="form-label" style="margin: 0; white-space: nowrap;">{{ title }}</label>
+       <input class="form-control" maxlength="25000" name="query_input" id="query_input" style="flex: 1;"></input>
     </div>
 {% endmacro %}
