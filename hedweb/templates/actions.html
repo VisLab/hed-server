@@ -2,8 +2,9 @@
 merge_spreadsheet=False,remodel=False,search=False,to_long=False,to_short=False,validate=False,compare_schemas=False) %}
     
 
-  <fieldset class="form-group">
-      <legend>Action:</legend>
+  <div class="form-group mt-4 mb-3 row g-2" role="group" aria-labelledby="action_label">
+      <label for="process_actions" id="action_label" class="col-sm-auto col-12 col-form-label fs-5" style="min-width: 100px;">Action:</label>
+      <div class="col-sm col-12">
       <select class="form-select" id="process_actions" name="process_actions">
         {% if validate %}
             <option value="validate" aria-label="Validate the indicated file." 
@@ -66,5 +67,6 @@ merge_spreadsheet=False,remodel=False,search=False,to_long=False,to_short=False,
         {% endif %}
       
      </select>
-    </fieldset>
+      </div>
+    </div>
 {% endmacro %}

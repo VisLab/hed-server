@@ -12,15 +12,29 @@
         {{ create_actions(to_long=True,to_short=True,extract_spreadsheet=True,
                           validate=True,merge_spreadsheet=True) }}
         {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
-        <p>&nbsp;</p>
-        <fieldset  class="form-group">
-            <legend>Input:</legend>
-            {{ create_file_input('JSON sidecar', 'sidecar_file') }}
-            <div id="spreadsheet_input_section">
-             {{ create_spreadsheets_input(has_column_names_option=False) }}
-             </div>
-        </fieldset>
-        <p>&nbsp;</p>
+
+        <div class="card card-body bg-light my-5">
+            <div class="row g-2 mb-2">
+                <label for="sidecar_file" class="col-sm-auto col-12 col-form-label" style="min-width: 150px;">JSON sidecar:</label>
+                <div class="col-sm col-12">
+                    <input class="form-control" type="file" id="sidecar_file" name="sidecar_file">
+                </div>
+            </div>
+            <div id="spreadsheet_input_section" class="mt-2">
+                <div class="row g-2 mb-2">
+                    <label for="spreadsheet_file" class="col-sm-auto col-12 col-form-label" style="min-width: 150px;">Spreadsheet:</label>
+                    <div class="col-sm col-12">
+                        <input class="form-control" type="file" id="spreadsheet_file" name="spreadsheet_file">
+                    </div>
+                </div>
+                <div id="worksheet_select" class="mt-2">
+                    <label class="form-label" for="worksheet_name">Worksheet name:</label>
+                    <select name="worksheet_name" id="worksheet_name" class="form-select"></select>
+                </div>
+                <p class="flash" id="spreadsheet_input_flash"></p>
+            </div>
+        </div>
+
         {{ create_schemas_pulldown() }}
         <fieldset class="form-group">
         <button id="sidecar_submit" type="button" class="btn btn-primary btn-large">Process</button>
