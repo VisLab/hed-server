@@ -5,3 +5,13 @@
 .special.active {
     color: darkgreen;
 }
+
+/* Form label column with consistent minimum width for alignment */
+.form-label-col {
+    min-width: 150px;
+}
+
+/* Process and Clear buttons with consistent width */
+.process-btn {
+    min-width: 100px;
+}

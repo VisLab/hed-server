@@ -75,7 +75,6 @@ function prepareForm() {
 function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
-        hideOption("expand_defs");
         showOption("check_for_warnings");
         hideOption("include_description_tags");
         $("#sidecar_input_section").show();
@@ -84,7 +83,6 @@ function setOptions() {
         $("#options_section").show();
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
         hideOption("include_description_tags");
         $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
@@ -92,7 +90,6 @@ function setOptions() {
         $("#options_section").show();
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        showOption("expand_defs");
         hideOption("include_description_tags");
         $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
@@ -100,14 +97,12 @@ function setOptions() {
         $("#options_section").show();
     } else if (selectedElement.value === "extract_spreadsheet") {
         hideOption("check_for_warnings");
-        hideOption("expand_defs");
         hideOption("include_description_tags");
         $("#sidecar_input_section").show();
         $("#spreadsheet_input_section").hide();
         $("#schema_pulldown_section").hide();
         $("#options_section").hide();
     } else if (selectedElement.value === "merge_spreadsheet") {
-        hideOption("expand_defs");
         hideOption("check_for_warnings");
         showOption("include_description_tags");
         $("#sidecar_input_section").show();

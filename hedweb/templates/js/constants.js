@@ -7,6 +7,6 @@ const SCHEMA_MEDIAWIKI_EXTENSION = 'mediawiki';
 const TEXT_FILE_EXTENSIONS = ['tsv', 'txt'];
 const XML_FILE_EXTENSIONS = ['xml'];
 const SCHEMA_EXTENSIONS = ['json', 'mediawiki', 'xml']
-const UPLOAD_FILE_LABEL = 'Upload a HED schema folder:'
+const UPLOAD_FILE_LABEL = 'Schema folder:'
 
 

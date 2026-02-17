@@ -3,7 +3,8 @@
 {% from "actions.html" import create_actions %}
 {% from "options.html" import create_options %}
 {% from "file-input.html" import create_file_input %}
-{% from "spreadsheets-input.html" import create_spreadsheets_input %}
+{% from "process-buttons.html" import create_process_buttons %}
+
 
 {% block content %}
     <h3>BIDS-style JSON sidecar:</h3>
@@ -11,18 +12,18 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {{ create_actions(to_long=True,to_short=True,extract_spreadsheet=True,
                           validate=True,merge_spreadsheet=True) }}
-        {{ create_options(check_for_warnings=True,expand_defs=True,include_description_tags=True) }}
+        {{ create_options(check_for_warnings=True,include_description_tags=True) }}
 
         <div class="card card-body bg-light my-5">
             <div class="row g-2 mb-2">
-                <label for="sidecar_file" class="col-sm-auto col-12 col-form-label" style="min-width: 150px;">JSON sidecar:</label>
+                <label for="sidecar_file" class="col-sm-auto col-12 col-form-label form-label-col">JSON sidecar:</label>
                 <div class="col-sm col-12">
                     <input class="form-control" type="file" id="sidecar_file" name="sidecar_file">
                 </div>
             </div>
             <div id="spreadsheet_input_section" class="mt-2">
                 <div class="row g-2 mb-2">
-                    <label for="spreadsheet_file" class="col-sm-auto col-12 col-form-label" style="min-width: 150px;">Spreadsheet:</label>
+                    <label for="spreadsheet_file" class="col-sm-auto col-12 col-form-label form-label-col">Spreadsheet:</label>
                     <div class="col-sm col-12">
                         <input class="form-control" type="file" id="spreadsheet_file" name="spreadsheet_file">
                     </div>
@@ -36,12 +37,7 @@
         </div>
 
         {{ create_schemas_pulldown() }}
-        <fieldset class="form-group">
-        <button id="sidecar_submit" type="button" class="btn btn-primary btn-large">Process</button>
-        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
-        <button id="sidecar_clear" type="button" class="btn btn-secondary btn-large">&nbsp;&nbsp;&nbsp;Clear&nbsp;&nbsp;&nbsp;</button>
-        </fieldset>
-        <p class="flash" id="sidecar_flash"></p>
+        {{ create_process_buttons('sidecar_submit', 'sidecar_clear', 'sidecar_flash') }}
     </form>
     <script type="module">
         {%  include 'js/constants.js' %}

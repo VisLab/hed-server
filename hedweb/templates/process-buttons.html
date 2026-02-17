@@ -1,0 +1,7 @@
+{% macro create_process_buttons(submit_id, clear_id, flash_id) %}
+    <div class="form-group mt-3">
+        <button id="{{ submit_id }}" type="button" class="btn btn-primary btn-large process-btn">Process</button>
+        <button id="{{ clear_id }}" type="button" class="btn btn-secondary btn-large process-btn ms-3">Clear</button>
+    </div>
+    <p class="flash mt-3" id="{{ flash_id }}"></p>
+{% endmacro %}
