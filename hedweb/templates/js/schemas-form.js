@@ -80,23 +80,6 @@ $('#schema_clear').on('click', function () {
     clearForm();
 });
 
-//
-//
-// $('#schema_file_option').on('change', function () {
-//     updateForm();
-// });
-//
-// $('#schema_url_option').on('change',function () {
-//     updateForm();
-// });
-//
-// $('#second_schema_file_option').on('change', function () {
-//     updateForm();
-// });
-//
-// $('#second_schema_url_option').on('change',function () {
-//     updateForm();
-// });
 
 /**
  * Clear the fields in the form.
@@ -194,14 +177,17 @@ function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
+        hideOption("save_merged");
         $("#options_section").show();
         $("#second_schema_section").hide()
     } else if (selectedElement.value === "compare_schemas") {
         hideOption("check_for_warnings");
+        hideOption("save_merged");
         $("#options_section").hide();
         $("#second_schema_section").show()
     } else {
         hideOption("check_for_warnings");
+        showOption("save_merged");
         $("#options_section").hide();
         $("#second_schema_section").hide()
     }

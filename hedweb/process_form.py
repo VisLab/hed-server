@@ -66,8 +66,9 @@ class ProcessForm:
                 request.form, bc.INCLUDE_SUMMARIES, "on"
             ),
             bc.LIMIT_ERRORS: form_has_option(request.form, bc.LIMIT_ERRORS, "on"),
-            bc.REMOVE_TYPES_ON: form_has_option(request.form, bc.REMOVE_TYPES_ON, "on"),
+            bc.REMOVE_TYPES: form_has_option(request.form, bc.REMOVE_TYPES, "on"),
             bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, "on"),
+            bc.SAVE_MERGED: form_has_option(request.form, bc.SAVE_MERGED, "on"),
             bc.SHOW_DETAILS: form_has_option(request.form, bc.SHOW_DETAILS, "on"),
             bc.SPREADSHEET_TYPE: fc.TSV_EXTENSION,
         }
