@@ -33,7 +33,7 @@
                 ],
                 "include_context",
                 "replace_defs",
-                "remove_types_on"
+                "remove_types"
             ],
             "Returns": "A string containing the text of assembled events file or a list of issues. The definitions are also returned if any."
         },
@@ -51,7 +51,7 @@
                 "queries",
                 "include_context",
                 "replace_defs",
-                "remove_types_on"
+                "remove_types"
             ],
             "Returns": "An error file as text if issues or an array of zeros and ones indicating whether respective queries were satisfied."},
 
@@ -252,7 +252,7 @@
         "include_summaries": "Return any summaries in addition to the events file when remodeling.",
         "queries": "A single string or a list of query strings for searching.",
         "remodel_string": "JSON remodel commands as a string",
-        "remove_types_on": "If true remove Condition-variable and Task tags from HED strings",
+        "remove_types": "If true remove Condition-variable and Task tags from HED strings",
         "replace_defs": "If true replace Def tags with contents of respective definitions",
         "schema_string": "HED XML schema as a string.",
         "schema_url": "A URL from which a HED schema can be downloaded.",

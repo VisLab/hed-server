@@ -87,6 +87,7 @@ REMOVE_TYPES = "remove_types"
 REPLACE_DEFS = "replace_defs"
 REQUEST_TYPE = "request_type"
 REQUIRED_COLUMN_INDICES = "required_column_indices"
+SAVE_MERGED = "save_merged"
 
 # Schema-specific constants
 SCHEMA = "schema"

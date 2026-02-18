@@ -57,7 +57,7 @@ prod = [
 hedweb = "hedweb.runserver:main"
 
 [project.urls]
-Homepage = "https://github.com/hed-standard/hed-web"
+Homepage = "https://www.hedtags.org"
 Documentation = "https://www.hedtags.org/hed-web"
 Repository = "https://github.com/hed-standard/hed-web.git"
 Issues = "https://github.com/hed-standard/hed-web/issues"

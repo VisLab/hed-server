@@ -90,7 +90,6 @@ class SidecarOperations(BaseOperations):
 
         Notes:
             command (str):           Either 'to short' or 'to long' indicating type of conversion.
-            expand_defs (bool):      If True, expand definitions when converting, otherwise do no expansion
 
         """
         self.check_for_warnings = False
@@ -98,10 +97,6 @@ class SidecarOperations(BaseOperations):
         if results[bc.MSG_CATEGORY] == "warning":
             return results
         display_name = self.sidecar.name
-        if self.expand_defs:
-            self.sidecar.get_def_dict(hed_schema=self.schema)
-        else:
-            pass
         if self.command == bc.COMMAND_TO_LONG:
             tag_form = "long_tag"
         else:

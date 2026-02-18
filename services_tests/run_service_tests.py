@@ -9,7 +9,7 @@ This script:
 4. Shuts down the server when tests complete
 
 Usage:
-    python run_service_tests.py [--port PORT] [--timeout TIMEOUT]
+    python services_tests/run_service_tests.py [--port PORT] [--timeout TIMEOUT]
 
 Options:
     --port PORT         Port to run the server on (default: 5000)

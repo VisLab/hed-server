@@ -158,7 +158,7 @@ Use the provided script that starts the server, runs tests, and cleans up automa
 
 ```powershell
 # Run service tests with automatic server management
-python run_service_tests.py
+python services_tests/run_service_tests.py
 ```
 
 **Option 2: Manual Server Management**\

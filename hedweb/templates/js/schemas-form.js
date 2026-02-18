@@ -188,7 +188,7 @@ function setOptions() {
     } else {
         hideOption("check_for_warnings");
         showOption("save_merged");
-        $("#options_section").hide();
+        $("#options_section").show();
         $("#second_schema_section").hide()
     }
 }
