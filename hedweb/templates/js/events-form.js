@@ -128,7 +128,7 @@ function setOptions() {
         hideOption("include_context");
         hideOption("include_summaries");
         showOption('limit_errors')
-        hideOption("remove_types_on");
+        hideOption("remove_types");
         hideOption("replace_defs");
         hideOption("use_hed");
         hideOption("show_details");
@@ -145,7 +145,7 @@ function setOptions() {
         hideOption("include_context");
         hideOption("include_summaries");
         showOption("limit_errors");
-        hideOption("remove_types_on");
+        hideOption("remove_types");
         hideOption("replace_defs");
         hideOption("use_hed");
         showOption("show_details");
@@ -162,7 +162,7 @@ function setOptions() {
         showOption("include_context", true);
         hideOption("include_summaries");
         hideOption("limit_errors");
-        showOption("remove_types_on", true);
+        showOption("remove_types", true);
         showOption("replace_defs", true);
         hideOption("use_hed");
         hideOption("show_details");
@@ -179,7 +179,7 @@ function setOptions() {
         hideOption("include_context");
         hideOption("include_summaries");
         hideOption("limit_errors");
-        hideOption("remove_types_on");
+        hideOption("remove_types");
         hideOption("replace_defs");
         hideOption("use_hed");
         hideOption("show_details");
@@ -196,7 +196,7 @@ function setOptions() {
         hideOption("include_context");
         showOption("include_summaries");
         hideOption("limit_errors");
-        hideOption("remove_types_on")
+        hideOption("remove_types")
         hideOption("replace_defs");
         hideOption("use_hed");
         hideOption("show_details");
@@ -213,7 +213,7 @@ function setOptions() {
         showOption("include_context", true);
         hideOption("include_summaries");
         hideOption("limit_errors");
-        showOption("remove_types_on", true);
+        showOption("remove_types", true);
         showOption("replace_defs", true);
         hideOption("use_hed");
         hideOption("show_details");

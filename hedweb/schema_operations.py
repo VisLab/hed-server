@@ -36,6 +36,7 @@ class SchemaOperations(BaseOperations):
         self.schema2 = None
         self.command = None
         self.check_for_warnings = False
+        self.save_merged = False
         if arguments:
             self.set_input_from_dict(arguments)
 
@@ -108,17 +109,20 @@ class SchemaOperations(BaseOperations):
             os.makedirs(base_dir, exist_ok=True)
             # Write all the formats to the temp directory.
             self.schema.save_as_xml(
-                os.path.join(base_dir, schema_name + ".xml"), save_merged=False
+                os.path.join(base_dir, schema_name + ".xml"),
+                save_merged=self.save_merged,
             )
             self.schema.save_as_mediawiki(
-                os.path.join(base_dir, schema_name + ".mediawiki"), save_merged=False
+                os.path.join(base_dir, schema_name + ".mediawiki"),
+                save_merged=self.save_merged,
             )
             self.schema.save_as_json(
-                os.path.join(base_dir, schema_name + ".json"), save_merged=False
+                os.path.join(base_dir, schema_name + ".json"),
+                save_merged=self.save_merged,
             )
             self.schema.save_as_dataframes(
                 os.path.join(base_dir, "hedtsv", schema_name, schema_name + ".tsv"),
-                save_merged=False,
+                save_merged=self.save_merged,
             )
 
             # Create zip archive in memory
@@ -141,6 +145,7 @@ class SchemaOperations(BaseOperations):
                 "data": encoded_zip,
                 "output_display_name": zip_file_name,
                 "schema_version": schema_name,
+                "save_merged": self.save_merged,
                 "msg_category": "success",
                 "msg": "Schema was successfully converted",
             }

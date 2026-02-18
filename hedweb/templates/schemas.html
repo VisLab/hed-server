@@ -10,7 +10,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
         {{ create_actions(convert_schema=True, validate=True, compare_schemas=True) }}
-        {{ create_options(check_for_warnings=True) }}
+        {{ create_options(check_for_warnings=True,save_merged=True) }}
         
         {{ create_schemas_input("Source schema:", "Schema to compare:") }}
         

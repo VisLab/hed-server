@@ -84,10 +84,10 @@ REMODEL_OPERATIONS = "remodel_operations"
 REMODEL_STRING = "remodel_string"
 REMOVE_DEFS = "remove_defs"
 REMOVE_TYPES = "remove_types"
-REMOVE_TYPES_ON = "remove_types_on"
 REPLACE_DEFS = "replace_defs"
 REQUEST_TYPE = "request_type"
 REQUIRED_COLUMN_INDICES = "required_column_indices"
+SAVE_MERGED = "save_merged"
 
 # Schema-specific constants
 SCHEMA = "schema"

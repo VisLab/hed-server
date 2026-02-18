@@ -1,4 +1,4 @@
-{% macro create_options(append_assembled=False,check_for_warnings=False,expand_defs=False,include_context=False,include_description_tags=False,include_summaries=False,limit_errors=False,replace_defs=False,remove_types_on=False,show_details=False) %}
+{% macro create_options(append_assembled=False,check_for_warnings=False,expand_defs=False,include_context=False,include_description_tags=False,include_summaries=False,limit_errors=False,replace_defs=False,remove_types=False,save_merged=False,show_details=False) %}
     <fieldset id="options_section" class="mt-2">
         <div class="form-group" id="options">
             {% if append_assembled %}
@@ -28,7 +28,7 @@
             {% if expand_defs %}
                 <span class="form-check form-switch" id="expand_defs_option" style="display: inline-block;">
                     <input class="form-check-input" type="checkbox" name="expand_defs" id="expand_defs">
-                    <label class="form-check-label" for="expand_defs">Expand defs</label>
+                    <label class="form-check-label" for="expand_defs">Expand defs &nbsp;&nbsp;</label>
                 </span>
             {% endif %}
             {% if include_context %}
@@ -55,10 +55,16 @@
                     <label class="form-check-label" for="replace_defs">Replace defs &nbsp;&nbsp;</label>
                 </span>
             {% endif %}
-            {% if remove_types_on %}
-                <span class="form-check form-switch" id="remove_types_on_option" style="display: inline-block;">
-                    <input class="form-check-input" type="checkbox" name="remove_types_on" id="remove_types_on">
-                    <label class="form-check-label" for="remove_types_on">No condition or task</label>
+            {% if remove_types %}
+                <span class="form-check form-switch" id="remove_types_option" style="display: inline-block;">
+                    <input class="form-check-input" type="checkbox" name="remove_types" id="remove_types">
+                    <label class="form-check-label" for="remove_types">No condition or task &nbsp;&nbsp;</label>
+                </span>
+            {% endif %}
+            {% if save_merged %}
+                <span class="form-check form-switch" id="save_merged_option" style="display: inline-block;">
+                    <input class="form-check-input" type="checkbox" name="save_merged" id="save_merged">
+                    <label class="form-check-label" for="save_merged">Save merged</label>
                 </span>
             {% endif %}
         </div>

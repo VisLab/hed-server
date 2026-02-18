@@ -30,7 +30,6 @@ class SidecarOperations(BaseOperations):
         self.sidecar = None
         self.spreadsheet = None
         self.check_for_warnings = False
-        self.expand_defs = False
         self.include_description_tags = False
         self.spreadsheet_type = fc.TSV_EXTENSION
         if arguments:
@@ -91,7 +90,6 @@ class SidecarOperations(BaseOperations):
 
         Notes:
             command (str):           Either 'to short' or 'to long' indicating type of conversion.
-            expand_defs (bool):      If True, expand definitions when converting, otherwise do no expansion
 
         """
         self.check_for_warnings = False
@@ -99,10 +97,6 @@ class SidecarOperations(BaseOperations):
         if results[bc.MSG_CATEGORY] == "warning":
             return results
         display_name = self.sidecar.name
-        if self.expand_defs:
-            def_dicts = self.sidecar.get_def_dict(hed_schema=self.schema)
-        else:
-            def_dicts = None
         if self.command == bc.COMMAND_TO_LONG:
             tag_form = "long_tag"
         else:
@@ -111,10 +105,6 @@ class SidecarOperations(BaseOperations):
             hed_strings = column_data.get_hed_strings()
             if hed_strings.empty:
                 continue
-            if self.expand_defs:
-                df_util.expand_defs(hed_strings, self.schema, def_dicts, columns=None)
-            else:
-                df_util.shrink_defs(hed_strings, self.schema)
             df_util.convert_to_form(hed_strings, self.schema, tag_form)
             column_data.set_hed_strings(hed_strings)
 

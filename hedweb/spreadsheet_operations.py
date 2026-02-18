@@ -34,7 +34,6 @@ class SpreadsheetOperations(BaseOperations):
         self.tag_columns = []
         self.has_column_names = True
         self.check_for_warnings = False
-        self.expand_defs = False
         if arguments:
             self.set_input_from_dict(arguments)
 

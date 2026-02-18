@@ -48,7 +48,7 @@ class EventOperations(BaseOperations):
         self.queries = None
         self.query_names = None
         self.remodel_operations = None
-        self.remove_types_on = False
+        self.remove_types = False
         self.replace_defs = False
         self.sidecar = None
         self.show_details = False
@@ -265,7 +265,7 @@ class EventOperations(BaseOperations):
         """
         definitions = self.events.get_def_dict(self.schema)
         event_manager = EventManager(self.events, self.schema)
-        if self.remove_types_on:
+        if self.remove_types:
             types = ["Condition-variable", "Task"]
         else:
             types = []
@@ -371,7 +371,7 @@ class EventOperations(BaseOperations):
             expand_defs (bool): If True, expand the definitions in the assembled HED. Otherwise, shrink definitions.
 
         """
-
+        # TODO:  This needs to handle expand_defs, versus replace_defs.
         display_name = self.events.name
         queries, query_names, issues = get_query_handlers(
             self.queries, self.query_names
