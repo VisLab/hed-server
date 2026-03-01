@@ -168,16 +168,47 @@ class Test(TestRouteBase):
                 response["data"], "The response data for valid schema is not empty"
             )
             self.assertEqual(
-                response["msg"], "SCHEMA_NOT_FOUND:  [Must provide a source schema]"
+                response["msg"], "SCHEMA_NOT_FOUND for []: Must provide a source schema"
             )
 
-    def test_schemas_results_validate_mediawiki_valid(self):
+    def test_schemas_results_validate_mediawiki_warning_on(self):
         with self.app.app_context():
             input_data = {
                 "schema_upload_options": "schema_file_option",
                 "command_option": "validate",
                 bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
                 "check_for_warnings": "on",
+            }
+            results = self.app.test.post(
+                "/schemas_submit", content_type="multipart/form-data", data=input_data
+            )
+            self.assertEqual(
+                200,
+                results.status_code,
+                "Validation of a valid MEDIAWIKI has a response",
+            )
+            headers_dict = dict(results.headers)
+            self.assertTrue(headers_dict, "A non-compliant validation has a header")
+            response = json.loads(results.data.decode("utf-8"))
+            self.assertEqual(
+                "warning",
+                response["msg_category"],
+                "Non-compliant schema produces a warning",
+            )
+            self.assertTrue(
+                response["data"], "The response data for valid schema is not empty"
+            )
+            self.assertEqual(
+                response["msg"], "HED schema HED8.2.0 had compliance issues"
+            )
+
+    def test_schemas_results_validate_mediawiki_warning_off(self):
+        with self.app.app_context():
+            input_data = {
+                "schema_upload_options": "schema_file_option",
+                "command_option": "validate",
+                bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.mediawiki"),
+                "check_for_warnings": "off",
             }
             results = self.app.test.post(
                 "/schemas_submit", content_type="multipart/form-data", data=input_data
@@ -202,7 +233,7 @@ class Test(TestRouteBase):
                 "schema_upload_options": "schema_file_option",
                 "command_option": "validate",
                 bc.SCHEMA_FILE: self._get_file_buffer("HED8.2.0.xml"),
-                "check_for_warnings": "on",
+                "check_for_warnings": "off",
             }
             results = self.app.test.post(
                 "/schemas_submit", content_type="multipart/form-data", data=input_data
@@ -211,7 +242,7 @@ class Test(TestRouteBase):
                 200, results.status_code, "Validation of a valid xml has a response"
             )
             headers_dict = dict(results.headers)
-            self.assertTrue(headers_dict, "An unsuccessful conversion has a header")
+            self.assertTrue(headers_dict, "A successful validation has a header")
             response = json.loads(results.data.decode("utf-8"))
             self.assertEqual("success", response["msg_category"], "An valid schema")
             self.assertFalse(
@@ -246,7 +277,7 @@ class Test(TestRouteBase):
             )
             self.assertEqual(
                 response["msg"],
-                "INVALID_HED_FORMAT: HED7.2.0 [Attempting to load an outdated or invalid XML schema]",
+                "INVALID_HED_FORMAT for [HED7.2.0]: Attempting to load an outdated or invalid XML schema",
             )
 
 

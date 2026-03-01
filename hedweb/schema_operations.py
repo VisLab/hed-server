@@ -11,7 +11,7 @@ import zipfile
 from hed import schema as hedschema
 from hed.errors import HedFileError, get_printable_issue_string
 from hed.schema.schema_comparer import SchemaComparer
-from hed.scripts.hed_script_util import validate_schema_object
+from hed.scripts.schema_script_util import validate_schema_object
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
@@ -151,18 +151,26 @@ class SchemaOperations(BaseOperations):
             }
 
     def validate(self) -> dict:
-        """Run schema compliance for HED-3G.
+        """Run schema compliance
 
         Returns:
             dict: A dictionary of results in the standard results format.
 
         """
-
+        issue_str = ""
+        error_type = "no issues"
         issues = validate_schema_object(self.schema, self.schema.name)
         if issues:
-            issue_str = get_printable_issue_string(
-                issues, f"Schema issues for {self.schema.name}:"
+            error_type = "I/O validation issues"
+        else:
+            issues = self.schema.check_compliance(
+                check_for_warnings=self.check_for_warnings, name=self.schema.name
             )
+            if issues:
+                error_type = "compliance issues"
+        if issues:
+            msg = f"HED schema {self.schema.name} had {error_type}"
+            issue_str = get_printable_issue_string(issues, msg)
             file_name = self.schema.name + "_schema_issues.txt"
             return {
                 "command": bc.COMMAND_VALIDATE,
@@ -171,7 +179,7 @@ class SchemaOperations(BaseOperations):
                 "output_display_name": file_name,
                 "schema_version": self.schema.get_formatted_version(),
                 "msg_category": "warning",
-                "msg": "Schema has validation issues",
+                "msg": msg,
             }
         else:
             return {

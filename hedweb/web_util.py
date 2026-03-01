@@ -12,7 +12,12 @@ from urllib.parse import urlparse
 from flask import Response, make_response, send_file
 from hed import HedSchema, HedSchemaGroup
 from hed import schema as hedschema
-from hed.errors import ErrorHandler, ErrorSeverity, HedFileError
+from hed.errors import (
+    ErrorHandler,
+    ErrorSeverity,
+    HedFileError,
+    get_printable_issue_string,
+)
 from hed.schema import load_schema_version
 from werkzeug.utils import secure_filename
 
@@ -440,7 +445,9 @@ def get_exception_message(ex) -> dict:
         filename = str(ex.filename)
     else:
         filename = ""
-    error_message = f"{error_code}: {filename} [{message}]"
+    error_message = f"{error_code} for [{filename}]: {message}"
+    if hasattr(ex, "issues") and ex.issues and isinstance(ex.issues, (list, dict)):
+        error_message += " [" + get_printable_issue_string(ex.issues) + "]"
     return {"data": "", bc.MSG_CATEGORY: "error", bc.MSG: error_message}
 
 

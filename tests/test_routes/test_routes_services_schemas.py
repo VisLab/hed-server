@@ -21,9 +21,14 @@ class Test(TestRouteBase):
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
             self.assertEqual(
-                "success",
+                "warning",
                 results["msg_category"],
-                "schemas_validate services has success on HED8.2.0.xml",
+                "schemas_validate services has warning on HED8.2.0.xml",
+            )
+            self.assertEqual(
+                "HED schema 8.2.0 had compliance issues",
+                results["msg"],
+                "schemas_validate services has warning on HED8.2.0.xml",
             )
             self.assertEqual(
                 json.dumps("8.2.0"),

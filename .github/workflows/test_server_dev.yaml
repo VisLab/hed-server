@@ -84,7 +84,7 @@ jobs:
       - name: Run service tests
         env:
           HED_SERVER_URL_KEY: ${{ env.HED_SERVER_URL }}
-        run: python -m unittest discover services_tests
+        run: python -m unittest discover service_tests
 
       - name: Show Docker logs on failure
         if: failure()

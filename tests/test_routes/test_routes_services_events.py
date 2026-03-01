@@ -35,7 +35,7 @@ class Test(TestRouteBase):
         with self.app.app_context():
             json_data = {
                 bc.CHECK_FOR_WARNINGS: "on",
-                bc.SCHEMA_VERSION: "8.3.0",
+                bc.SCHEMA_VERSION: "8.4.0",
                 bc.EVENTS_STRING: "bad file",
                 bc.SIDECAR_STRING: self._get_file_string("bids_events.json"),
                 bc.SERVICE: "events_validate",

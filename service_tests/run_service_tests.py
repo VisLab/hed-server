@@ -9,7 +9,7 @@ This script:
 4. Shuts down the server when tests complete
 
 Usage:
-    python services_tests/run_service_tests.py [--port PORT] [--timeout TIMEOUT]
+    python service_tests/run_service_tests.py [--port PORT] [--timeout TIMEOUT]
 
 Options:
     --port PORT         Port to run the server on (default: 5000)
@@ -92,7 +92,7 @@ def run_tests(server_url):
 
     # Discover and run tests
     loader = unittest.TestLoader()
-    suite = loader.discover("services_tests", pattern="test*.py")
+    suite = loader.discover("service_tests", pattern="test*.py", top_level_dir=".")
 
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)

@@ -726,7 +726,7 @@ python -m unittest discover
 
 # Run specific test category
 python -m unittest discover -s tests/
-python -m unittest discover -s services_tests/
+python -m unittest discover -s service_tests/
 
 # Run with coverage
 coverage run -m unittest discover

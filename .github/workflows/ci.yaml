@@ -101,7 +101,7 @@ jobs:
         COVERAGE_FILE: .coverage.service
       run: |
         echo "Running service tests under coverage..."
-        python -m coverage run --parallel-mode --source=hedweb -m unittest discover -s services_tests/ -p 'test_*.py'
+        python -m coverage run --parallel-mode --source=hedweb -m unittest discover -s service_tests/ -p 'test_*.py'
 
     - name: Stop server and combine coverage
       if: always()

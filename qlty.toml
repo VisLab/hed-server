@@ -25,7 +25,7 @@ exclude_patterns = [
     "examples/",
     "vendor/",
     "tests/",
-    "services_tests/",
+    "service_tests/",
     "**/static/",
     "**/templates/",
     "setup.py",

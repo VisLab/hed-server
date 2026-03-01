@@ -158,7 +158,7 @@ Use the provided script that starts the server, runs tests, and cleans up automa
 
 ```powershell
 # Run service tests with automatic server management
-python services_tests/run_service_tests.py
+python service_tests/run_service_tests.py
 ```
 
 **Option 2: Manual Server Management**\
@@ -175,7 +175,7 @@ Terminal 2 - Run tests:
 
 ```powershell
 # Run the tests exercising the server
-python -m unittest discover services_tests
+python -m unittest discover service_tests
 ```
 
 For more details, see [.status/running-service-tests-locally.md](.status/running-service-tests-locally.md).

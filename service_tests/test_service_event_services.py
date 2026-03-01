@@ -1,16 +1,17 @@
 import requests
 
-from services_tests.test_services_base import ServicesTest
+from service_tests.test_service_base import ServicesTest
 
 
-class TestStringServices(ServicesTest):
-    def test_validate_valid_hed_strings(self):
+class TestEventServices(ServicesTest):
+    def test_validate_valid_events_file(self):
         url = f"{self.BASEURL}/services_submit"
         json_data = {
-            "service": "strings_validate",
+            "service": "events_validate",
             "schema_version": "8.2.0",
-            "string_list": self.data["goodStrings"],
-            "check_for_warnings": True,
+            "events_string": self.data["eventsText"],
+            "sidecar_string": self.data["jsonText"],
+            "check_for_warnings": False,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
@@ -18,39 +19,28 @@ class TestStringServices(ServicesTest):
         self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
 
-    def test_validate_invalid_hed_strings_with_url(self):
+    def test_validate_invalid_events_file(self):
         url = f"{self.BASEURL}/services_submit"
         json_data = {
-            "service": "strings_validate",
-            "schema_url": "https://example.com/hed/schema",
-            "string_list": self.data["badStrings"],
+            "service": "events_validate",
+            "schema_version": "8.2.0",
+            "events_string": self.data["eventsText"],
+            "sidecar_string": self.data["jsonBadText"],
             "check_for_warnings": True,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertTrue(response_data.get("error_type"))
-
-    def test_validate_invalid_hed_strings_with_schema(self):
-        url = f"{self.BASEURL}/services_submit"
-        json_data = {
-            "service": "strings_validate",
-            "schema_string": self.data["schemaText"],
-            "string_list": self.data["badStrings"],
-            "check_for_warnings": True,
-        }
-        response = requests.post(url, json=json_data, headers=self._get_headers())
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json()
-        # Expecting a warning or error message, not a success
         self.assertNotEqual(response_data["results"]["msg_category"], "success")
 
-    def test_convert_valid_strings_to_long(self):
+    def test_assemble_valid_events_file(self):
         url = f"{self.BASEURL}/services_submit"
         json_data = {
-            "service": "strings_to_long",
+            "service": "events_assemble",
             "schema_version": "8.2.0",
-            "string_list": self.data["goodStrings"],
+            "events_string": self.data["eventsText"],
+            "sidecar_string": self.data["jsonText"],
+            "expand_defs": False,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
@@ -58,15 +48,14 @@ class TestStringServices(ServicesTest):
         self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
 
-    def test_validate_with_prereleases_false(self):
-        """Test validation with include_prereleases=false."""
+    def test_assemble_events_file_expand_defs(self):
         url = f"{self.BASEURL}/services_submit"
         json_data = {
-            "service": "strings_validate",
+            "service": "events_assemble",
             "schema_version": "8.2.0",
-            "string_list": self.data["goodStrings"],
-            "include_prereleases": False,
-            "check_for_warnings": True,
+            "events_string": self.data["eventsText"],
+            "sidecar_string": self.data["jsonText"],
+            "expand_defs": True,
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
@@ -74,15 +63,13 @@ class TestStringServices(ServicesTest):
         self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
 
-    def test_validate_with_prereleases_true(self):
-        """Test validation with include_prereleases=true."""
+    def test_generate_sidecar_template_from_events_file(self):
         url = f"{self.BASEURL}/services_submit"
         json_data = {
-            "service": "strings_validate",
-            "schema_version": "8.2.0",
-            "string_list": self.data["goodStrings"],
-            "include_prereleases": True,
-            "check_for_warnings": True,
+            "service": "events_generate_sidecar",
+            "events_string": self.data["eventsText"],
+            "columns_skip": ["onset", "duration", "sample"],
+            "columns_value": ["trial", "rep_lag", "stim_file"],
         }
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)

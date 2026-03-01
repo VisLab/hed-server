@@ -86,7 +86,7 @@ class Test(TestRouteBase):
         data = ""
         with self.app.app_context():
             input_data = {
-                bc.SCHEMA_VERSION: "8.3.0",
+                bc.SCHEMA_VERSION: "8.4.0",
                 bc.COMMAND_OPTION: bc.COMMAND_CHECK_QUALITY,
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),
@@ -110,7 +110,7 @@ class Test(TestRouteBase):
 
         with self.app.app_context():
             input_data = {
-                bc.SCHEMA_VERSION: "8.3.0",
+                bc.SCHEMA_VERSION: "8.4.0",
                 bc.COMMAND_OPTION: bc.COMMAND_CHECK_QUALITY,
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.EVENTS_FILE: self._get_file_buffer("bids_events.tsv"),

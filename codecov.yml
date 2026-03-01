@@ -28,7 +28,7 @@ comment:
 # Aligned with .coveragerc configuration
 ignore:
   - "tests/**/*"
-  - "services_tests/**/*"
+  - "service_tests/**/*"
   - "docs/**/*"
   - "deploy/**/*"
   # Versioneer-generated files (using patterns from .coveragerc)
