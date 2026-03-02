@@ -68,10 +68,7 @@ class EventOperations(BaseOperations):
         """
         if not self.command:
             raise HedFileError("MissingCommand", "Command is missing", "")
-        elif (
-            self.command == bc.COMMAND_GENERATE_SIDECAR
-            or self.command == bc.COMMAND_REMODEL
-        ):
+        elif self.command == bc.COMMAND_GENERATE_SIDECAR or self.command == bc.COMMAND_REMODEL:
             pass
         elif not self.schema or not isinstance(
             self.schema,
@@ -167,33 +164,22 @@ class EventOperations(BaseOperations):
         display_name = self.events.name
         results = self.validate()
         if results["data"]:
-            results["data"] = (
-                "Events file had validation issues, so quality check not performed...\n"
-                + results["data"]
-            )
+            results["data"] = "Events file had validation issues, so quality check not performed...\n" + results["data"]
             return results
 
         checker = EventsChecker(self.schema, self.events, display_name)
         issues = checker.validate_event_tags()
-        file_name = generate_filename(
-            display_name, name_suffix="_quality", extension=".txt", append_datetime=True
-        )
+        file_name = generate_filename(display_name, name_suffix="_quality", extension=".txt", append_datetime=True)
         if issues:
             num_issues = str(len(issues))
             title = "Annotation quality errors: Total issues: " + num_issues
             if self.limit_errors:
                 issues, counts = ErrorHandler.filter_issues_by_count(issues, 2)
                 count_str = [f"{code}: {count}" for code, count in counts.items()]
-                title = (
-                    title
-                    + " (Only 2 errors of each type displayed)\n"
-                    + "\n".join(count_str)
-                )
+                title = title + " (Only 2 errors of each type displayed)\n" + "\n".join(count_str)
             if self.show_details:
                 checker.insert_issue_details(issues)
-            data = get_printable_issue_string(
-                issues, title=title, show_details=self.show_details
-            )
+            data = get_printable_issue_string(issues, title=title, show_details=self.show_details)
             msg_category = "warning"
             msg = f"File {display_name} had annotation {num_issues} quality issues"
         else:
@@ -237,9 +223,7 @@ class EventOperations(BaseOperations):
                     bc.MSG_CATEGORY: "warning",
                     bc.MSG: "Cannot generate sidecar because skipped and value column names overlap.",
                 }
-        tab_sum = TabularSummary(
-            value_cols=self.columns_value, skip_cols=self.columns_skip
-        )
+        tab_sum = TabularSummary(value_cols=self.columns_value, skip_cols=self.columns_skip)
         tab_sum.update(self.events.dataframe)
         hed_dict = tab_sum.extract_sidecar_template()
         file_name = generate_filename(
@@ -373,9 +357,7 @@ class EventOperations(BaseOperations):
         """
         # TODO:  This needs to handle expand_defs, versus replace_defs.
         display_name = self.events.name
-        queries, query_names, issues = get_query_handlers(
-            self.queries, self.query_names
-        )
+        queries, query_names, issues = get_query_handlers(self.queries, self.query_names)
         if issues:
             return {
                 bc.COMMAND: bc.COMMAND_SEARCH,
@@ -400,16 +382,10 @@ class EventOperations(BaseOperations):
         if self.append_assembled:
             df = pd.concat([self.events.dataframe, df_factors], axis=1)
             df = df.loc[:, ~df.columns.duplicated(keep="last")]
-            data = df.to_csv(
-                None, sep="\t", index=False, header=True, lineterminator="\n"
-            )
+            data = df.to_csv(None, sep="\t", index=False, header=True, lineterminator="\n")
         else:
-            data = df_factors.to_csv(
-                None, sep="\t", index=False, header=True, lineterminator="\n"
-            )
-        file_name = generate_filename(
-            display_name, name_suffix="_queries", extension=".tsv", append_datetime=True
-        )
+            data = df_factors.to_csv(None, sep="\t", index=False, header=True, lineterminator="\n")
+        file_name = generate_filename(display_name, name_suffix="_queries", extension=".tsv", append_datetime=True)
         return {
             bc.COMMAND: bc.COMMAND_SEARCH,
             bc.COMMAND_TARGET: "events",
@@ -444,24 +420,16 @@ class EventOperations(BaseOperations):
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         issues = []
         if self.sidecar:
-            issues = self.sidecar.validate(
-                self.schema, name=self.sidecar.name, error_handler=error_handler
-            )
+            issues = self.sidecar.validate(self.schema, name=self.sidecar.name, error_handler=error_handler)
         if not check_for_any_errors(issues):
-            issues += self.events.validate(
-                self.schema, name=self.events.name, error_handler=error_handler
-            )
+            issues += self.events.validate(self.schema, name=self.events.name, error_handler=error_handler)
         if issues:
             num_errors = len(issues)
             title = f"File errors for {display_name}: {num_errors} Total errors"
             if self.limit_errors:
                 issues, counts = ErrorHandler.filter_issues_by_count(issues, 2)
                 count_str = [f"{code}: {count}" for code, count in counts.items()]
-                title = (
-                    title
-                    + " (Only 2 errors of each type displayed)\n"
-                    + "\n".join(count_str)
-                )
+                title = title + " (Only 2 errors of each type displayed)\n" + "\n".join(count_str)
             data = get_printable_issue_string(issues, title=title)
             file_name = generate_filename(
                 display_name,

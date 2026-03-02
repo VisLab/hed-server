@@ -48,23 +48,13 @@ class ProcessForm:
         arguments = {
             bc.REQUEST_TYPE: bc.FROM_FORM,
             bc.COMMAND: request.form.get(bc.COMMAND_OPTION, ""),
-            bc.APPEND_ASSEMBLED: form_has_option(
-                request.form, bc.APPEND_ASSEMBLED, "on"
-            ),
-            bc.CHECK_FOR_WARNINGS: form_has_option(
-                request.form, bc.CHECK_FOR_WARNINGS, "on"
-            ),
-            bc.INCLUDE_PRERELEASES: form_has_option(
-                request.form, bc.INCLUDE_PRERELEASES, "on"
-            ),
+            bc.APPEND_ASSEMBLED: form_has_option(request.form, bc.APPEND_ASSEMBLED, "on"),
+            bc.CHECK_FOR_WARNINGS: form_has_option(request.form, bc.CHECK_FOR_WARNINGS, "on"),
+            bc.INCLUDE_PRERELEASES: form_has_option(request.form, bc.INCLUDE_PRERELEASES, "on"),
             bc.EXPAND_DEFS: form_has_option(request.form, bc.EXPAND_DEFS, "on"),
             bc.INCLUDE_CONTEXT: form_has_option(request.form, bc.INCLUDE_CONTEXT, "on"),
-            bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(
-                request.form, bc.INCLUDE_DESCRIPTION_TAGS, "on"
-            ),
-            bc.INCLUDE_SUMMARIES: form_has_option(
-                request.form, bc.INCLUDE_SUMMARIES, "on"
-            ),
+            bc.INCLUDE_DESCRIPTION_TAGS: form_has_option(request.form, bc.INCLUDE_DESCRIPTION_TAGS, "on"),
+            bc.INCLUDE_SUMMARIES: form_has_option(request.form, bc.INCLUDE_SUMMARIES, "on"),
             bc.LIMIT_ERRORS: form_has_option(request.form, bc.LIMIT_ERRORS, "on"),
             bc.REMOVE_TYPES: form_has_option(request.form, bc.REMOVE_TYPES, "on"),
             bc.REPLACE_DEFS: form_has_option(request.form, bc.REPLACE_DEFS, "on"),
@@ -102,13 +92,8 @@ class ProcessForm:
                 name=secure_filename(f.filename),
             )
         if bc.STRING_INPUT in request.form and request.form[bc.STRING_INPUT]:
-            arguments[bc.STRING_LIST] = [
-                HedString(request.form[bc.STRING_INPUT], arguments[bc.SCHEMA])
-            ]
-        if (
-            bc.SPREADSHEET_FILE in request.files
-            and request.files[bc.SPREADSHEET_FILE].filename
-        ):
+            arguments[bc.STRING_LIST] = [HedString(request.form[bc.STRING_INPUT], arguments[bc.SCHEMA])]
+        if bc.SPREADSHEET_FILE in request.files and request.files[bc.SPREADSHEET_FILE].filename:
             arguments[bc.WORKSHEET] = request.form.get(bc.WORKSHEET_NAME, None)
             filename = request.files[bc.SPREADSHEET_FILE].filename
             file_ext = os.path.splitext(filename)[1]
@@ -157,9 +142,7 @@ class ProcessForm:
         if bc.DEFINITION_FILE in request.files and request.files[bc.DEFINITION_FILE]:
             f = request.files[bc.DEFINITION_FILE]
             sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-            arguments[bc.DEFINITIONS] = sidecar.get_def_dict(
-                arguments[bc.SCHEMA], extra_def_dicts=None
-            )
+            arguments[bc.DEFINITIONS] = sidecar.get_def_dict(arguments[bc.SCHEMA], extra_def_dicts=None)
 
     @staticmethod
     def set_queries(arguments, request):
@@ -189,36 +172,28 @@ class ProcessForm:
             return
 
         # The schemas section only
-        if form_has_option(
-            request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION
-        ) and form_has_file(request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
+        if form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FILE_OPTION) and form_has_file(
+            request.files, bc.SCHEMA_FILE, fc.SCHEMA_EXTENSIONS
+        ):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_FILE])
-        elif form_has_option(
-            request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION
-        ) and form_has_url(request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
+        elif form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_URL_OPTION) and form_has_url(
+            request.form, bc.SCHEMA_URL, fc.SCHEMA_EXTENSIONS
+        ):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.values[bc.SCHEMA_URL])
         elif (
-            form_has_option(
-                request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION
-            )
+            form_has_option(request.form, bc.SCHEMA_UPLOAD_OPTIONS, bc.SCHEMA_FOLDER_OPTION)
             and "schema_folder[]" in request.files
         ):
-            ProcessForm.set_tsv_schema(
-                arguments, request, "schema_folder[]", bc.SCHEMA1
-            )
+            ProcessForm.set_tsv_schema(arguments, request, "schema_folder[]", bc.SCHEMA1)
 
         if form_has_option(
             request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_FILE_OPTION
         ) and form_has_file(request.files, bc.SECOND_SCHEMA_FILE, fc.SCHEMA_EXTENSIONS):
-            arguments[bc.SCHEMA2] = ProcessForm.get_schema(
-                request.files[bc.SECOND_SCHEMA_FILE]
-            )
+            arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.files[bc.SECOND_SCHEMA_FILE])
         elif form_has_option(
             request.form, bc.SECOND_SCHEMA_UPLOAD_OPTIONS, bc.SECOND_SCHEMA_URL_OPTION
         ) and form_has_url(request.form, bc.SECOND_SCHEMA_URL, fc.SCHEMA_EXTENSIONS):
-            arguments[bc.SCHEMA2] = ProcessForm.get_schema(
-                request.values[bc.SECOND_SCHEMA_URL]
-            )
+            arguments[bc.SCHEMA2] = ProcessForm.get_schema(request.values[bc.SECOND_SCHEMA_URL])
         elif (
             form_has_option(
                 request.form,
@@ -227,9 +202,7 @@ class ProcessForm:
             )
             and "second_schema_folder[]" in request.files
         ):
-            ProcessForm.set_tsv_schema(
-                arguments, request, "second_schema_folder[]", bc.SCHEMA2
-            )
+            ProcessForm.set_tsv_schema(arguments, request, "second_schema_folder[]", bc.SCHEMA2)
 
     @staticmethod
     def set_tsv_schema(arguments, request, files_key, schema_key):

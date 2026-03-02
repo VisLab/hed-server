@@ -44,9 +44,7 @@ class Test(TestWebBase):
         self.assertEqual(result[bc.COLUMNS_FILE], "test.tsv")
         self.assertListEqual(result[bc.COLUMN_LIST], ["A", "B"])
 
-        excel_file_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx"
-        )
+        excel_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx")
         with open(excel_file_path, "rb") as file:
             columns_file = file
             columns_file.filename = os.path.basename(excel_file_path)
@@ -69,9 +67,7 @@ class Test(TestWebBase):
             columns_file = file
             columns_file.filename = os.path.basename(excel_file_path)
 
-            result = _create_columns_info(
-                columns_file, has_column_names=True, sheet_name="DAS Events"
-            )
+            result = _create_columns_info(columns_file, has_column_names=True, sheet_name="DAS Events")
             self.assertEqual(result[bc.COLUMNS_FILE], "ExcelMultipleSheets.xlsx")
             self.assertListEqual(
                 result[bc.COLUMN_LIST],
@@ -88,32 +84,24 @@ class Test(TestWebBase):
     def test_dataframe_from_worksheet_with_column_names(self):
         from hedweb.columns import dataframe_from_worksheet
 
-        excel_file_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx"
-        )
+        excel_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx")
         workbook = openpyxl.load_workbook(excel_file_path)
         worksheet = workbook.active
 
         result = dataframe_from_worksheet(worksheet, has_column_names=True)
         self.assertIsInstance(result, DataFrame)
-        self.assertTrue(
-            "Event code" in result.columns
-        )  # Replace with actual column header
+        self.assertTrue("Event code" in result.columns)  # Replace with actual column header
 
         # Test no column names
         result = dataframe_from_worksheet(worksheet, has_column_names=False)
 
         self.assertIsInstance(result, DataFrame)
-        self.assertTrue(
-            isinstance(result.columns[0], int)
-        )  # Default integer column names
+        self.assertTrue(isinstance(result.columns[0], int))  # Default integer column names
 
     def test_get_columns_request_excel(self):
         from hedweb.columns import get_columns_request
 
-        excel_file_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx"
-        )
+        excel_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelMultipleSheets.xlsx")
         with open(excel_file_path, "rb") as file:
             valid_excel_file = FileStorage(stream=file, filename="valid_excel.xlsx")
             input_dict = {

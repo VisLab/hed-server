@@ -11,11 +11,7 @@ class BaseOperations(ABC):
         """
         # Only allowed to set variables from init, and also disallow private variables to avoid possible issues
         for key, value in input_dict.items():
-            if (
-                not hasattr(self, key)
-                or callable(getattr(self, key))
-                or key.startswith("_")
-            ):
+            if not hasattr(self, key) or callable(getattr(self, key)) or key.startswith("_"):
                 continue
             setattr(self, key, value)
 

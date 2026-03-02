@@ -58,9 +58,7 @@ def wait_for_server(url, timeout=30):
 def hed_server(port, verbose=False):
     """Context manager to start and stop the HED server."""
     # Start server process
-    server_process = multiprocessing.Process(
-        target=run_server, args=(port, verbose), daemon=True
-    )
+    server_process = multiprocessing.Process(target=run_server, args=(port, verbose), daemon=True)
     server_process.start()
 
     # Wait for server to be ready
@@ -101,9 +99,7 @@ def run_tests(server_url):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Run HED service tests with a local test server"
-    )
+    parser = argparse.ArgumentParser(description="Run HED service tests with a local test server")
     parser.add_argument(
         "--port",
         type=int,

@@ -84,9 +84,7 @@ class ServicesTest(unittest.TestCase):
         return data
 
     def _get_path(self, filename):
-        filename_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "../tests/data/"
-        )
+        filename_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../tests/data/")
         return os.path.join(filename_path, filename)
 
     def _get_file_string(self, filename):

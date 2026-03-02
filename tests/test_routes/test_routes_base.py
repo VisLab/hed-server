@@ -12,9 +12,7 @@ class TestRouteBase(TestWebBase):
         super().setUpClass()
 
     def _get_path(self, filename):
-        filename_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "../data/"
-        )
+        filename_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../data/")
         return os.path.join(filename_path, filename)
 
     def _get_file_buffer(self, filename, name=None):

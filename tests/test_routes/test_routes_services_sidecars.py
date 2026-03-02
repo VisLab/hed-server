@@ -77,6 +77,4 @@ class Test(TestRouteBase):
                 results["msg_category"],
                 "sidecar_validation did not valid with 8.2.0",
             )
-            self.assertEqual(
-                json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used"
-            )
+            self.assertEqual(json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used")

@@ -180,9 +180,7 @@ def get_column_numbers(form_dict) -> list:
     return tag_columns
 
 
-def _get_worksheet(
-    excel_file, sheet_name
-) -> tuple[openpyxl.worksheet.worksheet.Worksheet, list[str]]:
+def _get_worksheet(excel_file, sheet_name) -> tuple[openpyxl.worksheet.worksheet.Worksheet, list[str]]:
     """Return a Worksheet and a list of sheet names from an Excel file.
 
     Parameters:
@@ -201,9 +199,7 @@ def _get_worksheet(
     if not sheet_names:
         raise HedFileError("BadExcelFile", "Excel files must have worksheets", None)
     if sheet_name and sheet_name not in sheet_names:
-        raise HedFileError(
-            "BadWorksheetName", f"Worksheet {sheet_name} not in Excel file", ""
-        )
+        raise HedFileError("BadWorksheetName", f"Worksheet {sheet_name} not in Excel file", "")
     if sheet_name:
         worksheet = wb[sheet_name]
     else:

@@ -42,9 +42,7 @@ def get_version_dict():
 def setup_logging():
     """Sets up the current_application logging. If the log directory does not exist then there will be no logging."""
     if os.path.exists(app.config["LOG_DIRECTORY"]):
-        file_handler = RotatingFileHandler(
-            app.config["LOG_FILE"], maxBytes=10 * 1024 * 1024, backupCount=5
-        )
+        file_handler = RotatingFileHandler(app.config["LOG_FILE"], maxBytes=10 * 1024 * 1024, backupCount=5)
         file_handler.setLevel(ERROR)
         app.logger.addHandler(file_handler)
 
@@ -90,9 +88,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Run the HED web server")
     parser.add_argument("--host", default="127.0.0.1", help="Host to run the server on")
-    parser.add_argument(
-        "--port", type=int, default=5000, help="Port to run the server on"
-    )
+    parser.add_argument("--port", type=int, default=5000, help="Port to run the server on")
     parser.add_argument("--debug", action="store_true", help="Run in debug mode")
 
     args = parser.parse_args()

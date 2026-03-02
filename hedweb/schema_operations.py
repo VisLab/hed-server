@@ -59,16 +59,12 @@ class SchemaOperations(BaseOperations):
             results = self.validate()
         elif self.command == bc.COMMAND_COMPARE_SCHEMAS:
             if not self.schema2:
-                raise HedFileError(
-                    "SCHEMA_NOT_FOUND", "Must provide a compare schema", ""
-                )
+                raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a compare schema", "")
             results = self.compare()
         elif self.command == bc.COMMAND_CONVERT_SCHEMA:
             results = self.convert()
         else:
-            raise HedFileError(
-                "UnknownProcessingMethod", "Select a schema processing method", ""
-            )
+            raise HedFileError("UnknownProcessingMethod", "Select a schema processing method", "")
         return results
 
     def compare(self):
@@ -79,9 +75,7 @@ class SchemaOperations(BaseOperations):
 
         comp = SchemaComparer(self.schema, self.schema2)
         data = comp.compare_differences()
-        output_name = (
-            self.schema.name + "_" + self.schema2.name + "_" + "differences.txt"
-        )
+        output_name = self.schema.name + "_" + self.schema2.name + "_" + "differences.txt"
         msg_results = ""
         if not data:
             msg_results = ": no differences found"
@@ -163,9 +157,7 @@ class SchemaOperations(BaseOperations):
         if issues:
             error_type = "I/O validation issues"
         else:
-            issues = self.schema.check_compliance(
-                check_for_warnings=self.check_for_warnings, name=self.schema.name
-            )
+            issues = self.schema.check_compliance(check_for_warnings=self.check_for_warnings, name=self.schema.name)
             if issues:
                 error_type = "compliance issues"
         if issues:
@@ -204,12 +196,8 @@ class SchemaOperations(BaseOperations):
             dict: A dictionary of results in the standard results format.
         """
         if isinstance(exception, HedFileError) and len(exception.issues) >= 1:
-            issue_str = get_printable_issue_string(
-                exception.issues, f"Schema issues for {exception.filename}:"
-            )
-            file_name = generate_filename(
-                exception.filename, name_suffix="_issues", extension=".txt"
-            )
+            issue_str = get_printable_issue_string(exception.issues, f"Schema issues for {exception.filename}:")
+            file_name = generate_filename(exception.filename, name_suffix="_issues", extension=".txt")
         else:
             issue_str = get_exception_message(exception)
             file_name = "unknown"
@@ -223,9 +211,7 @@ class SchemaOperations(BaseOperations):
         }
 
 
-def get_schema(
-    schema_input=None, version=None, as_xml_string=None
-) -> hedschema.HedSchema:
+def get_schema(schema_input=None, version=None, as_xml_string=None) -> hedschema.HedSchema:
     """Return a HedSchema object from the given parameters.
 
     Parameters:

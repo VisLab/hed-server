@@ -26,9 +26,7 @@ def _read_or_create_secret_key(path: str) -> str:
 class Config:
     LOG_DIRECTORY = "/var/log/hedtools"
     LOG_FILE = os.path.join(LOG_DIRECTORY, "error.log")
-    SECRET_KEY = os.getenv("SECRET_KEY") or _read_or_create_secret_key(
-        "/var/log/hedtools/tmp.txt"
-    )
+    SECRET_KEY = os.getenv("SECRET_KEY") or _read_or_create_secret_key("/var/log/hedtools/tmp.txt")
     STATIC_URL_PATH = None
     STATIC_URL_PATH_ATTRIBUTE_NAME = "STATIC_URL_PATH"
     UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "hedtools_uploads")

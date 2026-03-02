@@ -46,9 +46,7 @@ class Test(TestWebBase):
 
     def test_set_input_from_service_request(self):
         with self.app.test:
-            sidecar_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-            )
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
             with open(sidecar_path, "rb") as fp:
                 sidecar_string = fp.read().decode("utf-8")
             json_data = {
@@ -61,12 +59,8 @@ class Test(TestWebBase):
             request = Request(environ)
             arguments = ProcessServices.set_input_from_request(request)
             self.assertIn(bc.SIDECAR, arguments, "should have a json sidecar")
-            self.assertIsInstance(
-                arguments[bc.SIDECAR], Sidecar, "should contain a sidecar"
-            )
-            self.assertIsInstance(
-                arguments[bc.SCHEMA], HedSchema, "should have a HED schema"
-            )
+            self.assertIsInstance(arguments[bc.SIDECAR], Sidecar, "should contain a sidecar")
+            self.assertIsInstance(arguments[bc.SCHEMA], HedSchema, "should have a HED schema")
             self.assertEqual(
                 "sidecar_validate",
                 arguments[bc.SERVICE],
@@ -79,9 +73,7 @@ class Test(TestWebBase):
 
     def test_set_input_from_service_request_full_template(self):
         with self.app.test:
-            sidecar_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-            )
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
             with open(sidecar_path, "rb") as fp:
                 sidecar_string = fp.read().decode("utf-8")
             json_data = self.get_request_template()
@@ -93,12 +85,8 @@ class Test(TestWebBase):
             request = Request(environ)
             arguments = ProcessServices.set_input_from_request(request)
             self.assertIn(bc.SIDECAR, arguments, "should have a json sidecar")
-            self.assertIsInstance(
-                arguments[bc.SIDECAR], Sidecar, "should contain a sidecar"
-            )
-            self.assertIsInstance(
-                arguments[bc.SCHEMA], HedSchema, "should have a HED schema"
-            )
+            self.assertIsInstance(arguments[bc.SIDECAR], Sidecar, "should contain a sidecar")
+            self.assertIsInstance(arguments[bc.SCHEMA], HedSchema, "should have a HED schema")
             self.assertEqual(
                 "sidecar_validate",
                 arguments[bc.SERVICE],
@@ -125,20 +113,12 @@ class Test(TestWebBase):
         self.assertFalse(arguments[bc.TAG_COLUMNS])
 
     def test_services_set_sidecar(self):
-        path_upper = (
-            "data/eeg_ds003654s_hed_inheritance/task-FacePerception_events.json"
-        )
+        path_upper = "data/eeg_ds003654s_hed_inheritance/task-FacePerception_events.json"
         path_lower2 = "data/eeg_ds003654s_hed_inheritance/sub-002/sub-002_task-FacePerception_events.json"
         path_lower3 = "data/eeg_ds003654s_hed_inheritance/sub-003/sub-003_task-FacePerception_events.json"
-        sidecar_path_upper = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), path_upper
-        )
-        sidecar_path_lower2 = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), path_lower2
-        )
-        sidecar_path_lower3 = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), path_lower3
-        )
+        sidecar_path_upper = os.path.join(os.path.dirname(os.path.realpath(__file__)), path_upper)
+        sidecar_path_lower2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), path_lower2)
+        sidecar_path_lower3 = os.path.join(os.path.dirname(os.path.realpath(__file__)), path_lower3)
 
         with open(sidecar_path_upper) as f:
             data_upper = json.load(f)
@@ -152,9 +132,7 @@ class Test(TestWebBase):
         sidecar2 = arguments2[bc.SIDECAR]
         self.assertIn("event_type", data_upper, "should have key event_type")
         self.assertNotIn("event_type", data_lower2, "should not have event_type")
-        self.assertIn(
-            "event_type", sidecar2.loaded_dict, "merged sidecar should have event_type"
-        )
+        self.assertIn("event_type", sidecar2.loaded_dict, "merged sidecar should have event_type")
 
         with open(sidecar_path_lower3) as f:
             data_lower3 = json.load(f)
@@ -166,15 +144,11 @@ class Test(TestWebBase):
         sidecar3 = arguments3[bc.SIDECAR]
         self.assertIn("event_type", data_upper, "should have key event_type")
         self.assertNotIn("event_type", data_lower3, "should have event_type")
-        self.assertIn(
-            "event_type", sidecar3.loaded_dict, "merged sidecar should have event_type"
-        )
+        self.assertIn("event_type", sidecar3.loaded_dict, "merged sidecar should have event_type")
 
     def test_set_input_objects(self):
         sidecar_path = "data/task-FacePerception_events.json"
-        sidecar_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), sidecar_path
-        )
+        sidecar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), sidecar_path)
 
         sidecar = Sidecar(sidecar_path)
 
@@ -356,9 +330,7 @@ class Test(TestWebBase):
             )
 
     def test_process_services_sidecar_a(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         with open(json_path) as f:
             data = json.load(f)
         json_text = json.dumps(data)
@@ -390,9 +362,7 @@ class Test(TestWebBase):
                 "Version 8.2.0 was used",
             )
 
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         with open(json_path) as f:
             data = json.load(f)
         json_text = json.dumps(data)
@@ -414,9 +384,7 @@ class Test(TestWebBase):
                 results["msg_category"],
                 "sidecar_validation did not valid with 8.2.0",
             )
-            self.assertEqual(
-                json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used"
-            )
+            self.assertEqual(json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used")
 
 
 if __name__ == "__main__":

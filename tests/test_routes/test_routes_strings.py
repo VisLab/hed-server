@@ -8,21 +8,15 @@ from tests.test_routes.test_routes_base import TestRouteBase
 class Test(TestRouteBase):
     def test_strings_results_empty_data(self):
         response = self.app.test.post("/strings_submit")
-        self.assertEqual(
-            200, response.status_code, "HED string request succeeds even when no data"
-        )
-        self.assertTrue(
-            response.data, "The returned data for empty string question is not empty"
-        )
+        self.assertEqual(200, response.status_code, "HED string request succeeds even when no data")
+        self.assertTrue(response.data, "The returned data for empty string question is not empty")
         response_dict = json.loads(response.data)
         self.assertIsInstance(
             response_dict,
             dict,
             "The empty string response data is returned in a dictionary",
         )
-        self.assertTrue(
-            response_dict["message"], "The empty string response message is not empty"
-        )
+        self.assertTrue(response_dict["message"], "The empty string response message is not empty")
 
     def test_strings_results_to_long(self):
         with self.app.app_context():
@@ -34,12 +28,8 @@ class Test(TestRouteBase):
                 bc.STRING_INPUT: test_string,
             }
 
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
-            self.assertEqual(
-                200, response.status_code, "To long of a long string has a response"
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
+            self.assertEqual(200, response.status_code, "To long of a long string has a response")
             response_dict = json.loads(response.data)
             self.assertEqual(
                 "success",
@@ -53,9 +43,7 @@ class Test(TestRouteBase):
             )
 
             input_data["string_input"] = "Red"
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
             self.assertEqual(
                 200,
                 response.status_code,
@@ -74,9 +62,7 @@ class Test(TestRouteBase):
             )
 
             input_data["string_input"] = "Blob,Blue,Label/3"
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
             self.assertEqual(
                 200,
                 response.status_code,
@@ -103,12 +89,8 @@ class Test(TestRouteBase):
                 bc.STRING_INPUT: test_string,
             }
 
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
-            self.assertEqual(
-                200, response.status_code, "To short of a long string has a response"
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
+            self.assertEqual(200, response.status_code, "To short of a long string has a response")
             response_dict = json.loads(response.data)
             self.assertEqual(
                 "success",
@@ -122,9 +104,7 @@ class Test(TestRouteBase):
             )
 
             input_data["string_input"] = "Red"
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
             self.assertEqual(
                 200,
                 response.status_code,
@@ -143,9 +123,7 @@ class Test(TestRouteBase):
             )
 
             input_data["string_input"] = "Blob,Blue,Label/3"
-            response = self.app.test.post(
-                "/strings_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/strings_submit", content_type="multipart/form-data", data=input_data)
             self.assertEqual(
                 200,
                 response.status_code,
@@ -157,9 +135,7 @@ class Test(TestRouteBase):
                 response_dict["msg_category"],
                 "To short of invalid string generates a warning",
             )
-            self.assertTrue(
-                response_dict["data"][0], "The data should have error messages"
-            )
+            self.assertTrue(response_dict["data"][0], "The data should have error messages")
 
     def test_strings_results_validate(self):
         with self.app.app_context():
@@ -174,9 +150,7 @@ class Test(TestRouteBase):
                 },
             )
 
-            self.assertEqual(
-                200, response.status_code, "Validation of a valid string has a response"
-            )
+            self.assertEqual(200, response.status_code, "Validation of a valid string has a response")
             response_dict = json.loads(response.data)
             self.assertEqual(
                 "success",
@@ -209,9 +183,7 @@ class Test(TestRouteBase):
                 response_dict["msg_category"],
                 "Invalid hed string validation generates a warning",
             )
-            self.assertTrue(
-                response_dict["data"], "The data should have error messages"
-            )
+            self.assertTrue(response_dict["data"], "The data should have error messages")
 
     def test_strings_results_validate_defs(self):
         with self.app.app_context():
@@ -228,9 +200,7 @@ class Test(TestRouteBase):
                 },
             )
 
-            self.assertEqual(
-                200, response.status_code, "Validation of a valid string has a response"
-            )
+            self.assertEqual(200, response.status_code, "Validation of a valid string has a response")
             response_dict = json.loads(response.data)
             self.assertEqual(
                 "success",
@@ -263,9 +233,7 @@ class Test(TestRouteBase):
                 response_dict["msg_category"],
                 "No Definition provided, so should produce an error",
             )
-            self.assertTrue(
-                response_dict["data"], "The data should have error messages"
-            )
+            self.assertTrue(response_dict["data"], "The data should have error messages")
 
 
 if __name__ == "__main__":

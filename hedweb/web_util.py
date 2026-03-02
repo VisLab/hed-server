@@ -55,10 +55,7 @@ def file_extension_is_valid(filename, accepted_extensions=None) -> bool:
         bool: True if the file has an accepted extension.
 
     """
-    return (
-        not accepted_extensions
-        or os.path.splitext(filename.lower())[1] in accepted_extensions
-    )
+    return not accepted_extensions or os.path.splitext(filename.lower())[1] in accepted_extensions
 
 
 def filter_issues(issues, check_for_warnings):
@@ -81,9 +78,7 @@ def form_has_file(files, file_field, valid_extensions=None) -> bool:
 
     """
 
-    if file_field in files and file_extension_is_valid(
-        files[file_field].filename, valid_extensions
-    ):
+    if file_field in files and file_extension_is_valid(files[file_field].filename, valid_extensions):
         return True
     else:
         return False
@@ -198,20 +193,14 @@ def generate_download_spreadsheet(results) -> Response:
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers["Content-Disposition"] = (
-        "attachment; filename=" + results[bc.OUTPUT_DISPLAY_NAME]
-    )
+    response.headers["Content-Disposition"] = "attachment; filename=" + results[bc.OUTPUT_DISPLAY_NAME]
     response.headers["Category"] = results[bc.MSG_CATEGORY]
     response.headers["Message"] = results[bc.MSG]
-    response.mimetype = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     return response
 
 
-def generate_filename(
-    base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False
-) -> str:
+def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False) -> str:
     """Generate a filename for the attachment.
 
     Parameters:
@@ -301,9 +290,7 @@ def get_hed_schema_from_pull_down(request) -> HedSchema:
     """
 
     if bc.SCHEMA_VERSION not in request.form:
-        raise HedFileError(
-            "NoSchemaError", "Must provide a valid schema or schema version", ""
-        )
+        raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
     elif request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
         hed_schema = load_schema_version(request.form[bc.SCHEMA_VERSION])
     elif bc.SCHEMA_PATH in request.files:
@@ -313,9 +300,7 @@ def get_hed_schema_from_pull_down(request) -> HedSchema:
             schema_format=secure_filename(f.filename),
         )
     else:
-        raise HedFileError(
-            "NoSchemaFile", "Must provide a valid schema for upload if other chosen", ""
-        )
+        raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")
     return hed_schema
 
 
@@ -366,9 +351,7 @@ def get_schema_versions(hed_schema) -> str:
         return ""
     if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
         return hed_schema.get_formatted_version()
-    raise ValueError(
-        "InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group"
-    )
+    raise ValueError("InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group")
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True) -> str | dict:
@@ -466,10 +449,7 @@ def package_results(results) -> Response:
         results["data"] = "\n".join(results["data"]) + "\n"
     if results.get(bc.FILE_LIST, None):
         return generate_download_zip_file(results)
-    elif (
-        results.get("data", None)
-        and results.get("command_target", None) != "spreadsheet"
-    ):
+    elif results.get("data", None) and results.get("command_target", None) != "spreadsheet":
         return generate_download_file_from_text(results)
     elif results.get("data", None) or not results.get("spreadsheet", None):
         return generate_text_response(results)

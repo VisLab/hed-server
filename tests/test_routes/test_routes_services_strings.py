@@ -25,9 +25,7 @@ class Test(TestRouteBase):
                 isinstance(results, dict),
                 "should return a dictionary when validation errors",
             )
-            self.assertEqual(
-                "success", results["msg_category"], "should give success when no errors"
-            )
+            self.assertEqual("success", results["msg_category"], "should give success when no errors")
             self.assertFalse(results["data"], "process not return data no no errors")
 
     def test_submit_service_strings_validate_route_file_invalid(self):
@@ -50,9 +48,7 @@ class Test(TestRouteBase):
                 isinstance(results, dict),
                 "should return a dictionary when validation errors",
             )
-            self.assertEqual(
-                "warning", results["msg_category"], "should give warning with issues"
-            )
+            self.assertEqual("warning", results["msg_category"], "should give warning with issues")
             self.assertTrue(results["data"], "process return data for issues")
 
     def test_submit_service_strings_validate_route_file_invalid_format(self):
@@ -75,9 +71,7 @@ class Test(TestRouteBase):
                 isinstance(results, dict),
                 "should return a dictionary when validation errors",
             )
-            self.assertEqual(
-                "warning", results["msg_category"], "should give warning with issues"
-            )
+            self.assertEqual("warning", results["msg_category"], "should give warning with issues")
             self.assertTrue(results["data"], "process return data for issues")
             self.assertEqual(
                 len(results["data"]),
@@ -104,9 +98,7 @@ class Test(TestRouteBase):
             self.assertEqual(200, response.status_code)
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
-            self.assertEqual(
-                "success", results["msg_category"], "should process successfully"
-            )
+            self.assertEqual("success", results["msg_category"], "should process successfully")
 
     def test_submit_service_strings_with_prereleases_true(self):
         """Test strings service with include_prereleases=true."""
@@ -127,6 +119,4 @@ class Test(TestRouteBase):
             self.assertEqual(200, response.status_code)
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
-            self.assertEqual(
-                "success", results["msg_category"], "should process successfully"
-            )
+            self.assertEqual("success", results["msg_category"], "should process successfully")

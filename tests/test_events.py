@@ -22,21 +22,13 @@ class Test(TestWebBase):
     def get_event_proc(self, events_file, sidecar_file, schema_file):
         events_proc = EventOperations()
         if schema_file:
-            schema_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), schema_file
-            )
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), schema_file)
             events_proc.schema = load_schema(schema_path)
         if sidecar_file:
-            events_proc.sidecar = Sidecar(
-                files=os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)), sidecar_file
-                )
-            )
+            events_proc.sidecar = Sidecar(files=os.path.join(os.path.dirname(os.path.abspath(__file__)), sidecar_file))
         if events_file:
             events_proc.events = TabularInput(
-                file=os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)), events_file
-                ),
+                file=os.path.join(os.path.dirname(os.path.abspath(__file__)), events_file),
                 sidecar=events_proc.sidecar,
             )
         events_proc.expand_defs = True
@@ -52,12 +44,8 @@ class Test(TestWebBase):
                 proc_events.process()
 
     def test_set_input_from_events_form(self):
-        sidecar_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
-        events_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.tsv"
-        )
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.tsv")
         with self.app.app_context():
             with open(sidecar_path, "rb") as fp:
                 with open(events_path, "rb") as fpe:
@@ -73,18 +61,10 @@ class Test(TestWebBase):
             request = Request(environ)
             arguments = ProcessForm.get_input_from_form(request)
             event_proc = EventOperations(arguments=arguments)
-            self.assertIsInstance(
-                event_proc.events, TabularInput, "should have an events object"
-            )
-            self.assertIsInstance(
-                event_proc.schema, HedSchema, "should have a HED schema"
-            )
-            self.assertEqual(
-                event_proc.command, bc.COMMAND_ASSEMBLE, "should have correct command"
-            )
-            self.assertTrue(
-                event_proc.expand_defs, "should have expand_defs true when on"
-            )
+            self.assertIsInstance(event_proc.events, TabularInput, "should have an events object")
+            self.assertIsInstance(event_proc.schema, HedSchema, "should have a HED schema")
+            self.assertEqual(event_proc.command, bc.COMMAND_ASSEMBLE, "should have correct command")
+            self.assertTrue(event_proc.expand_defs, "should have expand_defs true when on")
 
     def test_events_process_empty_file(self):
         with self.assertRaises(HedFileError):
@@ -93,9 +73,7 @@ class Test(TestWebBase):
 
     def test_events_process_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
             events_proc.command = bc.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(
@@ -110,32 +88,24 @@ class Test(TestWebBase):
 
     def test_events_process_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
             events_proc.command = bc.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertTrue(
                 isinstance(results, dict),
                 "should return a dictionary when validation errors",
             )
-            self.assertEqual(
-                "success", results["msg_category"], "should give success when no errors"
-            )
+            self.assertEqual("success", results["msg_category"], "should give success when no errors")
             self.assertFalse(results["data"], "process not return data no no errors")
 
     def test_events_assemble_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
             events_proc.check_for_warnings = False
             events_proc.command = bc.COMMAND_ASSEMBLE
             results = events_proc.process()
             self.assertTrue("data" in results, "should have a data key when no errors")
-            self.assertEqual(
-                "warning", results["msg_category"], "should be warning when errors"
-            )
+            self.assertEqual("warning", results["msg_category"], "should be warning when errors")
 
     def test_events_assemble_valid(self):
         with self.app.app_context():
@@ -150,9 +120,7 @@ class Test(TestWebBase):
             results = events_proc.process()
             data1 = results["data"]
             self.assertTrue(data1, "should have a data key when no errors")
-            self.assertEqual(
-                "success", results["msg_category"], "should be success when no errors"
-            )
+            self.assertEqual("success", results["msg_category"], "should be success when no errors")
 
             # Explicitly tests defaults
             events_proc.remove_types = False
@@ -197,9 +165,7 @@ class Test(TestWebBase):
 
     def test_generate_sidecar_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "", "data/HED8.2.0.xml")
             events_proc.command = bc.COMMAND_GENERATE_SIDECAR
             events_proc.columns_skip = ["event_type"]
             events_proc.columns_value = ["event_type"]
@@ -215,9 +181,7 @@ class Test(TestWebBase):
             )
 
     def test_generate_sidecar_valid(self):
-        events_proc = self.get_event_proc(
-            "data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml"
-        )
+        events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
         events_proc.command = bc.COMMAND_GENERATE_SIDECAR
         events_proc.expand_defs = True
         events_proc.columns_value = ["trial"]
@@ -240,9 +204,7 @@ class Test(TestWebBase):
 
     def test_search_invalid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
             events_proc.query = ""
             events_proc.command = bc.COMMAND_SEARCH
             results = events_proc.process()
@@ -258,44 +220,28 @@ class Test(TestWebBase):
 
     def test_events_search_valid(self):
         with self.app.app_context():
-            events_proc = self.get_event_proc(
-                "data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml"
-            )
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
             events_proc.command = bc.COMMAND_SEARCH
             events_proc.queries = ["Sensory-event"]
             results = events_proc.process()
             self.assertTrue(results["data"], "should have a data key when no errors")
-            self.assertEqual(
-                "success", results["msg_category"], "should be success when no errors"
-            )
+            self.assertEqual("success", results["msg_category"], "should be success when no errors")
 
     def test_events_validate_invalid(self):
-        events_proc = self.get_event_proc(
-            "data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml"
-        )
+        events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
         events_proc.command = bc.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()
-            self.assertTrue(
-                results["data"], "should have a data key when validation errors"
-            )
-            self.assertEqual(
-                "warning", results["msg_category"], "should be warning when errors"
-            )
+            self.assertTrue(results["data"], "should have a data key when validation errors")
+            self.assertEqual("warning", results["msg_category"], "should be warning when errors")
 
     def test_events_validate_valid(self):
-        events_proc = self.get_event_proc(
-            "data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml"
-        )
+        events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
         events_proc.command = bc.COMMAND_VALIDATE
         with self.app.app_context():
             results = events_proc.process()
-            self.assertFalse(
-                results["data"], "should not have a data key when no validation errors"
-            )
-            self.assertEqual(
-                "success", results["msg_category"], "should be success when no errors"
-            )
+            self.assertFalse(results["data"], "should not have a data key when no validation errors")
+            self.assertEqual("success", results["msg_category"], "should be success when no errors")
 
     def test_events_remodel_valid_no_hed(self):
         rmdl1 = [
@@ -308,18 +254,14 @@ class Test(TestWebBase):
                 },
             }
         ]
-        events_proc = self.get_event_proc(
-            "data/sub-002_task-FacePerception_run-1_events.tsv", None, None
-        )
+        events_proc = self.get_event_proc("data/sub-002_task-FacePerception_run-1_events.tsv", None, None)
         events_proc.command = bc.COMMAND_REMODEL
         events_proc.remodel_operations = {"name": "test", "operations": rmdl1}
         cols_orig = events_proc.events.columns
         rows_orig = len(events_proc.events.dataframe)
         with self.app.app_context():
             results = events_proc.process()
-        self.assertTrue(
-            results["data"], "remodel results should have a data key when successful"
-        )
+        self.assertTrue(results["data"], "remodel results should have a data key when successful")
         self.assertEqual(
             "success",
             results["msg_category"],
@@ -340,9 +282,7 @@ class Test(TestWebBase):
                 },
             }
         ]
-        events_proc = self.get_event_proc(
-            "data/sub-002_task-FacePerception_run-1_events.tsv", None, None
-        )
+        events_proc = self.get_event_proc("data/sub-002_task-FacePerception_run-1_events.tsv", None, None)
         events_proc.command = bc.COMMAND_REMODEL
         events_proc.remodel_operations = {"name": "test", "operations": rmdl1}
         with self.app.app_context():
@@ -369,9 +309,7 @@ class Test(TestWebBase):
         events_proc.remodel_operations = {"name": "test", "operations": rmdl1}
         with self.app.app_context():
             results = events_proc.process()
-        self.assertTrue(
-            results["data"], "remodel results should have a data key when successful"
-        )
+        self.assertTrue(results["data"], "remodel results should have a data key when successful")
         self.assertEqual(
             "success",
             results["msg_category"],

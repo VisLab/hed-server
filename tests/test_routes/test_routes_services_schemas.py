@@ -66,17 +66,11 @@ class Test(TestRouteBase):
                 content_type="application/json",
                 data=json.dumps(json_data),
             )
-            self.assertEqual(
-                200, results.status_code, "Conversion of a valid xml url has a response"
-            )
+            self.assertEqual(200, results.status_code, "Conversion of a valid xml url has a response")
             response = json.loads(results.data.decode("utf-8"))
-            self.assertEqual(
-                "success", response["results"]["msg_category"], "An valid schema"
-            )
+            self.assertEqual("success", response["results"]["msg_category"], "An valid schema")
             self.assertTrue(
                 response["results"]["data"],
                 "The response data for valid schema is not empty",
             )
-            self.assertEqual(
-                response["results"]["msg"], "Schema was successfully converted"
-            )
+            self.assertEqual(response["results"]["msg"], "Schema was successfully converted")

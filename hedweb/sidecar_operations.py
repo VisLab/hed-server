@@ -56,14 +56,9 @@ class SidecarOperations(BaseOperations):
                 "Please give a valid JSON sidecar file to process",
                 "",
             )
-        elif (
-            self.command == bc.COMMAND_EXTRACT_SPREADSHEET
-            or self.command == bc.COMMAND_MERGE_SPREADSHEET
-        ):
+        elif self.command == bc.COMMAND_EXTRACT_SPREADSHEET or self.command == bc.COMMAND_MERGE_SPREADSHEET:
             pass
-        elif not self.schema or not isinstance(
-            self.schema, hedschema.hed_schema.HedSchema
-        ):
+        elif not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
 
         if self.command == bc.COMMAND_VALIDATE:
@@ -169,9 +164,7 @@ class SidecarOperations(BaseOperations):
         """
 
         if not self.spreadsheet:
-            raise HedFileError(
-                "MissingSpreadsheet", "Cannot merge spreadsheet with sidecar", ""
-            )
+            raise HedFileError("MissingSpreadsheet", "Cannot merge spreadsheet with sidecar", "")
         df = self.spreadsheet.dataframe
         hed_dict = df_to_hed(df, description_tag=self.include_description_tags)
         if self.sidecar:
@@ -210,13 +203,9 @@ class SidecarOperations(BaseOperations):
         """
 
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
-        issues = self.sidecar.validate(
-            self.schema, name=self.sidecar.name, error_handler=error_handler
-        )
+        issues = self.sidecar.validate(self.schema, name=self.sidecar.name, error_handler=error_handler)
         if issues:
-            data = get_printable_issue_string(
-                issues, f"JSON dictionary {self.sidecar.name} validation issues"
-            )
+            data = get_printable_issue_string(issues, f"JSON dictionary {self.sidecar.name} validation issues")
             file_name = generate_filename(
                 self.sidecar.name,
                 name_suffix="validation_issues",

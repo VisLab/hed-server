@@ -24,9 +24,7 @@ class Test(TestRouteBase):
             header_dict["Category"],
             "The header msg_category when no spreadsheet is error ",
         )
-        self.assertFalse(
-            response.data, "The response data for empty spreadsheet request is empty"
-        )
+        self.assertFalse(response.data, "The response data for empty spreadsheet request is empty")
 
     def test_spreadsheets_results_validate_valid(self):
         with self.app.app_context():
@@ -60,9 +58,7 @@ class Test(TestRouteBase):
                 headers_dict["Category"],
                 "The valid spreadsheet should validate successfully",
             )
-            self.assertFalse(
-                response.data, "The response for validated spreadsheet should be empty"
-            )
+            self.assertFalse(response.data, "The response for validated spreadsheet should be empty")
 
     def test_results_validate_invalid(self):
         with self.app.app_context():

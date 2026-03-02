@@ -58,9 +58,7 @@ class AppFactory:
 
             # If the class doesn't exist in the module, treat it as if the module import failed
             if config_class_obj is None:
-                raise AttributeError(
-                    f"module '{config_module_name}' has no attribute '{config_class_name}'"
-                )
+                raise AttributeError(f"module '{config_module_name}' has no attribute '{config_class_name}'")
 
         except (ImportError, AttributeError):
             # Fallback to default_config if main config is not available or doesn't have the class
