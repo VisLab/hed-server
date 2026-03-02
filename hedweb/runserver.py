@@ -71,6 +71,7 @@ def configure_app():
 def create_app_with_routes():
     """Create and configure the Flask app with routes registered."""
     app = configure_app()
+    app.config["VERSIONS"] = get_version_dict()
     with app.app_context():
         from hedweb.routes import route_blueprint
 
