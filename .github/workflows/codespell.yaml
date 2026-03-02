@@ -22,16 +22,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.10'
           enable-cache: true
-
-      - name: Create virtual environment
-        run: |
-          uv venv --clear .venv
-          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: uv pip install codespell tomli
+          cache-dependency-glob: "**/pyproject.toml"
 
       - name: Run Codespell
-        run: codespell .
+        run: uvx codespell . --skip="pyproject.toml,lychee.toml"

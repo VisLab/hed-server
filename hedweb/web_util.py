@@ -441,11 +441,11 @@ def get_exception_message(ex) -> dict:
     else:
         message = str(ex)
     message = message.replace("\n", " ")
-    if hasattr(ex, "filename"):
-        filename = str(ex.filename)
+    if hasattr(ex, "filename") and ex.filename:
+        filemsg = f" for {str(ex.filename)}"
     else:
-        filename = ""
-    error_message = f"{error_code} for [{filename}]: {message}"
+        filemsg = ""
+    error_message = f"{error_code}{filemsg}: {message}"
     if hasattr(ex, "issues") and ex.issues and isinstance(ex.issues, (list, dict)):
         error_message += " [" + get_printable_issue_string(ex.issues) + "]"
     return {"data": "", bc.MSG_CATEGORY: "error", bc.MSG: error_message}

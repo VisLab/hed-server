@@ -56,7 +56,13 @@ jobs:
           echo "Waiting for server to start..."
           sleep 5
           echo "Checking if container is running..."
-          docker ps | grep hedtools_dev || (echo "Container not running!" && docker logs hedtools_dev && exit 1)
+          if ! docker ps | grep -q hedtools_dev; then
+            echo "Container not running! Checking if it exited..."
+            docker ps -a | grep hedtools_dev || echo "Container not found at all"
+            echo "Container logs:"
+            docker logs hedtools_dev 2>&1 || true
+            exit 1
+          fi
           echo "Testing server health with retries..."
           for i in {1..30}; do
             if curl --silent --fail --max-time 5 ${{ env.HED_SERVER_URL }}; then
@@ -64,6 +70,11 @@ jobs:
               exit 0
             fi
             echo "Attempt $i/30 failed, waiting 5 seconds..."
+            if ! docker ps | grep -q hedtools_dev; then
+              echo "Container stopped during wait! Logs:"
+              docker logs hedtools_dev 2>&1 || true
+              exit 1
+            fi
             sleep 5
           done
           echo "Server did not become ready in time"

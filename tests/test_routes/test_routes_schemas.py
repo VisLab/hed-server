@@ -168,7 +168,7 @@ class Test(TestRouteBase):
                 response["data"], "The response data for valid schema is not empty"
             )
             self.assertEqual(
-                response["msg"], "SCHEMA_NOT_FOUND for []: Must provide a source schema"
+                response["msg"], "SCHEMA_NOT_FOUND: Must provide a source schema"
             )
 
     def test_schemas_results_validate_mediawiki_warning_on(self):
@@ -277,7 +277,7 @@ class Test(TestRouteBase):
             )
             self.assertEqual(
                 response["msg"],
-                "INVALID_HED_FORMAT for [HED7.2.0]: Attempting to load an outdated or invalid XML schema",
+                "INVALID_HED_FORMAT for HED7.2.0: Attempting to load an outdated or invalid XML schema",
             )
 
 
