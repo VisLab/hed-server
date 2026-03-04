@@ -6,16 +6,27 @@ import os
 import tempfile
 
 
+def _read_or_create_secret_key(path: str) -> str:
+    """Read SECRET_KEY from *path*, creating the file if it doesn't exist.
+
+    Falls back to a random key if the directory is not accessible (e.g. during
+    test runs or CI where /var/log/hedtools/ has not been created yet).
+    """
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if not os.path.exists(path):
+            with open(path, "w") as f:
+                f.write(str(os.urandom(24)))
+        with open(path) as f:
+            return f.read()
+    except OSError:
+        return str(os.urandom(24))
+
+
 class Config:
     LOG_DIRECTORY = "/var/log/hedtools"
     LOG_FILE = os.path.join(LOG_DIRECTORY, "error.log")
-    if not os.path.exists("/var/log/hedtools/tmp.txt"):
-        f = open("/var/log/hedtools/tmp.txt", "w+")
-        f.write(str(os.urandom(24)))
-        f.close()
-    f = open("/var/log/hedtools/tmp.txt")
-    SECRET_KEY = f.read()  # os.getenv('SECRET_KEY') # os.urandom(24)
-    f.close()
+    SECRET_KEY = os.getenv("SECRET_KEY") or _read_or_create_secret_key("/var/log/hedtools/tmp.txt")
     STATIC_URL_PATH = None
     STATIC_URL_PATH_ATTRIBUTE_NAME = "STATIC_URL_PATH"
     UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), "hedtools_uploads")

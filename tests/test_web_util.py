@@ -24,17 +24,13 @@ class Test(TestWebBase):
         self.assertTrue(just_blank_list == ["_9.0.0", "_9.1.0"])
         test_all = {"score": ["1.0.0", "2.0.0"], None: ["8.0.0", "8.1.0"]}
         test_all_list = convert_hed_versions(test_all)
-        self.assertTrue(
-            test_all_list == ["8.0.0", "8.1.0", "score_1.0.0", "score_2.0.0"]
-        )
+        self.assertTrue(test_all_list == ["8.0.0", "8.1.0", "score_1.0.0", "score_2.0.0"])
 
     def test_form_has_file(self):
         from hedweb.web_util import form_has_file
 
         with self.app.test as _:
-            sidecar_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-            )
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
             with open(sidecar_path, "rb") as fp:
                 environ = create_environ(data={"sidecar_file": fp})
 
@@ -48,9 +44,7 @@ class Test(TestWebBase):
                 "Form does not have file when form name is wrong",
             )
             self.assertFalse(
-                form_has_file(
-                    request.files, "sidecar_file", file_constants.SPREADSHEET_EXTENSIONS
-                ),
+                form_has_file(request.files, "sidecar_file", file_constants.SPREADSHEET_EXTENSIONS),
                 "Form does not have file when extension is wrong",
             )
             self.assertTrue(
@@ -81,9 +75,7 @@ class Test(TestWebBase):
         from hedweb.web_util import form_has_url
 
         with self.app.test as _:
-            environ = create_environ(
-                data={bc.SCHEMA_URL: "https://www.google.com/my.json"}
-            )
+            environ = create_environ(data={bc.SCHEMA_URL: "https://www.google.com/my.json"})
             request = Request(environ)
             self.assertTrue(
                 form_has_url(request.form, bc.SCHEMA_URL),
@@ -94,9 +86,7 @@ class Test(TestWebBase):
                 "Form does not have a field that is not specified",
             )
             self.assertFalse(
-                form_has_url(
-                    request.form, bc.SCHEMA_URL, file_constants.SPREADSHEET_EXTENSIONS
-                ),
+                form_has_url(request.form, bc.SCHEMA_URL, file_constants.SPREADSHEET_EXTENSIONS),
                 "Form does not URL with the wrong extension",
             )
 
@@ -119,9 +109,7 @@ class Test(TestWebBase):
                 "Generate_response_download_file_from_text has status code 200 for string",
             )
             header_content = dict(response.headers)
-            self.assertEqual(
-                "success", header_content["Category"], "The msg_category is success"
-            )
+            self.assertEqual("success", header_content["Category"], "The msg_category is success")
             self.assertEqual(
                 "attachment filename=download.txt",
                 header_content["Content-Disposition"],
@@ -134,9 +122,7 @@ class Test(TestWebBase):
 
             from hedweb.web_util import generate_download_spreadsheet
 
-            spreadsheet_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/ExcelOneSheet.xlsx"
-            )
+            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelOneSheet.xlsx")
 
             spreadsheet = SpreadsheetInput(
                 file=spreadsheet_path,
@@ -183,9 +169,7 @@ class Test(TestWebBase):
 
             from hedweb.web_util import generate_download_spreadsheet
 
-            spreadsheet_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/ExcelOneSheet.xlsx"
-            )
+            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelOneSheet.xlsx")
 
             spreadsheet = SpreadsheetInput(
                 file=spreadsheet_path,
@@ -229,9 +213,7 @@ class Test(TestWebBase):
 
             from hedweb.web_util import generate_download_spreadsheet
 
-            spreadsheet_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/LKTEventCodesHED3.tsv"
-            )
+            spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/LKTEventCodesHED3.tsv")
 
             spreadsheet = SpreadsheetInput(
                 file=spreadsheet_path,
@@ -305,48 +287,34 @@ class Test(TestWebBase):
             "mybasesuffix.json",
             "generate_file_name should return correct name for extension",
         )
-        file6 = generate_filename(
-            "mybase", name_prefix="prefix", name_suffix="suffix", extension=".json"
-        )
+        file6 = generate_filename("mybase", name_prefix="prefix", name_suffix="suffix", extension=".json")
         self.assertEqual(
             file6,
             "prefixmybasesuffix.json",
             "generate_file_name should return correct name for all set",
         )
-        filename = generate_filename(
-            None, name_prefix=None, name_suffix=None, extension=None
-        )
+        filename = generate_filename(None, name_prefix=None, name_suffix=None, extension=None)
         self.assertEqual("", filename, "Return empty when all arguments are none")
-        filename = generate_filename(
-            None, name_prefix=None, name_suffix=None, extension=".txt"
-        )
+        filename = generate_filename(None, name_prefix=None, name_suffix=None, extension=".txt")
         self.assertEqual(
             "",
             filename,
             "Return empty when base_name, prefix, and suffix are None, but extension is not",
         )
-        filename = generate_filename(
-            "c:/temp.json", name_prefix=None, name_suffix=None, extension=".txt"
-        )
+        filename = generate_filename("c:/temp.json", name_prefix=None, name_suffix=None, extension=".txt")
         self.assertEqual(
             "c_temp.txt",
             filename,
             "Returns stripped base_name + extension when prefix, and suffix are None",
         )
-        filename = generate_filename(
-            "temp.json", name_prefix="prefix_", name_suffix="_suffix", extension=".txt"
-        )
+        filename = generate_filename("temp.json", name_prefix="prefix_", name_suffix="_suffix", extension=".txt")
         self.assertEqual(
             "prefix_temp_suffix.txt",
             filename,
             "Return stripped base_name + extension when prefix, and suffix are None",
         )
-        filename = generate_filename(
-            None, name_prefix="prefix_", name_suffix="suffix", extension=".txt"
-        )
-        self.assertEqual(
-            "prefix_suffix.txt", filename, "Returns correct string when no base_name"
-        )
+        filename = generate_filename(None, name_prefix="prefix_", name_suffix="suffix", extension=".txt")
+        self.assertEqual("prefix_suffix.txt", filename, "Returns correct string when no base_name")
         filename = generate_filename(
             "event-strategy-v3_task-matchingpennies_events.json",
             name_suffix="_blech",
@@ -357,9 +325,7 @@ class Test(TestWebBase):
             filename,
             "Returns correct string when base_name with hyphens",
         )
-        filename = generate_filename(
-            "HED7.2.0.xml", name_suffix="_blech", extension=".txt"
-        )
+        filename = generate_filename("HED7.2.0.xml", name_suffix="_blech", extension=".txt")
         self.assertEqual(
             "HED7.2.0_blech.txt",
             filename,
@@ -416,9 +382,7 @@ class Test(TestWebBase):
 
             results = {"data": "testme", bc.MSG: "testing", bc.MSG_CATEGORY: "success"}
             response = generate_text_response(results)
-            self.assertIsInstance(
-                response, Response, "generate_download_text_response returns a response"
-            )
+            self.assertIsInstance(response, Response, "generate_download_text_response returns a response")
             headers_dict = dict(response.headers)
             self.assertEqual(
                 200,
@@ -454,13 +418,9 @@ class Test(TestWebBase):
             except HedFileError:
                 pass
             except Exception:
-                self.fail(
-                    "get_hed_schema_from_pull_down threw the wrong exception when data was empty"
-                )
+                self.fail("get_hed_schema_from_pull_down threw the wrong exception when data was empty")
             else:
-                self.fail(
-                    "get_hed_schema_from_pull_down should throw a HedFileError exception when data was empty"
-                )
+                self.fail("get_hed_schema_from_pull_down should throw a HedFileError exception when data was empty")
 
     def test_get_hed_schema_from_pull_down_version(self):
         from hed.schema import HedSchema
@@ -483,9 +443,7 @@ class Test(TestWebBase):
         from hedweb.web_util import get_hed_schema_from_pull_down
 
         with self.app.test:
-            schema_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/HED8.0.0.xml"
-            )
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HED8.0.0.xml")
             with open(schema_path, "rb") as fp:
                 environ = create_environ(
                     data={
@@ -506,22 +464,14 @@ class Test(TestWebBase):
 
         from hedweb.web_util import handle_error
 
-        ex = HedFileError(
-            HedExceptions.BAD_PARAMETERS, "This had bad parameters", "my.file"
-        )
+        ex = HedFileError(HedExceptions.BAD_PARAMETERS, "This had bad parameters", "my.file")
         output = handle_error(ex)
-        self.assertIsInstance(
-            output, str, "handle_error should return a string if return_as_str"
-        )
+        self.assertIsInstance(output, str, "handle_error should return a string if return_as_str")
         output1 = handle_error(ex, return_as_str=False)
-        self.assertIsInstance(
-            output1, dict, "handle_error should return a dict if not return_as_str"
-        )
+        self.assertIsInstance(output1, dict, "handle_error should return a dict if not return_as_str")
         self.assertTrue("message" in output1, "handle_error dict should have a message")
         output2 = handle_error(ex, {"mykey": "blech"}, return_as_str=False)
-        self.assertTrue(
-            "mykey" in output2, "handle_error dict should include passed dictionary"
-        )
+        self.assertTrue("mykey" in output2, "handle_error dict should include passed dictionary")
 
     def test_handle_http_error(self):
         from hed.errors.exceptions import HedExceptions, HedFileError
@@ -529,9 +479,7 @@ class Test(TestWebBase):
         from hedweb.web_util import handle_http_error
 
         with self.app.test_request_context():
-            ex = HedFileError(
-                HedExceptions.BAD_PARAMETERS, "This had bad parameters", "my.file"
-            )
+            ex = HedFileError(HedExceptions.BAD_PARAMETERS, "This had bad parameters", "my.file")
             response = handle_http_error(ex)
             headers = dict(response.headers)
             self.assertEqual(

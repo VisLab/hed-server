@@ -84,9 +84,7 @@ class ProcessServices:
         """
         # Column parameters
         arguments[bc.REQUEST_TYPE] = bc.FROM_SERVICE
-        arguments[bc.COLUMNS_CATEGORICAL] = ProcessServices.get_list(
-            bc.COLUMNS_CATEGORICAL, params
-        )
+        arguments[bc.COLUMNS_CATEGORICAL] = ProcessServices.get_list(bc.COLUMNS_CATEGORICAL, params)
         arguments[bc.COLUMNS_VALUE] = ProcessServices.get_list(bc.COLUMNS_VALUE, params)
         arguments[bc.COLUMNS_SKIP] = ProcessServices.get_list(bc.COLUMNS_SKIP, params)
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
@@ -97,9 +95,7 @@ class ProcessServices:
         arguments[bc.REMOVE_TYPES] = params.get(bc.REMOVE_TYPES, False)
         arguments[bc.REPLACE_DEFS] = params.get(bc.REPLACE_DEFS, False)
         arguments[bc.EXPAND_DEFS] = params.get(bc.EXPAND_DEFS, False)
-        arguments[bc.INCLUDE_DESCRIPTION_TAGS] = params.get(
-            bc.INCLUDE_DESCRIPTION_TAGS, False
-        )
+        arguments[bc.INCLUDE_DESCRIPTION_TAGS] = params.get(bc.INCLUDE_DESCRIPTION_TAGS, False)
         arguments[bc.INCLUDE_SUMMARIES] = params.get(bc.INCLUDE_SUMMARIES, False)
 
     @staticmethod
@@ -156,9 +152,7 @@ class ProcessServices:
         if definition_string:
             def_file = io.StringIO(definition_string)
 
-        arguments[bc.DEFINITIONS] = Sidecar(files=def_file).get_def_dict(
-            arguments[bc.SCHEMA]
-        )
+        arguments[bc.DEFINITIONS] = Sidecar(files=def_file).get_def_dict(arguments[bc.SCHEMA])
 
     @staticmethod
     def set_input_objects(arguments, params):
@@ -237,9 +231,7 @@ class ProcessServices:
         expand_defs = params.get(bc.EXPAND_DEFS, False)
         check_for_warnings = params.get(bc.CHECK_FOR_WARNINGS, True)
         include_description_tags = params.get(bc.INCLUDE_DESCRIPTION_TAGS, True)
-        include_prereleases = normalize_boolean(
-            params.get(bc.INCLUDE_PRERELEASES, False)
-        )
+        include_prereleases = normalize_boolean(params.get(bc.INCLUDE_PRERELEASES, False))
 
         return {
             bc.SERVICE: service,
@@ -269,9 +261,7 @@ class ProcessServices:
             the_schema = hedschema.load_schema(parameters[bc.SCHEMA_URL])
         elif bc.SCHEMA_VERSION in parameters and parameters[bc.SCHEMA_VERSION]:
             # Check if include_prereleases parameter is present and normalize to boolean
-            include_prereleases = normalize_boolean(
-                parameters.get(bc.INCLUDE_PRERELEASES, False)
-            )
+            include_prereleases = normalize_boolean(parameters.get(bc.INCLUDE_PRERELEASES, False))
             the_schema = hedschema.load_schema_version(
                 parameters[bc.SCHEMA_VERSION], check_prerelease=include_prereleases
             )

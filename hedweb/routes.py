@@ -46,9 +46,7 @@ def columns_info_results() -> str:
         return get_exception_message(ex)
 
 
-@route_blueprint.route(
-    route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"]
-)
+@route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
 def events_results() -> "Response":
     """Process events form submission and return results.
 
@@ -72,9 +70,7 @@ def events_results() -> "Response":
         return handle_http_error(ex)
 
 
-@route_blueprint.route(
-    route_constants.SCHEMAS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"]
-)
+@route_blueprint.route(route_constants.SCHEMAS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
 def schemas_results() -> "Response":
     """Process schema form submission and return results.
 
@@ -132,30 +128,18 @@ def schema_versions_results() -> str:
 
     try:
         hedschema.cache_xml_versions()
-        hed_base = convert_hed_versions(
-            hedschema.get_hed_versions(library_name="all", check_prerelease=False)
-        )
-        include_prereleases = (
-            request.args.get("include_prereleases", "false").lower() == "true"
-        )
+        hed_base = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=False))
+        include_prereleases = request.args.get("include_prereleases", "false").lower() == "true"
         if include_prereleases:
-            hed_pre = convert_hed_versions(
-                hedschema.get_hed_versions(library_name="all", check_prerelease=True)
-            )
-            prereleases = [
-                version + " (prerelease)"
-                for version in hed_pre
-                if version not in hed_base
-            ]
+            hed_pre = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=True))
+            prereleases = [version + " (prerelease)" for version in hed_pre if version not in hed_base]
             hed_base.extend(prereleases)
         return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
     except Exception as ex:
         return handle_error(ex)
 
 
-@route_blueprint.route(
-    route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"]
-)
+@route_blueprint.route(route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
 def services_results() -> str:
     """Perform the requested web service and return the results in JSON.
 
@@ -177,9 +161,7 @@ def services_results() -> str:
         return json.dumps(response)
 
 
-@route_blueprint.route(
-    route_constants.SIDECARS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"]
-)
+@route_blueprint.route(route_constants.SIDECARS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
 def sidecars_results() -> "Response":
     """Process sidecar form submission and return results.
 
@@ -206,9 +188,7 @@ def sidecars_results() -> "Response":
         return handle_http_error(ex)
 
 
-@route_blueprint.route(
-    route_constants.SPREADSHEETS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"]
-)
+@route_blueprint.route(route_constants.SPREADSHEETS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
 def spreadsheets_results() -> "Response":
     """Process the spreadsheets in the form and return results.
 
@@ -231,9 +211,7 @@ def spreadsheets_results() -> "Response":
         return handle_http_error(ex)
 
 
-@route_blueprint.route(
-    route_constants.STRINGS_SUBMIT_ROUTE, strict_slashes=False, methods=["GET", "POST"]
-)
+@route_blueprint.route(route_constants.STRINGS_SUBMIT_ROUTE, strict_slashes=False, methods=["GET", "POST"])
 def strings_results() -> str:
     """Process string entered in a form text box.
 
@@ -255,9 +233,7 @@ def strings_results() -> str:
         return handle_error(ex)
 
 
-@route_blueprint.route(
-    route_constants.EVENTS_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.EVENTS_ROUTE, strict_slashes=False, methods=["GET"])
 def render_events_form() -> str:
     """Form for BIDS event file (with JSON sidecar) processing.
 
@@ -275,9 +251,7 @@ def render_events_form() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.HED_TOOLS_HOME_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.HED_TOOLS_HOME_ROUTE, strict_slashes=False, methods=["GET"])
 def render_home_page() -> str:
     """The home page.
 
@@ -295,9 +269,7 @@ def render_home_page() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.SCHEMAS_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.SCHEMAS_ROUTE, strict_slashes=False, methods=["GET"])
 def render_schemas_form() -> str:
     """The schema processing form.
 
@@ -315,9 +287,7 @@ def render_schemas_form() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.SERVICES_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.SERVICES_ROUTE, strict_slashes=False, methods=["GET"])
 def render_services_form() -> str:
     """Landing page for HED hedweb services.
 
@@ -335,9 +305,7 @@ def render_services_form() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.SIDECARS_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.SIDECARS_ROUTE, strict_slashes=False, methods=["GET"])
 def render_sidecars_form() -> str:
     """The sidecar form.
 
@@ -355,9 +323,7 @@ def render_sidecars_form() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.SPREADSHEETS_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.SPREADSHEETS_ROUTE, strict_slashes=False, methods=["GET"])
 def render_spreadsheets_form() -> str:
     """The spreadsheets form.
 
@@ -375,9 +341,7 @@ def render_spreadsheets_form() -> str:
     )
 
 
-@route_blueprint.route(
-    route_constants.STRINGS_ROUTE, strict_slashes=False, methods=["GET"]
-)
+@route_blueprint.route(route_constants.STRINGS_ROUTE, strict_slashes=False, methods=["GET"])
 def render_strings_form() -> str:
     """The HED string form.
 

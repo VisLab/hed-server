@@ -11,7 +11,7 @@ import zipfile
 from hed import schema as hedschema
 from hed.errors import HedFileError, get_printable_issue_string
 from hed.schema.schema_comparer import SchemaComparer
-from hed.scripts.hed_script_util import validate_schema_object
+from hed.scripts.schema_script_util import validate_schema_object
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
@@ -59,16 +59,12 @@ class SchemaOperations(BaseOperations):
             results = self.validate()
         elif self.command == bc.COMMAND_COMPARE_SCHEMAS:
             if not self.schema2:
-                raise HedFileError(
-                    "SCHEMA_NOT_FOUND", "Must provide a compare schema", ""
-                )
+                raise HedFileError("SCHEMA_NOT_FOUND", "Must provide a compare schema", "")
             results = self.compare()
         elif self.command == bc.COMMAND_CONVERT_SCHEMA:
             results = self.convert()
         else:
-            raise HedFileError(
-                "UnknownProcessingMethod", "Select a schema processing method", ""
-            )
+            raise HedFileError("UnknownProcessingMethod", "Select a schema processing method", "")
         return results
 
     def compare(self):
@@ -79,9 +75,7 @@ class SchemaOperations(BaseOperations):
 
         comp = SchemaComparer(self.schema, self.schema2)
         data = comp.compare_differences()
-        output_name = (
-            self.schema.name + "_" + self.schema2.name + "_" + "differences.txt"
-        )
+        output_name = self.schema.name + "_" + self.schema2.name + "_" + "differences.txt"
         msg_results = ""
         if not data:
             msg_results = ": no differences found"
@@ -151,38 +145,35 @@ class SchemaOperations(BaseOperations):
             }
 
     def validate(self) -> dict:
-        """Run schema compliance for HED-3G.
+        """Run schema compliance
 
         Returns:
             dict: A dictionary of results in the standard results format.
 
         """
 
-        issues = validate_schema_object(self.schema, self.schema.name)
-        if issues:
-            issue_str = get_printable_issue_string(
-                issues, f"Schema issues for {self.schema.name}:"
-            )
-            file_name = self.schema.name + "_schema_issues.txt"
+        issue_strings = validate_schema_object(
+            self.schema, self.schema.name, check_for_warnings=self.check_for_warnings
+        )
+        if issue_strings:
             return {
                 "command": bc.COMMAND_VALIDATE,
                 bc.COMMAND_TARGET: "schema",
-                "data": issue_str,
-                "output_display_name": file_name,
+                "data": "\n".join(issue_strings),
+                "output_display_name": self.schema.name + "_schema_issues.txt",
                 "schema_version": self.schema.get_formatted_version(),
                 "msg_category": "warning",
-                "msg": "Schema has validation issues",
+                "msg": "Schema had validation issues",
             }
-        else:
-            return {
-                "command": bc.COMMAND_VALIDATE,
-                bc.COMMAND_TARGET: "schema",
-                "data": "",
-                "output_display_name": self.schema.name,
-                "schema_version": self.schema.get_formatted_version(),
-                "msg_category": "success",
-                "msg": "Schema had no validation issues",
-            }
+        return {
+            "command": bc.COMMAND_VALIDATE,
+            bc.COMMAND_TARGET: "schema",
+            "data": "",
+            "output_display_name": self.schema.name,
+            "schema_version": self.schema.get_formatted_version(),
+            "msg_category": "success",
+            "msg": "Schema had no validation issues",
+        }
 
     @staticmethod
     def format_error(command, exception) -> dict:
@@ -196,12 +187,8 @@ class SchemaOperations(BaseOperations):
             dict: A dictionary of results in the standard results format.
         """
         if isinstance(exception, HedFileError) and len(exception.issues) >= 1:
-            issue_str = get_printable_issue_string(
-                exception.issues, f"Schema issues for {exception.filename}:"
-            )
-            file_name = generate_filename(
-                exception.filename, name_suffix="_issues", extension=".txt"
-            )
+            issue_str = get_printable_issue_string(exception.issues, f"Schema issues for {exception.filename}:")
+            file_name = generate_filename(exception.filename, name_suffix="_issues", extension=".txt")
         else:
             issue_str = get_exception_message(exception)
             file_name = "unknown"
@@ -215,9 +202,7 @@ class SchemaOperations(BaseOperations):
         }
 
 
-def get_schema(
-    schema_input=None, version=None, as_xml_string=None
-) -> hedschema.HedSchema:
+def get_schema(schema_input=None, version=None, as_xml_string=None) -> hedschema.HedSchema:
     """Return a HedSchema object from the given parameters.
 
     Parameters:

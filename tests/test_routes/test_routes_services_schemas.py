@@ -21,9 +21,14 @@ class Test(TestRouteBase):
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
             self.assertEqual(
-                "success",
+                "warning",
                 results["msg_category"],
-                "schemas_validate services has success on HED8.2.0.xml",
+                "schemas_validate services has warning on HED8.2.0.xml",
+            )
+            self.assertEqual(
+                "Schema had validation issues",
+                results["msg"],
+                "schemas_validate services has warning on HED8.2.0.xml",
             )
             self.assertEqual(
                 json.dumps("8.2.0"),
@@ -61,17 +66,11 @@ class Test(TestRouteBase):
                 content_type="application/json",
                 data=json.dumps(json_data),
             )
-            self.assertEqual(
-                200, results.status_code, "Conversion of a valid xml url has a response"
-            )
+            self.assertEqual(200, results.status_code, "Conversion of a valid xml url has a response")
             response = json.loads(results.data.decode("utf-8"))
-            self.assertEqual(
-                "success", response["results"]["msg_category"], "An valid schema"
-            )
+            self.assertEqual("success", response["results"]["msg_category"], "An valid schema")
             self.assertTrue(
                 response["results"]["data"],
                 "The response data for valid schema is not empty",
             )
-            self.assertEqual(
-                response["results"]["msg"], "Schema was successfully converted"
-            )
+            self.assertEqual(response["results"]["msg"], "Schema was successfully converted")

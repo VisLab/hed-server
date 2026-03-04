@@ -8,7 +8,10 @@ on:
     branches: [ "*" ]
 
 env:
-  BRANCH_NAME: ${{ github.event.pull_request.base.ref || github.ref_name }}
+  # For PRs from forks (the normal workflow), github.base_ref resolves to 'main',
+  # so the Docker container is built and tested against the main branch code,
+  # not the PR branch. For direct pushes, github.ref_name is used instead.
+  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
 
 
 jobs:
@@ -56,14 +59,25 @@ jobs:
           echo "Waiting for server to start..."
           sleep 5
           echo "Checking if container is running..."
-          docker ps | grep hedtools_dev || (echo "Container not running!" && docker logs hedtools_dev && exit 1)
+          if ! docker ps | grep -q hedtools_dev; then
+            echo "Container not running! Checking if it exited..."
+            docker ps -a | grep hedtools_dev || echo "Container not found at all"
+            echo "Container logs:"
+            docker logs hedtools_dev 2>&1 || true
+            exit 1
+          fi
           echo "Testing server health with retries..."
           for i in {1..30}; do
-            if curl --silent --fail --max-time 5 ${{ env.HED_SERVER_URL }}; then
+            if curl --silent --fail --location --max-time 5 ${{ env.HED_SERVER_URL }}; then
               echo "Server is ready!"
               exit 0
             fi
             echo "Attempt $i/30 failed, waiting 5 seconds..."
+            if ! docker ps | grep -q hedtools_dev; then
+              echo "Container stopped during wait! Logs:"
+              docker logs hedtools_dev 2>&1 || true
+              exit 1
+            fi
             sleep 5
           done
           echo "Server did not become ready in time"
@@ -84,10 +98,10 @@ jobs:
       - name: Run service tests
         env:
           HED_SERVER_URL_KEY: ${{ env.HED_SERVER_URL }}
-        run: python -m unittest discover services_tests
+        run: python -m unittest discover service_tests
 
-      - name: Show Docker logs on failure
-        if: failure()
+      - name: Show Docker logs
+        if: always()
         run: |
           echo "Displaying Docker logs..."
-          docker logs hedtools_dev
+          docker logs hedtools_dev 2>&1 || echo "No logs available (container may not exist)"

@@ -12,7 +12,12 @@ from urllib.parse import urlparse
 from flask import Response, make_response, send_file
 from hed import HedSchema, HedSchemaGroup
 from hed import schema as hedschema
-from hed.errors import ErrorHandler, ErrorSeverity, HedFileError
+from hed.errors import (
+    ErrorHandler,
+    ErrorSeverity,
+    HedFileError,
+    get_printable_issue_string,
+)
 from hed.schema import load_schema_version
 from werkzeug.utils import secure_filename
 
@@ -50,10 +55,7 @@ def file_extension_is_valid(filename, accepted_extensions=None) -> bool:
         bool: True if the file has an accepted extension.
 
     """
-    return (
-        not accepted_extensions
-        or os.path.splitext(filename.lower())[1] in accepted_extensions
-    )
+    return not accepted_extensions or os.path.splitext(filename.lower())[1] in accepted_extensions
 
 
 def filter_issues(issues, check_for_warnings):
@@ -76,9 +78,7 @@ def form_has_file(files, file_field, valid_extensions=None) -> bool:
 
     """
 
-    if file_field in files and file_extension_is_valid(
-        files[file_field].filename, valid_extensions
-    ):
+    if file_field in files and file_extension_is_valid(files[file_field].filename, valid_extensions):
         return True
     else:
         return False
@@ -193,20 +193,14 @@ def generate_download_spreadsheet(results) -> Response:
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers["Content-Disposition"] = (
-        "attachment; filename=" + results[bc.OUTPUT_DISPLAY_NAME]
-    )
+    response.headers["Content-Disposition"] = "attachment; filename=" + results[bc.OUTPUT_DISPLAY_NAME]
     response.headers["Category"] = results[bc.MSG_CATEGORY]
     response.headers["Message"] = results[bc.MSG]
-    response.mimetype = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     return response
 
 
-def generate_filename(
-    base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False
-) -> str:
+def generate_filename(base_name, name_prefix=None, name_suffix=None, extension=None, append_datetime=False) -> str:
     """Generate a filename for the attachment.
 
     Parameters:
@@ -296,9 +290,7 @@ def get_hed_schema_from_pull_down(request) -> HedSchema:
     """
 
     if bc.SCHEMA_VERSION not in request.form:
-        raise HedFileError(
-            "NoSchemaError", "Must provide a valid schema or schema version", ""
-        )
+        raise HedFileError("NoSchemaError", "Must provide a valid schema or schema version", "")
     elif request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
         hed_schema = load_schema_version(request.form[bc.SCHEMA_VERSION])
     elif bc.SCHEMA_PATH in request.files:
@@ -308,9 +300,7 @@ def get_hed_schema_from_pull_down(request) -> HedSchema:
             schema_format=secure_filename(f.filename),
         )
     else:
-        raise HedFileError(
-            "NoSchemaFile", "Must provide a valid schema for upload if other chosen", ""
-        )
+        raise HedFileError("NoSchemaFile", "Must provide a valid schema for upload if other chosen", "")
     return hed_schema
 
 
@@ -361,9 +351,7 @@ def get_schema_versions(hed_schema) -> str:
         return ""
     if isinstance(hed_schema, HedSchema) or isinstance(hed_schema, HedSchemaGroup):
         return hed_schema.get_formatted_version()
-    raise ValueError(
-        "InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group"
-    )
+    raise ValueError("InvalidHedSchemaOrHedSchemaGroup", "Expected schema or schema group")
 
 
 def handle_error(ex, hed_info=None, title=None, return_as_str=True) -> str | dict:
@@ -436,11 +424,13 @@ def get_exception_message(ex) -> dict:
     else:
         message = str(ex)
     message = message.replace("\n", " ")
-    if hasattr(ex, "filename"):
-        filename = str(ex.filename)
+    if hasattr(ex, "filename") and ex.filename:
+        filemsg = f" for {str(ex.filename)}"
     else:
-        filename = ""
-    error_message = f"{error_code}: {filename} [{message}]"
+        filemsg = ""
+    error_message = f"{error_code}{filemsg}: {message}"
+    if hasattr(ex, "issues") and ex.issues and isinstance(ex.issues, (list, dict)):
+        error_message += " [" + get_printable_issue_string(ex.issues) + "]"
     return {"data": "", bc.MSG_CATEGORY: "error", bc.MSG: error_message}
 
 
@@ -459,10 +449,7 @@ def package_results(results) -> Response:
         results["data"] = "\n".join(results["data"]) + "\n"
     if results.get(bc.FILE_LIST, None):
         return generate_download_zip_file(results)
-    elif (
-        results.get("data", None)
-        and results.get("command_target", None) != "spreadsheet"
-    ):
+    elif results.get("data", None) and results.get("command_target", None) != "spreadsheet":
         return generate_download_file_from_text(results)
     elif results.get("data", None) or not results.get("spreadsheet", None):
         return generate_text_response(results)

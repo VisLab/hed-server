@@ -35,15 +35,9 @@ class Test(TestWebBase):
             request = Request(environ)
             arguments = ProcessForm.get_input_from_form(request)
             proc_strings = StringOperations(arguments)
-            self.assertIsInstance(
-                proc_strings.string_list, list, "should have a string list"
-            )
-            self.assertIsInstance(
-                proc_strings.schema, HedSchema, "should have a HED schema"
-            )
-            self.assertEqual(
-                proc_strings.command, bc.COMMAND_VALIDATE, "should have a command"
-            )
+            self.assertIsInstance(proc_strings.string_list, list, "should have a string list")
+            self.assertIsInstance(proc_strings.schema, HedSchema, "should have a HED schema")
+            self.assertEqual(proc_strings.command, bc.COMMAND_VALIDATE, "should have a command")
             self.assertTrue(
                 proc_strings.check_for_warnings,
                 "should have check_warnings true when on",
@@ -69,9 +63,7 @@ class Test(TestWebBase):
                 "should be False when checkbox unchecked",
             )
             proc_strings = StringOperations(arguments)
-            self.assertIsInstance(
-                proc_strings.schema, HedSchema, "should have a HED schema"
-            )
+            self.assertIsInstance(proc_strings.schema, HedSchema, "should have a HED schema")
             # Schema should be loaded successfully
             self.assertIsNotNone(proc_strings.schema)
 
@@ -95,9 +87,7 @@ class Test(TestWebBase):
                 "should be True when checkbox checked",
             )
             proc_strings = StringOperations(arguments)
-            self.assertIsInstance(
-                proc_strings.schema, HedSchema, "should have a HED schema"
-            )
+            self.assertIsInstance(proc_strings.schema, HedSchema, "should have a HED schema")
             # Schema should be loaded successfully
             self.assertIsNotNone(proc_strings.schema)
 
@@ -146,9 +136,7 @@ class Test(TestWebBase):
                 data[0],
                 "should return the correct short form.",
             )
-            self.assertEqual(
-                "success", results["msg_category"], "should return success if converted"
-            )
+            self.assertEqual("success", results["msg_category"], "should return success if converted")
 
     def test_string_convert_to_long(self):
         from hedweb.string_operations import StringOperations
@@ -162,9 +150,7 @@ class Test(TestWebBase):
             ]
             proc_strings.command = bc.COMMAND_TO_LONG
             results = proc_strings.process()
-            self.assertEqual(
-                "success", results["msg_category"], "should return success if converted"
-            )
+            self.assertEqual("success", results["msg_category"], "should return success if converted")
 
     def test_string_search(self):
         from hedweb.string_operations import StringOperations
@@ -181,9 +167,7 @@ class Test(TestWebBase):
             proc_strings.request_from = "from_service"
             proc_strings.queries = "Red"
             results = proc_strings.process()
-            self.assertEqual(
-                "success", results["msg_category"], "should return success if converted"
-            )
+            self.assertEqual("success", results["msg_category"], "should return success if converted")
 
     def test_string_validate(self):
         from hedweb.string_operations import StringOperations

@@ -16,9 +16,7 @@ class TestWebBase(unittest.TestCase):
     def setUpClass(cls):
         from hedweb.runserver import get_version_dict
 
-        cls.upload_directory = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/upload"
-        )
+        cls.upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/upload")
 
         # Try to use config.TestConfig, fallback to default_config if not available
         import importlib.util

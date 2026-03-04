@@ -46,14 +46,10 @@ class StringOperations(BaseOperations):
         """
         if not self.command:
             raise HedFileError("MissingCommand", "Command is missing", "")
-        elif not self.schema or not isinstance(
-            self.schema, hedschema.hed_schema.HedSchema
-        ):
+        elif not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
         elif not self.string_list:
-            raise HedFileError(
-                "EmptyHedStringList", "Please provide HED strings to be processed", ""
-            )
+            raise HedFileError("EmptyHedStringList", "Please provide HED strings to be processed", "")
         if self.command == bc.COMMAND_VALIDATE:
             results = self.validate()
         elif self.command == bc.COMMAND_SEARCH:
@@ -109,9 +105,7 @@ class StringOperations(BaseOperations):
         """
         if not self.queries:
             raise HedFileError("EmptyQueries", "Please provide a query to search", "")
-        queries, query_names, issues = get_query_handlers(
-            self.queries, self.query_names
-        )
+        queries, query_names, issues = get_query_handlers(self.queries, self.query_names)
         if issues:
             return {
                 bc.COMMAND: bc.COMMAND_VALIDATE,
@@ -159,9 +153,7 @@ class StringOperations(BaseOperations):
         for pos, h_string in enumerate(self.string_list):
             issues = validator.validate(h_string, True, error_handler=error_handler)
             if issues:
-                validation_issues.append(
-                    get_printable_issue_string(issues, f"Errors for HED string {pos}:")
-                )
+                validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
         if validation_issues:
             return {
                 bc.COMMAND: bc.COMMAND_VALIDATE,

@@ -9,9 +9,7 @@ from tests.test_routes.test_routes_base import TestRouteBase
 class Test(TestRouteBase):
     def test_sidecars_results_empty_data(self):
         response = self.app.test.post("/sidecars_submit")
-        self.assertEqual(
-            200, response.status_code, "HED sidecar request succeeds even when no data"
-        )
+        self.assertEqual(200, response.status_code, "HED sidecar request succeeds even when no data")
         self.assertTrue(
             isinstance(response, Response),
             "sidecars_submit to short should return a Response when no data",
@@ -22,9 +20,7 @@ class Test(TestRouteBase):
             header_dict["Category"],
             "The header msg_category when no sidecar is error ",
         )
-        self.assertFalse(
-            response.data, "The response data for empty sidecar request is empty"
-        )
+        self.assertFalse(response.data, "The response data for empty sidecar request is empty")
 
     def test_sidecars_results_to_long_valid(self):
         with self.app.app_context():
@@ -34,9 +30,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit should return a Response when valid to long sidecar",
@@ -52,9 +46,7 @@ class Test(TestRouteBase):
                 headers_dict["Category"],
                 "The valid sidecar should convert to long successfully",
             )
-            self.assertTrue(
-                response.data, "The converted to long sidecar should not be empty"
-            )
+            self.assertTrue(response.data, "The converted to long sidecar should not be empty")
 
     def test_sidecars_results_to_long_invalid(self):
         with self.app.app_context():
@@ -65,9 +57,7 @@ class Test(TestRouteBase):
                 bc.CHECK_FOR_WARNINGS: "on",
             }
 
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit should return a Response when invalid to long sidecar",
@@ -97,9 +87,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecar_submit should return a Response when valid to short sidecar",
@@ -115,9 +103,7 @@ class Test(TestRouteBase):
                 headers_dict["Category"],
                 "The valid sidecar should convert to short successfully",
             )
-            self.assertTrue(
-                response.data, "The converted to short sidecar should not be empty"
-            )
+            self.assertTrue(response.data, "The converted to short sidecar should not be empty")
 
     def test_sidecars_results_validate_valid(self):
         with self.app.app_context():
@@ -127,9 +113,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit should return a Response when valid sidecar",
@@ -145,9 +129,7 @@ class Test(TestRouteBase):
                 headers_dict["Category"],
                 "The valid sidecar should validate successfully",
             )
-            self.assertFalse(
-                response.data, "The response for validated sidecar should be empty"
-            )
+            self.assertFalse(response.data, "The response for validated sidecar should be empty")
 
     def test_sidecars_results_validate_valid_other(self):
         with self.app.app_context():
@@ -158,9 +140,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit should return a Response when valid sidecar",
@@ -187,9 +167,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit should return a response object when invalid to short sidecar",
@@ -218,9 +196,7 @@ class Test(TestRouteBase):
                 bc.SIDECAR_FILE: self._get_file_buffer("bids_events_bad.json"),
                 bc.CHECK_FOR_WARNINGS: "on",
             }
-            response = self.app.test.post(
-                "/sidecars_submit", content_type="multipart/form-data", data=input_data
-            )
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
             self.assertTrue(
                 isinstance(response, Response),
                 "sidecars_submit validate should return a response object when invalid sidecar",

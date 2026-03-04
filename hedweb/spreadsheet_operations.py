@@ -49,9 +49,7 @@ class SpreadsheetOperations(BaseOperations):
             HedFileError: If the spreadsheet is not found or cannot be loaded.
         """
 
-        if not self.schema or not isinstance(
-            self.schema, hedschema.hed_schema.HedSchema
-        ):
+        if not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
         if not self.spreadsheet or not isinstance(self.spreadsheet, SpreadsheetInput):
             raise HedFileError(
@@ -134,9 +132,7 @@ class SpreadsheetOperations(BaseOperations):
         )
         issues = filter_issues(issues, self.check_for_warnings)
         if issues:
-            data = get_printable_issue_string(
-                issues, f"Spreadsheet {display_name} validation issues"
-            )
+            data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation issues")
             file_name = generate_filename(
                 display_name,
                 name_suffix="_validation_issues",

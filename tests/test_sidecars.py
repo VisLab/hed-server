@@ -20,9 +20,7 @@ class Test(TestWebBase):
 
     def test_generate_input_from_sidecars_form(self):
         with self.app.app_context():
-            sidecar_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-            )
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
             with open(sidecar_path, "rb") as fp:
                 environ = create_environ(
                     data={
@@ -41,9 +39,7 @@ class Test(TestWebBase):
                 Sidecar,
                 "should have a JSON dictionary in sidecar list",
             )
-            self.assertIsInstance(
-                proc_sidecars.schema, HedSchema, "should have a HED schema"
-            )
+            self.assertIsInstance(proc_sidecars.schema, HedSchema, "should have a HED schema")
             self.assertEqual(
                 proc_sidecars.command,
                 base_constants.COMMAND_TO_LONG,
@@ -63,9 +59,7 @@ class Test(TestWebBase):
                 proc_sidecars.process()
 
     def test_sidecars_process_invalid(self):
-        sidecar_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         arguments = {
             base_constants.SCHEMA: load_schema_version("8.2.0"),
             base_constants.SIDECAR: Sidecar(files=sidecar_path, name="bids_events_bad"),
@@ -112,9 +106,7 @@ class Test(TestWebBase):
             self.assertTrue(results["data"], "should not convert using HED 8.2.0.xml")
 
     def test_sidecars_process_valid_to_short(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         arguments = {
             base_constants.SCHEMA: load_schema_version("8.2.0"),
             base_constants.SIDECAR: Sidecar(files=json_path, name="bids_events"),
@@ -137,9 +129,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_process_valid_to_short_defs_expanded(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         arguments = {
             base_constants.SCHEMA: load_schema_version("8.2.0"),
             base_constants.SIDECAR: Sidecar(files=json_path, name="bids_events"),
@@ -162,9 +152,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_process_valid_to_long(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         arguments = {
             base_constants.SCHEMA: load_schema_version("8.2.0"),
             base_constants.SIDECAR: Sidecar(files=json_path, name="bids_events"),
@@ -187,9 +175,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_process_valid_to_long_defs_expanded(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         arguments = {
             base_constants.SCHEMA: load_schema_version("8.2.0"),
             base_constants.SIDECAR: Sidecar(files=json_path, name="bids_events"),
@@ -211,18 +197,14 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_convert_to_long_invalid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events_bad")
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_LONG
             results = proc_sidecars.process()
-            self.assertTrue(
-                results["data"], "sidecar_convert to long results should have data key"
-            )
+            self.assertTrue(results["data"], "sidecar_convert to long results should have data key")
             self.assertEqual(
                 "warning",
                 results["msg_category"],
@@ -230,18 +212,14 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_convert_to_long_valid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_LONG
             results = proc_sidecars.process()
-            self.assertTrue(
-                results["data"], "sidecar_convert to long results should have data key"
-            )
+            self.assertTrue(results["data"], "sidecar_convert to long results should have data key")
             self.assertEqual(
                 "success",
                 results["msg_category"],
@@ -249,18 +227,14 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_convert_to_short_invalid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events_bad")
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_SHORT
             results = proc_sidecars.process()
-            self.assertTrue(
-                results["data"], "sidecar_convert results should have data key"
-            )
+            self.assertTrue(results["data"], "sidecar_convert results should have data key")
             self.assertEqual(
                 "warning",
                 results["msg_category"],
@@ -268,9 +242,7 @@ class Test(TestWebBase):
             )
 
     def test_bad_sidecar(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/both_types_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/both_types_events.json")
         json_sidecar = Sidecar(files=json_path, name="bids_events_bad")
         hed_schema = load_schema_version("8.2.0")
         issues = json_sidecar.validate(hed_schema)
@@ -278,18 +250,14 @@ class Test(TestWebBase):
         self.assertEqual(len(issues), 36)
 
     def test_sidecars_convert_to_short_valid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")
             proc_sidecars.schema = load_schema_version("8.2.0")
             proc_sidecars.command = base_constants.COMMAND_TO_SHORT
             results = proc_sidecars.process()
-            self.assertTrue(
-                results["data"], "sidecar_convert results should have data key"
-            )
+            self.assertTrue(results["data"], "sidecar_convert results should have data key")
             self.assertEqual(
                 "success",
                 results["msg_category"],
@@ -297,9 +265,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_validate_invalid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events_bad")
@@ -317,9 +283,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_validate_invalid_multiple(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events_bad")
@@ -337,9 +301,7 @@ class Test(TestWebBase):
             )
 
     def test_sidecars_validate_valid(self):
-        json_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json"
-        )
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
         with self.app.app_context():
             proc_sidecars = SidecarOperations()
             proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")

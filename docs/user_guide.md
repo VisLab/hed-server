@@ -2,22 +2,7 @@
 
 This guide provides comprehensive instructions for using the HED web-based tools and REST API services for validation, transformation, and analysis of HED annotations.
 
-## Table of contents
-
-01. [HED online tool overview](#hed-online-tool-overview)
-02. [Getting started](#getting-started)
-03. [Working with events files](#working-with-events-files)
-04. [Working with sidecars](#working-with-sidecars)
-05. [Working with spreadsheets](#working-with-spreadsheets)
-06. [Working with HED strings](#working-with-hed-strings)
-07. [Working with HED schemas](#working-with-hed-schemas)
-08. [Using RESTful services](#using-restful-services)
-09. [Best practices](#best-practices)
-10. [Troubleshooting](#troubleshooting)
-
-## HED online tool overview
-
-### What is HED?
+## Brief HED introduction
 
 HED (Hierarchical Event Descriptors) is a standardized vocabulary and annotation framework designed to systematically describe events in experimental data, particularly neuroimaging and behavioral data. HED tags are comma-separated path strings that describe what happened, when it happened, and other relevant properties of experimental events as well as other experimental metadata.
 

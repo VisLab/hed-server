@@ -32,9 +32,6 @@ class AppFactory:
         static_url_path = AppFactory._get_static_url_path_from_class(config_class)
         app = Flask(__name__, static_url_path=static_url_path)
         app.config.from_object(config_class)
-        from hedweb.runserver import get_version_dict
-
-        app.config["VERSIONS"] = get_version_dict()
 
         # Configure hedtools to use the specified cache directory
         if "HED_CACHE_FOLDER" in app.config:
@@ -61,9 +58,7 @@ class AppFactory:
 
             # If the class doesn't exist in the module, treat it as if the module import failed
             if config_class_obj is None:
-                raise AttributeError(
-                    f"module '{config_module_name}' has no attribute '{config_class_name}'"
-                )
+                raise AttributeError(f"module '{config_module_name}' has no attribute '{config_class_name}'")
 
         except (ImportError, AttributeError):
             # Fallback to default_config if main config is not available or doesn't have the class

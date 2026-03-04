@@ -26,16 +26,14 @@ class Test(TestRouteBase):
                 isinstance(results, dict),
                 "should return a dictionary when validation errors",
             )
-            self.assertEqual(
-                "success", results["msg_category"], "should give success when no errors"
-            )
+            self.assertEqual("success", results["msg_category"], "should give success when no errors")
             self.assertFalse(results["data"], "process not return data no no errors")
 
     def test_submit_service_events_validate_route_file_invalid(self):
         with self.app.app_context():
             json_data = {
                 bc.CHECK_FOR_WARNINGS: "on",
-                bc.SCHEMA_VERSION: "8.3.0",
+                bc.SCHEMA_VERSION: "8.4.0",
                 bc.EVENTS_STRING: "bad file",
                 bc.SIDECAR_STRING: self._get_file_string("bids_events.json"),
                 bc.SERVICE: "events_validate",
@@ -48,9 +46,7 @@ class Test(TestRouteBase):
             )
             json_data2 = json.loads(response.data)
             results = json_data2.get("results")
-            self.assertEqual(
-                "warning", results["msg_category"], "should be warning when errors"
-            )
+            self.assertEqual("warning", results["msg_category"], "should be warning when errors")
 
     def test_submit_service_events_validate_route_file_issues(self):
         with self.app.app_context():
@@ -69,7 +65,5 @@ class Test(TestRouteBase):
             )
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
-            self.assertEqual(
-                results["msg_category"], "warning", "it should have warning"
-            )
+            self.assertEqual(results["msg_category"], "warning", "it should have warning")
             self.assertTrue("data" in results, "should have a data key when no errors")

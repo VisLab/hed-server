@@ -17,9 +17,7 @@ class Test(TestWebBase):
         from hedweb.schema_operations import SchemaOperations
 
         with self.app.test:
-            schema_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "data/HED8.0.0.xml"
-            )
+            schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HED8.0.0.xml")
             with open(schema_path, "rb") as fp:
                 environ = create_environ(
                     data={
@@ -35,9 +33,7 @@ class Test(TestWebBase):
             schema1 = schema_proc.schema
             self.assertTrue(schema1)
             self.assertIsInstance(schema1, HedSchema)
-            self.assertEqual(
-                schema_proc.command, bc.COMMAND_CONVERT_SCHEMA, "should have a command"
-            )
+            self.assertEqual(schema_proc.command, bc.COMMAND_CONVERT_SCHEMA, "should have a command")
             self.assertFalse(
                 schema_proc.check_for_warnings,
                 "should have check_warnings false when not given",
@@ -95,18 +91,14 @@ class Test(TestWebBase):
             self.assertFalse(results["data"], "HED 8.4.0 is HED-3G compliant")
 
     def test_schemas_convert_valid(self):
-        schema_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/HED8.2.0.mediawiki"
-        )
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HED8.2.0.mediawiki")
         name = "HED8.2.0"
         with self.app.app_context():
             proc_schemas = SchemaOperations()
             proc_schemas.command = bc.COMMAND_CONVERT_SCHEMA
             proc_schemas.schema = load_schema(schema_path, name=name)
             results = proc_schemas.process()
-            self.assertTrue(
-                results["data"], "HED 8.2.0.mediawiki can be converted to xml"
-            )
+            self.assertTrue(results["data"], "HED 8.2.0.mediawiki can be converted to xml")
             self.assertEqual(results["output_display_name"], "HED8.2.0_converted.zip")
 
             proc_schemas = SchemaOperations()
@@ -116,15 +108,11 @@ class Test(TestWebBase):
             }
             proc_schemas.set_input_from_dict(input_dict)
             results = proc_schemas.process()
-            self.assertTrue(
-                results["data"], "HED 8.2.0.mediawiki can be converted to xml"
-            )
+            self.assertTrue(results["data"], "HED 8.2.0.mediawiki can be converted to xml")
             self.assertEqual(results["output_display_name"], "HED8.2.0_converted.zip")
 
     def test_schemas_convert_invalid(self):
-        schema_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "data/HEDbad.xml"
-        )
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HEDbad.xml")
         display_name = "HEDbad"
         with self.assertRaises(HedFileError):
             with self.app.app_context():
@@ -132,9 +120,7 @@ class Test(TestWebBase):
                 proc_schemas.command = bc.COMMAND_CONVERT_SCHEMA
                 proc_schemas.schema = load_schema(schema_path, name=display_name)
                 results = proc_schemas.process()
-                self.assertTrue(
-                    results["data"], "Does not reach here, as it fails to load"
-                )
+                self.assertTrue(results["data"], "Does not reach here, as it fails to load")
 
     def test_schemas_compare_valid(self):
         with self.app.app_context():
@@ -146,12 +132,9 @@ class Test(TestWebBase):
             self.assertTrue(results["data"], "HED 8.1.0/8.2.0 can be compared")
             # Check for some differences
             self.assertTrue("Differences between 8.1.0 and 8.2.0" in results["data"])
+            self.assertTrue("Ethnicity (Minor): Item Ethnicity added" in results["data"])
             self.assertTrue(
-                "Ethnicity (Minor): Item Ethnicity added" in results["data"]
-            )
-            self.assertTrue(
-                "Dash (Patch): Suggested tag changed on Dash from empty to Sensory-presentation"
-                in results["data"]
+                "Dash (Patch): Suggested tag changed on Dash from empty to Sensory-presentation" in results["data"]
             )
 
             input_dict = {
@@ -171,9 +154,7 @@ class Test(TestWebBase):
             proc_schemas.schema = load_schema_version("8.2.0")
             proc_schemas.schema2 = load_schema_version("8.2.0")
             results = proc_schemas.process()
-            self.assertFalse(
-                results["data"], "HED 8.2.0/8.2.0 can be compared, but are identical"
-            )
+            self.assertFalse(results["data"], "HED 8.2.0/8.2.0 can be compared, but are identical")
 
     def test_schemas_compare_8_3_to_8_4(self):
         """Test comparison between HED 8.3.0 and 8.4.0 schemas."""
@@ -216,9 +197,7 @@ class Test(TestWebBase):
             proc_schemas.schema = load_schema_version("8.4.0")
             proc_schemas.schema2 = load_schema_version("8.4.0")
             results = proc_schemas.process()
-            self.assertFalse(
-                results["data"], "HED 8.4.0/8.4.0 can be compared, but are identical"
-            )
+            self.assertFalse(results["data"], "HED 8.4.0/8.4.0 can be compared, but are identical")
 
     def test_schemas_compare_invalid(self):
         with self.app.app_context():
