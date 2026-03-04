@@ -152,7 +152,7 @@ class Test(TestRouteBase):
                 "Non-compliant schema produces a warning",
             )
             self.assertTrue(response["data"], "The response data for valid schema is not empty")
-            self.assertEqual(response["msg"], "HED schema HED8.2.0 had compliance issues")
+            self.assertEqual(response["msg"], "Schema had validation issues")
 
     def test_schemas_results_validate_mediawiki_warning_off(self):
         with self.app.app_context():
@@ -216,22 +216,23 @@ class Test(TestRouteBase):
                 "INVALID_HED_FORMAT for HED7.2.0: Attempting to load an outdated or invalid XML schema",
             )
 
-
-def test_schemas_results_validate_xml_url_valid(self):
-    schema_url = "https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml"
-    with self.app.app_context():
-        input_data = {
-            "schema_upload_options": "schema_url_option",
-            "command_option": "validate",
-            "schema_url": schema_url,
-            "check_for_warnings": "on",
-        }
-        results = self.app.test.post("/schemas_submit", content_type="multipart/form-data", data=input_data)
-        self.assertEqual(200, results.status_code, "Validation of a valid xml url has a response")
-        response = json.loads(results.data.decode("utf-8"))
-        self.assertEqual("success", response["msg_category"], "An valid schema")
-        self.assertFalse(response["data"], "The response data for valid schema is not empty")
-        self.assertEqual(response["msg"], "Schema had no validation issues")
+    def test_schemas_results_validate_xml_url_valid(self):
+        schema_url = (
+            "https://raw.githubusercontent.com/hed-standard/hed-schemas/main/standard_schema/hedxml/HED8.2.0.xml"
+        )
+        with self.app.app_context():
+            input_data = {
+                "schema_upload_options": "schema_url_option",
+                "command_option": "validate",
+                "schema_url": schema_url,
+                "check_for_warnings": "on",
+            }
+            results = self.app.test.post("/schemas_submit", content_type="multipart/form-data", data=input_data)
+            self.assertEqual(200, results.status_code, "Validation of a valid xml url has a response")
+            response = json.loads(results.data.decode("utf-8"))
+            self.assertEqual("warning", response["msg_category"], "An valid schema with warnings")
+            self.assertTrue(response["data"], "The response data for valid schema is not empty")
+            self.assertEqual(response["msg"], "Schema had validation issues")
 
 
 if __name__ == "__main__":

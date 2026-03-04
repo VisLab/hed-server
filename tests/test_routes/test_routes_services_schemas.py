@@ -26,7 +26,7 @@ class Test(TestRouteBase):
                 "schemas_validate services has warning on HED8.2.0.xml",
             )
             self.assertEqual(
-                "HED schema 8.2.0 had compliance issues",
+                "Schema had validation issues",
                 results["msg"],
                 "schemas_validate services has warning on HED8.2.0.xml",
             )

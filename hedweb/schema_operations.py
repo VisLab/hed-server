@@ -151,38 +151,29 @@ class SchemaOperations(BaseOperations):
             dict: A dictionary of results in the standard results format.
 
         """
-        issue_str = ""
-        error_type = "no issues"
-        issues = validate_schema_object(self.schema, self.schema.name)
-        if issues:
-            error_type = "I/O validation issues"
-        else:
-            issues = self.schema.check_compliance(check_for_warnings=self.check_for_warnings, name=self.schema.name)
-            if issues:
-                error_type = "compliance issues"
-        if issues:
-            msg = f"HED schema {self.schema.name} had {error_type}"
-            issue_str = get_printable_issue_string(issues, msg)
-            file_name = self.schema.name + "_schema_issues.txt"
+
+        issue_strings = validate_schema_object(
+            self.schema, self.schema.name, check_for_warnings=self.check_for_warnings
+        )
+        if issue_strings:
             return {
                 "command": bc.COMMAND_VALIDATE,
                 bc.COMMAND_TARGET: "schema",
-                "data": issue_str,
-                "output_display_name": file_name,
+                "data": "\n".join(issue_strings),
+                "output_display_name": self.schema.name + "_schema_issues.txt",
                 "schema_version": self.schema.get_formatted_version(),
                 "msg_category": "warning",
-                "msg": msg,
+                "msg": "Schema had validation issues",
             }
-        else:
-            return {
-                "command": bc.COMMAND_VALIDATE,
-                bc.COMMAND_TARGET: "schema",
-                "data": "",
-                "output_display_name": self.schema.name,
-                "schema_version": self.schema.get_formatted_version(),
-                "msg_category": "success",
-                "msg": "Schema had no validation issues",
-            }
+        return {
+            "command": bc.COMMAND_VALIDATE,
+            bc.COMMAND_TARGET: "schema",
+            "data": "",
+            "output_display_name": self.schema.name,
+            "schema_version": self.schema.get_formatted_version(),
+            "msg_category": "success",
+            "msg": "Schema had no validation issues",
+        }
 
     @staticmethod
     def format_error(command, exception) -> dict:
