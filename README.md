@@ -37,7 +37,7 @@ The HED online tools include an AI assistant widget powered by the Open Science 
 
 #### HED online tools summary
 
-The following table summarizes the available online tools. The tools are organized around the types of data that the tools handle. The Actions refer to the types of actions that can be performed on the data through the online tools. Each action is linked to its corresponding documentation to provide additional information. **NEW: an experimental [CTagger](http://ctagger.hed.tools) online annotation tool is now available**.
+The following table summarizes the available online tools. The tools are organized around the types of data that the tools handle. The Actions refer to the types of actions that can be performed on the data through the online tools. Each action is linked to its corresponding documentation to provide additional information.
 
 | Data type        | Action                                                                                                      | Description                                                                                                        |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
