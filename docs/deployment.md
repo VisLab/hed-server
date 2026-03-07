@@ -669,7 +669,7 @@ If you encounter issues not covered here:
 
 - **HED online tools (production)**: [https://hedtools.org/hed](https://hedtools.org/hed)
 - **HED online tools (Development)**: [https://hedtools.org/hed_dev](https://hedtools.org/hed_dev)
-- **CTagger**: [http://ctagger.hed.tools](http://ctagger.hed.tools)
+- **CTagger**: [http://github.com/hed-standard/CTagger](http://github.com/hed-standard/CTagger)
 
 ### Community
 
