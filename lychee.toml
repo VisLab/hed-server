@@ -37,16 +37,11 @@ exclude_path = [
     'webpack-macros\.html$',
     'sbt-webpack-macros\.html$',
     '.*-macros\.html$',
-    '^http://127\.0\.0\.',
-    '^http://localhost',
-    '^file://',
 ]
 
 # Exclude URL patterns from link checking
-# Fragment identifiers (#) and query parameters (?) in file:// URLs
 exclude = [
-    "^file://.*%23",
-    "^file://.*%3F",
-    "^file://.*#",
-    "^file://.*\\?"
+    '^http://127\.0\.0\.',
+    '^http://localhost',
+    '^file://',
 ]
