@@ -130,7 +130,7 @@ pip install -e .[dev,docs]
 ### Dependency Groups
 
 - **Base dependencies**: Flask, hedtools, pandas, openpyxl, etc. (required for all installations)
-- **`[dev]`**: black, ruff, coverage, codespell, mdformat (for development only)
+- **`[dev]`**: ruff, typos, coverage, mdformat (for development only)
 - **`[prod]`**: gunicorn (for production deployment, not needed for local development)
 - **`[docs]`**: sphinx, furo, myst-parser (for building documentation)
 
