@@ -652,7 +652,7 @@ If you encounter issues not covered here:
 
 - **Use virtual environments** to isolate dependencies
 - **Run tests** before committing changes
-- **Format code** with black/ruff before commits
+- **Format code** with `ruff format` before commits
 - **Follow PEP 8** style guidelines
 - **Write tests** for new features
 

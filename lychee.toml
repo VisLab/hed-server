@@ -43,5 +43,6 @@ exclude_path = [
 exclude = [
     '^http://127\.0\.0\.',
     '^http://localhost',
+    '^https://localhost',
     '^file://',
 ]
