@@ -6,6 +6,7 @@ from werkzeug.wrappers import Request, Response
 
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants
+
 from tests.test_web_base import TestWebBase
 
 
@@ -487,7 +488,7 @@ class Test(TestWebBase):
                 headers["Category"],
                 "handle_http_error should have category error",
             )
-            self.assertTrue(headers["Message"].startswith("BAD_PARAMETERS"))
+            self.assertTrue(headers["Message"].startswith(str(HedExceptions.BAD_PARAMETERS))
             self.assertFalse(response.data, "handle_http_error should have empty data")
             ex = Exception()
             response = handle_http_error(ex)
