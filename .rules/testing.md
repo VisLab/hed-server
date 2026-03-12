@@ -3,7 +3,7 @@
 ## Framework
 
 - **unittest** is the project standard for writing and running tests
-- Unit test files are flat under `tests/` (no subdirectory nesting)
+- Unit test files live under `tests/`; subdirectories are used for data and route-specific helpers
 - Test file naming: `test_<module>.py`
 - Uses unittest's `setUp`/`setUpClass` (no pytest fixtures or conftest.py)
 

@@ -109,5 +109,5 @@ sphinx-build -b html docs docs/_build/html
 - `.rules/python.md` - Style, linting, formatting, naming, dependencies
 - `.rules/testing.md` - unittest framework, no-mocks policy, spec tests
 - `.rules/git.md` - Branch strategy, commits, PR process
-- `.rules/ci_cd.md` - All 12 GitHub Actions workflows
+- `.rules/ci_cd.md` - GitHub Actions workflows (see `.github/workflows/`)
 - `.rules/code_review.md` - PR review checklist with pr-review-toolkit

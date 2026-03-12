@@ -32,6 +32,6 @@
 
 - Unit tests and service tests pass
 - Linting and formatting clean (ruff check + ruff format)
-- Spelling clean (codespell, typos), markdown clean (mdformat)
+- Spelling clean (typos), markdown clean (mdformat)
 - Documentation builds successfully
 - Docker-based service tests pass

@@ -9,9 +9,8 @@
 ## Formatting and linting
 
 - **ruff:** Lint (`ruff check .`)
-  - Rules enabled: E (pycodestyle errors), W (warnings), F (pyflakes), N (pep8-naming), B (bugbear), C4 (comprehensions)
-  - Max McCabe complexity: 10
-  - Excludes: .git, .venv, __pycache__, build, dist, hedweb/\_version.py
+  - Rules enabled: E (pycodestyle errors), W (warnings), F (pyflakes), I (isort), B (bugbear), C4 (comprehensions), UP (pyupgrade)
+  - Excludes: .git, .venv, __pycache__, build, dist, hedweb/\_version.py, .status
   - Per-file: F401 ignored in `__init__.py` (unused imports are re-exports)
 - **ruff format:** Format (`ruff format .`); 120-char line, matches ruff lint config
 - **typos:** Spell checking via `uvx typos`; domain-specific words (hed, parms, etc.) excluded via `[tool.typos.default.extend-words]` in pyproject.toml
@@ -22,7 +21,7 @@
 - Functions/methods: snake_case
 - Constants: UPPER_SNAKE_CASE
 - Private members: leading underscore
-- Test methods: may use camelCase (legacy convention; N802 ignored by ruff)
+- Test methods: may use camelCase (legacy convention; not enforced as N ruleset is not enabled)
 
 ## Import order (ruff isort)
 
