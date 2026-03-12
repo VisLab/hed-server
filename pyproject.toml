@@ -126,6 +126,7 @@ extend-exclude = [
     "hedweb/static/",
     "docs/_build/",
     "docs/_static/",
+    "service_tests/data/",
     "*.xml",
     "*.tsv",
     "*.json",
