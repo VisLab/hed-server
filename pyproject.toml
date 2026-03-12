@@ -146,6 +146,7 @@ covert = "covert"
 recuse = "recuse"
 disjointness = "disjointness"
 cace = "cace"
+assertIn = "assertIn"
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "service_tests"]
