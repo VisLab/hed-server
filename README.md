@@ -153,7 +153,8 @@ python -m unittest discover -s tests -p "test*.py" -v
 
 Service tests validate the REST API endpoints by making HTTP requests to a running HED web server.
 
-**Option 1: Automatic (Recommended)**\
+**Option 1: Automatic (Recommended)**
+
 Use the provided script that starts the server, runs tests, and cleans up automatically:
 
 ```powershell
