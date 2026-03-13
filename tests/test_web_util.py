@@ -487,7 +487,7 @@ class Test(TestWebBase):
                 headers["Category"],
                 "handle_http_error should have category error",
             )
-            self.assertTrue(headers["Message"].startswith("badParameters"))
+            self.assertTrue(headers["Message"].startswith(str(HedExceptions.BAD_PARAMETERS)))
             self.assertFalse(response.data, "handle_http_error should have empty data")
             ex = Exception()
             response = handle_http_error(ex)
