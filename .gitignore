@@ -122,10 +122,6 @@ Thumbs.db
 # Folder config file
 Desktop.ini
 
-# GitHub Copilot instructions (excluded from version control)
-.github/copilot-instructions.md
-*copilot-instructions*
-
 # Status directory for development notes and summaries
 status/
 .status/
