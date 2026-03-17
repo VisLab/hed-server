@@ -76,11 +76,15 @@ docker run -p 5000:5000 hedweb
 
 ## CI/CD
 
-One workflow: `.github/workflows/claude-code-review.yml`
-- Triggers on `pull_request` (same-repo branches) and `pull_request_target` (forks)
-- Skips draft PRs and bot PRs
-- Runs Claude Code Review and posts inline comments on issues
-- No automated test runner in CI — run tests locally before opening a PR
+GitHub Actions workflows in `.github/workflows/`:
+- `ci.yaml` — runs on every push/PR; installs `.[dev]`, runs unit tests (`tests/`) and service tests (`service_tests/`)
+- `ruff.yaml` — linting with ruff on every push/PR
+- `typos.yaml` — spell-checking
+- `mdformat.yaml` — Markdown formatting check
+- `docs.yaml` — Sphinx documentation build
+- `links.yaml` — link checking
+- `claude-code-review.yml` — Claude Code Review on PRs (same-repo and forks via `pull_request_target`); skips drafts and bots
+- `claude.yml` — Claude Code assistant; responds to `@claude` mentions in issues/PR comments (restricted to OWNER/MEMBER/COLLABORATOR)
 
 ## Commit and PR conventions
 
