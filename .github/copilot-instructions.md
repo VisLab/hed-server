@@ -83,8 +83,8 @@ GitHub Actions workflows in `.github/workflows/`:
 - `mdformat.yaml` — Markdown formatting check
 - `docs.yaml` — Sphinx documentation build
 - `links.yaml` — link checking
-- `claude-code-review.yml` — Claude Code Review on PRs (same-repo and forks via `pull_request_target`); skips drafts and bots
-- `claude.yml` — Claude Code assistant; responds to `@claude` mentions in issues/PR comments (restricted to OWNER/MEMBER/COLLABORATOR)
+- `claude-code-review.yaml` — Claude Code Review on PRs (same-repo and forks via `pull_request_target`); skips drafts and bots
+- `claude.yaml` — Claude Code assistant; responds to `@claude` mentions in issues/PR comments (restricted to OWNER/MEMBER/COLLABORATOR)
 
 ## Commit and PR conventions
 

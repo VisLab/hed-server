@@ -73,7 +73,7 @@ exclude_patterns:
 - "**/.gitignore"
 - "**/LICENSE"
 - "**/examples/"
-- "**/*.yml"
+- "**/*.yaml"
 - "**/*.yaml"
 - "**/config_template.py"
 - "**/*.txt"
