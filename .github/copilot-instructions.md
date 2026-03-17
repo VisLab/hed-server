@@ -72,7 +72,7 @@ docker run -p 5000:5000 hedweb
 - PEP 8, 120-char line length (configured in `pyproject.toml` `[tool.ruff]`)
 - ruff rules: E, W, F, N, B, C4 — run `ruff check .` before committing
 - Google-style docstrings for public APIs
-- Type hints on all function parameters and return values
+- Add type hints to new code where they improve clarity
 
 ## CI/CD
 
