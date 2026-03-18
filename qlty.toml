@@ -36,7 +36,7 @@ exclude_patterns = [
     "hedweb/_version.py",
     "**/_version.py",
     "MANIFEST.in",
-    "mkdocs.yml",
+    "mkdocs.yaml",
     "qlty.toml",
     ".coveragerc",
     "codespellrc",
