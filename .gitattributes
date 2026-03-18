@@ -12,7 +12,7 @@ hedweb/_version.py export-subst
 *.txt text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
-*.yaml text eol=lf
+*.yml text eol=lf
 *.yaml text eol=lf
 *.json text eol=lf
 *.toml text eol=lf

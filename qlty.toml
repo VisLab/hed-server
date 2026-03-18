@@ -50,7 +50,7 @@ exclude_patterns = [
     "**/*.md",
     "**/*.rst",
     "**/*.txt",
-    "**/*.yaml",
+    "**/*.yml",
     "**/*.yaml",
     "**/*.html",
     "config_template.py",
