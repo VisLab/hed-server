@@ -8,7 +8,6 @@
 # - 403 Forbidden: Some sites (npmjs.com, mathworks.com, doi.org) block automated 
 #   requests but work fine in browsers
 # - 429 Too Many Requests: Rate limiting doesn't mean the link is broken
-# - See .lycheeignore for sites/patterns that are completely excluded
 
 # Accept these HTTP status codes as valid
 # 200: OK (standard success)
@@ -41,8 +40,56 @@ exclude_path = [
 
 # Exclude URL patterns from link checking
 exclude = [
+    # Localhost and local addresses
     '^http://127\.0\.0\.',
     '^http://localhost',
     '^https://localhost',
+    '^https://127\.0\.0\.',
+
+    # File and mail URLs
     '^file://',
+    '^mailto:',
+
+    # Placeholder/example domains
+    '^https?://example\.com',
+
+    # Internal anchor links (false positives from lychee)
+    '^#',
+    '(_anchor|-anchor)',
+
+    # ScienceDirect (require authentication/cookies)
+    '^https?://www\.sciencedirect\.com/science/article/pii/S1053811921010387',
+    '^https?://www\.sciencedirect\.com/science/article/pii/S0010945221001106',
+    '^https?://www\.sciencedirect\.com/science/article/pii/S1388245717309069',
+
+    # Springer (503 errors, but links work in browsers)
+    '^https?://link\.springer\.com/',
+
+    # INCF (certificate/network issues)
+    '^https?://.*\.incf\.org/',
+    '^https?://incf\.org/',
+    '^https?://neuroinformatics\.incf\.org/',
+
+    # DOI (403 in automation but works in browsers)
+    '^https?://doi\.org/10\.1111/epi\.18113',
+
+    # NPM (blocks automated requests)
+    '^https?://.*\.npmjs\.com/package/hed-validator',
+
+    # MathWorks (blocks automated requests)
+    '^https?://.*\.mathworks\.com/',
+
+    # Brain Meeting poster links (expired/removed)
+    '^https?://brainmeeting.*\.ipostersessions\.com/',
+    '^https?://globalbrainconsortium\.org/documents/GBC_March-2023_Agenda_Annual_Meeting\.pdf',
+
+    # CANCTA network (authentication/access issues)
+    '^https?://.*\.cancta\.net/',
+    '^https?://cancta\.net/',
+
+    # GitHub discussions (programmatic access blocked)
+    '^https?://github\.com/hed-standard/hed-python/discussions',
+
+    # HED tools services (programmatic access blocked)
+    '^https?://hedtools\.org/hed/services_submit',
 ]
