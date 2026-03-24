@@ -61,7 +61,7 @@ WEB_CODE_DIR="${GIT_HED_WEB_DIR}/hedweb"
 
 # Print error message and exit
 error_exit() {
-    echo "[ERROR] $1"
+    printf '[ERROR] %b\n' "$1" >&2
     exit 1
 }
 
@@ -98,8 +98,8 @@ setup_web_directory() {
     echo "Setting up web directory for ${ENVIRONMENT} environment..."
     mkdir -p "${CODE_DEPLOY_DIR}"
     cp "${BASE_CONFIG_FILE}" "${CONFIG_FILE}" || error_exit "Failed to copy base config file"
-    cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/Dockerfile" 2>/dev/null
-    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" 2>/dev/null
+    cp "${SOURCE_DOCKERFILE}" "${DEPLOY_DIR}/Dockerfile" || error_exit "Failed to copy Dockerfile"
+    cp "${LOGROTATE_CONF_FILE}" "${DEPLOY_DIR}/gunicorn-logrotate.conf" || error_exit "Failed to copy gunicorn logrotate config"
     # When running from inside the repo, these are already in place
     if [ "${RUNNING_IN_REPO}" = false ]; then
         cp "${GIT_HED_WEB_DIR}/pyproject.toml" "${DEPLOY_DIR}/pyproject.toml" || error_exit "Failed to copy pyproject.toml"

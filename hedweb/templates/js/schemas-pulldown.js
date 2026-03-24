@@ -107,8 +107,7 @@ function populateSchemaVersionsDropdown(hedVersions) {
     let hedVersionDropdown = $('#schema_version');
     $('#schema_version').empty()
     if (hedVersions.length > 0) {
-        hedVersionDropdown.append('<option value=' + hedVersions[0] + '>' + hedVersions[0] + ' (Latest)</option>');
-        for (let i = 1; i < hedVersions.length; i++) {
+        for (let i = 0; i < hedVersions.length; i++) {
             hedVersionDropdown.append('<option value=' + hedVersions[i].trim().split(' ')[0] + '>' + hedVersions[i] + '</option>');
         }
     }
