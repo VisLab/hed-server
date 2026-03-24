@@ -260,11 +260,7 @@ class ProcessServices:
         elif bc.SCHEMA_URL in parameters and parameters[bc.SCHEMA_URL]:
             the_schema = hedschema.load_schema(parameters[bc.SCHEMA_URL])
         elif bc.SCHEMA_VERSION in parameters and parameters[bc.SCHEMA_VERSION]:
-            # Check if include_prereleases parameter is present and normalize to boolean
-            include_prereleases = normalize_boolean(parameters.get(bc.INCLUDE_PRERELEASES, False))
-            the_schema = hedschema.load_schema_version(
-                parameters[bc.SCHEMA_VERSION], check_prerelease=include_prereleases
-            )
+            the_schema = hedschema.load_schema_version(parameters[bc.SCHEMA_VERSION])
         return the_schema
 
     @staticmethod

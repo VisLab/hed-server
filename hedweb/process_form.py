@@ -248,10 +248,7 @@ class ProcessForm:
             request (Request): A Request object containing form data.
         """
         if request.form[bc.SCHEMA_VERSION] != bc.OTHER_VERSION_OPTION:
-            arguments[bc.SCHEMA] = load_schema_version(
-                request.form[bc.SCHEMA_VERSION],
-                check_prerelease=arguments[bc.INCLUDE_PRERELEASES],
-            )
+            arguments[bc.SCHEMA] = load_schema_version(request.form[bc.SCHEMA_VERSION])
         elif form_has_file(request.files, bc.SCHEMA_PATH):
             arguments[bc.SCHEMA] = ProcessForm.get_schema(request.files[bc.SCHEMA_PATH])
         else:
