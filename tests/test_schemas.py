@@ -213,6 +213,44 @@ class Test(TestWebBase):
                 proc_schemas.schema2 = load_schema_version("8.2.0")
                 proc_schemas.process()
 
+    def test_schemas_validate_library_schema(self):
+        """Test validation of a library schema (score_1.0.0)."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_VALIDATE
+            proc_schemas.schema = load_schema_version("score_1.0.0")
+            results = proc_schemas.process()
+            self.assertFalse(results["data"], "score_1.0.0 library schema should be valid")
+
+    def test_schemas_validate_library_schema_group(self):
+        """Test validation of a schema group combining standard and library schemas."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_VALIDATE
+            proc_schemas.schema = load_schema_version(["8.2.0", "sc:score_1.0.0"])
+            results = proc_schemas.process()
+            self.assertFalse(results["data"], "Standard+score schema group should be valid")
+
+    def test_schemas_compare_library_schema_versions(self):
+        """Test comparison between two versions of a library schema."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_COMPARE_SCHEMAS
+            proc_schemas.schema = load_schema_version("score_1.0.0")
+            proc_schemas.schema2 = load_schema_version("score_1.1.0")
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "score_1.0.0 vs score_1.1.0 should have differences")
+
+    def test_schemas_compare_library_schema_identical(self):
+        """Test comparison of a library schema with itself returns no differences."""
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_COMPARE_SCHEMAS
+            proc_schemas.schema = load_schema_version("score_1.0.0")
+            proc_schemas.schema2 = load_schema_version("score_1.0.0")
+            results = proc_schemas.process()
+            self.assertFalse(results["data"], "score_1.0.0 compared to itself should have no differences")
+
 
 if __name__ == "__main__":
     unittest.main()
