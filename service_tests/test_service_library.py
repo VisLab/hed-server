@@ -50,4 +50,3 @@ class TestLibraryServices(ServicesTest):
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertEqual(response_data["results"]["msg_category"], "error")
-

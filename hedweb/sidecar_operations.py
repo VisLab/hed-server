@@ -58,7 +58,7 @@ class SidecarOperations(BaseOperations):
             )
         elif self.command == bc.COMMAND_EXTRACT_SPREADSHEET or self.command == bc.COMMAND_MERGE_SPREADSHEET:
             pass
-        elif not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
+        elif not self.schema or not isinstance(self.schema, (hedschema.hed_schema.HedSchema, hedschema.HedSchemaGroup)):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
 
         if self.command == bc.COMMAND_VALIDATE:

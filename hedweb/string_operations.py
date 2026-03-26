@@ -46,7 +46,7 @@ class StringOperations(BaseOperations):
         """
         if not self.command:
             raise HedFileError("MissingCommand", "Command is missing", "")
-        elif not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
+        elif not self.schema or not isinstance(self.schema, (hedschema.hed_schema.HedSchema, hedschema.HedSchemaGroup)):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
         elif not self.string_list:
             raise HedFileError("EmptyHedStringList", "Please provide HED strings to be processed", "")
