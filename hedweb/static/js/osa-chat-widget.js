@@ -1405,7 +1405,10 @@
     try {
       localStorage.setItem(storageKey, JSON.stringify({ model: userSettings.model }));
       if (userSettings.apiKey) {
-        sessionStorage.setItem(sessionKey, userSettings.apiKey);
+        // sessionStorage is the minimal viable scope for this credential: it is never sent to the
+        // server, is not synced across tabs or devices, and is cleared when the tab is closed.
+        // This is intentionally not localStorage. See: js/clear-text-storage-of-sensitive-data
+        sessionStorage.setItem(sessionKey, userSettings.apiKey); // lgtm[js/clear-text-storage-of-sensitive-data]
       } else {
         sessionStorage.removeItem(sessionKey);
       }
