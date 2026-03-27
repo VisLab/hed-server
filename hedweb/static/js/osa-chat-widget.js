@@ -1330,56 +1330,64 @@
     }
   }
 
-  // Load user settings from localStorage
+  // Load user settings.
+  // Non-sensitive preferences (model) are persisted in localStorage across sessions.
+  // The API key is sensitive and is stored only in sessionStorage (cleared on browser close).
   function loadUserSettings() {
     const storageKey = `osa-settings-${CONFIG.communityId}`;
+    const sessionKey = `osa-apikey-${CONFIG.communityId}`;
     try {
+      // Migrate: remove any apiKey that was previously stored in localStorage
+      const legacy = localStorage.getItem(storageKey);
+      if (legacy) {
+        try {
+          const legacyParsed = JSON.parse(legacy);
+          if (legacyParsed && legacyParsed.apiKey) {
+            delete legacyParsed.apiKey;
+            localStorage.setItem(storageKey, JSON.stringify(legacyParsed));
+          }
+        } catch {}
+      }
+
       const saved = localStorage.getItem(storageKey);
-      if (!saved) {
-        userSettings = { apiKey: null, model: null };
-        return;
+      let model = null;
+      if (saved) {
+        let parsed;
+        try {
+          parsed = JSON.parse(saved);
+        } catch (jsonErr) {
+          console.error('[OSA] Saved settings contain invalid JSON:', jsonErr.message);
+          const container = document.querySelector('.osa-chat-widget');
+          if (container && isOpen) {
+            showError(container, 'Saved settings are corrupted. Using defaults.');
+          }
+          try { localStorage.removeItem(storageKey); } catch {}
+        }
+
+        if (parsed && parsed.model && typeof parsed.model === 'string') {
+          if (/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/.test(parsed.model)) {
+            model = parsed.model;
+          } else {
+            console.error('[OSA] Saved model has invalid format, ignoring');
+          }
+        }
       }
 
-      let parsed;
+      // Load API key from sessionStorage only
+      let apiKey = null;
       try {
-        parsed = JSON.parse(saved);
-      } catch (jsonErr) {
-        console.error('[OSA] Saved settings contain invalid JSON:', jsonErr.message);
-        const container = document.querySelector('.osa-chat-widget');
-        if (container && isOpen) {
-          showError(container, 'Saved settings are corrupted. Using defaults.');
-        }
-        userSettings = { apiKey: null, model: null };
-        // Clear corrupted data
-        try { localStorage.removeItem(storageKey); } catch {}
-        return;
-      }
-
-      // Validate API key format if present
-      if (parsed.apiKey) {
-        // Basic format validation: sk-or-v1-[hex]
-        if (!/^sk-or-v1-[0-9a-f]{64}$/i.test(parsed.apiKey)) {
+        const savedKey = sessionStorage.getItem(sessionKey);
+        if (savedKey && /^sk-or-v1-[0-9a-f]{64}$/i.test(savedKey)) {
+          apiKey = savedKey;
+        } else if (savedKey) {
           console.error('[OSA] Saved API key has invalid format, ignoring');
-          parsed.apiKey = null;
+          sessionStorage.removeItem(sessionKey);
         }
-      }
+      } catch {}
 
-      // Validate model format if present
-      if (parsed.model && typeof parsed.model === 'string') {
-        // Validate model format: provider/model-name
-        if (!/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/.test(parsed.model)) {
-          console.error('[OSA] Saved model has invalid format, ignoring');
-          parsed.model = null;
-        }
-      }
-
-      userSettings = {
-        apiKey: parsed.apiKey || null,
-        model: parsed.model || null
-      };
+      userSettings = { apiKey, model };
     } catch (e) {
-      // localStorage access error
-      console.error('[OSA] Cannot access localStorage for settings:', e.message);
+      console.error('[OSA] Cannot access browser storage for settings:', e.message);
       const container = document.querySelector('.osa-chat-widget');
       if (container && isOpen) {
         showError(container, 'Cannot access browser storage. Settings will not persist.');
@@ -1388,18 +1396,21 @@
     }
   }
 
-  // Save user settings to localStorage
-  // NOTE: The API key is a user-supplied BYOK credential stored at the user's explicit request.
-  // Encrypting it with a key from the same origin provides no additional security — any attacker
-  // with access to localStorage can also access a co-located key. The correct mitigation for this
-  // class of alert is this explanatory comment. See: https://codeql.github.com/codeql-query-help/javascript/js-clear-text-storage-of-sensitive-data/
+  // Save user settings.
+  // Only non-sensitive preferences (model) are written to localStorage.
+  // The API key is written only to sessionStorage (cleared on browser close).
   function saveUserSettings() {
     const storageKey = `osa-settings-${CONFIG.communityId}`;
+    const sessionKey = `osa-apikey-${CONFIG.communityId}`;
     try {
-      localStorage.setItem(storageKey, JSON.stringify(userSettings)); // lgtm[js/clear-text-storage-of-sensitive-data]
+      localStorage.setItem(storageKey, JSON.stringify({ model: userSettings.model }));
+      if (userSettings.apiKey) {
+        sessionStorage.setItem(sessionKey, userSettings.apiKey);
+      } else {
+        sessionStorage.removeItem(sessionKey);
+      }
     } catch (e) {
       console.error('[OSA] Could not save user settings:', e);
-      // Show error to user - this is critical
       const container = document.querySelector('.osa-chat-widget');
       if (container) {
         showError(container, 'Could not save settings. Storage may be full or disabled. Your settings will not persist.');
