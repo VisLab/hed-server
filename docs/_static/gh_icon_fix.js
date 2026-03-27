@@ -9,16 +9,24 @@ document.addEventListener("DOMContentLoaded", function() {
             const href = link.getAttribute("href");
             if (!href) return;
 
+            // Parse the URL to avoid substring-match bypass (e.g. http://evil.com/github.com)
+            let parsed;
+            try {
+                parsed = new URL(href, window.location.origin);
+            } catch {
+                return;
+            }
+
             // Check if it's a GitHub link (edit or blob/view)
-            if (href.includes("github.com")) {
+            if (parsed.hostname === "github.com" || parsed.hostname.endsWith(".github.com")) {
 
                 // If it's the Edit link, hide it
-                if (href.includes("/edit/")) {
+                if (parsed.pathname.includes("/edit/")) {
                     link.style.display = "none";
                     link.classList.add("hidden-edit-link"); // Marker for CSS
                 }
                 // If it's the View/Blob link, hijack it
-                else if (href.includes("/blob/") || href.includes("/tree/")) {
+                else if (parsed.pathname.includes("/blob/") || parsed.pathname.includes("/tree/")) {
                     // Change URL to repo root
                     link.href = "https://github.com/hed-standard/hed-web";
                     link.title = "Go to repository";

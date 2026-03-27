@@ -1,5 +1,7 @@
 name: Claude Code Review
 
+permissions: {}
+
 on:
   # Same-repo branches: full access to secrets and write permissions
   pull_request:
