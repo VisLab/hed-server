@@ -49,7 +49,7 @@ class SpreadsheetOperations(BaseOperations):
             HedFileError: If the spreadsheet is not found or cannot be loaded.
         """
 
-        if not self.schema or not isinstance(self.schema, hedschema.hed_schema.HedSchema):
+        if not self.schema or not isinstance(self.schema, (hedschema.hed_schema.HedSchema, hedschema.HedSchemaGroup)):
             raise HedFileError("BadHedSchema", "Please provide a valid HedSchema", "")
         if not self.spreadsheet or not isinstance(self.spreadsheet, SpreadsheetInput):
             raise HedFileError(

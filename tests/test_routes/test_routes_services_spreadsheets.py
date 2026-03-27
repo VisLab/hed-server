@@ -116,3 +116,41 @@ class Test(TestRouteBase):
             )
             self.assertTrue("data" in results, "should have a data key when no errors")
             self.assertEqual("warning", results["msg_category"], "should be warning when errors")
+
+    def test_submit_service_spreadsheets_to_long_route(self):
+        """Test the spreadsheet_to_long service route."""
+        with self.app.app_context():
+            json_data = {
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.SPREADSHEET_STRING: self._get_file_string("SpreadsheetTest.tsv"),
+                bc.TAG_COLUMNS: [5],
+                bc.SERVICE: "spreadsheet_to_long",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual("success", results["msg_category"], "spreadsheet_to_long should succeed on valid input")
+            self.assertTrue(results[bc.SPREADSHEET], "spreadsheet_to_long should return converted spreadsheet")
+
+    def test_submit_service_spreadsheets_to_short_route(self):
+        """Test the spreadsheet_to_short service route."""
+        with self.app.app_context():
+            json_data = {
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.SPREADSHEET_STRING: self._get_file_string("SpreadsheetTest.tsv"),
+                bc.TAG_COLUMNS: [5],
+                bc.SERVICE: "spreadsheet_to_short",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual("success", results["msg_category"], "spreadsheet_to_short should succeed on valid input")
+            self.assertTrue(results[bc.SPREADSHEET], "spreadsheet_to_short should return converted spreadsheet")

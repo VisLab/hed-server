@@ -1,0 +1,15 @@
+{
+    "event_type": {
+        "LongName": "Event category",
+        "Description": "The main category of the event (library schema annotations).",
+        "HED": {
+            "show_face": "Sensory-event, test:Event/Sensory-event",
+            "show_face_initial": "Sensory-event, test:Event/Sensory-event",
+            "show_circle": "Sensory-event, test:Event/Sensory-event",
+            "show_cross": "Sensory-event, test:Event/Sensory-event",
+            "left_press": "Agent-action, test:Event/Agent-action",
+            "right_press": "Agent-action, test:Event/Agent-action",
+            "double_press": "Agent-action, test:Event/Agent-action"
+        }
+    }
+}

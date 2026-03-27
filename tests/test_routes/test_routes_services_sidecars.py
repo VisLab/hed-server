@@ -78,3 +78,61 @@ class Test(TestRouteBase):
                 "sidecar_validation did not valid with 8.2.0",
             )
             self.assertEqual(json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used")
+
+    def test_submit_service_sidecar_to_long_route(self):
+        """Test the sidecar_to_long service route."""
+        with self.app.app_context():
+            json_data = {
+                bc.SIDECAR_STRING: self._get_file_string("bids_events.json"),
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.SERVICE: "sidecar_to_long",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual("success", results["msg_category"], "sidecar_to_long should succeed on valid sidecar")
+            self.assertTrue(results["data"], "sidecar_to_long should return converted data")
+
+    def test_submit_service_sidecar_to_short_route(self):
+        """Test the sidecar_to_short service route."""
+        with self.app.app_context():
+            json_data = {
+                bc.SIDECAR_STRING: self._get_file_string("bids_events.json"),
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.SERVICE: "sidecar_to_short",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual("success", results["msg_category"], "sidecar_to_short should succeed on valid sidecar")
+            self.assertTrue(results["data"], "sidecar_to_short should return converted data")
+
+    def test_submit_service_sidecar_validate_with_library_schema(self):
+        """Test sidecar validation using a schema version list with a library schema."""
+        with self.app.app_context():
+            json_data = {
+                bc.SIDECAR_STRING: self._get_file_string("bids_events.json"),
+                bc.SCHEMA_VERSION: ["8.2.0", "sc:score_1.0.0"],
+                bc.SERVICE: "sidecar_validate",
+                bc.CHECK_FOR_WARNINGS: False,
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual(
+                "success",
+                results["msg_category"],
+                "sidecar_validate with library schema should succeed on valid sidecar",
+            )
