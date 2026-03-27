@@ -122,8 +122,8 @@ class Test(TestRouteBase):
         with self.app.app_context():
             json_data = {
                 bc.SCHEMA_VERSION: "8.2.0",
-                bc.SPREADSHEET_STRING: self._get_file_string("LKTEventCodesHED3.tsv"),
-                bc.TAG_COLUMNS: [4],
+                bc.SPREADSHEET_STRING: self._get_file_string("SpreadsheetTest.tsv"),
+                bc.TAG_COLUMNS: [5],
                 bc.SERVICE: "spreadsheet_to_long",
             }
             response = self.app.test.post(
@@ -133,20 +133,16 @@ class Test(TestRouteBase):
             )
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
-            self.assertIn(
-                results["msg_category"],
-                ["success", "warning"],
-                "spreadsheet_to_long should complete (LKTEventCodesHED3.tsv may have validation issues)",
-            )
-            self.assertTrue(results["data"], "spreadsheet_to_long should return converted data")
+            self.assertEqual("success", results["msg_category"], "spreadsheet_to_long should succeed on valid input")
+            self.assertTrue(results[bc.SPREADSHEET], "spreadsheet_to_long should return converted spreadsheet")
 
     def test_submit_service_spreadsheets_to_short_route(self):
         """Test the spreadsheet_to_short service route."""
         with self.app.app_context():
             json_data = {
                 bc.SCHEMA_VERSION: "8.2.0",
-                bc.SPREADSHEET_STRING: self._get_file_string("LKTEventCodesHED3.tsv"),
-                bc.TAG_COLUMNS: [4],
+                bc.SPREADSHEET_STRING: self._get_file_string("SpreadsheetTest.tsv"),
+                bc.TAG_COLUMNS: [5],
                 bc.SERVICE: "spreadsheet_to_short",
             }
             response = self.app.test.post(
@@ -156,9 +152,5 @@ class Test(TestRouteBase):
             )
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
-            self.assertIn(
-                results["msg_category"],
-                ["success", "warning"],
-                "spreadsheet_to_short should complete (LKTEventCodesHED3.tsv may have validation issues)",
-            )
-            self.assertTrue(results["data"], "spreadsheet_to_short should return converted data")
+            self.assertEqual("success", results["msg_category"], "spreadsheet_to_short should succeed on valid input")
+            self.assertTrue(results[bc.SPREADSHEET], "spreadsheet_to_short should return converted spreadsheet")

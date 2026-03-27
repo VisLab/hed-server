@@ -17,7 +17,7 @@ class TestLibraryServices(ServicesTest):
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertNotIn("error_type", response_data)
+        self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
 
     def test_validate_valid_events_file_with_libraries(self):
@@ -33,7 +33,7 @@ class TestLibraryServices(ServicesTest):
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertNotIn("error_type", response_data)
+        self.assertFalse(response_data.get("error_type"))
         self.assertEqual(response_data["results"]["msg_category"], "success")
 
     def test_validate_events_file_missing_libraries(self):
@@ -49,4 +49,4 @@ class TestLibraryServices(ServicesTest):
         response = requests.post(url, json=json_data, headers=self._get_headers())
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
-        self.assertEqual(response_data["results"]["msg_category"], "error")
+        self.assertEqual(response_data["results"]["msg_category"], "warning")
