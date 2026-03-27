@@ -1389,10 +1389,14 @@
   }
 
   // Save user settings to localStorage
+  // NOTE: The API key is a user-supplied BYOK credential stored at the user's explicit request.
+  // Encrypting it with a key from the same origin provides no additional security — any attacker
+  // with access to localStorage can also access a co-located key. The correct mitigation for this
+  // class of alert is this explanatory comment. See: https://codeql.github.com/codeql-query-help/javascript/js-clear-text-storage-of-sensitive-data/
   function saveUserSettings() {
     const storageKey = `osa-settings-${CONFIG.communityId}`;
     try {
-      localStorage.setItem(storageKey, JSON.stringify(userSettings));
+      localStorage.setItem(storageKey, JSON.stringify(userSettings)); // lgtm[js/clear-text-storage-of-sensitive-data]
     } catch (e) {
       console.error('[OSA] Could not save user settings:', e);
       // Show error to user - this is critical

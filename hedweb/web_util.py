@@ -193,7 +193,9 @@ def generate_download_spreadsheet(results) -> Response:
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers["Content-Disposition"] = f'attachment; filename="{secure_filename(results[bc.OUTPUT_DISPLAY_NAME])}"'
+    response.headers["Content-Disposition"] = (
+        f'attachment; filename="{secure_filename(results[bc.OUTPUT_DISPLAY_NAME])}"'
+    )
     response.headers["Category"] = results[bc.MSG_CATEGORY]
     response.headers["Message"] = results[bc.MSG]
     response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
