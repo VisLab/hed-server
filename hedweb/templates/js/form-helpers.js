@@ -49,7 +49,7 @@ function fileIsSpecified(nameID, flashID, errorMsg) {
  */
 function flashMessageOnScreen(message, category, flashMessageElementId) {
     let flashMessage = document.getElementById(flashMessageElementId);
-    flashMessage.innerHTML = message;
+    flashMessage.textContent = message;
     setFlashMessageCategory(flashMessage, category);
 }
 

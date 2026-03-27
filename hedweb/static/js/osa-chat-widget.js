@@ -966,9 +966,12 @@
 
   // Escape HTML for user messages
   function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;');
   }
 
   // Validate URL protocol to prevent javascript: XSS
@@ -987,11 +990,10 @@
     try {
       await navigator.clipboard.writeText(text);
       // Show success feedback
-      const originalHtml = button.innerHTML;
       button.innerHTML = ICONS.check;
       button.classList.add('copied');
       setTimeout(() => {
-        button.innerHTML = originalHtml;
+        button.innerHTML = ICONS.copy;
         button.classList.remove('copied');
       }, 2000);
     } catch (e) {

@@ -111,7 +111,7 @@ class Test(TestWebBase):
             header_content = dict(response.headers)
             self.assertEqual("success", header_content["Category"], "The msg_category is success")
             self.assertEqual(
-                "attachment filename=download.txt",
+                'attachment; filename="download.txt"',
                 header_content["Content-Disposition"],
                 "generate_download_file has the correct attachment file name",
             )
@@ -250,7 +250,7 @@ class Test(TestWebBase):
                 "generate_download_spreadsheet should return text for tsv files",
             )
             self.assertTrue(
-                headers_dict["Content-Disposition"].startswith("attachment filename="),
+                headers_dict["Content-Disposition"].startswith('attachment; filename="'),
                 "generate_download_spreadsheet tsv should be downloaded as an attachment",
             )
 

@@ -160,7 +160,7 @@ def generate_download_file_from_text(results, file_header=None) -> Response:
         generate(),
         mimetype="text/plain charset=utf-8",
         headers={
-            "Content-Disposition": f"attachment filename={display_name}",
+            "Content-Disposition": f'attachment; filename="{secure_filename(display_name)}"',
             "Category": results[bc.MSG_CATEGORY],
             "Message": results[bc.MSG],
         },
@@ -193,7 +193,7 @@ def generate_download_spreadsheet(results) -> Response:
     buffer.seek(0)
     response = make_response()
     response.data = buffer.read()
-    response.headers["Content-Disposition"] = "attachment; filename=" + results[bc.OUTPUT_DISPLAY_NAME]
+    response.headers["Content-Disposition"] = f'attachment; filename="{secure_filename(results[bc.OUTPUT_DISPLAY_NAME])}"'
     response.headers["Category"] = results[bc.MSG_CATEGORY]
     response.headers["Message"] = results[bc.MSG]
     response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
