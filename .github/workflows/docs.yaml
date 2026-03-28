@@ -37,7 +37,6 @@ jobs:
     - name: Install dependencies
       run: |
         uv pip install setuptools-scm
-        uv pip install git+https://github.com/hed-standard/hed-python.git
         uv pip install -e ".[docs]"
 
     - name: Configure Git for GitHub Pages
