@@ -503,6 +503,42 @@ class Test(TestWebBase):
             )
             self.assertFalse(response.data, "handle_http_error should have empty data")
 
+    def test_get_exception_message_safe_filename(self):
+        from hed.errors.exceptions import HedExceptions, HedFileError
+
+        from hedweb.constants import base_constants as bc
+        from hedweb.web_util import get_exception_message
+
+        # A schema identifier like "HED7.2.0" should be included in the message
+        ex = HedFileError(HedExceptions.INVALID_HED_FORMAT, "Outdated schema", "HED7.2.0")
+        result = get_exception_message(ex)
+        self.assertIn("HED7.2.0", result[bc.MSG], "Safe schema identifier should appear in error message")
+        self.assertIn("INVALID_HED_FORMAT", result[bc.MSG], "Error code should appear in error message")
+
+    def test_get_exception_message_path_filename_suppressed(self):
+        from hed.errors.exceptions import HedExceptions, HedFileError
+
+        from hedweb.constants import base_constants as bc
+        from hedweb.web_util import get_exception_message
+
+        # A filesystem path should NOT be included in the user-facing message
+        for path_filename in ["/etc/passwd", "C:\\Windows\\system32\\file.txt", "../../secret"]:
+            ex = HedFileError(HedExceptions.BAD_PARAMETERS, "Some error", path_filename)
+            result = get_exception_message(ex)
+            self.assertNotIn(path_filename, result[bc.MSG], f"Path '{path_filename}' must not appear in error message")
+
+    def test_get_exception_message_control_chars_stripped(self):
+        from hed.errors.exceptions import HedExceptions, HedFileError
+
+        from hedweb.constants import base_constants as bc
+        from hedweb.web_util import get_exception_message
+
+        # A filename containing CR/LF (header injection attempt) must have those chars removed
+        ex = HedFileError(HedExceptions.BAD_PARAMETERS, "Injected", "HED8\r\nX-Injected: evil")
+        result = get_exception_message(ex)
+        self.assertNotIn("\r", result[bc.MSG], "CR must be stripped from error message")
+        self.assertNotIn("\n", result[bc.MSG], "LF must be stripped from error message")
+
 
 if __name__ == "__main__":
     unittest.main()

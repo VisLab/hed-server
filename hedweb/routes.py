@@ -94,11 +94,11 @@ def schemas_results() -> "Response":
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=["POST"])
-def schema_version_results() -> str:
-    """Return the version of the schema as a JSON string.
+def schema_version_results() -> Response:
+    """Return the version of the schema as a JSON response.
 
     Returns:
-        str: A serialized JSON string containing the version of the schema.
+        Response: A JSON response containing the version of the schema.
 
     """
 
@@ -112,17 +112,17 @@ def schema_version_results() -> str:
                 schema_format=extension,
             )
             hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
-        return json.dumps(hed_info)
+        return jsonify(hed_info)
     except Exception as ex:
-        return jsonify(json.loads(handle_error(ex)))
+        return jsonify(handle_error(ex, return_as_str=False))
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=["GET"])
-def schema_versions_results() -> str:
-    """Return serialized JSON string with HED versions.
+def schema_versions_results() -> Response:
+    """Return JSON response with HED versions.
 
     Returns:
-        str: A serialized JSON string containing a list of the HED versions.
+        Response: A JSON response containing a list of the HED versions.
 
     """
 
@@ -136,7 +136,7 @@ def schema_versions_results() -> str:
             hed_base.extend(prereleases)
         return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
     except Exception as ex:
-        return jsonify(json.loads(handle_error(ex)))
+        return jsonify(handle_error(ex, return_as_str=False))
 
 
 @route_blueprint.route(route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])

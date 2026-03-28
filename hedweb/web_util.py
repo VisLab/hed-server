@@ -432,8 +432,14 @@ def get_exception_message(ex) -> dict:
         message = str(ex)
     message = message.replace("\n", " ")
     filename = getattr(ex, "filename", None)
-    if filename and not any(c in str(filename) for c in ("/", "\\", ":")):
-        error_message = f"{error_code} for {filename}: {message}"
+    if filename:
+        # Normalize to basename only and strip all control characters (prevents header injection)
+        safe_filename = secure_filename(str(filename))
+        # Only include if the result is a safe identifier with no path separators or drive letters
+        if safe_filename and not any(c in safe_filename for c in ("/", "\\", ":")):
+            error_message = f"{error_code} for {safe_filename}: {message}"
+        else:
+            error_message = f"{error_code}: {message}"
     else:
         error_message = f"{error_code}: {message}"
     if hasattr(ex, "issues") and ex.issues and isinstance(ex.issues, (list, dict)):
