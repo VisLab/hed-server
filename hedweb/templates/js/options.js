@@ -4,8 +4,10 @@
  * @param {string} optionName - Name of the option checkbox to be hidden
  */
 function hideOption(optionName) {
-    $("#" + optionName).prop('checked', false)
-    $("#" + optionName + "_option").hide()
+    const el = document.getElementById(optionName);
+    if (el) el.checked = false;
+    const optEl = document.getElementById(optionName + "_option");
+    if (optEl) optEl.style.display = 'none';
 }
 
 /**
@@ -14,15 +16,19 @@ function hideOption(optionName) {
  * @param {boolean} checked - Indicates whether checked.
  */
 function showOption(optionName, checked=false) {
-    $("#" + optionName + "_option").show();
-    $("#" + optionName).prop('checked', checked)
+    const optEl = document.getElementById(optionName + "_option");
+    if (optEl) optEl.style.display = '';
+    const el = document.getElementById(optionName);
+    if (el) el.checked = checked;
 }
 
 function showElement(id) {
-    document.getElementById(id).style.display = '';
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
 }
 
 function hideElement(id) {
-    document.getElementById(id).style.display = 'none';
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
 }
 

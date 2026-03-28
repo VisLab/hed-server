@@ -1,16 +1,16 @@
-$(function () {
+document.addEventListener('DOMContentLoaded', function() {
     prepareForm();
 });
 
 
-$('#definition_file').change(function() {
+document.getElementById('definition_file').addEventListener('change', function() {
     clearFlashMessages();
 })
 
 /**
  * Set the options according to the action specified.
  */
-$('#process_actions').change(function(){
+document.getElementById('process_actions').addEventListener('change', function() {
     setOptions();
     clearSpreadsheet();
     clearFlashMessages();
@@ -42,8 +42,8 @@ document.getElementById('spreadsheet_clear').addEventListener('click', function 
 function clearForm() {
     clearFlashMessages();
     clearSpreadsheet()
-    $('#definition_file').val('');
-    $("#validate").prop('checked', true);
+    document.getElementById('definition_file').value = '';
+    document.getElementById('process_actions').value = 'validate';
     setOptions();
     hideOtherSchemaVersionFileUpload()
 }
@@ -64,7 +64,7 @@ function clearFlashMessages() {
  * components will be hidden and populated.
  */
 function prepareForm() {
-    $('#spreadsheet_form')[0].reset();
+    document.getElementById('spreadsheet_form').reset();
     clearForm();
     getSchemaVersions()
 }
@@ -94,7 +94,7 @@ async function submitForm() {
     formData.append('worksheet_selected', worksheetName)
     const spreadsheetFile = getSpreadsheetFileName();
     const isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
-        !$("#validate").prop("checked");
+        document.getElementById('process_actions').value !== 'validate';
     clearFlashMessages();
     flashMessageOnScreen('Spreadsheet is being processed ...', 'success',
         'spreadsheet_flash')
