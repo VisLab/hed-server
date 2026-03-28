@@ -4,6 +4,7 @@ Utilities for handling web requests and responses in the HED web application.
 
 import io
 import json
+import logging
 import os
 import zipfile
 from datetime import datetime
@@ -23,6 +24,8 @@ from werkzeug.utils import secure_filename
 
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
+
+logger = logging.getLogger(__name__)
 
 TIME_FORMAT = "%Y_%m_%d_T_%H_%M_%S_%f"
 
@@ -370,6 +373,7 @@ def handle_error(ex, hed_info=None, title=None, return_as_str=True) -> str | dic
 
     """
 
+    logger.exception("handle_error: %s", ex)
     if not hed_info:
         hed_info = {}
     if hasattr(ex, "error_type"):
@@ -415,6 +419,7 @@ def get_exception_message(ex) -> dict:
         dict: A dict indicating the field_type of error.
 
     """
+    logger.exception("get_exception_message: %s", ex)
     if hasattr(ex, "error_type"):
         error_code = ex.error_type
     elif hasattr(ex, "code"):
@@ -426,11 +431,17 @@ def get_exception_message(ex) -> dict:
     else:
         message = str(ex)
     message = message.replace("\n", " ")
-    if hasattr(ex, "filename") and ex.filename:
-        filemsg = f" for {str(ex.filename)}"
+    filename = getattr(ex, "filename", None)
+    if filename:
+        # Normalize to basename only and strip all control characters (prevents header injection)
+        safe_filename = secure_filename(str(filename))
+        # Only include if the result is a safe identifier with no path separators or drive letters
+        if safe_filename and not any(c in safe_filename for c in ("/", "\\", ":")):
+            error_message = f"{error_code} for {safe_filename}: {message}"
+        else:
+            error_message = f"{error_code}: {message}"
     else:
-        filemsg = ""
-    error_message = f"{error_code}{filemsg}: {message}"
+        error_message = f"{error_code}: {message}"
     if hasattr(ex, "issues") and ex.issues and isinstance(ex.issues, (list, dict)):
         error_message += " [" + get_printable_issue_string(ex.issues) + "]"
     return {"data": "", bc.MSG_CATEGORY: "error", bc.MSG: error_message}
