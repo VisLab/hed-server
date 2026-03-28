@@ -1407,8 +1407,10 @@
       if (userSettings.apiKey) {
         // sessionStorage is the minimal viable scope for this credential: it is never sent to the
         // server, is not synced across tabs or devices, and is cleared when the tab is closed.
-        // This is intentionally not localStorage. See: js/clear-text-storage-of-sensitive-data
-        sessionStorage.setItem(sessionKey, userSettings.apiKey); // lgtm[js/clear-text-storage-of-sensitive-data]
+        // This is intentionally not localStorage. The user explicitly provides this key (BYOK),
+        // and sessionStorage is the standard browser mechanism for ephemeral credential storage.
+        // codeql[js/clear-text-storage-of-sensitive-data]
+        sessionStorage.setItem(sessionKey, userSettings.apiKey);
       } else {
         sessionStorage.removeItem(sessionKey);
       }
