@@ -1,4 +1,4 @@
-$(function () {
+document.addEventListener('DOMContentLoaded', function() {
     prepareForm();
 });
 
@@ -6,7 +6,7 @@ $(function () {
 /**
  * Set the options according to the action specified.
  */
-$('#process_actions').change(function(){
+document.getElementById('process_actions').addEventListener('change', function() {
     clearFlashMessages();
     setOptions();
 });
@@ -14,58 +14,58 @@ $('#process_actions').change(function(){
 /**
  * Checks if the HED file uploaded has a valid extension.
  */
-$('#schema_file').on('change', function () {
-    updateFileLabel($('#schema_file').val(), '#schema_file_display_name');
-    $('#schema_file_option').prop('checked', true);
+document.getElementById('schema_file').addEventListener('change', function () {
+    updateFileLabel(document.getElementById('schema_file').value, '#schema_file_display_name');
+    document.getElementById('schema_file_option').checked = true;
     updateFlash("schema");
 });
 
-$('#second_schema_file').on('change', function () {
-    updateFileLabel($('#second_schema_file').val(), '#second_schema_file_display_name');
-    $('#second_schema_file_option').prop('checked', true);
+document.getElementById('second_schema_file').addEventListener('change', function () {
+    updateFileLabel(document.getElementById('second_schema_file').value, '#second_schema_file_display_name');
+    document.getElementById('second_schema_file_option').checked = true;
     updateFlash("second_schema");
 });
 
-$('#schema_url').on('change', function () {
-    updateFileLabel($('#schema_url').val(), '#schema_url_display_name');
-    $('#schema_url_option').prop('checked', true);
+document.getElementById('schema_url').addEventListener('change', function () {
+    updateFileLabel(document.getElementById('schema_url').value, '#schema_url_display_name');
+    document.getElementById('schema_url_option').checked = true;
     updateFlash("schema");
 });
 
-$('#second_schema_url').on('change', function () {
-    updateFileLabel($('#second_schema_url').val(), '#second_schema_url_display_name');
-    $('#second_schema_url_option').prop('checked', true);
+document.getElementById('second_schema_url').addEventListener('change', function () {
+    updateFileLabel(document.getElementById('second_schema_url').value, '#second_schema_url_display_name');
+    document.getElementById('second_schema_url_option').checked = true;
     updateFlash("second_schema");
 });
 
-$('#schema_folder').on('change', function () {
+document.getElementById('schema_folder').addEventListener('change', function () {
     const files = this.files;
-    const label = $('#schema_folder_label');
+    const label = document.getElementById('schema_folder_label');
 
     if (files.length > 0) {
         const folderName = files[0].webkitRelativePath.split('/')[0];
-        label.text(`Schema folder: ${folderName}`);
+        label.textContent = `Schema folder: ${folderName}`;
     } else {
-        label.text(UPLOAD_FILE_LABEL);
+        label.textContent = UPLOAD_FILE_LABEL;
     }
 });
 
-$('#second_schema_folder').on('change', function () {
+document.getElementById('second_schema_folder').addEventListener('change', function () {
     const files = this.files;
-    const label = $('#second_schema_folder_label');
+    const label = document.getElementById('second_schema_folder_label');
 
     if (files.length > 0) {
         const folderName = files[0].webkitRelativePath.split('/')[0];
-        label.text(`Schema folder: ${folderName}`);
+        label.textContent = `Schema folder: ${folderName}`;
     } else {
-        label.text(UPLOAD_FILE_LABEL);
+        label.textContent = UPLOAD_FILE_LABEL;
     }
 });
 
 /**
  * Submit the form if a schema is specified.
  */
-$('#schema_submit').on('click', function () {
+document.getElementById('schema_submit').addEventListener('click', function () {
     if (getSchemaFilename("schema") === "") {
         flashMessageOnScreen('No valid source input file.  See above.', 'error', 'schema_flash')
     } else {
@@ -76,7 +76,7 @@ $('#schema_submit').on('click', function () {
 /**
  * Clear the form.
  */
-$('#schema_clear').on('click', function () {
+document.getElementById('schema_clear').addEventListener('click', function () {
     clearForm();
 });
 
@@ -86,14 +86,14 @@ $('#schema_clear').on('click', function () {
  */
 function clearForm() {
     clearFlashMessages();
-    $('#schema_url_option').prop('checked', false);
-    $('#schema_file_option').prop('checked', false);
-    $('#schema_folder_option').prop('checked', false);
-    $('#schema_url').val(DEFAULT_XML_URL);
-    $('#schema_folder_label').text(UPLOAD_FILE_LABEL);
-    $('#second_schema_url').val(DEFAULT_XML_URL);
-    $('#schema_file').val('');
-    $('#second_schema_file').val('');
+    document.getElementById('schema_url_option').checked = false;
+    document.getElementById('schema_file_option').checked = false;
+    document.getElementById('schema_folder_option').checked = false;
+    document.getElementById('schema_url').value = DEFAULT_XML_URL;
+    document.getElementById('schema_folder_label').textContent = UPLOAD_FILE_LABEL;
+    document.getElementById('second_schema_url').value = DEFAULT_XML_URL;
+    document.getElementById('schema_file').value = '';
+    document.getElementById('second_schema_file').value = '';
     setOptions();
 }
 
@@ -121,18 +121,18 @@ function getSchemaFilename(type) {
     let checkRadioVal = checkRadio.id
     
     if (checkRadioVal === type + "_file_option") {
-        let schemaFile = $('#' + type + '_file');
-        let schemaFileIsEmpty = schemaFile[0].files.length === 0;
+        const schemaFile = document.getElementById(type + '_file');
+        let schemaFileIsEmpty = schemaFile.files.length === 0;
         if (schemaFileIsEmpty) {
             flashMessageOnScreen('Schema file not specified.', 'error', 'schema_flash');
             return '';
         }
 
-        return schemaFile[0].files[0].name;
+        return schemaFile.files[0].name;
     }
 
     if (checkRadioVal === type + "_url_option") {
-        let schemaUrl = $('#' + type + '_url').val();
+        let schemaUrl = document.getElementById(type + '_url').value;
         let schemaUrlIsEmpty = schemaUrl === "";
         if (schemaUrlIsEmpty) {
             flashMessageOnScreen('URL not specified.', 'error', 'schema_flash');
@@ -142,8 +142,8 @@ function getSchemaFilename(type) {
     }
 
     if (checkRadioVal === type + "_folder_option") {
-        let schemaFolder = $('#' + type + '_folder');
-        let files = schemaFolder[0].files;
+        const schemaFolder = document.getElementById(type + '_folder');
+        let files = schemaFolder.files;
 
         if (!files || files.length === 0) {
             flashMessageOnScreen('Schema folder not selected.', 'error', 'schema_flash');
@@ -163,10 +163,10 @@ function getSchemaFilename(type) {
  */
 function prepareForm() {
     clearForm();
-    $('#schema_form')[0].reset();
-    $('#process_actions').val('validate');
-    $('#schema_url').val(DEFAULT_XML_URL);
-    $('#second_schema_url').val(DEFAULT_XML_URL);
+    document.getElementById('schema_form').reset();
+    document.getElementById('process_actions').value = 'validate';
+    document.getElementById('schema_url').value = DEFAULT_XML_URL;
+    document.getElementById('second_schema_url').value = DEFAULT_XML_URL;
 }
 
 
@@ -178,18 +178,18 @@ function setOptions() {
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
         hideOption("save_merged");
-        $("#options_section").show();
-        $("#second_schema_section").hide()
+        showElement("options_section");
+        hideElement("second_schema_section");
     } else if (selectedElement.value === "compare_schemas") {
         hideOption("check_for_warnings");
         hideOption("save_merged");
-        $("#options_section").hide();
-        $("#second_schema_section").show()
+        hideElement("options_section");
+        showElement("second_schema_section");
     } else {
         hideOption("check_for_warnings");
         showOption("save_merged");
-        $("#options_section").show();
-        $("#second_schema_section").hide()
+        showElement("options_section");
+        hideElement("second_schema_section");
     }
 }
 
@@ -198,7 +198,7 @@ function setOptions() {
  */
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
-    const files = $('#schema_folder')[0].files;
+    const files = document.getElementById('schema_folder').files;
     for (const file of files) {
         // Preserve relative paths using the webkitRelativePath
         formData.append('files[]', file, file.webkitRelativePath);

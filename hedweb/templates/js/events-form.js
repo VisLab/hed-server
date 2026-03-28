@@ -1,4 +1,4 @@
-$(function () {
+document.addEventListener('DOMContentLoaded', function() {
     prepareForm();
 })
 
@@ -34,7 +34,7 @@ document.getElementById('events_file').addEventListener('change', function () {
 /**
  * Submit the form if there is an events file and an available HED schema
  */
-$('#events_submit').on('click', function () {
+document.getElementById('events_submit').addEventListener('click', function () {
     if (fileIsSpecified('events_file', 'events_flash', 'Events file is not specified.')
         && schemaSpecifiedWhenOtherIsSelected()) {
         submitForm();
@@ -133,11 +133,11 @@ function setOptions() {
         hideOption("use_hed");
         hideOption("show_details");
         showElement("options_section")
-        $("#query_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#remodel_input_section").hide();
-        $("#sidecar_input_section").show();
-        $("#show_events_section").show();
+        hideElement("query_input_section");
+        showElement("schema_pulldown_section");
+        hideElement("remodel_input_section");
+        showElement("sidecar_input_section");
+        showElement("show_events_section");
     } else if (selectedElement.value === "check_quality") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -149,12 +149,12 @@ function setOptions() {
         hideOption("replace_defs");
         hideOption("use_hed");
         showOption("show_details");
-        $("#options_section").show();
-        $("#query_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#remodel_input_section").hide();
-        $("#sidecar_input_section").show();
-        $("#show_events_section").show();
+        showElement("options_section");
+        hideElement("query_input_section");
+        showElement("schema_pulldown_section");
+        hideElement("remodel_input_section");
+        showElement("sidecar_input_section");
+        showElement("show_events_section");
     } else if (selectedElement.value === "assemble") {
         showOption("append_assembled", true);
         hideOption("check_for_warnings");
@@ -167,11 +167,11 @@ function setOptions() {
         hideOption("use_hed");
         hideOption("show_details");
         showElement("options_section")
-        $("#query_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#remodel_input_section").hide();
-        $("#sidecar_input_section").show();
-        $("#show_events_section").show();
+        hideElement("query_input_section");
+        showElement("schema_pulldown_section");
+        hideElement("remodel_input_section");
+        showElement("sidecar_input_section");
+        showElement("show_events_section");
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -183,12 +183,12 @@ function setOptions() {
         hideOption("replace_defs");
         hideOption("use_hed");
         hideOption("show_details");
-        $("#options_section").hide();
-        $("#query_input_section").hide();
-        $("#schema_pulldown_section").hide();
-        $("#remodel_input_section").hide();
-        $("#sidecar_input_section").hide();
-        $("#show_events_section").show();
+        hideElement("options_section");
+        hideElement("query_input_section");
+        hideElement("schema_pulldown_section");
+        hideElement("remodel_input_section");
+        hideElement("sidecar_input_section");
+        showElement("show_events_section");
     } else if (selectedElement.value === "remodel") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -200,12 +200,12 @@ function setOptions() {
         hideOption("replace_defs");
         hideOption("use_hed");
         hideOption("show_details");
-        $("#options_section").show();
-        $("#query_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#remodel_input_section").show();
-        $("#sidecar_input_section").show();
-        $("#show_events_section").show();
+        showElement("options_section");
+        hideElement("query_input_section");
+        showElement("schema_pulldown_section");
+        showElement("remodel_input_section");
+        showElement("sidecar_input_section");
+        showElement("show_events_section");
     }  else if (selectedElement.value === "search") {
         showOption("append_assembled", true);
         hideOption("check_for_warnings");
@@ -217,12 +217,12 @@ function setOptions() {
         showOption("replace_defs", true);
         hideOption("use_hed");
         hideOption("show_details");
-        $("#options_section").show();
-        $("#query_input_section").show();
-        $("#schema_pulldown_section").show();
-        $("#remodel_input_section").hide();
-        $("#sidecar_input_section").show();
-        $("#show_events_section").show();
+        showElement("options_section");
+        showElement("query_input_section");
+        showElement("schema_pulldown_section");
+        hideElement("remodel_input_section");
+        showElement("sidecar_input_section");
+        showElement("show_events_section");
     }
 }
 
@@ -232,7 +232,7 @@ function setOptions() {
  */
 async function submitForm() {
     const [formData, defaultName] = prepareSubmitForm("events");
-    const includeSummaries = $('#include_summaries').is(':checked')
+    const includeSummaries = document.getElementById('include_summaries').checked
     clearFlashMessages();
     flashMessageOnScreen('Event file is being processed ...', 'success', 'events_flash')
      try {

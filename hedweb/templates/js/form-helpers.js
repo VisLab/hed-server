@@ -20,7 +20,7 @@ function convertToResultsName(filename, suffix) {
  */
 function fileHasValidExtension(filePath, acceptedFileExtensions) {
     let fileExtension = filePath.split('.').pop();
-    return $.inArray(fileExtension.toLowerCase(), acceptedFileExtensions) !== -1
+    return acceptedFileExtensions.includes(fileExtension.toLowerCase())
 }
 
 
@@ -32,8 +32,8 @@ function fileHasValidExtension(filePath, acceptedFileExtensions) {
  * @returns {boolean} - returns true if file is specified.
  */
 function fileIsSpecified(nameID, flashID, errorMsg) {
-    let theFile = $('#' + nameID);
-    if (theFile[0].files.length === 0) {
+    let theFile = document.getElementById(nameID);
+    if (theFile.files.length === 0) {
         flashMessageOnScreen(errorMsg, 'error', flashID);
         return false;
     }
@@ -101,7 +101,7 @@ function prepareSubmitForm(type) {
     const selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value);
     formData.append('csrf_token', "{{ csrf_token() }}");
-    const fileDesignator=  $(`#${type}_file`)[0];
+    const fileDesignator = document.getElementById(`${type}_file`);
     let defaultName = "default_processed"
     if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {
         defaultName = convertToResultsName(fileDesignator.files[0].name, '_processed');
@@ -289,5 +289,6 @@ function triggerDownloadBlob(download, displayName, contentType) {
  */
 function updateFileLabel(filePath, displayName) {
     let filename = filePath.split('\\').pop();
-    $(displayName).text(filename);
+    const el = document.querySelector(displayName);
+    if (el) el.textContent = filename;
 }

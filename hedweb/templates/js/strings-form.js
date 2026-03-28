@@ -1,22 +1,22 @@
-$(function () {
+document.addEventListener('DOMContentLoaded', function() {
     prepareForm();
 });
 
 /**
  * Set the options according to the action specified.
  */
-$('#process_actions').change(function(){
+document.getElementById('process_actions').addEventListener('change', function() {
     clearFlashMessages();
     setOptions();
 });
 
-$('#definition_file').change(function() {
+document.getElementById('definition_file').addEventListener('change', function() {
     clearFlashMessages();
 })
 /**
  * Submit the form if a string has been entered.
  */
-$('#string_submit').on('click', function () {
+document.getElementById('string_submit').addEventListener('click', function () {
    if (!stringIsSpecified()) {
         flashMessageOnScreen('Must give a non-empty string.  See above.', 'error', 'string_flash')
     } else {
@@ -27,7 +27,7 @@ $('#string_submit').on('click', function () {
 /**
  * Clears the form.
  */
-$('#string_clear').on('click', function () {
+document.getElementById('string_clear').addEventListener('click', function () {
     clearForm();
 });
 
@@ -38,9 +38,9 @@ function clearForm() {
     clearFlashMessages();
     setOptions();
     hideOtherSchemaVersionFileUpload();
-    $('#definition_file').val('');
-    $('#string_result').val('');
-    $('#string_input').val('');
+    document.getElementById('definition_file').value = '';
+    document.getElementById('string_result').value = '';
+    document.getElementById('string_input').value = '';
 }
 
 /**
@@ -57,8 +57,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
-    $('#string_form')[0].reset();
-    $('#process_actions').val('validate');
+    document.getElementById('string_form').reset();
+    document.getElementById('process_actions').value = 'validate';
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload()
 }
@@ -67,28 +67,28 @@ function prepareForm() {
  * Set the options for the events depending on the action
  */
 function setOptions() {
-    // let action_value = $("#process_actions").val;
+    // let action_value = document.getElementById("process_actions").value;
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
-        $("#options_section").show();
-        $("#definition_section").show();
-        $("#query_input_section").hide();
+        showElement("options_section");
+        showElement("definition_section");
+        hideElement("query_input_section");
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
-         $("#options_section").hide();
-         $("#definition_section").hide();
-         $("#query_input_section").hide();
+        hideElement("options_section");
+        hideElement("definition_section");
+        hideElement("query_input_section");
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
-        $("#options_section").hide();
-        $("#definition_section").hide();
-        $("#query_input_section").hide();
+        hideElement("options_section");
+        hideElement("definition_section");
+        hideElement("query_input_section");
     } else if (selectedElement.value === "search") {
         hideOption("check_for_warnings");
-        $("#options_section").hide();
-        $("#definition_section").hide();
-        $("#query_input_section").show();
+        hideElement("options_section");
+        hideElement("definition_section");
+        showElement("query_input_section");
     }
 }
 

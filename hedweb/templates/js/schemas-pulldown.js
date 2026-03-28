@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
  * Event handler function when the HED version drop-down menu changes. If Other is selected the file browser
  * underneath it will appear. If another option is selected then it will disappear.
  */
-$('#schema_version').on('change',function () {
-    if ($(this).val() === OTHER_VERSION_OPTION) {
-        $('#schema_other_version').show();
+document.getElementById('schema_version').addEventListener('change', function () {
+    if (this.value === OTHER_VERSION_OPTION) {
+        document.getElementById('schema_other_version').style.display = '';
     } else {
         hideOtherSchemaVersionFileUpload()
     }
@@ -21,9 +21,8 @@ $('#schema_version').on('change',function () {
 /**
  * Checks if the HED file uploaded has a valid extension.
  */
-$('#schema_path').on('change', function () {
-    let hedSchema = $('#schema_path');
-    let hedPath = hedSchema.val();
+document.getElementById('schema_path').addEventListener('change', function () {
+    let hedPath = document.getElementById('schema_path').value;
     if (fileHasValidExtension(hedPath, XML_FILE_EXTENSIONS)) {
         clearSchemaSelectFlashMessages();
         updateFileLabel(hedPath, '#schema_display_name');
@@ -81,9 +80,9 @@ async function getSchemaVersions() {
  * Checks to see if a HED XML file is specified when the HED drop-down is set to "Other".
  */
 function schemaSpecifiedWhenOtherIsSelected() {
-    let hedFile = $('#schema_path');
-    let hedFileIsEmpty = hedFile[0].files.length === 0;
-    if ($('#schema_version').val() === OTHER_VERSION_OPTION && hedFileIsEmpty) {
+    const hedFile = document.getElementById('schema_path');
+    let hedFileIsEmpty = hedFile.files.length === 0;
+    if (document.getElementById('schema_version').value === OTHER_VERSION_OPTION && hedFileIsEmpty) {
         flashMessageOnScreen('Schema version is not specified.', 'error', 'schema_select_flash');
         return false;
     }
@@ -94,8 +93,10 @@ function schemaSpecifiedWhenOtherIsSelected() {
  * Hides the HED XML file upload.
  */
 function hideOtherSchemaVersionFileUpload() {
-    $('#schema_display_name').text('');
-    $('#schema_other_version').hide();
+    const displayEl = document.getElementById('schema_display_name');
+    if (displayEl) displayEl.textContent = '';
+    const otherEl = document.getElementById('schema_other_version');
+    if (otherEl) otherEl.style.display = 'none';
 }
 
 
@@ -104,13 +105,12 @@ function hideOtherSchemaVersionFileUpload() {
  * @param {Array} hedVersions - An array containing the HED versions.
  */
 function populateSchemaVersionsDropdown(hedVersions) {
-    let hedVersionDropdown = $('#schema_version');
-    $('#schema_version').empty()
+    const hedVersionDropdown = document.getElementById('schema_version');
+    hedVersionDropdown.replaceChildren();
     if (hedVersions.length > 0) {
         for (let i = 0; i < hedVersions.length; i++) {
-            hedVersionDropdown.append('<option value=' + hedVersions[i].trim().split(' ')[0] + '>' + hedVersions[i] + '</option>');
+            hedVersionDropdown.insertAdjacentHTML('beforeend', '<option value=' + hedVersions[i].trim().split(' ')[0] + '>' + hedVersions[i] + '</option>');
         }
     }
-    hedVersionDropdown.append('<option value=' + OTHER_VERSION_OPTION + '>' + OTHER_VERSION_OPTION +
-        '</option>');
+    hedVersionDropdown.insertAdjacentHTML('beforeend', '<option value=' + OTHER_VERSION_OPTION + '>' + OTHER_VERSION_OPTION + '</option>');
 }

@@ -1,6 +1,6 @@
 
 function clearColumnInfoFlashMessages() {
-    if ($('#column_info_flash').length) {
+    if (document.getElementById('column_info_flash')) {
         flashMessageOnScreen('', 'success', 'column_info_flash')
     }
 }
@@ -10,8 +10,8 @@ function clearColumnInfoFlashMessages() {
  * @param {string} table - One of show_columns, show_indices, or show_events
  */
 function hideColumnInfo(table) {
-    let table_section = '#' + table + '_section';
-    $(table_section).hide();
+    const el = document.getElementById(table + '_section');
+    if (el) el.style.display = 'none';
 }
 
 /**
@@ -19,9 +19,9 @@ function hideColumnInfo(table) {
  * @param {string} table - One of show_columns, show_indices, or show_events
  */
 function removeColumnInfo(table) {
-    let table_tag = '#' + table + '_table';
-    if ($(table_tag).length) {
-        $(table_tag).children().remove();
+    const el = document.getElementById(table + '_table');
+    if (el) {
+        el.replaceChildren();
     }
 }
 
@@ -86,12 +86,12 @@ async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheet
  * @param {Object} columnCounts - A dictionary of the count of unique values in each column.
  */
 function showEvents(columnList, columnCounts) {
-    $('#show_events_section').show();
-    let columnEventsTable = $('#show_events_table');
+    document.getElementById('show_events_section').style.display = '';
+    const columnEventsTable = document.getElementById('show_events_table');
     let contents = '<thead><tr><th scope="col">Include?</th>' +
                    '<th scope="col">Column name (unique entries)</th>' + 
                     '<th scope="col">Categorical?</th></tr></thead>'
-    columnEventsTable.empty();
+    columnEventsTable.replaceChildren();
     if (columnList) {
         for (let i = 0; i < columnList.length; i++) {
             let columnName = columnList[i]
@@ -110,7 +110,7 @@ function showEvents(columnList, columnCounts) {
             contents = contents + row;
         }
     }
-    columnEventsTable.append(contents + '</table>')
+    columnEventsTable.insertAdjacentHTML('beforeend', contents + '</table>')
 }
 
 /**
@@ -119,11 +119,11 @@ function showEvents(columnList, columnCounts) {
  * 
  */
 function showIndices(columnList) {
-    $('#show_indices_section').show();
-    let indicesTable = $('#show_indices_table');
+    document.getElementById('show_indices_section').style.display = '';
+    const indicesTable = document.getElementById('show_indices_table');
     let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
     contents += '</tr></thead>';
-    indicesTable.empty();
+    indicesTable.replaceChildren();
     if (columnList) {
         for (let i = 0; i < columnList.length; i++) {
             let columnName = columnList[i]
@@ -137,5 +137,5 @@ function showIndices(columnList) {
             contents = contents + row + '</tr>';
         }
     }
-    indicesTable.append(contents + '</table>')
+    indicesTable.insertAdjacentHTML('beforeend', contents + '</table>')
 }

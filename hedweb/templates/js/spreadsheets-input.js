@@ -2,17 +2,17 @@
 /**
  * Adjust the column names if the has_column_names check box changes state.
  */
-$('#has_column_names').on('change', function() {
-    let spreadsheetFile = $('#spreadsheet_file')[0].files[0];
-    let worksheetName = $('#worksheet_name option:selected').text();
-    let hasColumnNames = $("#has_column_names").is(':checked')
+document.getElementById('has_column_names')?.addEventListener('change', function() {
+    let spreadsheetFile = document.getElementById('spreadsheet_file').files[0];
+    let worksheetName = document.getElementById('worksheet_name').options[document.getElementById('worksheet_name').selectedIndex].text;
+    let hasColumnNames = document.getElementById('has_column_names').checked;
     setColumnsInfo(spreadsheetFile, 'spreadsheet_flash', worksheetName, hasColumnNames, "show_indices")
 })
 
 /**
  * Spreadsheet event handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
-$('#spreadsheet_file').on('change', function () {
+document.getElementById('spreadsheet_file')?.addEventListener('change', function () {
     clearFlashMessages();
     setColumnTable();
 })
@@ -22,18 +22,18 @@ $('#spreadsheet_file').on('change', function () {
  * Gets the information associated with the Excel sheet_name that was newly selected. This information contains
  * the names of the columns and column indices that contain HED tags.
  */
-$('#worksheet_name').on('change', function () {
+document.getElementById('worksheet_name')?.addEventListener('change', function () {
     clearFlashMessages();
-    clearWorksheetFlashMessages()
-    if ($('#show_indices_section') != null) {
+    clearWorksheetFlashMessages();
+    if (document.getElementById('show_indices_section') !== null) {
         setIndicesTable();
     }
 });
 
 function clearSpreadsheet() {
-    $('#spreadsheet_file').val('');
-    $('#worksheet_name').empty();
-    $('#worksheet_select').hide();
+    document.getElementById('spreadsheet_file').value = '';
+    document.getElementById('worksheet_name').replaceChildren();
+    document.getElementById('worksheet_select').style.display = 'none';
     hideColumnInfo("show_indices");
     removeColumnInfo("show_indices")
 }
@@ -43,11 +43,11 @@ function clearWorksheetFlashMessages() {
 }
 
 function getSpreadsheetFileName() {
-    return $('#spreadsheet_file')[0].files[0].name;
+    return document.getElementById('spreadsheet_file').files[0].name;
 }
 
 function getWorksheetName() {
-    return $('#worksheet_select option:selected').text();
+    return document.getElementById('worksheet_select').options[document.getElementById('worksheet_select').selectedIndex].text;
 }
 
 /**
@@ -56,10 +56,10 @@ function getWorksheetName() {
  */
 function populateWorksheetDropdown(worksheetNames) {
     if (Array.isArray(worksheetNames) && worksheetNames.length > 0) {
-        $('#worksheet_select').show();
-        $('#worksheet_name').empty();
+        document.getElementById('worksheet_select').style.display = '';
+        document.getElementById('worksheet_name').replaceChildren();
         for (let i = 0; i < worksheetNames.length; i++) {
-            $('#worksheet_name').append(new Option(worksheetNames[i], worksheetNames[i]) );
+            document.getElementById('worksheet_name').append(new Option(worksheetNames[i], worksheetNames[i]));
         }
     }
 }
@@ -67,10 +67,11 @@ function populateWorksheetDropdown(worksheetNames) {
 async function setIndicesTable() {
     clearColumnInfoFlashMessages();
     removeColumnInfo("show_indices_table")
-    let spreadsheet = $('#spreadsheet_file')[0];
+    let spreadsheet = document.getElementById('spreadsheet_file');
     let worksheet = undefined
-    if ($('#worksheet_name') != null){
-        worksheet = $('#worksheet_name option:selected').text();
+    if (document.getElementById('worksheet_name') !== null) {
+        const wn = document.getElementById('worksheet_name');
+        worksheet = wn.options[wn.selectedIndex].text;
     }
     let spreadsheetFile = spreadsheet.files[0];
     if (spreadsheetFile != null) {
@@ -82,19 +83,19 @@ async function setIndicesTable() {
 }
 
 async function setColumnTable() {
-    let spreadsheet = $('#spreadsheet_file');
-    let spreadsheetPath = spreadsheet.val();
-    let spreadsheetFile = spreadsheet[0].files[0];
+    let spreadsheet = document.getElementById('spreadsheet_file');
+    let spreadsheetPath = spreadsheet.value;
+    let spreadsheetFile = spreadsheet.files[0];
 
-    let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash', undefined,true);
+    let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash', undefined, true);
     if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
         await populateWorksheetDropdown(info["worksheet_names"]);
     } else if (fileHasValidExtension(spreadsheetPath, TEXT_FILE_EXTENSIONS)) {
-        $('#worksheet_name').empty();
-        $('#worksheet_select').hide();
+        document.getElementById('worksheet_name').replaceChildren();
+        document.getElementById('worksheet_select').style.display = 'none';
     }
 
-    if ($('#show_indices_section') != null) {
+    if (document.getElementById('show_indices_section') !== null) {
         let selectedElement = document.getElementById("process_actions");
         setIndicesTable(selectedElement.value === "validate");
     }

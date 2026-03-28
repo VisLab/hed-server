@@ -1,16 +1,16 @@
-$(function () {
+document.addEventListener('DOMContentLoaded', function() {
     prepareForm();
 });
 
 /**
  * Set the options according to the action specified.
  */
-$('#process_actions').change(function(){
+document.getElementById('process_actions').addEventListener('change', function() {
     setOptions();
     clearFlashMessages();
 });
 
-$('#sidecar_file').change(function() {
+document.getElementById('sidecar_file').addEventListener('change', function() {
     clearFlashMessages();
 })
 
@@ -44,7 +44,7 @@ document.getElementById('sidecar_clear').addEventListener('click', function () {
 function clearForm() {
     clearFlashMessages();
     setOptions();
-    $('#sidecar_file').val('');
+    document.getElementById('sidecar_file').value = '';
     clearSpreadsheet();
     hideOtherSchemaVersionFileUpload()
 }
@@ -63,8 +63,8 @@ function clearFlashMessages() {
  */
 function prepareForm() {
     clearForm();
-    $('#sidecar_form')[0].reset();
-    $('#process_actions').val('validate');
+    document.getElementById('sidecar_form').reset();
+    document.getElementById('process_actions').value = 'validate';
     getSchemaVersions()
     hideOtherSchemaVersionFileUpload();
 }
@@ -77,38 +77,38 @@ function setOptions() {
     if (selectedElement.value === "validate") {
         showOption("check_for_warnings");
         hideOption("include_description_tags");
-        $("#sidecar_input_section").show();
-        $("#spreadsheet_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
+        showElement("sidecar_input_section");
+        hideElement("spreadsheet_input_section");
+        showElement("schema_pulldown_section");
+        showElement("options_section");
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
-        $("#sidecar_input_section").show();
-        $("#spreadsheet_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
+        showElement("sidecar_input_section");
+        hideElement("spreadsheet_input_section");
+        showElement("schema_pulldown_section");
+        showElement("options_section");
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
-        $("#sidecar_input_section").show();
-        $("#spreadsheet_input_section").hide();
-        $("#schema_pulldown_section").show();
-        $("#options_section").show();
+        showElement("sidecar_input_section");
+        hideElement("spreadsheet_input_section");
+        showElement("schema_pulldown_section");
+        showElement("options_section");
     } else if (selectedElement.value === "extract_spreadsheet") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
-        $("#sidecar_input_section").show();
-        $("#spreadsheet_input_section").hide();
-        $("#schema_pulldown_section").hide();
-        $("#options_section").hide();
+        showElement("sidecar_input_section");
+        hideElement("spreadsheet_input_section");
+        hideElement("schema_pulldown_section");
+        hideElement("options_section");
     } else if (selectedElement.value === "merge_spreadsheet") {
         hideOption("check_for_warnings");
         showOption("include_description_tags");
-        $("#sidecar_input_section").show();
-        $("#spreadsheet_input_section").show();
-        $("#schema_pulldown_section").hide();
-        $("#options_section").show();
+        showElement("sidecar_input_section");
+        showElement("spreadsheet_input_section");
+        hideElement("schema_pulldown_section");
+        showElement("options_section");
     }
 }
 
