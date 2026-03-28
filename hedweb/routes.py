@@ -43,7 +43,7 @@ def columns_info_results() -> str:
             return jsonify(columns_info)
         return jsonify({"message": "Method not allowed."}), 405
     except Exception as ex:
-        return get_exception_message(ex)
+        return jsonify(get_exception_message(ex))
 
 
 @route_blueprint.route(route_constants.EVENTS_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
@@ -114,7 +114,7 @@ def schema_version_results() -> str:
             hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
         return json.dumps(hed_info)
     except Exception as ex:
-        return handle_error(ex)
+        return jsonify(json.loads(handle_error(ex)))
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=["GET"])
@@ -136,7 +136,7 @@ def schema_versions_results() -> str:
             hed_base.extend(prereleases)
         return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
     except Exception as ex:
-        return handle_error(ex)
+        return jsonify(json.loads(handle_error(ex)))
 
 
 @route_blueprint.route(route_constants.SERVICES_SUBMIT_ROUTE, strict_slashes=False, methods=["POST"])
