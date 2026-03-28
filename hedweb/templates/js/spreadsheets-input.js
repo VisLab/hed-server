@@ -47,7 +47,11 @@ function getSpreadsheetFileName() {
 }
 
 function getWorksheetName() {
-    return document.getElementById('worksheet_select').options[document.getElementById('worksheet_select').selectedIndex].text;
+    const selectElement = document.getElementById('worksheet_name');
+    if (!selectElement || selectElement.options.length === 0 || selectElement.selectedIndex < 0) {
+        return undefined;
+    }
+    return selectElement.options[selectElement.selectedIndex].text;
 }
 
 /**

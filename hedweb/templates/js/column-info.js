@@ -86,31 +86,65 @@ async function getColumnsInfoHelper(columnsFile, flashMessageLocation, worksheet
  * @param {Object} columnCounts - A dictionary of the count of unique values in each column.
  */
 function showEvents(columnList, columnCounts) {
-    document.getElementById('show_events_section').style.display = '';
+    const section = document.getElementById('show_events_section');
+    if (section) section.style.display = '';
     const columnEventsTable = document.getElementById('show_events_table');
-    let contents = '<thead><tr><th scope="col">Include?</th>' +
-                   '<th scope="col">Column name (unique entries)</th>' + 
-                    '<th scope="col">Categorical?</th></tr></thead>'
+    if (!columnEventsTable) return;
     columnEventsTable.replaceChildren();
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Include?', 'Column name (unique entries)', 'Categorical?'].forEach(text => {
+        const th = document.createElement('th');
+        th.scope = 'col';
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    columnEventsTable.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
     if (columnList) {
         for (let i = 0; i < columnList.length; i++) {
-            let columnName = columnList[i]
-            let column = "column_" + i;
-            let useName = column + "_use";
-            let categoryName = column + "_category";
-            let columnNameField = column + "_name";
-            let categoryBoxes = '<td><input type="checkbox" class="form-check-input form-check" ' +
-                'name="' + categoryName + '" id="' + categoryName + '">' +
-                '<input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
-                '" value="' + columnName + '"></td>';
+            const columnName = columnList[i];
+            const column = 'column_' + i;
 
-            let row = '<tr class="table-active"><td><input type="checkbox" ' +
-                'class="form-check-input form-check" name="' + useName + '" id="' + useName + '"></td>' +
-                '<td>' + columnName + ' (' + columnCounts[columnName] + ')</td>' + categoryBoxes + '</tr>';
-            contents = contents + row;
+            const row = document.createElement('tr');
+            row.className = 'table-active';
+
+            const tdUse = document.createElement('td');
+            const useCheckbox = document.createElement('input');
+            useCheckbox.type = 'checkbox';
+            useCheckbox.className = 'form-check-input form-check';
+            useCheckbox.name = column + '_use';
+            useCheckbox.id = column + '_use';
+            tdUse.appendChild(useCheckbox);
+            row.appendChild(tdUse);
+
+            const tdName = document.createElement('td');
+            tdName.textContent = columnName + ' (' + columnCounts[columnName] + ')';
+            row.appendChild(tdName);
+
+            const tdCategory = document.createElement('td');
+            const categoryCheckbox = document.createElement('input');
+            categoryCheckbox.type = 'checkbox';
+            categoryCheckbox.className = 'form-check-input form-check';
+            categoryCheckbox.name = column + '_category';
+            categoryCheckbox.id = column + '_category';
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'text';
+            hiddenInput.hidden = true;
+            hiddenInput.id = column + '_name';
+            hiddenInput.name = column + '_name';
+            hiddenInput.value = columnName;
+            tdCategory.appendChild(categoryCheckbox);
+            tdCategory.appendChild(hiddenInput);
+            row.appendChild(tdCategory);
+
+            tbody.appendChild(row);
         }
     }
-    columnEventsTable.insertAdjacentHTML('beforeend', contents + '</table>')
+    columnEventsTable.appendChild(tbody);
 }
 
 /**
@@ -119,23 +153,54 @@ function showEvents(columnList, columnCounts) {
  * 
  */
 function showIndices(columnList) {
-    document.getElementById('show_indices_section').style.display = '';
+    const section = document.getElementById('show_indices_section');
+    if (section) section.style.display = '';
     const indicesTable = document.getElementById('show_indices_table');
-    let contents = '<thead><tr><th scope="col">Include?</th><th scope="col">Column names</th>';
-    contents += '</tr></thead>';
+    if (!indicesTable) return;
     indicesTable.replaceChildren();
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Include?', 'Column names'].forEach(text => {
+        const th = document.createElement('th');
+        th.scope = 'col';
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    indicesTable.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
     if (columnList) {
         for (let i = 0; i < columnList.length; i++) {
-            let columnName = columnList[i]
-            let column = "column_" + i;
-            let useName = column + "_use";
-            let columnNameField = column + "_name";
-            let row = '<tr class="table-active"><td><input type="checkbox" ' +
-                'class="form-check-input form-check" name="' + useName + '" id="' + useName +
-                '"><input type="text" hidden id="' + columnNameField + '" name="' + columnNameField +
-                '" value="' + columnName + '"></td>' + '<td>' + columnName + '</td>';
-            contents = contents + row + '</tr>';
+            const columnName = columnList[i];
+            const column = 'column_' + i;
+
+            const row = document.createElement('tr');
+            row.className = 'table-active';
+
+            const tdUse = document.createElement('td');
+            const useCheckbox = document.createElement('input');
+            useCheckbox.type = 'checkbox';
+            useCheckbox.className = 'form-check-input form-check';
+            useCheckbox.name = column + '_use';
+            useCheckbox.id = column + '_use';
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'text';
+            hiddenInput.hidden = true;
+            hiddenInput.id = column + '_name';
+            hiddenInput.name = column + '_name';
+            hiddenInput.value = columnName;
+            tdUse.appendChild(useCheckbox);
+            tdUse.appendChild(hiddenInput);
+            row.appendChild(tdUse);
+
+            const tdName = document.createElement('td');
+            tdName.textContent = columnName;
+            row.appendChild(tdName);
+
+            tbody.appendChild(row);
         }
     }
-    indicesTable.insertAdjacentHTML('beforeend', contents + '</table>')
+    indicesTable.appendChild(tbody);
 }

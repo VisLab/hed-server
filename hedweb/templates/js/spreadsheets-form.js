@@ -94,7 +94,7 @@ async function submitForm() {
     formData.append('worksheet_selected', worksheetName)
     const spreadsheetFile = getSpreadsheetFileName();
     const isExcel = fileHasValidExtension(spreadsheetFile, EXCEL_FILE_EXTENSIONS) &&
-        !document.getElementById("validate").checked;
+        document.getElementById('process_actions').value !== 'validate';
     clearFlashMessages();
     flashMessageOnScreen('Spreadsheet is being processed ...', 'success',
         'spreadsheet_flash')

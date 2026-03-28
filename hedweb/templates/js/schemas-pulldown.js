@@ -109,8 +109,14 @@ function populateSchemaVersionsDropdown(hedVersions) {
     hedVersionDropdown.replaceChildren();
     if (hedVersions.length > 0) {
         for (let i = 0; i < hedVersions.length; i++) {
-            hedVersionDropdown.insertAdjacentHTML('beforeend', '<option value=' + hedVersions[i].trim().split(' ')[0] + '>' + hedVersions[i] + '</option>');
+            const opt = document.createElement('option');
+            opt.value = hedVersions[i].trim().split(' ')[0];
+            opt.textContent = hedVersions[i];
+            hedVersionDropdown.appendChild(opt);
         }
     }
-    hedVersionDropdown.insertAdjacentHTML('beforeend', '<option value=' + OTHER_VERSION_OPTION + '>' + OTHER_VERSION_OPTION + '</option>');
+    const otherOpt = document.createElement('option');
+    otherOpt.value = OTHER_VERSION_OPTION;
+    otherOpt.textContent = OTHER_VERSION_OPTION;
+    hedVersionDropdown.appendChild(otherOpt);
 }
