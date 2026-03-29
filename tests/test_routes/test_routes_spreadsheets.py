@@ -97,6 +97,52 @@ class Test(TestRouteBase):
                 "The response data for invalid validation should have error messages",
             )
 
+    def test_spreadsheets_results_convert_to_long_valid(self):
+        with self.app.app_context():
+            input_data = {
+                bc.SCHEMA_VERSION: "8.0.0",
+                bc.COMMAND_OPTION: bc.COMMAND_TO_LONG,
+                bc.WORKSHEET_NAME: "LKT 8HED3",
+                bc.WORKSHEET_SELECTED: "LKT 8HED3",
+                "column_4_use": "on",
+                "column_4_name": "HED tags",
+                bc.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
+            }
+            response = self.app.test.post(
+                "/spreadsheets_submit",
+                content_type="multipart/form-data",
+                data=input_data,
+            )
+            self.assertIsInstance(response, Response, "spreadsheets_submit to_long should return a Response")
+            self.assertEqual(200, response.status_code, "To long conversion should return status 200")
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"], "Valid spreadsheet to_long should succeed")
+            self.assertTrue(response.data, "Converted spreadsheet should not be empty")
 
+    def test_spreadsheets_results_convert_to_short_valid(self):
+        with self.app.app_context():
+            input_data = {
+                bc.SCHEMA_VERSION: "8.0.0",
+                bc.COMMAND_OPTION: bc.COMMAND_TO_SHORT,
+                bc.WORKSHEET_NAME: "LKT 8HED3",
+                bc.WORKSHEET_SELECTED: "LKT 8HED3",
+                "column_4_use": "on",
+                "column_4_name": "HED tags",
+                bc.SPREADSHEET_FILE: self._get_file_buffer("ExcelMultipleSheets.xlsx"),
+            }
+            response = self.app.test.post(
+                "/spreadsheets_submit",
+                content_type="multipart/form-data",
+                data=input_data,
+            )
+            self.assertIsInstance(response, Response, "spreadsheets_submit to_short should return a Response")
+            self.assertEqual(200, response.status_code, "To short conversion should return status 200")
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"], "Valid spreadsheet to_short should succeed")
+            self.assertTrue(response.data, "Converted spreadsheet should not be empty")
+
+
+if __name__ == "__main__":
+    unittest.main()
 if __name__ == "__main__":
     unittest.main()
