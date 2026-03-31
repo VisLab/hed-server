@@ -217,6 +217,36 @@ class Test(TestRouteBase):
                 "The response data for invalid validation should have error messages",
             )
 
+    def test_sidecars_results_extract_spreadsheet_valid(self):
+        with self.app.app_context():
+            input_data = {
+                bc.COMMAND_OPTION: bc.COMMAND_EXTRACT_SPREADSHEET,
+                bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+            }
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
+            self.assertIsInstance(response, Response, "sidecars_submit extract should return a Response")
+            self.assertEqual(200, response.status_code, "Sidecar extract should return status 200")
+            headers_dict = dict(response.headers)
+            self.assertEqual(
+                "success",
+                headers_dict["Category"],
+                "Sidecar extract should succeed for a valid sidecar",
+            )
+            self.assertTrue(response.data, "Extracted spreadsheet should not be empty")
+
+    def test_sidecars_results_merge_spreadsheet_no_spreadsheet(self):
+        """Merge without a spreadsheet file should return an error."""
+        with self.app.app_context():
+            input_data = {
+                bc.COMMAND_OPTION: bc.COMMAND_MERGE_SPREADSHEET,
+                bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+            }
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
+            self.assertIsInstance(response, Response)
+            self.assertEqual(200, response.status_code)
+            headers_dict = dict(response.headers)
+            self.assertEqual("error", headers_dict["Category"], "Merge without spreadsheet should return error")
+
 
 if __name__ == "__main__":
     unittest.main()

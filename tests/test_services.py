@@ -386,6 +386,78 @@ class Test(TestWebBase):
             )
             self.assertEqual(json.dumps("8.2.0"), results["schema_version"], "Version 8.2.0 was used")
 
+    def test_normalize_boolean(self):
+        from hedweb.process_service import normalize_boolean
+
+        # None → default
+        self.assertFalse(normalize_boolean(None))
+        self.assertTrue(normalize_boolean(None, default=True))
+
+        # Actual booleans pass through unchanged
+        self.assertTrue(normalize_boolean(True))
+        self.assertFalse(normalize_boolean(False))
+
+        # Truthy strings
+        for truthy in ("true", "True", "TRUE", "on", "ON", "1", "yes", "YES"):
+            self.assertTrue(normalize_boolean(truthy), f"'{truthy}' should normalize to True")
+
+        # Falsy strings
+        for falsy in ("false", "off", "0", "no", "", "random"):
+            self.assertFalse(normalize_boolean(falsy), f"'{falsy}' should normalize to False")
+
+        # Integers
+        self.assertTrue(normalize_boolean(1))
+        self.assertTrue(normalize_boolean(42))
+        self.assertFalse(normalize_boolean(0))
+
+        # Other types → default
+        self.assertFalse(normalize_boolean([]))
+        self.assertFalse(normalize_boolean({}))
+
+    def test_set_definitions(self):
+        from hed.schema import load_schema_version
+
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/def_test.json")
+        with open(def_path) as f:
+            def_string = f.read()
+
+        # With a valid definition string
+        arguments = {bc.SCHEMA: schema}
+        params = {bc.DEFINITION_STRING: def_string}
+        ProcessServices.set_definitions(arguments, params)
+        self.assertIn(bc.DEFINITIONS, arguments)
+
+        # With no definition string — should still populate DEFINITIONS key (empty)
+        arguments2 = {bc.SCHEMA: schema}
+        params2 = {}
+        ProcessServices.set_definitions(arguments2, params2)
+        self.assertIn(bc.DEFINITIONS, arguments2)
+
+    def test_set_queries(self):
+        from hedweb.process_service import ProcessServices
+
+        # With queries present
+        arguments = {}
+        params = {bc.QUERIES: ["Event", "Sensory-event"], bc.QUERY_NAMES: ["q1", "q2"]}
+        ProcessServices.set_queries(arguments, params)
+        self.assertIn(bc.QUERIES, arguments)
+        self.assertEqual(arguments[bc.QUERIES], ["Event", "Sensory-event"])
+        self.assertEqual(arguments[bc.QUERY_NAMES], ["q1", "q2"])
+
+        # With no queries key — should not set anything
+        arguments2 = {}
+        ProcessServices.set_queries(arguments2, {})
+        self.assertNotIn(bc.QUERIES, arguments2)
+        self.assertNotIn(bc.QUERY_NAMES, arguments2)
+
+        # With empty queries list — should not set
+        arguments3 = {}
+        ProcessServices.set_queries(arguments3, {bc.QUERIES: []})
+        self.assertNotIn(bc.QUERIES, arguments3)
+
 
 if __name__ == "__main__":
     unittest.main()

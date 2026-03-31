@@ -120,3 +120,84 @@ class Test(TestRouteBase):
             json_data2 = json.loads(response.data)
             results = json_data2["results"]
             self.assertEqual("success", results["msg_category"], "should process successfully")
+
+    def test_submit_service_strings_to_long_route(self):
+        with self.app.app_context():
+            json_data = {
+                bc.CHECK_FOR_WARNINGS: "on",
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.STRING_LIST: ["Sensory-event"],
+                bc.SERVICE: "strings_to_long",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            self.assertEqual(200, response.status_code)
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertIsInstance(results, dict, "strings_to_long should return a results dict")
+            self.assertEqual("success", results["msg_category"], "strings_to_long should succeed for valid tags")
+            self.assertTrue(results["data"], "strings_to_long should produce output data")
+
+    def test_submit_service_strings_to_short_route(self):
+        with self.app.app_context():
+            json_data = {
+                bc.CHECK_FOR_WARNINGS: "on",
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.STRING_LIST: ["Event/Sensory-event"],
+                bc.SERVICE: "strings_to_short",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            self.assertEqual(200, response.status_code)
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertIsInstance(results, dict, "strings_to_short should return a results dict")
+            self.assertEqual("success", results["msg_category"], "strings_to_short should succeed for valid tags")
+            self.assertTrue(results["data"], "strings_to_short should produce output data")
+
+    def test_submit_service_strings_to_long_invalid_route(self):
+        with self.app.app_context():
+            json_data = {
+                bc.CHECK_FOR_WARNINGS: "on",
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.STRING_LIST: ["Blech"],
+                bc.SERVICE: "strings_to_long",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            self.assertEqual(200, response.status_code)
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertEqual(
+                "warning", results["msg_category"], "strings_to_long should return warning for invalid tags"
+            )
+
+    def test_submit_service_strings_search_route(self):
+        with self.app.app_context():
+            json_data = {
+                bc.CHECK_FOR_WARNINGS: "on",
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.STRING_LIST: ["Sensory-event", "Event"],
+                bc.QUERIES: ["Sensory-event"],
+                bc.SERVICE: "strings_search",
+            }
+            response = self.app.test.post(
+                "/services_submit",
+                content_type="application/json",
+                data=json.dumps(json_data),
+            )
+            self.assertEqual(200, response.status_code)
+            json_data2 = json.loads(response.data)
+            results = json_data2["results"]
+            self.assertIsInstance(results, dict, "strings_search should return a results dict")
+            self.assertEqual("success", results["msg_category"], "strings_search should succeed")
+            self.assertTrue(results["data"], "strings_search should return match data")

@@ -318,6 +318,109 @@ class Test(TestWebBase):
                 "sidecar_validate msg_category should be success when no issues",
             )
 
+    def test_sidecar_extract_valid(self):
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        with self.app.app_context():
+            proc_sidecars = SidecarOperations()
+            proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")
+            proc_sidecars.command = base_constants.COMMAND_EXTRACT_SPREADSHEET
+            results = proc_sidecars.process()
+            self.assertIsInstance(results, dict, "sidecar_extract should return a dict")
+            self.assertEqual("success", results["msg_category"], "sidecar_extract should succeed")
+            self.assertTrue(results["data"], "sidecar_extract should produce TSV data")
+            self.assertIn("_extracted", results["output_display_name"], "output name should include _extracted suffix")
+            self.assertTrue(results["output_display_name"].endswith(".tsv"), "output should be a .tsv file")
+
+    def test_sidecar_extract_no_schema_required(self):
+        """Extract does not require a schema."""
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        with self.app.app_context():
+            proc_sidecars = SidecarOperations()
+            proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")
+            proc_sidecars.command = base_constants.COMMAND_EXTRACT_SPREADSHEET
+            # schema deliberately left as None
+            results = proc_sidecars.process()
+            self.assertEqual("success", results["msg_category"], "sidecar_extract should not need a schema")
+
+    def test_sidecar_merge_no_spreadsheet_raises(self):
+        """Merge should raise HedFileError when no spreadsheet is provided."""
+        from hed.errors.exceptions import HedFileError
+
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        with self.app.app_context():
+            proc_sidecars = SidecarOperations()
+            proc_sidecars.sidecar = Sidecar(files=json_path, name="bids_events")
+            proc_sidecars.command = base_constants.COMMAND_MERGE_SPREADSHEET
+            with self.assertRaises(HedFileError):
+                proc_sidecars.process()
+
+    def test_sidecar_merge_valid(self):
+        """Merge a spreadsheet back into a sidecar via round-trip extract then merge."""
+        import io
+
+        from hed.models import SpreadsheetInput
+
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        with self.app.app_context():
+            # Step 1: extract
+            sidecar = Sidecar(files=json_path, name="bids_events")
+            extract_op = SidecarOperations()
+            extract_op.sidecar = sidecar
+            extract_op.command = base_constants.COMMAND_EXTRACT_SPREADSHEET
+            extract_results = extract_op.process()
+            self.assertEqual("success", extract_results["msg_category"])
+
+            # Step 2: load the extracted TSV as a SpreadsheetInput and merge
+            tsv_data = extract_results["data"]
+            spreadsheet = SpreadsheetInput(
+                file=io.StringIO(tsv_data),
+                file_type=".tsv",
+                tag_columns=[3],
+                has_column_names=True,
+                name="extracted.tsv",
+            )
+            merge_op = SidecarOperations()
+            merge_op.sidecar = Sidecar(files=json_path, name="bids_events")
+            merge_op.spreadsheet = spreadsheet
+            merge_op.command = base_constants.COMMAND_MERGE_SPREADSHEET
+            merge_results = merge_op.process()
+            self.assertIsInstance(merge_results, dict, "sidecar_merge should return a dict")
+            self.assertEqual("success", merge_results["msg_category"], "sidecar_merge should succeed")
+            self.assertTrue(merge_results["data"], "sidecar_merge should produce JSON data")
+            self.assertIn("_merged_with_spreadsheet", merge_results["output_display_name"])
+            self.assertTrue(merge_results["output_display_name"].endswith(".json"))
+
+    def test_sidecar_merge_without_sidecar(self):
+        """Merge with no original sidecar creates a new one from the spreadsheet."""
+        import io
+
+        from hed.models import SpreadsheetInput
+
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        with self.app.app_context():
+            # Extract first to get a valid 4-column spreadsheet
+            sidecar = Sidecar(files=json_path, name="bids_events")
+            extract_op = SidecarOperations()
+            extract_op.sidecar = sidecar
+            extract_op.command = base_constants.COMMAND_EXTRACT_SPREADSHEET
+            extract_results = extract_op.process()
+
+            tsv_data = extract_results["data"]
+            spreadsheet = SpreadsheetInput(
+                file=io.StringIO(tsv_data),
+                file_type=".tsv",
+                tag_columns=[3],
+                has_column_names=True,
+                name="extracted.tsv",
+            )
+            merge_op = SidecarOperations()
+            merge_op.sidecar = None  # no original sidecar
+            merge_op.spreadsheet = spreadsheet
+            merge_op.command = base_constants.COMMAND_MERGE_SPREADSHEET
+            merge_results = merge_op.process()
+            self.assertEqual("success", merge_results["msg_category"])
+            self.assertTrue(merge_results["data"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -145,6 +145,39 @@ class Test(TestWebBase):
         result = get_tag_columns(form_dict)
         self.assertEqual(result, [])
 
+    def test_get_column_numbers(self):
+        from hedweb.columns import get_column_numbers
+
+        form_dict = {
+            "column_1_check": "on",
+            "column_2_check": "off",
+            "column_3_check": "on",
+            "column_5_check": "on",
+            "other_field": "on",
+        }
+        result = get_column_numbers(form_dict)
+        self.assertIsInstance(result, list)
+        self.assertIn(1, result, "column 1 should be selected")
+        self.assertIn(3, result, "column 3 should be selected")
+        self.assertIn(5, result, "column 5 should be selected")
+        self.assertNotIn(2, result, "column 2 should not be selected (off)")
+
+    def test_get_column_numbers_empty(self):
+        from hedweb.columns import get_column_numbers
+
+        self.assertEqual(get_column_numbers({}), [], "empty form dict should return empty list")
+        self.assertEqual(
+            get_column_numbers({"other": "on"}),
+            [],
+            "non-column keys should not be included",
+        )
+
+    def test_get_column_numbers_all_off(self):
+        from hedweb.columns import get_column_numbers
+
+        form_dict = {"column_1_check": "off", "column_2_check": "off"}
+        self.assertEqual(get_column_numbers(form_dict), [], "all-off checkboxes should return empty list")
+
 
 if __name__ == "__main__":
     unittest.main()
