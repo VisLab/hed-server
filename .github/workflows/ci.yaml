@@ -207,7 +207,7 @@ jobs:
 
     - name: Upload coverage to Codecov (merged)
       if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         files: ./merged/coverage.xml
         disable_search: true
