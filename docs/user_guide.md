@@ -195,7 +195,7 @@ Validates HED annotations in a BIDS events file or other tabular file. An excell
 
 **Returns:** A downloadable `.txt` file of error messages if errors are found.
 
-**Note:** This tool validates a single tabular file. For full BIDS dataset validation with inherited sidecars and library schemas, use the [JavaScript HEDTools](https://www.hedtags.org/hed-javascript) which has a browser-based validator that works on the entire dataset. However, from a practical viewpoint, it is better to debug a single file first.
+**Note:** This tool validates a single tabular file. For full BIDS dataset validation with inherited sidecars and library schemas, use the [JavaScript HEDTools](https://www.hedtags.org/hed-javascript) which has a browser-based validator [hed-web](https://www.hedtags.org/hed-web) that works on the entire dataset. However, from a practical viewpoint, it is better to debug a single file first.
 
 ### Check HED quality
 
