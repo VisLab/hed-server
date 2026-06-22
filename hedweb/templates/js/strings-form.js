@@ -121,20 +121,22 @@ async function submitStringForm() {
         if (!response.ok) {
             let errorMessage = `Status: ${response.status}`;
             try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorMessage;
-            } catch (e) {
+                // Read response body once as text, then attempt JSON parse
+                const responseText = await response.text();
                 try {
-                    const errorText = await response.text();
-                    if (errorText.includes('<html') || errorText.includes('<HTML')) {
-                        console.error("Server returned HTML error page:", errorText);
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.message || errorMessage;
+                } catch (parseErr) {
+                    // Not JSON, check if it's HTML or use as-is
+                    if (responseText.includes('<html') || responseText.includes('<HTML')) {
+                        console.error("Server returned HTML error page:", responseText);
                         errorMessage = `Server error: ${response.statusText}`;
                     } else {
-                        errorMessage = errorText;
+                        errorMessage = responseText || errorMessage;
                     }
-                } catch (parseErr) {
-                    console.error("Could not parse error response:", parseErr);
                 }
+            } catch (readErr) {
+                console.error("Could not read error response:", readErr);
             }
             throw new Error(errorMessage);
         }
