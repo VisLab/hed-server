@@ -143,7 +143,7 @@ async function submitForm() {
 
     } catch (error) {
         if (error.response) {
-            handleResponseFailure(error.response, error.message, error, defaultName, 'spreadsheet_flash');
+            handleResponseFailure(error.response, '', error, defaultName, 'spreadsheet_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
