@@ -119,26 +119,12 @@ async function submitStringForm() {
         });
 
         if (!response.ok) {
-            let errorMessage = `HED string validation error: Status ${response.status}`;
-            try {
-                // Read response body once as text, then attempt JSON parse
-                const responseText = await response.text();
-                try {
-                    const errorData = JSON.parse(responseText);
-                    errorMessage = 'HED string validation error: ' + (errorData.msg || errorData.message || `Status ${response.status}`);
-                } catch (parseErr) {
-                    // Not JSON, check if it's HTML or use as-is
-                    if (responseText.includes('<html') || responseText.includes('<HTML')) {
-                        console.error("Server returned HTML error page:", responseText);
-                        errorMessage = `HED string validation error: Server error: ${response.statusText}`;
-                    } else {
-                        errorMessage = 'HED string validation error: ' + (responseText || `Status ${response.status}`);
-                    }
-                }
-            } catch (readErr) {
-                console.error("Could not read error response:", readErr);
-            }
-            throw new Error(errorMessage);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            // Prepend context-specific prefix if not already present
+            const contextMessage = errorMessage.includes('HED string validation error:') ? 
+                errorMessage : 
+                `HED string validation error: ${errorMessage}`;
+            throw new Error(contextMessage);
         }
 
         const hedInfo = await response.json();

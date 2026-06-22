@@ -161,6 +161,34 @@ function prepareSubmitForm(type) {
     return [formData, defaultName]
 }
 
+/**
+ * Parses error response from server, handling JSON, HTML, and plain text formats.
+ * Reads response body once as text, then attempts JSON parsing with fallbacks.
+ * @param {Response} response - The fetch response object (must have !response.ok)
+ * @returns {Promise<string>} - Formatted error message for display to user
+ */
+async function getErrorMessageFromResponse(response) {
+    let errorMessage = `Status: ${response.status}`;
+    try {
+        // Read response body once as text, then attempt JSON parse
+        const responseText = await response.text();
+        try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.msg || errorData.message || errorMessage;
+        } catch (parseErr) {
+            // Not JSON, check if it's HTML or use as-is
+            if (responseText.includes('<html') || responseText.includes('<HTML')) {
+                console.error("Server returned HTML error page:", responseText);
+                errorMessage = `Server error: ${response.statusText}`;
+            } else {
+                errorMessage = responseText || errorMessage;
+            }
+        }
+    } catch (readErr) {
+        console.error("Could not read error response:", readErr);
+    }
+    return errorMessage;
+}
 
 /**
  * Gets standard failure response for download
