@@ -93,30 +93,6 @@ def schemas_results() -> "Response":
         return jsonify(get_exception_message(ex))
 
 
-@route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=["POST"])
-def schema_version_results() -> Response:
-    """Return the version of the schema as a JSON response.
-
-    Returns:
-        Response: A JSON response containing the version of the schema.
-
-    """
-
-    try:
-        hed_info = {}
-        if bc.SCHEMA_PATH in request.files:
-            f = request.files[bc.SCHEMA_PATH]
-            name, extension = get_parsed_name(secure_filename(f.filename))
-            hed_schema = hedschema.from_string(
-                f.stream.read(file_constants.BYTE_LIMIT).decode("utf-8"),
-                schema_format=extension,
-            )
-            hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
-        return jsonify(hed_info)
-    except Exception as ex:
-        return jsonify(handle_error(ex, return_as_str=False))
-
-
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=["GET"])
 def schema_versions_results() -> Response:
     """Return JSON response with HED versions.

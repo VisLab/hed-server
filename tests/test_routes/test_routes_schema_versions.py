@@ -18,19 +18,6 @@ class Test(TestRouteBase):
             v_list = v_dict["schema_version_list"]
             self.assertIsInstance(v_list, list, "The versions are in a list")
 
-    def test_schemas_version_results1(self):
-        with self.app.app_context():
-            the_file = FileStorage(*self._get_file_buffer("HED8.0.0.xml"))
-            data = {"schema_path": the_file}
-            response = self.app.test.post("/schema_version", content_type="multipart/form-data", data=data)
-            self.assertEqual(200, response.status_code, "The HED version list does not require data")
-            response_dict = json.loads(response.data.decode("utf-8"))
-            self.assertEqual(
-                json.dumps("8.0.0"),
-                response_dict["schema_version"],
-                "The HED version should be returned",
-            )
-
     def test_schema_versions_without_prereleases(self):
         """Test schema_versions endpoint without include_prereleases parameter."""
         with self.app.app_context():
