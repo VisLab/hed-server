@@ -198,13 +198,17 @@ function setOptions() {
  */
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
-    const files = document.getElementById('schema_folder').files;
-    for (const file of files) {
-        // Preserve relative paths using the webkitRelativePath
-        formData.append('files[]', file, file.webkitRelativePath);
+    
+    // Only add folder files if any are selected
+    const schemaFolderInput = document.getElementById('schema_folder');
+    if (schemaFolderInput && schemaFolderInput.files && schemaFolderInput.files.length > 0) {
+        const files = schemaFolderInput.files;
+        for (const file of files) {
+            // Preserve relative paths using the webkitRelativePath
+            formData.append('schema_folder[]', file, file.webkitRelativePath);
+        }
     }
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
+    
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     try {
@@ -219,8 +223,26 @@ async function submitSchemaForm() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred`);
+            let errorMessage = `Status: ${response.status}`;
+            try {
+                // Try to parse JSON error response
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // If response is HTML (error page), try to extract meaningful info
+                try {
+                    const errorText = await response.text();
+                    if (errorText.includes('<html') || errorText.includes('<HTML')) {
+                        console.error("Server returned HTML error page:", errorText);
+                        errorMessage = `Server error: ${response.statusText}`;
+                    } else {
+                        errorMessage = errorText;
+                    }
+                } catch (parseErr) {
+                    console.error("Could not parse error response:", parseErr);
+                }
+            }
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -230,7 +252,7 @@ async function submitSchemaForm() {
         handleResponse1(response, download, defaultName, 'schema_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
+            handleResponseFailure(error.response, error.message, error, defaultName, 'schema_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

@@ -92,15 +92,67 @@ function getFilenameFromResponseHeader(headers, defaultName) {
 
 /**
  * Create the form data and default display name for the submit form.
+ * Selectively builds FormData to avoid including empty file inputs that cause
+ * malformed multipart data and race conditions on the server.
  * @param {string} type - The ID of the form to construct the data from.
  * @returns {[FormData, string]} - The form data and a default display name.
  */
 function prepareSubmitForm(type) {
     const form = document.getElementById(`${type}_form`);
-    const formData = new FormData(form);
+    const formData = new FormData();
+    
+    // Collect form elements
+    const formElements = form.elements;
+    
+    // Process each form element, excluding empty file inputs
+    for (let i = 0; i < formElements.length; i++) {
+        const element = formElements[i];
+        const elementName = element.name;
+        const elementType = element.type;
+        
+        // Skip unnamed elements and schema/sidecar/spreadsheet/event folder inputs
+        if (!elementName || elementName.endsWith('_folder') || elementName === 'schema_folder[]' || 
+            elementName === 'second_schema_folder[]' || elementName === 'sidecar_folder[]' || 
+            elementName === 'spreadsheet_folder[]') {
+            continue;
+        }
+        
+        // Handle file inputs - only add if files are selected
+        if (elementType === 'file') {
+            if (element.files && element.files.length > 0) {
+                for (let j = 0; j < element.files.length; j++) {
+                    formData.append(elementName, element.files[j]);
+                }
+            }
+            continue;
+        }
+        
+        // Handle radio buttons - only add if checked
+        if (elementType === 'radio') {
+            if (element.checked) {
+                formData.append(elementName, element.value);
+            }
+            continue;
+        }
+        
+        // Handle checkboxes - only add if checked
+        if (elementType === 'checkbox') {
+            if (element.checked) {
+                formData.append(elementName, element.value);
+            }
+            continue;
+        }
+        
+        // Handle all other inputs (text, hidden, etc.)
+        if (element.value) {
+            formData.append(elementName, element.value);
+        }
+    }
+    
     const selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value);
     formData.append('csrf_token', "{{ csrf_token() }}");
+    
     const fileDesignator = document.getElementById(`${type}_file`);
     let defaultName = "default_processed"
     if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {

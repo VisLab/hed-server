@@ -247,8 +247,26 @@ async function submitForm() {
           });
 
           if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred Status: ${response.status}`);
+            let errorMessage = `Status: ${response.status}`;
+            try {
+                // Try to parse JSON error response
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // If response is HTML (error page), try to extract meaningful info
+                try {
+                    const errorText = await response.text();
+                    if (errorText.includes('<html') || errorText.includes('<HTML')) {
+                        console.error("Server returned HTML error page:", errorText);
+                        errorMessage = `Server error: ${response.statusText}`;
+                    } else {
+                        errorMessage = errorText;
+                    }
+                } catch (parseErr) {
+                    console.error("Could not parse error response:", parseErr);
+                }
+            }
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -262,7 +280,7 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'events_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, defaultName, 'events_flash');
+            handleResponseFailure(error.response, error.message, error, defaultName, 'events_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

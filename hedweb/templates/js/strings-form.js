@@ -119,8 +119,24 @@ async function submitStringForm() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `A response error occurred`);
+            let errorMessage = `Status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                try {
+                    const errorText = await response.text();
+                    if (errorText.includes('<html') || errorText.includes('<HTML')) {
+                        console.error("Server returned HTML error page:", errorText);
+                        errorMessage = `Server error: ${response.statusText}`;
+                    } else {
+                        errorMessage = errorText;
+                    }
+                } catch (parseErr) {
+                    console.error("Could not parse error response:", parseErr);
+                }
+            }
+            throw new Error(errorMessage);
         }
 
         const hedInfo = await response.json();
