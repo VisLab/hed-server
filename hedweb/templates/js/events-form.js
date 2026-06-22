@@ -247,8 +247,8 @@ async function submitForm() {
           });
 
           if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred Status: ${response.status}`);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -262,7 +262,7 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'events_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, defaultName, 'events_flash');
+            handleResponseFailure(error.response, 'Event validation error: ', error, defaultName, 'events_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

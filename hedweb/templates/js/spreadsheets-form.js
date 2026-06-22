@@ -110,8 +110,8 @@ async function submitForm() {
             credentials: 'same-origin'
         });
         if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred`);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -125,7 +125,7 @@ async function submitForm() {
 
     } catch (error) {
         if (error.response) {
-            handleResponseFailure(error.response, message, error, defaultName, 'spreadsheet_flash');
+            handleResponseFailure(error.response, 'Spreadsheet validation error: ', error, defaultName, 'spreadsheet_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

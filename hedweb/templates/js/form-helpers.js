@@ -92,15 +92,67 @@ function getFilenameFromResponseHeader(headers, defaultName) {
 
 /**
  * Create the form data and default display name for the submit form.
+ * Selectively builds FormData to avoid including empty file inputs that cause
+ * malformed multipart data and race conditions on the server.
  * @param {string} type - The ID of the form to construct the data from.
  * @returns {[FormData, string]} - The form data and a default display name.
  */
 function prepareSubmitForm(type) {
     const form = document.getElementById(`${type}_form`);
-    const formData = new FormData(form);
+    const formData = new FormData();
+    
+    // Collect form elements
+    const formElements = form.elements;
+    
+    // Process each form element, excluding empty file inputs
+    for (let i = 0; i < formElements.length; i++) {
+        const element = formElements[i];
+        const elementName = element.name;
+        const elementType = element.type;
+        
+        // Skip unnamed elements and schema/sidecar/spreadsheet/event folder inputs
+        if (!elementName || elementName.endsWith('_folder') || elementName === 'schema_folder[]' || 
+            elementName === 'second_schema_folder[]' || elementName === 'sidecar_folder[]' || 
+            elementName === 'spreadsheet_folder[]') {
+            continue;
+        }
+        
+        // Handle file inputs - only add if files are selected and element is visible
+        if (elementType === 'file') {
+            // Skip hidden elements (offsetParent is null when element is not rendered)
+            if (element.offsetParent !== null && element.files && element.files.length > 0) {
+                for (let j = 0; j < element.files.length; j++) {
+                    formData.append(elementName, element.files[j]);
+                }
+            }
+            continue;
+        }
+        
+        // Handle radio buttons - only add if checked
+        if (elementType === 'radio') {
+            if (element.checked) {
+                formData.append(elementName, element.value);
+            }
+            continue;
+        }
+        
+        // Handle checkboxes - only add if checked
+        if (elementType === 'checkbox') {
+            if (element.checked) {
+                formData.append(elementName, element.value);
+            }
+            continue;
+        }
+        
+        // Handle all other inputs (text, hidden, etc.)
+        if (element.value) {
+            formData.append(elementName, element.value);
+        }
+    }
+    
     const selectedElement = document.getElementById("process_actions");
     formData.append("command_option", selectedElement.value);
-    formData.append('csrf_token', "{{ csrf_token() }}");
+    
     const fileDesignator = document.getElementById(`${type}_file`);
     let defaultName = "default_processed"
     if (fileDesignator && fileDesignator.files && fileDesignator.files.length > 0) {
@@ -109,6 +161,36 @@ function prepareSubmitForm(type) {
     return [formData, defaultName]
 }
 
+/**
+ * Parses error response from server, handling JSON, HTML, and plain text formats.
+ * Reads response body once as text, then attempts JSON parsing with fallbacks.
+ * @param {Response} response - The fetch response object (must have !response.ok)
+ * @returns {Promise<string>} - Formatted error message for display to user
+ */
+async function getErrorMessageFromResponse(response) {
+    let errorMessage = `Status: ${response.status}`;
+    try {
+        // Read response body once as text, then attempt JSON parse
+        const responseText = await response.text();
+        try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.msg || errorData.message || errorMessage;
+        } catch (parseErr) {
+            // Not JSON, check if it's HTML or use as-is
+            if (responseText.includes('<html') || responseText.includes('<HTML')) {
+                // Log only first 500 chars to avoid performance/security issues
+                const truncated = responseText.substring(0, 500);
+                console.error(`Server returned HTML error page (${response.status}):`, truncated, responseText.length > 500 ? '...(truncated)' : '');
+                errorMessage = `Server error: ${response.status} ${response.statusText}`;
+            } else {
+                errorMessage = responseText || errorMessage;
+            }
+        }
+    } catch (readErr) {
+        console.error("Could not read error response:", readErr);
+    }
+    return errorMessage;
+}
 
 /**
  * Gets standard failure response for download

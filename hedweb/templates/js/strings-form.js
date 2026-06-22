@@ -119,8 +119,12 @@ async function submitStringForm() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `A response error occurred`);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            // Prepend context-specific prefix if not already present
+            const contextMessage = errorMessage.includes('HED string validation error:') ? 
+                errorMessage : 
+                `HED string validation error: ${errorMessage}`;
+            throw new Error(contextMessage);
         }
 
         const hedInfo = await response.json();

@@ -198,13 +198,29 @@ function setOptions() {
  */
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
-    const files = document.getElementById('schema_folder').files;
-    for (const file of files) {
-        // Preserve relative paths using the webkitRelativePath
-        formData.append('files[]', file, file.webkitRelativePath);
+    
+    // Only add folder files if schema_folder_option is selected AND files exist
+    const schemaFolderOption = document.getElementById('schema_folder_option');
+    const schemaFolderInput = document.getElementById('schema_folder');
+    if (schemaFolderOption && schemaFolderOption.checked && schemaFolderInput && schemaFolderInput.files && schemaFolderInput.files.length > 0) {
+        const files = schemaFolderInput.files;
+        for (const file of files) {
+            // Preserve relative paths using the webkitRelativePath
+            formData.append('schema_folder[]', file, file.webkitRelativePath);
+        }
     }
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
+
+    // Add second schema folder files if second_schema_folder_option is selected AND files exist
+    const secondSchemaFolderOption = document.getElementById('second_schema_folder_option');
+    const secondSchemaFolderInput = document.getElementById('second_schema_folder');
+    if (secondSchemaFolderOption && secondSchemaFolderOption.checked && secondSchemaFolderInput && secondSchemaFolderInput.files && secondSchemaFolderInput.files.length > 0) {
+        const files = secondSchemaFolderInput.files;
+        for (const file of files) {
+            // Preserve relative paths using the webkitRelativePath
+            formData.append('second_schema_folder[]', file, file.webkitRelativePath);
+        }
+    }
+    
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
     try {
@@ -219,8 +235,8 @@ async function submitSchemaForm() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred`);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -230,7 +246,7 @@ async function submitSchemaForm() {
         handleResponse1(response, download, defaultName, 'schema_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, defaultName, 'schema_flash');
+            handleResponseFailure(error.response, 'Schema validation error: ', error, defaultName, 'schema_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

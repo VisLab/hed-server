@@ -132,8 +132,8 @@ async function submitForm() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json()
-            const error = new Error(errorData.message || `A response error occurred`);
+            const errorMessage = await getErrorMessageFromResponse(response);
+            const error = new Error(errorMessage);
             error.response = response;
             throw error;
         }
@@ -141,10 +141,10 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'sidecar_flash')
     } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, message, error, displayName, 'sidecar_flash');
+            handleResponseFailure(error.response, 'Sidecar validation error: ', error, defaultName, 'sidecar_flash');
         } else {
             // Network or unexpected error
-            const info = `Unexpected error occurred [Source: ${displayName}][Error: ${error.message}]`;
+            const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
             flashMessageOnScreen(info, 'error', 'sidecar_flash');
         }
     }
