@@ -208,6 +208,16 @@ async function submitSchemaForm() {
             formData.append('schema_folder[]', file, file.webkitRelativePath);
         }
     }
+
+    // Add second schema folder files if selected (for compare schemas feature)
+    const secondSchemaFolderInput = document.getElementById('second_schema_folder');
+    if (secondSchemaFolderInput && secondSchemaFolderInput.files && secondSchemaFolderInput.files.length > 0) {
+        const files = secondSchemaFolderInput.files;
+        for (const file of files) {
+            // Preserve relative paths using the webkitRelativePath
+            formData.append('second_schema_folder[]', file, file.webkitRelativePath);
+        }
+    }
     
     clearFlashMessages();
     flashMessageOnScreen('Schema is being processed...', 'success','schema_flash')
@@ -229,7 +239,7 @@ async function submitSchemaForm() {
                 const responseText = await response.text();
                 try {
                     const errorData = JSON.parse(responseText);
-                    errorMessage = errorData.message || errorMessage;
+                    errorMessage = errorData.msg || errorData.message || errorMessage;
                 } catch (parseErr) {
                     // Not JSON, check if it's HTML or use as-is
                     if (responseText.includes('<html') || responseText.includes('<HTML')) {

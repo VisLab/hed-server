@@ -253,7 +253,7 @@ async function submitForm() {
                 const responseText = await response.text();
                 try {
                     const errorData = JSON.parse(responseText);
-                    errorMessage = errorData.message || errorMessage;
+                    errorMessage = errorData.msg || errorData.message || errorMessage;
                 } catch (parseErr) {
                     // Not JSON, check if it's HTML or use as-is
                     if (responseText.includes('<html') || responseText.includes('<HTML')) {
