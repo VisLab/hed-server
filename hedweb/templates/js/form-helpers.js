@@ -178,8 +178,10 @@ async function getErrorMessageFromResponse(response) {
         } catch (parseErr) {
             // Not JSON, check if it's HTML or use as-is
             if (responseText.includes('<html') || responseText.includes('<HTML')) {
-                console.error("Server returned HTML error page:", responseText);
-                errorMessage = `Server error: ${response.statusText}`;
+                // Log only first 500 chars to avoid performance/security issues
+                const truncated = responseText.substring(0, 500);
+                console.error(`Server returned HTML error page (${response.status}):`, truncated, responseText.length > 500 ? '...(truncated)' : '');
+                errorMessage = `Server error: ${response.status} ${response.statusText}`;
             } else {
                 errorMessage = responseText || errorMessage;
             }
