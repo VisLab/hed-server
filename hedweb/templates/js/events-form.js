@@ -280,7 +280,7 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'events_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, '', error, defaultName, 'events_flash');
+            handleResponseFailure(error.response, 'Event validation error: ', error, defaultName, 'events_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

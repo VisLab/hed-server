@@ -119,20 +119,20 @@ async function submitStringForm() {
         });
 
         if (!response.ok) {
-            let errorMessage = `Status: ${response.status}`;
+            let errorMessage = `HED string validation error: Status ${response.status}`;
             try {
                 // Read response body once as text, then attempt JSON parse
                 const responseText = await response.text();
                 try {
                     const errorData = JSON.parse(responseText);
-                    errorMessage = errorData.msg || errorData.message || errorMessage;
+                    errorMessage = 'HED string validation error: ' + (errorData.msg || errorData.message || `Status ${response.status}`);
                 } catch (parseErr) {
                     // Not JSON, check if it's HTML or use as-is
                     if (responseText.includes('<html') || responseText.includes('<HTML')) {
                         console.error("Server returned HTML error page:", responseText);
-                        errorMessage = `Server error: ${response.statusText}`;
+                        errorMessage = `HED string validation error: Server error: ${response.statusText}`;
                     } else {
-                        errorMessage = responseText || errorMessage;
+                        errorMessage = 'HED string validation error: ' + (responseText || `Status ${response.status}`);
                     }
                 }
             } catch (readErr) {

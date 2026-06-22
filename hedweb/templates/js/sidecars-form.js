@@ -159,7 +159,7 @@ async function submitForm() {
         handleResponse(response, download, defaultName, 'sidecar_flash')
     } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, '', error, defaultName, 'sidecar_flash');
+            handleResponseFailure(error.response, 'Sidecar validation error: ', error, defaultName, 'sidecar_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;

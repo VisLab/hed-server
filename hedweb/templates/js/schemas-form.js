@@ -264,7 +264,7 @@ async function submitSchemaForm() {
         handleResponse1(response, download, defaultName, 'schema_flash');
       } catch (error) {
        if (error.response) {
-            handleResponseFailure(error.response, '', error, defaultName, 'schema_flash');
+            handleResponseFailure(error.response, 'Schema validation error: ', error, defaultName, 'schema_flash');
         } else {
             // Network or unexpected error
             const info = `Unexpected error occurred [Source: ${defaultName}][Error: ${error.message}]`;
