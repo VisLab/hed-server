@@ -117,9 +117,10 @@ function prepareSubmitForm(type) {
             continue;
         }
         
-        // Handle file inputs - only add if files are selected
+        // Handle file inputs - only add if files are selected and element is visible
         if (elementType === 'file') {
-            if (element.files && element.files.length > 0) {
+            // Skip hidden elements (offsetParent is null when element is not rendered)
+            if (element.offsetParent !== null && element.files && element.files.length > 0) {
                 for (let j = 0; j < element.files.length; j++) {
                     formData.append(elementName, element.files[j]);
                 }

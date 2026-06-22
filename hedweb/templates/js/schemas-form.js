@@ -199,9 +199,10 @@ function setOptions() {
 async function submitSchemaForm() {
     const [formData, defaultName] = prepareSubmitForm("schema");
     
-    // Only add folder files if any are selected
+    // Only add folder files if schema_folder_option is selected AND files exist
+    const schemaFolderOption = document.getElementById('schema_folder_option');
     const schemaFolderInput = document.getElementById('schema_folder');
-    if (schemaFolderInput && schemaFolderInput.files && schemaFolderInput.files.length > 0) {
+    if (schemaFolderOption && schemaFolderOption.checked && schemaFolderInput && schemaFolderInput.files && schemaFolderInput.files.length > 0) {
         const files = schemaFolderInput.files;
         for (const file of files) {
             // Preserve relative paths using the webkitRelativePath
@@ -209,9 +210,10 @@ async function submitSchemaForm() {
         }
     }
 
-    // Add second schema folder files if selected (for compare schemas feature)
+    // Add second schema folder files if second_schema_folder_option is selected AND files exist
+    const secondSchemaFolderOption = document.getElementById('second_schema_folder_option');
     const secondSchemaFolderInput = document.getElementById('second_schema_folder');
-    if (secondSchemaFolderInput && secondSchemaFolderInput.files && secondSchemaFolderInput.files.length > 0) {
+    if (secondSchemaFolderOption && secondSchemaFolderOption.checked && secondSchemaFolderInput && secondSchemaFolderInput.files && secondSchemaFolderInput.files.length > 0) {
         const files = secondSchemaFolderInput.files;
         for (const file of files) {
             // Preserve relative paths using the webkitRelativePath
