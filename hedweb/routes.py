@@ -6,11 +6,10 @@ import json
 
 from flask import Blueprint, Response, current_app, jsonify, render_template, request
 from hed import schema as hedschema
-from werkzeug.utils import secure_filename
 
 from hedweb.columns import get_columns_request
 from hedweb.constants import base_constants as bc
-from hedweb.constants import file_constants, page_constants, route_constants
+from hedweb.constants import page_constants, route_constants
 from hedweb.event_operations import EventOperations
 from hedweb.process_form import ProcessForm
 from hedweb.process_service import ProcessServices
@@ -21,7 +20,6 @@ from hedweb.string_operations import StringOperations
 from hedweb.web_util import (
     convert_hed_versions,
     get_exception_message,
-    get_parsed_name,
     handle_error,
     handle_http_error,
     package_results,
