@@ -99,7 +99,8 @@ class SchemaOperations(BaseOperations):
 
         schema_name = self.schema.name
         with tempfile.TemporaryDirectory() as tmpdir:
-            base_dir = os.path.join(tmpdir, f"{schema_name}_converted")
+            merged_status = "merged" if self.save_merged else "unmerged"
+            base_dir = os.path.join(tmpdir, f"{schema_name}_converted_{merged_status}")
             os.makedirs(base_dir, exist_ok=True)
             # Write all the formats to the temp directory.
             self.schema.save_as_xml(
