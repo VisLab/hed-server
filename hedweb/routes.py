@@ -6,11 +6,10 @@ import json
 
 from flask import Blueprint, Response, current_app, jsonify, render_template, request
 from hed import schema as hedschema
-from werkzeug.utils import secure_filename
 
 from hedweb.columns import get_columns_request
 from hedweb.constants import base_constants as bc
-from hedweb.constants import file_constants, page_constants, route_constants
+from hedweb.constants import page_constants, route_constants
 from hedweb.event_operations import EventOperations
 from hedweb.process_form import ProcessForm
 from hedweb.process_service import ProcessServices
@@ -21,7 +20,6 @@ from hedweb.string_operations import StringOperations
 from hedweb.web_util import (
     convert_hed_versions,
     get_exception_message,
-    get_parsed_name,
     handle_error,
     handle_http_error,
     package_results,
@@ -91,30 +89,6 @@ def schemas_results() -> "Response":
         return jsonify(a)
     except Exception as ex:
         return jsonify(get_exception_message(ex))
-
-
-@route_blueprint.route(route_constants.SCHEMA_VERSION_ROUTE, methods=["POST"])
-def schema_version_results() -> Response:
-    """Return the version of the schema as a JSON response.
-
-    Returns:
-        Response: A JSON response containing the version of the schema.
-
-    """
-
-    try:
-        hed_info = {}
-        if bc.SCHEMA_PATH in request.files:
-            f = request.files[bc.SCHEMA_PATH]
-            name, extension = get_parsed_name(secure_filename(f.filename))
-            hed_schema = hedschema.from_string(
-                f.stream.read(file_constants.BYTE_LIMIT).decode("utf-8"),
-                schema_format=extension,
-            )
-            hed_info[bc.SCHEMA_VERSION] = hed_schema.get_formatted_version()
-        return jsonify(hed_info)
-    except Exception as ex:
-        return jsonify(handle_error(ex, return_as_str=False))
 
 
 @route_blueprint.route(route_constants.SCHEMA_VERSIONS_ROUTE, methods=["GET"])
