@@ -77,10 +77,13 @@ function prepareForm() {
 function setOptions() {
     let selectedElement = document.getElementById("process_actions");
     if (selectedElement.value === "validate") {
+        showElement("definition_section");
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
+        hideElement("definition_section");
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
+        hideElement("definition_section");
     }
 }
 

@@ -37,6 +37,7 @@ class EventOperations(BaseOperations):
         self.schema = None
         self.events = None
         self.command = None
+        self.definitions = None
         self.append_assembled = False
         self.check_for_warnings = False
         self.columns_skip = []

@@ -1,6 +1,6 @@
 # HED-server developer instructions
 
-> **Local environment**: Check `.status/local-environment.md` (not version-controlled) for platform-specific setup — shell, venv activation path, and summary-file conventions.
+> **Local environment**: Check `.status/local-environment.md` (not version-controlled) for platform-specific setup — shell, venv activation path, and summary-file conventions. For each chat, create a new summary file in `.status/` (e.g., `.status/definitions-refactor-summary.md`) to track your work/plans that summaries what was done and why.
 
 ## Repository overview
 

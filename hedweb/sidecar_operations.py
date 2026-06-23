@@ -27,6 +27,7 @@ class SidecarOperations(BaseOperations):
         """
         self.schema = None
         self.command = None
+        self.definitions = None
         self.sidecar = None
         self.spreadsheet = None
         self.check_for_warnings = False

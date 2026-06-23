@@ -14,6 +14,10 @@ document.getElementById('sidecar_file').addEventListener('change', function() {
     clearFlashMessages();
 })
 
+document.getElementById('definition_file').addEventListener('change', function() {
+    clearFlashMessages();
+})
+
 
 /**
  * Submit the form if schema and json file specified.
@@ -45,6 +49,7 @@ function clearForm() {
     clearFlashMessages();
     setOptions();
     document.getElementById('sidecar_file').value = '';
+    document.getElementById('definition_file').value = '';
     clearSpreadsheet();
     hideOtherSchemaVersionFileUpload()
 }
@@ -81,6 +86,7 @@ function setOptions() {
         hideElement("spreadsheet_input_section");
         showElement("schema_pulldown_section");
         showElement("options_section");
+        showElement("definition_section");
     } else if (selectedElement.value === "to_long") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
@@ -88,6 +94,7 @@ function setOptions() {
         hideElement("spreadsheet_input_section");
         showElement("schema_pulldown_section");
         showElement("options_section");
+        hideElement("definition_section");
     } else if (selectedElement.value === "to_short") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
@@ -95,6 +102,7 @@ function setOptions() {
         hideElement("spreadsheet_input_section");
         showElement("schema_pulldown_section");
         showElement("options_section");
+        hideElement("definition_section");
     } else if (selectedElement.value === "extract_spreadsheet") {
         hideOption("check_for_warnings");
         hideOption("include_description_tags");
@@ -102,6 +110,7 @@ function setOptions() {
         hideElement("spreadsheet_input_section");
         hideElement("schema_pulldown_section");
         hideElement("options_section");
+        hideElement("definition_section");
     } else if (selectedElement.value === "merge_spreadsheet") {
         hideOption("check_for_warnings");
         showOption("include_description_tags");
@@ -109,6 +118,7 @@ function setOptions() {
         showElement("spreadsheet_input_section");
         hideElement("schema_pulldown_section");
         showElement("options_section");
+        hideElement("definition_section");
     }
 }
 
