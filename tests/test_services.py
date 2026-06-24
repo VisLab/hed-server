@@ -431,8 +431,8 @@ class Test(TestWebBase):
         self.assertIn(bc.DEFINITIONS, arguments)
 
         # With no definition string — should still populate DEFINITIONS key (empty)
-        arguments2 = {bc.SCHEMA: schema, bc.DEFINITIONS: None}
-        params2 = {bc.DEFINITIONS: None}
+        arguments2 = {bc.SCHEMA: schema}
+        params2 = {}
         ProcessServices.set_definitions(arguments2, params2)
         self.assertIn(bc.DEFINITIONS, arguments2)
         self.assertIsNone(arguments2[bc.DEFINITIONS])

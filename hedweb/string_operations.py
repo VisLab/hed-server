@@ -149,9 +149,11 @@ class StringOperations(BaseOperations):
         """
 
         issues = []
+        def_issues = []
         if self.definitions and self.definitions.issues:
-            issues = self.definitions.issues
-        if not check_for_any_errors(issues):
+            def_issues = self.definitions.issues
+            issues.append(get_printable_issue_string(def_issues, "Definition issues"))
+        if not check_for_any_errors(def_issues):
             error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
             validator = HedValidator(self.schema, self.definitions)
             for pos, h_string in enumerate(self.string_list):

@@ -51,32 +51,34 @@ class Test(TestWebBase):
     def test_set_input_from_spreadsheets_form(self):
         with self.app.test:
             spreadsheet_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/ExcelOneSheet.xlsx")
+            definitions_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/definitions.json")
             with open(spreadsheet_path, "rb") as fp:
-                environ = create_environ(
-                    data={
-                        bc.SPREADSHEET_FILE: fp,
-                        bc.SCHEMA_VERSION: "8.2.0",
-                        "column_4_use": "on",
-                        "column_4_name": "HED tags",
-                        bc.WORKSHEET_NAME: "LKT 8HED3",
-                        bc.HAS_COLUMN_NAMES: "on",
-                        bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
-                        bc.DEFINITION_STRING: '{"definitions": ["(Definition/Acc/#, (Acceleration/# m-per-s^2, Red))", "(Definition/MyColor, (Item, (Label/Pie)))"]}',
-                    }
-                )
+                with open(definitions_path, "rb") as def_fp:
+                    environ = create_environ(
+                        data={
+                            bc.SPREADSHEET_FILE: fp,
+                            bc.SCHEMA_VERSION: "8.2.0",
+                            "column_4_use": "on",
+                            "column_4_name": "HED tags",
+                            bc.WORKSHEET_NAME: "LKT 8HED3",
+                            bc.HAS_COLUMN_NAMES: "on",
+                            bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                            bc.DEFINITION_FILE: def_fp,
+                        }
+                    )
 
-            request = Request(environ)
-            parameters = ProcessForm.get_input_from_form(request)
-            spread_proc = SpreadsheetOperations(arguments=parameters)
-            self.assertIsInstance(
-                spread_proc.spreadsheet,
-                SpreadsheetInput,
-                "should have an spreadsheet object",
-            )
-            self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
-            self.assertEqual(spread_proc.command, bc.COMMAND_VALIDATE, "should have a command")
-            self.assertEqual(spread_proc.worksheet, "LKT 8HED3", "should have a sheet_name name")
-            self.assertTrue(spread_proc.has_column_names, "should have column names")
+                    request = Request(environ)
+                    parameters = ProcessForm.get_input_from_form(request)
+                    spread_proc = SpreadsheetOperations(arguments=parameters)
+                    self.assertIsInstance(
+                        spread_proc.spreadsheet,
+                        SpreadsheetInput,
+                        "should have an spreadsheet object",
+                    )
+                    self.assertIsInstance(spread_proc.schema, HedSchema, "should have a HED schema")
+                    self.assertEqual(spread_proc.command, bc.COMMAND_VALIDATE, "should have a command")
+                    self.assertEqual(spread_proc.worksheet, "LKT 8HED3", "should have a sheet_name name")
+                    self.assertTrue(spread_proc.has_column_names, "should have column names")
 
     def test_set_input_from_spreadsheets_form_other(self):
         with self.app.test:

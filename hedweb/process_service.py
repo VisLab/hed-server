@@ -168,6 +168,12 @@ class ProcessServices:
         if not definition_string:
             return None
         json_defs = json.loads(definition_string)
+        try:
+            json_defs = json.loads(definition_string)
+        except json.JSONDecodeError as ex:
+            raise HedFileError("BadDefinitionString", "Definition string must be valid JSON", "") from ex
+        if not isinstance(json_defs, dict):
+            raise HedFileError("BadDefinitionString", 'Definition JSON must be an object with a "definitions" key', "")
         definitions = json_defs.get("definitions", None)
         if definitions is not None:
             return DefinitionDict(definitions, schema)
