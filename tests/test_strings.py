@@ -203,7 +203,9 @@ class Test(TestWebBase):
             proc_strings.definitions = ProcessServices.get_definitions(def_string, proc_strings.schema)
             proc_strings.command = bc.COMMAND_VALIDATE
             results = proc_strings.process()
-            self.assertEqual("success", results["msg_category"], "should validate successfully with external definitions")
+            self.assertEqual(
+                "success", results["msg_category"], "should validate successfully with external definitions"
+            )
 
     def test_string_convert_with_external_definitions(self):
         """Test string conversion with external definitions."""
