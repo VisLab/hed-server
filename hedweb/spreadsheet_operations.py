@@ -127,7 +127,7 @@ class SpreadsheetOperations(BaseOperations):
         display_name = self.spreadsheet.name
         issues = []
         if self.definitions and self.definitions.issues:
-            issues = self.definitions.issues
+            issues = list(self.definitions.issues)
         if not check_for_any_errors(issues):
             issues += self.spreadsheet.validate(
                 self.schema,

@@ -424,7 +424,7 @@ class EventOperations(BaseOperations):
         issues = []
         if self.definitions and self.definitions.issues:
             issues = list(self.definitions.issues)
-        if not check_for_any_errors(issues):
+        if not check_for_any_errors(issues) and self.sidecar:
             issues += self.sidecar.validate(
                 self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
             )
