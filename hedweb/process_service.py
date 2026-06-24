@@ -174,9 +174,9 @@ class ProcessServices:
         if not isinstance(json_defs, dict):
             raise HedFileError("BadDefinitionString", 'Definition JSON must be an object with a "definitions" key', "")
         definitions = json_defs.get("definitions", None)
-        if definitions is not None:
-            return DefinitionDict(definitions, schema)
-        return None
+        if definitions is None:
+            return None
+        return DefinitionDict(definitions, schema)
 
     @staticmethod
     def set_input_objects(arguments, params):

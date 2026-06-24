@@ -319,6 +319,109 @@ class Test(TestWebBase):
         (self.assertEqual(len(df.columns), len(cols_orig) + 7),)
         self.assertEqual(len(df), rows_orig)
 
+    def test_events_validate_with_external_definitions(self):
+        """Test events validation with external definitions."""
+        with self.app.app_context():
+            from hedweb.process_service import ProcessServices
+
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            events_proc.definitions = ProcessServices.get_definitions(def_string, events_proc.schema)
+            events_proc.command = bc.COMMAND_VALIDATE
+            results = events_proc.process()
+            # Should validate without errors using external definitions
+            self.assertIn("msg_category", results, "should have msg_category")
+
+    def test_events_assemble_with_external_definitions(self):
+        """Test events assembly with external definitions."""
+        with self.app.app_context():
+            from hedweb.process_service import ProcessServices
+
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            events_proc.definitions = ProcessServices.get_definitions(def_string, events_proc.schema)
+            events_proc.command = bc.COMMAND_ASSEMBLE
+            events_proc.check_for_warnings = False
+            results = events_proc.process()
+            self.assertTrue(results["data"], "should assemble successfully with external definitions")
+            self.assertEqual("success", results["msg_category"], "should be success when no errors")
+
+    def test_set_input_from_events_form_with_valid_definition_file(self):
+        """Test form input with valid definition file."""
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.tsv")
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        def_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/definitions.json")
+        with self.app.app_context():
+            with open(events_path, "rb") as fpe:
+                with open(sidecar_path, "rb") as fps:
+                    with open(def_path, "rb") as fpd:
+                        environ = create_environ(
+                            data={
+                                bc.EVENTS_FILE: fpe,
+                                bc.SIDECAR_FILE: fps,
+                                bc.DEFINITION_FILE: fpd,
+                                bc.SCHEMA_VERSION: "8.2.0",
+                                bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                            }
+                        )
+            request = Request(environ)
+            arguments = ProcessForm.get_input_from_form(request)
+            self.assertIn(bc.DEFINITIONS, arguments, "should have definitions in arguments")
+
+    def test_set_input_from_events_form_with_invalid_definition_file(self):
+        """Test form input with invalid JSON definition file."""
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.tsv")
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        invalid_def_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/invalid_json.json")
+        with self.app.app_context():
+            with open(events_path, "rb") as fpe:
+                with open(sidecar_path, "rb") as fps:
+                    with open(invalid_def_path, "rb") as fpd:
+                        environ = create_environ(
+                            data={
+                                bc.EVENTS_FILE: fpe,
+                                bc.SIDECAR_FILE: fps,
+                                bc.DEFINITION_FILE: fpd,
+                                bc.SCHEMA_VERSION: "8.2.0",
+                                bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                            }
+                        )
+            request = Request(environ)
+            with self.assertRaises(HedFileError) as context:
+                ProcessForm.get_input_from_form(request)
+            self.assertIn("JSON", str(context.exception))
+
+    def test_set_input_from_events_form_with_non_dict_definition_file(self):
+        """Test form input with non-dict JSON definition file."""
+        events_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.tsv")
+        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+        not_dict_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/not_dict.json")
+        with self.app.app_context():
+            with open(events_path, "rb") as fpe:
+                with open(sidecar_path, "rb") as fps:
+                    with open(not_dict_path, "rb") as fpd:
+                        environ = create_environ(
+                            data={
+                                bc.EVENTS_FILE: fpe,
+                                bc.SIDECAR_FILE: fps,
+                                bc.DEFINITION_FILE: fpd,
+                                bc.SCHEMA_VERSION: "8.2.0",
+                                bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                            }
+                        )
+            request = Request(environ)
+            with self.assertRaises(HedFileError) as context:
+                ProcessForm.get_input_from_form(request)
+            self.assertIn("object", str(context.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

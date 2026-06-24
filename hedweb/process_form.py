@@ -151,8 +151,9 @@ class ProcessForm:
                     "BadDefinitionJSON", 'Definition JSON must be an object with a "definitions" key', ""
                 )
             definitions = json_defs.get("definitions", None)
-            if definitions is not None:
-                arguments[bc.DEFINITIONS] = DefinitionDict(definitions, arguments.get(bc.SCHEMA, None))
+            if definitions is None:
+                raise HedFileError("BadDefinitionJSON", 'Definition JSON must contain a "definitions" key', "")
+            arguments[bc.DEFINITIONS] = DefinitionDict(definitions, arguments.get(bc.SCHEMA, None))
 
     @staticmethod
     def set_queries(arguments, request):

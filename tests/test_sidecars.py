@@ -421,6 +421,38 @@ class Test(TestWebBase):
             self.assertEqual("success", merge_results["msg_category"])
             self.assertTrue(merge_results["data"])
 
+    def test_sidecar_validate_with_external_definitions(self):
+        """Test sidecar validation with external definitions."""
+        from hedweb.process_service import ProcessServices
+        from hedweb.sidecar_operations import SidecarOperations
+
+        with self.app.app_context():
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/sidecar_with_defs.json")
+            proc_sidecar = SidecarOperations()
+            proc_sidecar.schema = load_schema_version("8.2.0")
+            proc_sidecar.sidecar = Sidecar(files=sidecar_path, name="sidecar_with_defs")
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            proc_sidecar.definitions = ProcessServices.get_definitions(def_string, proc_sidecar.schema)
+            proc_sidecar.command = base_constants.COMMAND_VALIDATE
+            results = proc_sidecar.process()
+            self.assertIn("msg_category", results, "should have msg_category")
+
+    def test_sidecar_convert_with_external_definitions(self):
+        """Test sidecar conversion with external definitions."""
+        from hedweb.process_service import ProcessServices
+        from hedweb.sidecar_operations import SidecarOperations
+
+        with self.app.app_context():
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/sidecar_with_defs.json")
+            proc_sidecar = SidecarOperations()
+            proc_sidecar.schema = load_schema_version("8.2.0")
+            proc_sidecar.sidecar = Sidecar(files=sidecar_path, name="sidecar_with_defs")
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            proc_sidecar.definitions = ProcessServices.get_definitions(def_string, proc_sidecar.schema)
+            proc_sidecar.command = base_constants.COMMAND_TO_LONG
+            results = proc_sidecar.process()
+            self.assertIn("msg_category", results, "should have msg_category")
+
 
 if __name__ == "__main__":
     unittest.main()

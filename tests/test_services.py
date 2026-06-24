@@ -459,6 +459,70 @@ class Test(TestWebBase):
         ProcessServices.set_queries(arguments3, {bc.QUERIES: []})
         self.assertNotIn(bc.QUERIES, arguments3)
 
+    def test_get_definitions_valid(self):
+        """Test get_definitions with valid JSON string containing definitions."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '{"definitions": ["(Definition/TestDef/#, (Age/#))", "(Definition/Color, (Red))"]}'
+        result = ProcessServices.get_definitions(def_string, schema)
+        self.assertIsNotNone(result, "should return DefinitionDict for valid definitions")
+
+    def test_get_definitions_empty_string(self):
+        """Test get_definitions with empty string returns None."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        result = ProcessServices.get_definitions("", schema)
+        self.assertIsNone(result, "should return None for empty string")
+
+    def test_get_definitions_single_def_string(self):
+        """Test get_definitions with a single definition as string."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+        result = ProcessServices.get_definitions(def_string, schema)
+        self.assertIsNotNone(result, "should return DefinitionDict for single definition string")
+
+    def test_get_definitions_invalid_json(self):
+        """Test get_definitions with invalid JSON raises HedFileError."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '{"definitions": invalid json}'
+        with self.assertRaises(HedFileError) as context:
+            ProcessServices.get_definitions(def_string, schema)
+        self.assertIn("valid JSON", str(context.exception))
+
+    def test_get_definitions_non_dict(self):
+        """Test get_definitions with non-dict JSON raises HedFileError."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '["Definition/TestDef", "Definition/Color"]'
+        with self.assertRaises(HedFileError) as context:
+            ProcessServices.get_definitions(def_string, schema)
+        self.assertIn("object", str(context.exception))
+
+    def test_get_definitions_missing_key(self):
+        """Test get_definitions with missing 'definitions' key returns None."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '{"something_else": "value"}'
+        result = ProcessServices.get_definitions(def_string, schema)
+        self.assertIsNone(result, "should return None when 'definitions' key is missing")
+
+    def test_get_definitions_null_definitions(self):
+        """Test get_definitions with null 'definitions' key returns None."""
+        from hedweb.process_service import ProcessServices
+
+        schema = load_schema_version("8.2.0")
+        def_string = '{"definitions": null}'
+        result = ProcessServices.get_definitions(def_string, schema)
+        self.assertIsNone(result, "should return None when 'definitions' is null")
+
 
 if __name__ == "__main__":
     unittest.main()
