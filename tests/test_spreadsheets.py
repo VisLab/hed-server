@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from hed import Sidecar, load_schema_version
+from hed import load_schema_version
 from hed.errors.exceptions import HedFileError
 from hed.models import SpreadsheetInput
 from hed.schema import HedSchema
@@ -10,13 +10,14 @@ from werkzeug.wrappers import Request
 
 from hedweb.constants import base_constants as bc
 from hedweb.process_form import ProcessForm
+from hedweb.process_service import ProcessServices
 from hedweb.spreadsheet_operations import SpreadsheetOperations
 from tests.test_web_base import TestWebBase
 
 
 class Test(TestWebBase):
     @staticmethod
-    def get_spread_proc(spread_file, schema_version="8.2.0", worksheet=None, tag_columns=None):
+    def get_spread_proc(spread_file, schema_version="8.4.0", worksheet=None, tag_columns=None, definition_string=None):
         spread_proc = SpreadsheetOperations()
         spread_proc.worksheet = worksheet
         spread_proc.tag_columns = tag_columns
@@ -33,6 +34,12 @@ class Test(TestWebBase):
             )
         if schema_version:
             spread_proc.schema = load_schema_version(schema_version)
+        else:
+            spread_proc.schema = None
+        if definition_string:
+            spread_proc.definitions = ProcessServices.get_definitions(definition_string, spread_proc.schema)
+        else:
+            spread_proc.definitions = None
         return spread_proc
 
     def test_spreadsheets_empty_file(self):
@@ -54,6 +61,7 @@ class Test(TestWebBase):
                         bc.WORKSHEET_NAME: "LKT 8HED3",
                         bc.HAS_COLUMN_NAMES: "on",
                         bc.COMMAND_OPTION: bc.COMMAND_VALIDATE,
+                        bc.DEFINITION_STRING: '{"definitions": ["(Definition/Acc/#, (Acceleration/# m-per-s^2, Red))", "(Definition/MyColor, (Item, (Label/Pie)))"]}',
                     }
                 )
 
@@ -184,9 +192,10 @@ class Test(TestWebBase):
             self.assertEqual("warning", results["msg_category"], "should be warning when errors")
 
     def test_spreadsheet_validate_definitions(self):
-        spread_proc = self.get_spread_proc("data/spreadsheet_with_defs.tsv", tag_columns=[2])
-        sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/def_test.json")
-        spread_proc.definitions = Sidecar(sidecar_path).get_def_dict(spread_proc.schema)
+        def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+        spread_proc = self.get_spread_proc(
+            "data/spreadsheet_with_defs.tsv", schema_version="8.4.0", tag_columns=[2], definition_string=def_string
+        )
         spread_proc.command = bc.COMMAND_VALIDATE
         results = spread_proc.process()
         self.assertFalse(results["data"], "should have empty data when no errors")

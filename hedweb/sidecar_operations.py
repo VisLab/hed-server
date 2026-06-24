@@ -6,6 +6,7 @@ import json
 
 from hed import schema as hedschema
 from hed.errors import ErrorHandler, HedFileError, get_printable_issue_string
+from hed.errors.error_reporter import check_for_any_errors
 from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 
@@ -204,7 +205,13 @@ class SidecarOperations(BaseOperations):
         """
 
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
-        issues = self.sidecar.validate(self.schema, name=self.sidecar.name, error_handler=error_handler)
+        issues = []
+        if self.definitions and self.definitions.issues:
+            issues = self.definitions.issues
+        if not check_for_any_errors(issues):
+            issues += self.sidecar.validate(
+                self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
+            )
         if issues:
             data = get_printable_issue_string(issues, f"JSON dictionary {self.sidecar.name} validation issues")
             file_name = generate_filename(

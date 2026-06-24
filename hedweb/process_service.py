@@ -9,8 +9,8 @@ import os
 from flask import current_app
 from hed import schema as hedschema
 from hed.errors import HedFileError
+from hed.models.definition_dict import DefinitionDict
 from hed.models.hed_string import HedString
-from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
 from hed.models.tabular_input import TabularInput
 from hed.tools.analysis.annotation_util import strs_to_sidecar
@@ -89,7 +89,7 @@ class ProcessServices:
         arguments[bc.COLUMNS_SKIP] = ProcessServices.get_list(bc.COLUMNS_SKIP, params)
         arguments[bc.TAG_COLUMNS] = ProcessServices.get_list(bc.TAG_COLUMNS, params)
         arguments[bc.HAS_COLUMN_NAMES] = True
-
+        arguments[bc.DEFINITIONS] = None
         # Assemble and search parameters
         arguments[bc.INCLUDE_CONTEXT] = params.get(bc.INCLUDE_CONTEXT, False)
         arguments[bc.REMOVE_TYPES] = params.get(bc.REMOVE_TYPES, False)
@@ -148,11 +148,30 @@ class ProcessServices:
             params (dict): The service request dictionary extracted from the Request object.
         """
         definition_string = params.get(bc.DEFINITION_STRING, "")
-        def_file = None
-        if definition_string:
-            def_file = io.StringIO(definition_string)
+        arguments[bc.DEFINITIONS] = ProcessServices.get_definitions(definition_string, arguments.get(bc.SCHEMA, None))
 
-        arguments[bc.DEFINITIONS] = Sidecar(files=def_file).get_def_dict(arguments[bc.SCHEMA])
+    @staticmethod
+    def get_definitions(definition_string, schema):
+        """Get a DefinitionDict object from the definition string.
+
+        Parameters:
+            definition_string (str): A JSON string containing definitions.
+            schema (HedSchema): The HED schema to use for validation.
+
+        Returns:
+            DefinitionDict: A DefinitionDict object created from the definition string.
+
+        Note:
+            The definition string should be a JSON string with a "definitions" key containing the definitions
+            as a single string containing a list of definitions as strings or a string containing a single definition.
+        """
+        if not definition_string:
+            return None
+        json_defs = json.loads(definition_string)
+        definitions = json_defs.get("definitions", None)
+        if definitions is not None:
+            return DefinitionDict(definitions, schema)
+        return None
 
     @staticmethod
     def set_input_objects(arguments, params):

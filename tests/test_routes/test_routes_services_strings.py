@@ -186,6 +186,7 @@ class Test(TestRouteBase):
             json_data = {
                 bc.CHECK_FOR_WARNINGS: "on",
                 bc.SCHEMA_VERSION: "8.2.0",
+                bc.DEFINITIONS: None,
                 bc.STRING_LIST: ["Sensory-event", "Event"],
                 bc.QUERIES: ["Sensory-event"],
                 bc.SERVICE: "strings_search",

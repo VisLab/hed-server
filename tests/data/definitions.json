@@ -1,0 +1,7 @@
+{
+    "definitions": [
+        "(Definition/Acc/#, (Acceleration/# m-per-s^2, Red))",
+        "(Definition/MyColor, (Item, (Label/Pie)))",
+        "(Definition/Blech, (Red))"
+    ]
+}

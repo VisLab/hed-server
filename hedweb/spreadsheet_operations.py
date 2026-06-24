@@ -6,6 +6,7 @@ import os
 
 from hed import schema as hedschema
 from hed.errors import ErrorHandler, HedFileError, get_printable_issue_string
+from hed.errors.error_reporter import check_for_any_errors
 from hed.models.spreadsheet_input import SpreadsheetInput
 from werkzeug.utils import secure_filename
 
@@ -124,12 +125,16 @@ class SpreadsheetOperations(BaseOperations):
 
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         display_name = self.spreadsheet.name
-        issues = self.spreadsheet.validate(
-            self.schema,
-            extra_def_dicts=self.definitions,
-            error_handler=error_handler,
-            name=display_name,
-        )
+        issues = []
+        if self.definitions and self.definitions.issues:
+            issues = self.definitions.issues
+        if not check_for_any_errors(issues):
+            issues += self.spreadsheet.validate(
+                self.schema,
+                extra_def_dicts=self.definitions,
+                error_handler=error_handler,
+                name=display_name,
+            )
         issues = filter_issues(issues, self.check_for_warnings)
         if issues:
             data = get_printable_issue_string(issues, f"Spreadsheet {display_name} validation issues")

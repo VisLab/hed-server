@@ -5,6 +5,7 @@ Performs operations on strings, such as validation and conversion between long a
 from hed import get_query_handlers, search_hed_objs
 from hed import schema as hedschema
 from hed.errors import ErrorHandler, HedFileError, get_printable_issue_string
+from hed.errors.error_reporter import check_for_any_errors
 from hed.validator import HedValidator
 
 from hedweb.base_operations import BaseOperations
@@ -147,18 +148,21 @@ class StringOperations(BaseOperations):
             dict: The results in standard form.
         """
 
-        validation_issues = []
-        error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
-        validator = HedValidator(self.schema, self.definitions)
-        for pos, h_string in enumerate(self.string_list):
-            issues = validator.validate(h_string, True, error_handler=error_handler)
-            if issues:
-                validation_issues.append(get_printable_issue_string(issues, f"Errors for HED string {pos}:"))
-        if validation_issues:
+        issues = []
+        if self.definitions and self.definitions.issues:
+            issues = self.definitions.issues
+        if not check_for_any_errors(issues):
+            error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
+            validator = HedValidator(self.schema, self.definitions)
+            for pos, h_string in enumerate(self.string_list):
+                string_issues = validator.validate(h_string, True, error_handler=error_handler)
+                if string_issues:
+                    issues.append(get_printable_issue_string(string_issues, f"Errors for HED string {pos}:"))
+        if issues:
             return {
                 bc.COMMAND: bc.COMMAND_VALIDATE,
                 bc.COMMAND_TARGET: "strings",
-                "data": "\n".join(validation_issues),
+                "data": "\n".join(issues),
                 bc.SCHEMA_VERSION: self.schema.get_formatted_version(),
                 "msg_category": "warning",
                 "msg": "Strings had validation issues",
