@@ -167,7 +167,6 @@ class ProcessServices:
         """
         if not definition_string:
             return None
-        json_defs = json.loads(definition_string)
         try:
             json_defs = json.loads(definition_string)
         except json.JSONDecodeError as ex:

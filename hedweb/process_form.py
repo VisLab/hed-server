@@ -145,9 +145,11 @@ class ProcessForm:
             try:
                 json_defs = json.load(f)
             except json.JSONDecodeError as ex:
-                raise HedFileError("BadDefinitionString", "Definition string must be valid JSON", "") from ex
+                raise HedFileError("BadDefinitionString", "Definition file must contain valid JSON", "") from ex
             if not isinstance(json_defs, dict):
-                raise HedFileError("BadDefinitionString", 'Definition JSON must be an object with a "definitions" key', "")
+                raise HedFileError(
+                    "BadDefinitionJSON", 'Definition JSON must be an object with a "definitions" key', ""
+                )
             definitions = json_defs.get("definitions", None)
             if definitions is not None:
                 arguments[bc.DEFINITIONS] = DefinitionDict(definitions, arguments.get(bc.SCHEMA, None))

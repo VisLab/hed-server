@@ -121,7 +121,9 @@ class EventOperations(BaseOperations):
         self.check_for_warnings = False
         results = self.validate()
         if results["data"]:
-            results["data"] = "Input had HED validation issues, so assembly could not performed...\n" + results["data"]
+            results["data"] = (
+                "Input had HED validation issues, so assembly could not be performed...\n" + results["data"]
+            )
             return results
         hed_objs, definitions = self.get_hed_objs()
         data = [str(obj) if obj is not None else "" for obj in hed_objs]
@@ -421,8 +423,8 @@ class EventOperations(BaseOperations):
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         issues = []
         if self.definitions and self.definitions.issues:
-            issues = self.definitions.issues
-        if self.sidecar:
+            issues = list(self.definitions.issues)
+        if not check_for_any_errors(issues):
             issues += self.sidecar.validate(
                 self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
             )
