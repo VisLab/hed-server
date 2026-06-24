@@ -121,7 +121,9 @@ class EventOperations(BaseOperations):
         self.check_for_warnings = False
         results = self.validate()
         if results["data"]:
-            results["data"] = "Input had HED validation issues, so assembly could not be performed...\n" + results["data"]
+            results["data"] = (
+                "Input had HED validation issues, so assembly could not be performed...\n" + results["data"]
+            )
             return results
         hed_objs, definitions = self.get_hed_objs()
         data = [str(obj) if obj is not None else "" for obj in hed_objs]
