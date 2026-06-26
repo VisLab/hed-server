@@ -13,7 +13,7 @@ from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_d
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
-from hedweb.web_util import generate_filename, get_schema_versions
+from hedweb.web_util import filter_issues, generate_filename, get_schema_versions
 
 
 class SidecarOperations(BaseOperations):
@@ -207,7 +207,8 @@ class SidecarOperations(BaseOperations):
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         issues = []
         if self.definitions and self.definitions.issues:
-            issues = list(self.definitions.issues)
+            def_issues = filter_issues(list(self.definitions.issues), self.check_for_warnings)
+            issues.extend(def_issues)
         if not check_for_any_errors(issues):
             issues += self.sidecar.validate(
                 self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler

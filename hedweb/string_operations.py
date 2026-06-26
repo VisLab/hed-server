@@ -10,6 +10,7 @@ from hed.validator import HedValidator
 
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
+from hedweb.web_util import filter_issues
 
 
 class StringOperations(BaseOperations):
@@ -152,7 +153,9 @@ class StringOperations(BaseOperations):
         def_issues = []
         if self.definitions and self.definitions.issues:
             def_issues = self.definitions.issues
-            issues.append(get_printable_issue_string(def_issues, "Definition issues"))
+            def_issues = filter_issues(def_issues, self.check_for_warnings)
+            if def_issues:
+                issues.append(get_printable_issue_string(def_issues, "Definition issues"))
         if not check_for_any_errors(def_issues):
             error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
             validator = HedValidator(self.schema, self.definitions)
