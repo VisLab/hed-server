@@ -155,15 +155,16 @@ class ProcessServices:
         """Get a DefinitionDict object from the definition string.
 
         Parameters:
-            definition_string (str): A JSON string containing definitions.
+            definition_string (str): A JSON string containing a "definitions" key. The value associated with
+                "definitions" can be either a single definition string or a list of definition strings.
             schema (HedSchema): The HED schema to use for validation.
 
         Returns:
-            DefinitionDict: A DefinitionDict object created from the definition string.
+            DefinitionDict or None: A DefinitionDict object created from the definition string, or None if
+                definition_string is empty or the "definitions" key is missing.
 
-        Note:
-            The definition string should be a JSON string with a "definitions" key containing the definitions
-            as a single string containing a list of definitions as strings or a string containing a single definition.
+        Raises:
+            HedFileError: If definition_string is not valid JSON or if the JSON is not a dictionary.
         """
         if not definition_string:
             return None
