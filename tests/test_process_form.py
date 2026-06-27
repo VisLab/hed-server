@@ -1,4 +1,4 @@
-﻿"""
+"""
 Comprehensive test coverage for hedweb.process_form.ProcessForm.
 
 This module provides extensive testing of form processing and input extraction
