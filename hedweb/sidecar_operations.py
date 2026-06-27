@@ -52,7 +52,7 @@ class SidecarOperations(BaseOperations):
         """
         if not self.command:
             raise HedFileError("MissingCommand", "Command is missing", "")
-        elif not self.sidecar and not bc.COMMAND_MERGE_SPREADSHEET:
+        elif not self.sidecar and self.command not in (bc.COMMAND_EXTRACT_SPREADSHEET, bc.COMMAND_MERGE_SPREADSHEET):
             raise HedFileError(
                 "MissingSidecarFile",
                 "Please give a valid JSON sidecar file to process",

@@ -13,7 +13,9 @@ from hedweb.sidecar_operations import SidecarOperations
 from tests.test_web_base import TestWebBase
 
 
-class Test(TestWebBase):
+class TestSidecarOperations(TestWebBase):
+    """Comprehensive test coverage for SidecarOperations class."""
+
     def test_one(self):
         proc = SidecarOperations()
         self.assertIsInstance(proc, SidecarOperations)
@@ -452,6 +454,206 @@ class Test(TestWebBase):
             proc_sidecar.command = base_constants.COMMAND_TO_LONG
             results = proc_sidecar.process()
             self.assertIn("msg_category", results, "should have msg_category")
+
+    # ========== COMPREHENSIVE COVERAGE TESTS ==========
+    # Additional comprehensive tests for SidecarOperations from coverage file
+    # Tests for sidecar_validate() method variations
+    def test_validate_with_valid_sidecar_no_warnings(self):
+        """Test validation of valid sidecar without checking warnings."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            sidecar_proc.check_for_warnings = False
+            results = sidecar_proc.sidecar_validate()
+            self.assertEqual("success", results["msg_category"], "valid sidecar should return success")
+
+    def test_validate_with_valid_sidecar_with_warnings(self):
+        """Test validation of valid sidecar while checking for warnings."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            sidecar_proc.check_for_warnings = True
+            results = sidecar_proc.sidecar_validate()
+            self.assertIn("msg_category", results, "should have msg_category")
+
+    def test_validate_with_invalid_sidecar(self):
+        """Test validation of invalid sidecar."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events_bad")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            sidecar_proc.check_for_warnings = False
+            results = sidecar_proc.sidecar_validate()
+            self.assertEqual("warning", results["msg_category"], "invalid sidecar should return warning")
+
+    def test_validate_result_structure(self):
+        """Test that validation results have expected structure."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            results = sidecar_proc.sidecar_validate()
+            self.assertIn(base_constants.COMMAND, results, "should have command key")
+
+    def test_convert_to_short_with_valid_sidecar(self):
+        """Test conversion to short form with valid sidecar."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_TO_SHORT
+            results = sidecar_proc.sidecar_convert()
+            self.assertEqual("success", results["msg_category"], "should succeed with valid sidecar")
+
+    def test_convert_to_long_with_valid_sidecar(self):
+        """Test conversion to long form with valid sidecar."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_TO_LONG
+            results = sidecar_proc.sidecar_convert()
+            self.assertEqual("success", results["msg_category"], "should succeed with valid sidecar")
+
+    def test_convert_to_short_with_invalid_sidecar(self):
+        """Test conversion to short form with invalid sidecar."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events_bad")
+            sidecar_proc.command = base_constants.COMMAND_TO_SHORT
+            results = sidecar_proc.sidecar_convert()
+            self.assertEqual("warning", results["msg_category"], "invalid sidecar should return warning")
+
+    def test_convert_to_long_with_invalid_sidecar(self):
+        """Test conversion to long form with invalid sidecar."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events_bad.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events_bad")
+            sidecar_proc.command = base_constants.COMMAND_TO_LONG
+            results = sidecar_proc.sidecar_convert()
+            self.assertEqual("warning", results["msg_category"], "invalid sidecar should return warning")
+
+    def test_extract_creates_spreadsheet(self):
+        """Test that extraction creates a spreadsheet."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            results = sidecar_proc.sidecar_extract()
+            self.assertEqual("success", results["msg_category"], "extraction should succeed")
+            self.assertTrue(results["data"], "should have extracted data")
+
+    def test_extract_result_structure(self):
+        """Test that extraction results have expected structure."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            results = sidecar_proc.sidecar_extract()
+            self.assertIn(base_constants.COMMAND, results, "should have command key")
+
+    def test_process_missing_command(self):
+        """Test process raises error when command is missing."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = None
+            from hed.errors import HedFileError
+
+            with self.assertRaises(HedFileError):
+                sidecar_proc.process()
+
+    def test_process_missing_sidecar(self):
+        """Test process raises error when sidecar is missing for non-merge command."""
+        from hed.errors import HedFileError
+
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            sidecar_proc.sidecar = None
+            with self.assertRaises(HedFileError):
+                sidecar_proc.process()
+
+    def test_process_validate_command(self):
+        """Test process handles validate command."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_VALIDATE
+            results = sidecar_proc.process()
+            self.assertIsInstance(results, dict, "should return dict")
+
+    def test_process_to_short_command(self):
+        """Test process handles to_short command."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_TO_SHORT
+            results = sidecar_proc.process()
+            self.assertIsInstance(results, dict, "should return dict")
+
+    def test_process_to_long_command(self):
+        """Test process handles to_long command."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_TO_LONG
+            results = sidecar_proc.process()
+            self.assertIsInstance(results, dict, "should return dict")
+
+    def test_process_extract_command(self):
+        """Test process handles extract command."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = base_constants.COMMAND_EXTRACT_SPREADSHEET
+            results = sidecar_proc.process()
+            self.assertIsInstance(results, dict, "should return dict")
+
+    def test_process_invalid_command(self):
+        """Test process raises error for invalid command."""
+        from hed.errors import HedFileError
+
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations()
+            sidecar_proc.schema = load_schema_version("8.2.0")
+            sidecar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/bids_events.json")
+            sidecar_proc.sidecar = Sidecar(files=sidecar_path, name="bids_events")
+            sidecar_proc.command = "invalid_command"
+            with self.assertRaises(HedFileError):
+                sidecar_proc.process()
+
+    def test_sidecar_operations_initialization_with_none(self):
+        """Test SidecarOperations can be initialized with None."""
+        with self.app.app_context():
+            sidecar_proc = SidecarOperations(None)
+            self.assertIsNone(sidecar_proc.schema)
 
 
 if __name__ == "__main__":

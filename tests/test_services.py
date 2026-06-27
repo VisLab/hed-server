@@ -1,10 +1,41 @@
+"""
+Comprehensive test coverage for ProcessServices class.
+
+ProcessServices handles REST API request processing by:
+- Extracting and parsing JSON service requests
+- Loading HED schemas from various sources (version, URL, string)
+- Setting up input objects (events, sidecars, spreadsheets, strings)
+- Configuring parameters for domain-specific operations
+- Routing requests to appropriate operation handlers (events, sidecars, spreadsheets, strings, schemas)
+- Packaging results in standardized format
+
+Test Organization:
+- REQUEST PROCESSING: set_input_from_request and related parameter extraction
+- SCHEMA LOADING: get_input_schema for various schema sources
+- SIDECAR HANDLING: set_sidecar and multi-file sidecar merging
+- INPUT OBJECTS: set_input_objects for events, spreadsheets, and HED strings
+- DEFINITIONS: set_definitions and get_definitions with validation
+- QUERIES: set_queries for search operations
+- REMODEL OPERATIONS: set_remodel_parameters for event remodeling
+- SERVICE ROUTING: get_process, process for different operation targets
+- RESULT PACKAGING: package_spreadsheet for output transformation
+- UTILITY FUNCTIONS: normalize_boolean, get_list, get_parameter_string
+- SERVICES METADATA: get_services_list for service documentation
+
+Test Approach:
+- Uses real Flask app context and werkzeug test utilities
+- No mocking of hedtools classes (Sidecar, HedString, etc.)
+- Tests with real data files from tests/data/
+- Validates error handling and edge cases
+"""
+
 import io
 import json
 import os
 import unittest
 
 from hed.errors.exceptions import HedFileError
-from hed.models import Sidecar
+from hed.models import Sidecar, TabularInput
 from hed.schema import HedSchema, load_schema_version
 from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
@@ -14,7 +45,7 @@ from hedweb.process_service import ProcessServices
 from tests.test_web_base import TestWebBase
 
 
-class Test(TestWebBase):
+class TestProcessServices(TestWebBase):
     @staticmethod
     def get_request_template():
         return {
@@ -522,6 +553,233 @@ class Test(TestWebBase):
         def_string = '{"definitions": null}'
         result = ProcessServices.get_definitions(def_string, schema)
         self.assertIsNone(result, "should return None when 'definitions' is null")
+
+    # ========== ADDITIONAL COMPREHENSIVE COVERAGE TESTS ==========
+    def test_get_list_with_string(self):
+        """Test get_list converts string to single-element list."""
+        result = ProcessServices.get_list("test_key", {"test_key": "single_value"})
+        self.assertEqual(result, ["single_value"])
+
+    def test_get_list_with_list(self):
+        """Test get_list returns list as-is."""
+        result = ProcessServices.get_list("test_key", {"test_key": ["a", "b", "c"]})
+        self.assertEqual(result, ["a", "b", "c"])
+
+    def test_get_list_missing_key(self):
+        """Test get_list returns empty list for missing key."""
+        result = ProcessServices.get_list("missing_key", {})
+        self.assertEqual(result, [])
+
+    def test_get_list_none_value(self):
+        """Test get_list returns empty list for None value."""
+        result = ProcessServices.get_list("test_key", {"test_key": None})
+        self.assertEqual(result, [])
+
+    def test_get_list_empty_list(self):
+        """Test get_list returns empty list for empty list."""
+        result = ProcessServices.get_list("test_key", {"test_key": []})
+        self.assertEqual(result, [])
+
+    def test_get_process_events(self):
+        """Test get_process returns EventOperations for 'events' target."""
+        from hedweb.event_operations import EventOperations
+
+        result = ProcessServices.get_process("events")
+        self.assertIsInstance(result, EventOperations)
+
+    def test_get_process_sidecar(self):
+        """Test get_process returns SidecarOperations for 'sidecar' target."""
+        from hedweb.sidecar_operations import SidecarOperations
+
+        result = ProcessServices.get_process("sidecar")
+        self.assertIsInstance(result, SidecarOperations)
+
+    def test_get_process_spreadsheet(self):
+        """Test get_process returns SpreadsheetOperations for 'spreadsheet' target."""
+        from hedweb.spreadsheet_operations import SpreadsheetOperations
+
+        result = ProcessServices.get_process("spreadsheet")
+        self.assertIsInstance(result, SpreadsheetOperations)
+
+    def test_get_process_strings(self):
+        """Test get_process returns StringOperations for 'strings' target."""
+        from hedweb.string_operations import StringOperations
+
+        result = ProcessServices.get_process("strings")
+        self.assertIsInstance(result, StringOperations)
+
+    def test_get_process_schemas(self):
+        """Test get_process returns SchemaOperations for 'schemas' target."""
+        from hedweb.schema_operations import SchemaOperations
+
+        result = ProcessServices.get_process("schemas")
+        self.assertIsInstance(result, SchemaOperations)
+
+    def test_get_process_invalid_target(self):
+        """Test get_process raises HedFileError for invalid target."""
+        with self.assertRaises(HedFileError) as context:
+            ProcessServices.get_process("invalid_target")
+        self.assertIn("invalid", str(context.exception).lower())
+
+    def test_package_spreadsheet_with_success(self):
+        """Test package_spreadsheet converts SpreadsheetInput to CSV string on success."""
+        from hed import SpreadsheetInput
+
+        # Create a sample spreadsheet
+        tsv_data = "col1\tcol2\tcol3\n1\t2\t(Event)\n3\t4\t(Age)"
+        spreadsheet = SpreadsheetInput(
+            file=io.StringIO(tsv_data), file_type=".tsv", tag_columns=[3], has_column_names=True, name="test.tsv"
+        )
+
+        results = {"msg_category": "success", bc.SPREADSHEET: spreadsheet, "data": "some data"}
+
+        packaged = ProcessServices.package_spreadsheet(results)
+        self.assertIn(bc.SPREADSHEET, packaged)
+        self.assertIsInstance(packaged[bc.SPREADSHEET], str)
+        self.assertIn("col1", packaged[bc.SPREADSHEET])
+
+    def test_package_spreadsheet_with_warning(self):
+        """Test package_spreadsheet deletes spreadsheet on non-success."""
+        from hed import SpreadsheetInput
+
+        tsv_data = "col1\tcol2\tcol3\n1\t2\t(Event)"
+        spreadsheet = SpreadsheetInput(
+            file=io.StringIO(tsv_data), file_type=".tsv", tag_columns=[3], has_column_names=True, name="test.tsv"
+        )
+
+        results = {
+            "msg_category": "warning",
+            bc.SPREADSHEET: spreadsheet,
+        }
+
+        packaged = ProcessServices.package_spreadsheet(results)
+        self.assertNotIn(bc.SPREADSHEET, packaged)
+
+    def test_package_spreadsheet_no_spreadsheet(self):
+        """Test package_spreadsheet handles missing spreadsheet gracefully."""
+        results = {"msg_category": "success", "data": "some data"}
+
+        packaged = ProcessServices.package_spreadsheet(results)
+        self.assertEqual(packaged, results)
+
+    def test_get_parameter_string_empty_params(self):
+        """Test get_parameter_string with empty parameters."""
+        result = ProcessServices.get_parameter_string(None)
+        self.assertEqual(result, "\tParameters: []")
+
+    def test_get_parameter_string_single_params(self):
+        """Test get_parameter_string with single string parameters."""
+        params = ["param1", "param2", "param3"]
+        result = ProcessServices.get_parameter_string(params)
+        self.assertIn("param1", result)
+        self.assertIn("param2", result)
+        self.assertIn("param3", result)
+
+    def test_get_parameter_string_list_params(self):
+        """Test get_parameter_string with 'or' alternatives in lists."""
+        params = ["param1", ["param2a", "param2b"], "param3"]
+        result = ProcessServices.get_parameter_string(params)
+        self.assertIn("param1", result)
+        self.assertIn("param2a or param2b", result)
+        self.assertIn("param3", result)
+
+    def test_process_events_target(self):
+        """Test process method with events operation target."""
+        events_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "data/sub-002_task-FacePerception_run-1_events.tsv",
+        )
+        with open(events_path) as fp:
+            events_data = fp.read()
+
+        sidecar_path = "data/task-FacePerception_events.json"
+        sidecar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), sidecar_path)
+        sidecar = Sidecar(sidecar_path)
+
+        arguments = {
+            bc.SERVICE: "events_validate",
+            bc.COMMAND: "validate",
+            bc.COMMAND_TARGET: "events",
+            bc.SCHEMA: load_schema_version("8.2.0"),
+            bc.EVENTS: TabularInput(file=io.StringIO(events_data), sidecar=sidecar, name="Events"),
+            bc.CHECK_FOR_WARNINGS: True,
+        }
+
+        with self.app.app_context():
+            response = ProcessServices.process(arguments)
+            self.assertFalse(response["error_type"])
+            self.assertEqual(response[bc.SERVICE], "events_validate")
+
+    def test_process_strings_target(self):
+        """Test process method with strings operation target."""
+        from hed import HedString
+
+        schema = load_schema_version("8.2.0")
+        arguments = {
+            bc.SERVICE: "strings_validate",
+            bc.COMMAND: "validate",
+            bc.COMMAND_TARGET: "strings",
+            bc.SCHEMA: schema,
+            bc.STRING_LIST: [
+                HedString("(Event, (Age))", hed_schema=schema),
+                HedString("(Sensory-event)", hed_schema=schema),
+            ],
+            bc.CHECK_FOR_WARNINGS: True,
+        }
+
+        with self.app.app_context():
+            response = ProcessServices.process(arguments)
+            self.assertFalse(response["error_type"])
+            self.assertEqual(response[bc.SERVICE], "strings_validate")
+
+    def test_process_invalid_target_missing(self):
+        """Test process with invalid/missing command target."""
+        arguments = {
+            bc.SERVICE: "invalid_validate",
+            bc.COMMAND: "validate",
+            bc.COMMAND_TARGET: "invalid",
+        }
+
+        with self.app.app_context():
+            with self.assertRaises(HedFileError):
+                ProcessServices.process(arguments)
+
+    def test_process_get_services(self):
+        """Test process method with get_services command."""
+        arguments = {
+            bc.SERVICE: "get_services",
+            bc.COMMAND: "get_services",
+        }
+
+        with self.app.app_context():
+            response = ProcessServices.process(arguments)
+            self.assertFalse(response["error_type"])
+            self.assertIn("data", response["results"])
+
+    def test_set_parameters_all_options(self):
+        """Test set_parameters with all option flags."""
+        arguments = {}
+        params = {
+            bc.COLUMNS_CATEGORICAL: ["col1"],
+            bc.COLUMNS_VALUE: ["col2"],
+            bc.COLUMNS_SKIP: ["col3"],
+            bc.TAG_COLUMNS: ["col4"],
+            bc.INCLUDE_CONTEXT: True,
+            bc.REMOVE_TYPES: True,
+            bc.REPLACE_DEFS: True,
+            bc.EXPAND_DEFS: True,
+            bc.INCLUDE_DESCRIPTION_TAGS: True,
+            bc.INCLUDE_SUMMARIES: True,
+        }
+        ProcessServices.set_parameters(arguments, params)
+
+        self.assertEqual(arguments[bc.COLUMNS_CATEGORICAL], ["col1"])
+        self.assertEqual(arguments[bc.COLUMNS_VALUE], ["col2"])
+        self.assertEqual(arguments[bc.COLUMNS_SKIP], ["col3"])
+        self.assertTrue(arguments[bc.INCLUDE_CONTEXT])
+        self.assertTrue(arguments[bc.REMOVE_TYPES])
+        self.assertTrue(arguments[bc.REPLACE_DEFS])
+        self.assertTrue(arguments[bc.EXPAND_DEFS])
 
 
 if __name__ == "__main__":

@@ -1,3 +1,28 @@
+"""
+Comprehensive test coverage for EventOperations class.
+
+This module provides extensive testing of hedweb/event_operations.py, which handles tabular event data
+files with HED annotations and metadata sidecars. Tests cover form processing, validation, conversion,
+searching, quality checking, remodeling, and sidecar generation.
+
+Test Approach:
+- No mocks: All tests use real test data files from tests/data/ (bids_events.tsv, bids_events.json)
+- Parameter variations: Tests combinations like with/without warnings, append modes, definition options
+- End-to-end workflows: Tests complex operations like validate→search to verify composition
+- Error paths: Tests invalid data, missing files, bad schemas to verify error handling
+- Output validation: Verifies not just success but that output is correctly formatted
+
+Coverage:
+- validate() - HED annotation validation with various options and external definitions
+- check_quality() - Annotation quality analysis with metrics and limits
+- assemble() - Short-form to long-form HED conversion with different modes
+- search() - Finding matching HED tags with query options
+- get_hed_objs() - Converting to HED objects with context preservation
+- remodel() - Data structure transformation with optional summaries
+- generate_sidecar() - Creating sidecar metadata from columns
+- Error conditions - Invalid commands, bad schemas, missing files
+"""
+
 import json
 import os
 import unittest
@@ -13,10 +38,11 @@ from werkzeug.wrappers import Request
 from hedweb.constants import base_constants as bc
 from hedweb.event_operations import EventOperations
 from hedweb.process_form import ProcessForm
+from hedweb.process_service import ProcessServices
 from tests.test_web_base import TestWebBase
 
 
-class Test(TestWebBase):
+class TestEventOperations(TestWebBase):
     cache_schemas = True
 
     def get_event_proc(self, events_file, sidecar_file, schema_file):
@@ -421,6 +447,313 @@ class Test(TestWebBase):
             with self.assertRaises(HedFileError) as context:
                 ProcessForm.get_input_from_form(request)
             self.assertIn("object", str(context.exception))
+
+    # ========== COMPREHENSIVE COVERAGE TESTS ==========
+    # Additional comprehensive tests for EventOperations class
+    # Includes parameter variations, option combinations, edge cases, and error paths
+
+    def test_check_quality_with_limit_errors(self):
+        """Test check_quality with limit_errors enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_CHECK_QUALITY
+            events_proc.limit_errors = True
+            results = events_proc.process()
+            self.assertIsInstance(results, dict, "should return a dictionary")
+            self.assertIn("data", results, "should have data with quality issues")
+
+    def test_check_quality_with_show_details(self):
+        """Test check_quality with show_details enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_CHECK_QUALITY
+            events_proc.show_details = True
+            results = events_proc.process()
+            self.assertIsInstance(results, dict, "should return a dictionary")
+
+    def test_check_quality_with_both_limit_and_show_details(self):
+        """Test check_quality with both limit_errors and show_details."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_CHECK_QUALITY
+            events_proc.limit_errors = True
+            events_proc.show_details = True
+            results = events_proc.process()
+            self.assertIsInstance(results, dict, "should return a dictionary")
+            self.assertIn("data", results, "should have quality check data")
+
+    def test_validate_without_warnings(self):
+        """Test validation with check_for_warnings disabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_VALIDATE
+            events_proc.check_for_warnings = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success without warnings")
+            self.assertFalse(results["data"], "should have empty data for no errors")
+
+    def test_validate_with_warnings_enabled(self):
+        """Test validation with check_for_warnings enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_VALIDATE
+            events_proc.check_for_warnings = True
+            results = events_proc.process()
+            self.assertIn("msg_category", results, "should have msg_category")
+
+    def test_validate_with_external_definitions_no_errors(self):
+        """Test validate with external definitions that introduce no errors."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            events_proc.definitions = ProcessServices.get_definitions(def_string, events_proc.schema)
+            events_proc.command = bc.COMMAND_VALIDATE
+            results = events_proc.process()
+            self.assertIn("msg_category", results, "should have msg_category")
+
+    def test_validate_with_sidecar_and_no_events_file_schema(self):
+        """Test validate with sidecar but no schema."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", None)
+            events_proc.command = bc.COMMAND_VALIDATE
+            # Without schema, process should raise an error
+            with self.assertRaises(HedFileError):
+                events_proc.process()
+
+    def test_validate_with_limit_errors(self):
+        """Test validate with limit_errors enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events_bad.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_VALIDATE
+            events_proc.limit_errors = True
+            results = events_proc.process()
+            self.assertEqual("warning", results["msg_category"], "should be warning for errors")
+            self.assertTrue(results["data"], "should have error data")
+
+    def test_assemble_with_append_assembled_true(self):
+        """Test assemble with append_assembled enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.command = bc.COMMAND_ASSEMBLE
+            events_proc.append_assembled = True
+            events_proc.check_for_warnings = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertTrue(results["data"], "should have assembled data")
+            # Data should be tab-separated when append_assembled is true
+            self.assertIn("\t", results["data"], "data should contain tabs when appended")
+
+    def test_assemble_without_appending(self):
+        """Test assemble without appending to original dataframe."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.command = bc.COMMAND_ASSEMBLE
+            events_proc.append_assembled = False
+            events_proc.check_for_warnings = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertTrue(results["data"], "should have assembled data")
+
+    def test_assemble_with_replace_defs(self):
+        """Test assemble with replace_defs enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.command = bc.COMMAND_ASSEMBLE
+            events_proc.replace_defs = True
+            events_proc.check_for_warnings = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertTrue(isinstance(results["data"], list), "data should be a list")
+
+    def test_search_with_query_names(self):
+        """Test search with explicit query names."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_SEARCH
+            events_proc.queries = ["Sensory-event", "Motor-action"]
+            events_proc.query_names = ["query1", "query2"]
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertIn("data", results, "should include search data in results")
+            self.assertTrue(results["data"], "search results should contain data")
+
+    def test_search_with_append_assembled(self):
+        """Test search with append_assembled enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_SEARCH
+            events_proc.queries = ["Sensory-event"]
+            events_proc.append_assembled = True
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertTrue(results["data"], "should have search results")
+
+    def test_search_without_append_assembled(self):
+        """Test search without append_assembled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_SEARCH
+            events_proc.queries = ["Sensory-event"]
+            events_proc.append_assembled = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            self.assertTrue(results["data"], "should have search results")
+
+    def test_get_hed_objs_with_context(self):
+        """Test get_hed_objs with include_context enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.include_context = True
+            hed_objs, definitions = events_proc.get_hed_objs()
+            self.assertIsInstance(hed_objs, list, "should return a list of HED objects")
+            self.assertTrue(len(hed_objs) > 0, "should have HED objects")
+
+    def test_get_hed_objs_without_context(self):
+        """Test get_hed_objs without context."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.include_context = False
+            hed_objs, definitions = events_proc.get_hed_objs()
+            self.assertIsInstance(hed_objs, list, "should return a list")
+            self.assertTrue(len(hed_objs) > 0, "should have HED objects")
+
+    def test_get_hed_objs_with_replace_defs(self):
+        """Test get_hed_objs with replace_defs enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.replace_defs = True
+            hed_objs, definitions = events_proc.get_hed_objs()
+            self.assertIsInstance(hed_objs, list, "should return a list")
+
+    def test_get_hed_objs_with_remove_types(self):
+        """Test get_hed_objs with remove_types enabled."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc(
+                "data/sub-002_task-FacePerception_run-1_events.tsv",
+                "data/task-FacePerception_events.json",
+                "data/HED8.2.0.xml",
+            )
+            events_proc.remove_types = True
+            hed_objs, definitions = events_proc.get_hed_objs()
+            self.assertIsInstance(hed_objs, list, "should return a list")
+
+    def test_remodel_with_include_summaries(self):
+        """Test remodel with include_summaries enabled."""
+        with self.app.app_context():
+            rmdl_ops = [
+                {
+                    "operation": "remove_columns",
+                    "description": "Remove columns",
+                    "parameters": {"column_names": ["value"], "ignore_missing": True},
+                }
+            ]
+            events_proc = self.get_event_proc("data/sub-002_task-FacePerception_run-1_events.tsv", None, None)
+            events_proc.command = bc.COMMAND_REMODEL
+            events_proc.remodel_operations = {"name": "test_remodel", "operations": rmdl_ops}
+            events_proc.include_summaries = True
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+
+    def test_remodel_without_include_summaries(self):
+        """Test remodel without include_summaries."""
+        with self.app.app_context():
+            rmdl_ops = [
+                {
+                    "operation": "remove_columns",
+                    "description": "Remove columns",
+                    "parameters": {"column_names": ["value"], "ignore_missing": True},
+                }
+            ]
+            events_proc = self.get_event_proc("data/sub-002_task-FacePerception_run-1_events.tsv", None, None)
+            events_proc.command = bc.COMMAND_REMODEL
+            events_proc.remodel_operations = {"name": "test_remodel", "operations": rmdl_ops}
+            events_proc.include_summaries = False
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+
+    def test_remodel_missing_operations(self):
+        """Test remodel with missing operations."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/sub-002_task-FacePerception_run-1_events.tsv", None, None)
+            events_proc.command = bc.COMMAND_REMODEL
+            events_proc.remodel_operations = None
+            with self.assertRaises(HedFileError):
+                events_proc.process()
+
+    def test_generate_sidecar_with_all_columns(self):
+        """Test generate_sidecar with no column filtering."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_GENERATE_SIDECAR
+            events_proc.columns_skip = []
+            events_proc.columns_value = []
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+            sidecar_data = json.loads(results["data"])
+            self.assertIsInstance(sidecar_data, dict, "generated sidecar should be a dict")
+
+    def test_generate_sidecar_with_column_filtering(self):
+        """Test generate_sidecar with column skip and value lists."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = bc.COMMAND_GENERATE_SIDECAR
+            events_proc.columns_skip = ["onset", "duration"]
+            events_proc.columns_value = ["trial"]
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], "should be success")
+
+    def test_process_invalid_command_coverage(self):
+        """Test process with an invalid command."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", "data/HED8.2.0.xml")
+            events_proc.command = "invalid_command"
+            with self.assertRaises(HedFileError) as context:
+                events_proc.process()
+            self.assertIn("invalid", str(context.exception).lower())
+
+    def test_validate_with_bad_schema_coverage(self):
+        """Test validate with invalid schema."""
+        with self.app.app_context():
+            events_proc = self.get_event_proc("data/bids_events.tsv", "data/bids_events.json", None)
+            events_proc.schema = "not_a_schema"
+            events_proc.command = bc.COMMAND_VALIDATE
+            with self.assertRaises(HedFileError):
+                events_proc.process()
+
+    def test_process_no_events_file_coverage(self):
+        """Test process with no events file."""
+        with self.app.app_context():
+            events_proc = EventOperations()
+            events_proc.schema = load_schema(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HED8.2.0.xml")
+            )
+            events_proc.command = bc.COMMAND_VALIDATE
+            with self.assertRaises(HedFileError):
+                events_proc.process()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ from hedweb.process_form import ProcessForm
 from tests.test_web_base import TestWebBase
 
 
-class Test(TestWebBase):
+class TestStringOperations(TestWebBase):
     def test_set_input_from_string_form_empty(self):
         from hedweb.string_operations import StringOperations
 
