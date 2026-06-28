@@ -1,7 +1,3 @@
 {
-    "defs": {
-        "HED": {
-            "def1": "(Definition/TestDef/#, (Age/#))"
-        }
-    }
+    "definitions": "(Definition/TestDef/#, (Age/#))"
 }

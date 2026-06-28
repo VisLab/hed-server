@@ -22,6 +22,10 @@ document.getElementById('remodel_file').addEventListener('change', function() {
     clearFlashMessages();
 });
 
+document.getElementById('definition_file').addEventListener('change', function() {
+    clearFlashMessages();
+});
+
 /**
  * Events file handler function. Checks if the file uploaded has a valid spreadsheet extension.
  */
@@ -58,6 +62,7 @@ function clearForm() {
     document.getElementById('sidecar_file').value = '';
     document.getElementById('events_file').value = '';
     document.getElementById('remodel_file').value = '';
+    document.getElementById('definition_file').value = '';
     setOptions();
     hideOtherSchemaVersionFileUpload();
     clearEventsTable();
@@ -138,6 +143,7 @@ function setOptions() {
         hideElement("remodel_input_section");
         showElement("sidecar_input_section");
         showElement("show_events_section");
+        showElement("definition_section");
     } else if (selectedElement.value === "check_quality") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -155,6 +161,7 @@ function setOptions() {
         hideElement("remodel_input_section");
         showElement("sidecar_input_section");
         showElement("show_events_section");
+        showElement("definition_section");
     } else if (selectedElement.value === "assemble") {
         showOption("append_assembled", true);
         hideOption("check_for_warnings");
@@ -172,6 +179,7 @@ function setOptions() {
         hideElement("remodel_input_section");
         showElement("sidecar_input_section");
         showElement("show_events_section");
+        showElement("definition_section");
     } else if (selectedElement.value === "generate_sidecar") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -189,6 +197,7 @@ function setOptions() {
         hideElement("remodel_input_section");
         hideElement("sidecar_input_section");
         showElement("show_events_section");
+        hideElement("definition_section");
     } else if (selectedElement.value === "remodel") {
         hideOption("append_assembled");
         hideOption("check_for_warnings");
@@ -206,6 +215,7 @@ function setOptions() {
         showElement("remodel_input_section");
         showElement("sidecar_input_section");
         showElement("show_events_section");
+        showElement("definition_section");
     }  else if (selectedElement.value === "search") {
         showOption("append_assembled", true);
         hideOption("check_for_warnings");
@@ -223,6 +233,7 @@ function setOptions() {
         hideElement("remodel_input_section");
         showElement("sidecar_input_section");
         showElement("show_events_section");
+        showElement("definition_section");
     }
 }
 

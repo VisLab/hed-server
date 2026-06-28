@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import hed.schema as hs
 from hed.errors import HedFileError
+from hed.models.definition_dict import DefinitionDict
 from hed.models.hed_string import HedString
 from hed.models.sidecar import Sidecar
 from hed.models.spreadsheet_input import SpreadsheetInput
@@ -141,8 +142,18 @@ class ProcessForm:
             }
         if bc.DEFINITION_FILE in request.files and request.files[bc.DEFINITION_FILE]:
             f = request.files[bc.DEFINITION_FILE]
-            sidecar = Sidecar(files=f, name=secure_filename(f.filename))
-            arguments[bc.DEFINITIONS] = sidecar.get_def_dict(arguments[bc.SCHEMA], extra_def_dicts=None)
+            try:
+                json_defs = json.load(f)
+            except json.JSONDecodeError as ex:
+                raise HedFileError("BadDefinitionString", "Definition file must contain valid JSON", "") from ex
+            if not isinstance(json_defs, dict):
+                raise HedFileError(
+                    "BadDefinitionJSON", 'Definition JSON must be an object with a "definitions" key', ""
+                )
+            definitions = json_defs.get("definitions", None)
+            if definitions is None:
+                raise HedFileError("BadDefinitionJSON", 'Definition JSON must contain a "definitions" key', "")
+            arguments[bc.DEFINITIONS] = DefinitionDict(definitions, arguments.get(bc.SCHEMA, None))
 
     @staticmethod
     def set_queries(arguments, request):

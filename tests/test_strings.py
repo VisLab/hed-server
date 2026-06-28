@@ -11,7 +11,7 @@ from hedweb.process_form import ProcessForm
 from tests.test_web_base import TestWebBase
 
 
-class Test(TestWebBase):
+class TestStringOperations(TestWebBase):
     def test_set_input_from_string_form_empty(self):
         from hedweb.string_operations import StringOperations
 
@@ -186,6 +186,45 @@ class Test(TestWebBase):
                 results["msg_category"],
                 "validate has warning if validation issues",
             )
+
+    def test_string_validate_with_external_definitions(self):
+        """Test string validation with external definitions."""
+        from hedweb.process_service import ProcessServices
+        from hedweb.string_operations import StringOperations
+
+        with self.app.app_context():
+            proc_strings = StringOperations()
+            proc_strings.schema = load_schema_version("8.2.0")
+            proc_strings.string_list = [
+                HedString("Def/TestDef/10", proc_strings.schema),
+                HedString("Red", proc_strings.schema),
+            ]
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            proc_strings.definitions = ProcessServices.get_definitions(def_string, proc_strings.schema)
+            proc_strings.command = bc.COMMAND_VALIDATE
+            results = proc_strings.process()
+            self.assertEqual(
+                "success", results["msg_category"], "should validate successfully with external definitions"
+            )
+
+    def test_string_convert_with_external_definitions(self):
+        """Test string conversion with external definitions."""
+        from hedweb.constants import base_constants
+        from hedweb.process_service import ProcessServices
+        from hedweb.string_operations import StringOperations
+
+        with self.app.app_context():
+            proc_strings = StringOperations()
+            proc_strings.schema = load_schema_version("8.2.0")
+            proc_strings.string_list = [
+                HedString("Def/TestDef/10", proc_strings.schema),
+                HedString("Red", proc_strings.schema),
+            ]
+            def_string = '{"definitions": "(Definition/TestDef/#, (Age/#))"}'
+            proc_strings.definitions = ProcessServices.get_definitions(def_string, proc_strings.schema)
+            proc_strings.command = base_constants.COMMAND_TO_LONG
+            results = proc_strings.process()
+            self.assertIn("msg_category", results, "should have msg_category")
 
 
 if __name__ == "__main__":

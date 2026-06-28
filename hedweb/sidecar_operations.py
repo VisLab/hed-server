@@ -6,13 +6,14 @@ import json
 
 from hed import schema as hedschema
 from hed.errors import ErrorHandler, HedFileError, get_printable_issue_string
+from hed.errors.error_reporter import check_for_any_errors
 from hed.models import df_util
 from hed.tools.analysis.annotation_util import df_to_hed, hed_to_df, merge_hed_dict
 
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
 from hedweb.constants import file_constants as fc
-from hedweb.web_util import generate_filename, get_schema_versions
+from hedweb.web_util import filter_issues, generate_filename, get_schema_versions
 
 
 class SidecarOperations(BaseOperations):
@@ -27,6 +28,7 @@ class SidecarOperations(BaseOperations):
         """
         self.schema = None
         self.command = None
+        self.definitions = None
         self.sidecar = None
         self.spreadsheet = None
         self.check_for_warnings = False
@@ -50,7 +52,7 @@ class SidecarOperations(BaseOperations):
         """
         if not self.command:
             raise HedFileError("MissingCommand", "Command is missing", "")
-        elif not self.sidecar and not bc.COMMAND_MERGE_SPREADSHEET:
+        elif not self.sidecar and self.command not in (bc.COMMAND_EXTRACT_SPREADSHEET, bc.COMMAND_MERGE_SPREADSHEET):
             raise HedFileError(
                 "MissingSidecarFile",
                 "Please give a valid JSON sidecar file to process",
@@ -203,7 +205,14 @@ class SidecarOperations(BaseOperations):
         """
 
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
-        issues = self.sidecar.validate(self.schema, name=self.sidecar.name, error_handler=error_handler)
+        issues = []
+        if self.definitions and self.definitions.issues:
+            def_issues = filter_issues(list(self.definitions.issues), self.check_for_warnings)
+            issues.extend(def_issues)
+        if not check_for_any_errors(issues):
+            issues += self.sidecar.validate(
+                self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
+            )
         if issues:
             data = get_printable_issue_string(issues, f"JSON dictionary {self.sidecar.name} validation issues")
             file_name = generate_filename(

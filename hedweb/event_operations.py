@@ -21,7 +21,7 @@ from remodeler.remodeler_validator import RemodelerValidator
 
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
-from hedweb.web_util import generate_filename, get_schema_versions
+from hedweb.web_util import filter_issues, generate_filename, get_schema_versions
 
 
 class EventOperations(BaseOperations):
@@ -37,6 +37,7 @@ class EventOperations(BaseOperations):
         self.schema = None
         self.events = None
         self.command = None
+        self.definitions = None
         self.append_assembled = False
         self.check_for_warnings = False
         self.columns_skip = []
@@ -120,7 +121,9 @@ class EventOperations(BaseOperations):
         self.check_for_warnings = False
         results = self.validate()
         if results["data"]:
-            results["data"] = results["data"]
+            results["data"] = (
+                "Input had HED validation issues, so assembly could not be performed...\n" + results["data"]
+            )
             return results
         hed_objs, definitions = self.get_hed_objs()
         data = [str(obj) if obj is not None else "" for obj in hed_objs]
@@ -164,7 +167,7 @@ class EventOperations(BaseOperations):
         display_name = self.events.name
         results = self.validate()
         if results["data"]:
-            results["data"] = "Events file had validation issues, so quality check not performed...\n" + results["data"]
+            results["data"] = "Data had validation issues, so quality check not performed...\n" + results["data"]
             return results
 
         checker = EventsChecker(self.schema, self.events, display_name)
@@ -247,7 +250,7 @@ class EventOperations(BaseOperations):
         Returns:
           tuple[list, DefinitionDict]: A tuple containing a list of HED objects and a DefinitionDict of definitions.
         """
-        definitions = self.events.get_def_dict(self.schema)
+        definitions = self.events.get_def_dict(self.schema, extra_def_dicts=self.definitions)
         event_manager = EventManager(self.events, self.schema)
         if self.remove_types:
             types = ["Condition-variable", "Task"]
@@ -419,8 +422,13 @@ class EventOperations(BaseOperations):
             }
         error_handler = ErrorHandler(check_for_warnings=self.check_for_warnings)
         issues = []
-        if self.sidecar:
-            issues = self.sidecar.validate(self.schema, name=self.sidecar.name, error_handler=error_handler)
+        if self.definitions and self.definitions.issues:
+            def_issues = filter_issues(list(self.definitions.issues), self.check_for_warnings)
+            issues.extend(def_issues)
+        if not check_for_any_errors(issues) and self.sidecar:
+            issues += self.sidecar.validate(
+                self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
+            )
         if not check_for_any_errors(issues):
             issues += self.events.validate(self.schema, name=self.events.name, error_handler=error_handler)
         if issues:

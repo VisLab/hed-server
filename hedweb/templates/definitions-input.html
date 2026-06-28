@@ -1,0 +1,8 @@
+{% macro create_definitions_input(label="Definitions (JSON):") %}
+    <div id="definition_section" class="row g-2 mb-2 mt-3">
+        <label for="definition_file" class="col-sm-auto col-12 col-form-label form-label-col">{{ label }}</label>
+        <div class="col-sm col-12">
+            <input class="form-control" type="file" id="definition_file" name="definition_file">
+        </div>
+    </div>
+{% endmacro %}

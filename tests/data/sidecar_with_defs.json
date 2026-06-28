@@ -1,0 +1,9 @@
+
+{
+    "defs": {
+        "HED": {
+            "def1": "(Definition/Apple/#, (Label/#))",
+            "def2": "(Definition/Blech/#, (Red, Label/#))"
+        }
+    }
+}
