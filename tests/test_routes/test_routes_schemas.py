@@ -48,7 +48,7 @@ class Test(TestRouteBase):
             self.assertTrue(response["data"], "The response data for valid schema is not empty")
             self.assertEqual(
                 response["output_display_name"],
-                "HED8.2.0_converted.zip",
+                "HED8.2.0_converted_unmerged.zip",
             )
 
     def test_schemas_results_convert_xml_valid(self):
@@ -66,7 +66,7 @@ class Test(TestRouteBase):
             response = json.loads(result.data.decode("utf-8"))
             self.assertEqual("success", response["msg_category"], "An valid schema")
             self.assertTrue(response["data"], "The response data for valid schema is not empty")
-            self.assertEqual(response["output_display_name"], "HED8.2.0_converted.zip")
+            self.assertEqual(response["output_display_name"], "HED8.2.0_converted_unmerged.zip")
 
     def test_schemas_results_convert_xml_url_valid(self):
         schema_url = (
@@ -86,7 +86,7 @@ class Test(TestRouteBase):
             response = json.loads(result.data.decode("utf-8"))
             self.assertEqual("success", response["msg_category"], "An valid schema")
             self.assertTrue(response["data"], "The response data for valid schema is not empty")
-            self.assertEqual(response["output_display_name"], "HED8.2.0_converted.zip")
+            self.assertEqual(response["output_display_name"], "HED8.2.0_converted_unmerged.zip")
 
     def test_schemas_results_convert_xml_url_valid2(self):
         schema_url = (
@@ -106,7 +106,7 @@ class Test(TestRouteBase):
             response = json.loads(result.data.decode("utf-8"))
             self.assertEqual("success", response["msg_category"], "An valid schema")
             self.assertTrue(response["data"], "The response data for valid schema is not empty")
-            self.assertEqual(response["output_display_name"], "HED8.2.0_converted.zip")
+            self.assertEqual(response["output_display_name"], "HED8.2.0_converted_unmerged.zip")
 
     def test_schemas_results_validate_mediawiki_invalid(self):
         with self.app.app_context():
