@@ -111,6 +111,34 @@ class Test(TestWebBase):
             self.assertTrue(results["data"], "HED 8.5.0.mediawiki can be converted to xml")
             self.assertEqual(results["output_display_name"], "HED8.5.0_converted_unmerged.zip")
 
+    def test_schemas_convert_valid_merged(self):
+        """Test schema conversion with save_merged=True to verify merged filename.
+        
+        This test ensures the filename behavior depends on the save_merged setting
+        and prevents regressions for both merged and unmerged output modes.
+        """
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HED8.5.0.mediawiki")
+        name = "HED8.5.0"
+        with self.app.app_context():
+            proc_schemas = SchemaOperations()
+            proc_schemas.command = bc.COMMAND_CONVERT_SCHEMA
+            proc_schemas.save_merged = True
+            proc_schemas.schema = load_schema(schema_path, name=name)
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "HED 8.5.0.mediawiki can be converted to xml (merged)")
+            self.assertEqual(results["output_display_name"], "HED8.5.0_converted_merged.zip")
+
+            proc_schemas = SchemaOperations()
+            input_dict = {
+                bc.COMMAND: bc.COMMAND_CONVERT_SCHEMA,
+                bc.SCHEMA1: load_schema(schema_path, name=name),
+            }
+            proc_schemas.set_input_from_dict(input_dict)
+            proc_schemas.save_merged = True
+            results = proc_schemas.process()
+            self.assertTrue(results["data"], "HED 8.5.0.mediawiki can be converted to xml (merged)")
+            self.assertEqual(results["output_display_name"], "HED8.5.0_converted_merged.zip")
+
     def test_schemas_convert_invalid(self):
         schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/HEDbad.xml")
         display_name = "HEDbad"
