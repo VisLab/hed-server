@@ -113,7 +113,7 @@ class Test(TestWebBase):
 
     def test_schemas_convert_valid_merged(self):
         """Test schema conversion with save_merged=True to verify merged filename.
-        
+
         This test ensures the filename behavior depends on the save_merged setting
         and prevents regressions for both merged and unmerged output modes.
         """
