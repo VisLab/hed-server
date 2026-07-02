@@ -132,7 +132,7 @@ class SchemaOperations(BaseOperations):
             zip_buffer.seek(0)
             zip_bytes = zip_buffer.read()
             encoded_zip = base64.b64encode(zip_bytes).decode("utf-8")
-            zip_file_name = f"{schema_name}_converted.zip"
+            zip_file_name = f"{schema_name}_converted_{merged_status}.zip"
 
             return {
                 "command": "convert_schema",
