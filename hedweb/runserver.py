@@ -12,9 +12,13 @@ if parent_dir not in sys.path:
 from hed import _version as vr  # noqa: E402
 
 try:
-    from hedweb._version import __version__ as web_version  # noqa: E402
+    from hedweb import _version as wv  # noqa: E402
+
+    web_version = getattr(wv, "__version__", "unknown")
+    web_commit = getattr(wv, "__commit_id__", "")
 except ImportError:
     web_version = "unknown"
+    web_commit = ""
 
 from hedweb.app_factory import AppFactory  # noqa: E402
 
@@ -25,7 +29,7 @@ def get_version_dict():
     """Create a dictionary of versions and related metadata.
 
     Returns:
-        dict: Keys are tool_ver, tool_commit, web_ver, web_date.
+        dict: Keys are tool_ver, tool_commit, web_ver, web_commit.
 
     """
 
@@ -36,7 +40,7 @@ def get_version_dict():
         "tool_ver": tools_version,
         "tool_commit": tools_commit,
         "web_ver": web_version,
-        "web_date": "",  # setuptools-scm doesn't provide build date
+        "web_commit": web_commit,
     }
 
 

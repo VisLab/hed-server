@@ -221,7 +221,7 @@ def render_events_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -239,7 +239,7 @@ def render_home_page() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -257,7 +257,7 @@ def render_schemas_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -275,7 +275,7 @@ def render_services_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -293,7 +293,7 @@ def render_sidecars_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -311,7 +311,7 @@ def render_spreadsheets_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
 
 
@@ -329,5 +329,5 @@ def render_strings_form() -> str:
         tool_ver=ver["tool_ver"],
         tool_commit=ver.get("tool_commit", ""),
         web_ver=ver["web_ver"],
-        web_date=ver["web_date"],
+        web_commit=ver.get("web_commit", ""),
     )
