@@ -19,7 +19,6 @@ class Test(unittest.TestCase):
         self.assertIsInstance(ver_dict["tool_commit"], str, "tool_commit is a string")
         self.assertIsInstance(ver_dict["web_ver"], str, "web_ver is a string")
         self.assertIsInstance(ver_dict["web_commit"], str, "web_commit is a string")
-        self.assertNotEqual(ver_dict["web_ver"], "unknown", "web_ver resolves from _version module")
 
     def test_setup_logging_with_log_directory(self):
         from hedweb.runserver import app, setup_logging

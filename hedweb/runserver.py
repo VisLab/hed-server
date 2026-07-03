@@ -29,7 +29,7 @@ def get_version_dict():
     """Create a dictionary of versions and related metadata.
 
     Returns:
-        dict: Keys are tool_ver, tool_commit, web_ver, web_date.
+        dict: Keys are tool_ver, tool_commit, web_ver, web_commit.
 
     """
 
