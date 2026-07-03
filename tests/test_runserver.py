@@ -14,7 +14,12 @@ class Test(unittest.TestCase):
         self.assertIn("tool_ver", ver_dict, "get_version_dict has a tool_ver key")
         self.assertIn("tool_commit", ver_dict, "get_version_dict has a tool_commit key")
         self.assertIn("web_ver", ver_dict, "get_version_dict has a web_ver key")
-        self.assertIn("web_date", ver_dict, "get_version_dict has a t]web_date key")
+        self.assertIn("web_commit", ver_dict, "get_version_dict has a web_commit key")
+        self.assertIsInstance(ver_dict["tool_ver"], str, "tool_ver is a string")
+        self.assertIsInstance(ver_dict["tool_commit"], str, "tool_commit is a string")
+        self.assertIsInstance(ver_dict["web_ver"], str, "web_ver is a string")
+        self.assertIsInstance(ver_dict["web_commit"], str, "web_commit is a string")
+        self.assertNotEqual(ver_dict["web_ver"], "unknown", "web_ver resolves from _version module")
 
     def test_setup_logging_with_log_directory(self):
         from hedweb.runserver import app, setup_logging
