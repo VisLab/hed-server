@@ -150,5 +150,7 @@
         crossorigin="anonymous"
         defer
         onload="window.OSAChatWidget && window.OSAChatWidget.setConfig(window.osaChatConfig)"></script><!-- osa v0.8.1 -->
+<script>window.hedHelpJsonUrl = "{{ url_for('static', filename='resources/ui_help.json') }}";</script>
+<script src="{{ url_for('static', filename='js/help-icons.js') }}" defer></script>
 </body>
 </html>

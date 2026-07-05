@@ -33,6 +33,21 @@ class AppFactory:
         app = Flask(__name__, static_url_path=static_url_path)
         app.config.from_object(config_class)
 
+        # Ensure runtime directories exist for any paths that are explicitly
+        # configured.  Using LOG_DIRECTORY and HED_CACHE_FOLDER directly avoids
+        # inadvertently creating ./log or ./schema_cache when BASE_DIRECTORY is
+        # absent or empty.  OSErrors (permission denied, drive not mounted, etc.)
+        # are logged as warnings so a misconfigured path doesn't prevent startup.
+        import os
+
+        for dir_key in ("LOG_DIRECTORY", "HED_CACHE_FOLDER"):
+            target = app.config.get(dir_key, "")
+            if target:
+                try:
+                    os.makedirs(target, exist_ok=True)
+                except OSError as exc:
+                    app.logger.warning("Could not create directory %s=%r: %s", dir_key, target, exc)
+
         # Configure hedtools to use the specified cache directory
         if "HED_CACHE_FOLDER" in app.config:
             import hed.schema as hedschema
