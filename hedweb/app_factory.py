@@ -33,6 +33,16 @@ class AppFactory:
         app = Flask(__name__, static_url_path=static_url_path)
         app.config.from_object(config_class)
 
+        # Create required runtime directories (log, schema_cache) if missing.
+        # Done here rather than at config class definition time so that importing
+        # the config module never has filesystem side-effects.
+        import os
+
+        for subdir in ("log", "schema_cache"):
+            target = os.path.join(app.config.get("BASE_DIRECTORY", ""), subdir)
+            if target:
+                os.makedirs(target, exist_ok=True)
+
         # Configure hedtools to use the specified cache directory
         if "HED_CACHE_FOLDER" in app.config:
             import hed.schema as hedschema

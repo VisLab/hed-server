@@ -72,12 +72,16 @@ def configure_app():
     if CONFIG_ENVIRON_NAME in os.environ:
         config_class = os.environ.get(CONFIG_ENVIRON_NAME)
     else:
-        # Try to use config.DevelopmentConfig, fallback to default_config if not available
+        # Try to use config.DevelopmentConfig, fallback to default_config if not available.
+        # Catch OSError in addition to ImportError: config.py runs os.makedirs at class
+        # definition time, so if BASE_DIRECTORY is on a drive that is not yet mounted
+        # (e.g. an external drive E:) the import raises FileNotFoundError (a subclass of
+        # OSError) rather than ImportError.
         try:
             import config  # noqa: F401  # only to test availability
 
             config_class = "config.DevelopmentConfig"
-        except ImportError:
+        except (ImportError, OSError):
             config_class = "default_config.DevelopmentConfig"
 
     return AppFactory.create_app(config_class)

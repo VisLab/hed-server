@@ -1,0 +1,157 @@
+{
+  "version": "1.1",
+  "_comment": "Keys in each section are sorted alphabetically. Set \"html\": true on an entry to allow HTML tags in \"text\".",
+  "sections": {
+    "actions": {
+      "process_actions": {
+        "title": "Action",
+        "text": "Selects the operation to perform on the uploaded file(s). Different actions may show or hide inputs and options below.",
+        "html": true,
+        "action_details": {
+          "assemble": "Creates a file containing the assembled HED string for each row in the tabular input file. The <em>Append assembled</em> option controls whether strings are added as a new column or returned separately. Other options control what is included in each string.",
+          "check_quality": "Evaluates the quality and completeness of HED annotations beyond basic validity.",
+          "compare_schemas": "Compares two HED schemas and reports differences between them.",
+          "convert_schema": "Converts a HED schema file between supported formats (e.g., XML to MediaWiki or vice versa).",
+          "extract_spreadsheet": "Extracts the HED portion of a JSON sidecar into a 4-column TSV spreadsheet for easier editing.",
+          "generate_sidecar": "Extracts a JSON sidecar template from the column structure of the events file. Use the column info table to select which columns are categorical (finite set of values) and which are value columns (numeric or free-text).",
+          "merge_spreadsheet": "Merges a 4-column HED spreadsheet back into a JSON sidecar.",
+          "remodel": "Restructures the events file using a list of operations defined in a JSON remodel file. Operations include renaming columns, factoring columns, and creating summary files.",
+          "search": "Filters rows using a HED query expression and returns a column of 0/1 match indicators showing which rows satisfy the query.",
+          "to_long": "Converts all HED tags in the file to long form — the full path from the root of the HED schema hierarchy (e.g., <em>Sensory-event/Visual/Color/Red</em>).",
+          "to_short": "Converts all HED tags in the file to short form — the leaf node only (e.g., <em>Red</em>).",
+          "validate": "Checks the uploaded files for HED annotation errors. Enable <em>Check warnings</em> to also report non-critical issues such as deprecated tags. Enable <em>Limit errors</em> to truncate the error report for large files with many repeated errors."
+        }
+      }
+    },
+    "inputs": {
+      "definition_file": {
+        "title": "Definitions (.json)",
+        "text": "A JSON file containing HED definitions to augment those in a sidecar file. The format is a JSON dictionary with a single key <code>definitions</code> whose value is a list of HED definition strings. Each definition is of the form <code>(Definition/Name, (HED tags))</code>. The definition name must be unique across all definitions in the sidecar and definition files.",
+        "html": true
+      },
+      "events_file": {
+        "title": "Tabular (.tsv) file",
+        "text": "A BIDS-style tabular file with a header line containing the column names. <ul><li>Tabular files with an <code>onset</code> column are treated as timeline files.</li><li>Tabular files without an <code>onset</code> column are treated as descriptor files.</li><li>Values in the HED column must contain valid HED annotations</li><li>Accompanying sidecar and definition files contain HED information that applies across rows.</li><li>The value <code>n/a</code> is used for missing values.</li></ul>",
+        "html": true
+      },
+      "query_input": {
+        "title": "HED query",
+        "text": "A HED search expression used to filter rows. Rows where the assembled HED string satisfies the query receive a value of 1; others receive 0. Use logical operators (<em>and</em>, <em>or</em>, <em>not</em>) and wildcards. Example: <code>Sensory-event and Visual</code>",
+        "html": true
+      },
+      "remodel_file": {
+        "title": "Remodel (.json)",
+        "text": "A JSON file containing a list of operations on tabular files that can be applied in pipeline fashion using the Python table-remodeler package. Operations include renaming, factoring, and summarizing columns."
+      },
+      "schema_file_option": {
+        "title": "Schema file",
+        "text": "Select this option to upload a local HED schema file in XML or MediaWiki format."
+      },
+      "schema_folder_option": {
+        "title": "Schema folder",
+        "text": "Select this option to upload a folder containing HED library schema files. Used when working with multi-library schema sets."
+      },
+      "schema_url_option": {
+        "title": "Schema URL",
+        "text": "Select this option to load a HED schema directly from a URL. The URL must point to a valid HED schema file in XML or MediaWiki format."
+      },
+      "second_schema_file_option": {
+        "title": "Second schema file",
+        "text": "Select this option to upload a second local HED schema file for comparison."
+      },
+      "second_schema_folder_option": {
+        "title": "Second schema folder",
+        "text": "Select this option to upload a folder containing a second set of HED library schema files for comparison."
+      },
+      "second_schema_url_option": {
+        "title": "Second schema URL",
+        "text": "Select this option to load the second HED schema from a URL for comparison."
+      },
+      "sidecar_file": {
+        "title": "Sidecar (.json)",
+        "text": "A BIDS-style JSON sidecar that maps event column values to HED annotation strings. HED definitions can be included in the sidecar to provide named, reusable tag groups."
+      },
+      "spreadsheet_file": {
+        "title": "Spreadsheet",
+        "text": "A TSV or Excel spreadsheet file containing HED tags. For Excel files, use the <em>Worksheet name</em> selector to choose the sheet to process.",
+        "html": true
+      },
+      "string_input": {
+        "title": "HED string",
+        "text": "Enter one or more HED annotation strings to validate, convert, or search. Each line is treated as a separate string."
+      },
+      "worksheet_name": {
+        "title": "Worksheet name",
+        "text": "For Excel spreadsheet files (.xlsx), select the worksheet to process. Only shown when an Excel file is uploaded."
+      }
+    },
+    "schema": {
+      "include_prereleases": {
+        "title": "Include prereleases",
+        "text": "When on, the schema version list includes pre-release (beta/RC) versions. Use this to test annotations against an upcoming schema before it is officially released."
+      },
+      "schema_path": {
+        "title": "Schema file to upload",
+        "text": "Upload a local HED schema file in XML or MediaWiki format. Only needed when <em>Other</em> is selected in the schema version dropdown.",
+        "html": true
+      },
+      "schema_version": {
+        "title": "HED schema version",
+        "text": "The HED schema version used for tag validation, assembly, and other operations. Choose <em>Other</em> to upload a local schema file instead.",
+        "html": true
+      }
+    },
+    "options": {
+      "append_assembled": {
+        "title": "Append assembled",
+        "text": "When on, the returned file is a copy of the original tabular file with the assembled HED strings appended as a new <em>HedAssembled</em> column. When off, the returned file contains only the assembled HED strings, one per line (blank for rows with no HED).",
+        "html": true
+      },
+      "check_for_warnings": {
+        "title": "Check warnings",
+        "text": "When on, validation also reports HED warnings such as deprecated tags and style issues, in addition to errors."
+      },
+      "expand_defs": {
+        "title": "Expand defs",
+        "text": "When on, <code>Def/XXX</code> placeholder tags are expanded inline to <code>Def-expand/XXX</code> groups with the full definition body inside. See <em>Replace defs</em> if you prefer that definition tags replace <code>Def/XXX</code> entirely.",
+        "html": true
+      },
+      "include_context": {
+        "title": "Include context",
+        "text": "When on, each assembled HED string includes context tags derived from temporally overlapping events. These ongoing events are included in <code>Event-context</code> groups, which tools use to determine everything happening at a given point in time.",
+        "html": true
+      },
+      "include_description_tags": {
+        "title": "Include description",
+        "text": "When on, <code>Description/XXX</code> tags from the sidecar are included in the assembled output.",
+        "html": true
+      },
+      "include_summaries": {
+        "title": "Include summaries",
+        "text": "When on, summary files produced by remodel operations are included in the output as a zip archive alongside the remodeled events file."
+      },
+      "limit_errors": {
+        "title": "Limit errors",
+        "text": "When on, the error report is truncated to a manageable size. Useful for large files with many repeated errors of the same type."
+      },
+      "replace_defs": {
+        "title": "Replace defs",
+        "text": "When on, <code>Def/XXX</code> tags in the output are replaced with the full content of the definition they reference (without the <code>Def-expand</code> wrapper).",
+        "html": true
+      },
+      "remove_types": {
+        "title": "No condition or task",
+        "text": "When on, <code>Condition-variable</code> and <code>Task</code> structural tags are stripped from the assembled HED strings. Useful for downstream analysis that does not need study-design tags.",
+        "html": true
+      },
+      "save_merged": {
+        "title": "Save merged",
+        "text": "When on, the merged sidecar (original plus any updates from the spreadsheet) is saved as part of the output."
+      },
+      "show_details": {
+        "title": "Show error details",
+        "text": "When on, the full technical details of each error are shown. When off, a shorter summary message is displayed."
+      }
+    }
+  }
+}
