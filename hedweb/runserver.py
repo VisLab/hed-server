@@ -35,12 +35,12 @@ def get_version_dict():
 
     # New hedtools version uses __version__ attribute instead of get_versions()
     tools_version = getattr(vr, "__version__", "unknown")
-    tools_commit = getattr(vr, "__commit_id__", "")
+    tools_commit = getattr(vr, "__commit_id__", "").lstrip("g")
     return {
         "tool_ver": tools_version,
         "tool_commit": tools_commit,
         "web_ver": web_version,
-        "web_commit": web_commit,
+        "web_commit": web_commit.lstrip("g"),
     }
 
 
