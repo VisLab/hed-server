@@ -58,7 +58,9 @@ EXPOSE 80
 
 # Run the Flask application with Gunicorn, binding to port 80
 # Import path matches PYTHONPATH layout (/root contains the 'hedweb' package)
+# Error log goes to stderr ("-") so "docker logs" always captures startup
+# failures; access log goes to the persistent file.
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "--forwarded-allow-ips=127.0.0.1", \
      "--access-logfile", "/var/log/hedtools/access.log", \
-     "--error-logfile", "/var/log/hedtools/error.log",  "--capture-output",\
+     "--error-logfile", "-", "--capture-output",\
      "--log-level", "info", "hedweb.runserver:app"]

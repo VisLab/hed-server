@@ -119,9 +119,11 @@ generate_version_file() {
             version="${tag}.post${distance}"
         fi
     else
-        echo "Warning: git describe failed; _version.py will use fallback values."
-        version="0.0.0"
-        commit_node=""
+        # No annotated tags exist (this repo uses commit-count versioning).
+        # Replicate what setuptools-scm produces: 0.0.0.post<commit-count>.
+        distance=$(git -C "${GIT_HED_SERVER_DIR}" rev-list HEAD --count 2>/dev/null || echo "0")
+        commit_node=$(git -C "${GIT_HED_SERVER_DIR}" rev-parse --short HEAD 2>/dev/null || echo "")
+        version="0.0.0.post${distance}"
     fi
 
     cat > "${CODE_DEPLOY_DIR}/hedweb/_version.py" << PYEOF
