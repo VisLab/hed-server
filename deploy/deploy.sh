@@ -119,8 +119,15 @@ generate_version_file() {
             version="${tag}.post${distance}"
         fi
     else
-        # No annotated tags exist (this repo uses commit-count versioning).
-        # Replicate what setuptools-scm produces: 0.0.0.post<commit-count>.
+        # git describe returned nothing.  Common causes:
+        #   - shallow clone (no tag reachable in the truncated history)
+        #   - clone made with --no-tags
+        #   - not running inside a git worktree
+        # Fall back to counting all commits for the distance component and
+        # using the HEAD short hash for the commit node.
+        echo "Warning: 'git describe --tags --long' produced no output." \
+             "Falling back to commit-count versioning." \
+             "Check that the clone is not shallow and that tags are fetched."
         distance=$(git -C "${GIT_HED_SERVER_DIR}" rev-list HEAD --count 2>/dev/null || echo "0")
         commit_node=$(git -C "${GIT_HED_SERVER_DIR}" rev-parse --short HEAD 2>/dev/null || echo "")
         version="0.0.0.post${distance}"

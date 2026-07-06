@@ -57,6 +57,19 @@ jobs:
           echo "Checking Docker images..."
           docker images
 
+      - name: Debug container startup (on failure)
+        if: failure()
+        run: |
+          echo "=== Attempting direct Python import to capture startup traceback ==="
+          docker run --rm \
+            -e HEDTOOLS_CONFIG_CLASS=config.ProductionConfig \
+            -e HED_URL_PREFIX=/hed_dev \
+            -e HED_STATIC_URL_PATH=/hed_dev/hedweb/static \
+            hedtools_dev:latest \
+            python -c "from hedweb.runserver import app; print('App loaded OK')" \
+            || true
+          echo "=== End of startup debug ==="
+
       - name: Wait for server to be ready
         run: |
           echo "Waiting for server to start..."
