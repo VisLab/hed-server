@@ -750,7 +750,7 @@ python -m sphinx_autobuild . _build/html
 
 - Template: `config_template.py`
 - Local: `config.py` (create from template)
-- Docker: `/root/hedtools/config.py`
+- Docker: `/root/config.py` (copied from `deploy/base_config.py` during the image build)
 
 **Logs (Docker):**
 

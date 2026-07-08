@@ -15,7 +15,7 @@ try:
     from hedweb import _version as wv  # noqa: E402
 
     web_version = getattr(wv, "__version__", "unknown")
-    web_commit = getattr(wv, "__commit_id__", "")
+    web_commit = getattr(wv, "__commit_id__", "") or ""
 except ImportError:
     web_version = "unknown"
     web_commit = ""
@@ -35,7 +35,7 @@ def get_version_dict():
 
     # New hedtools version uses __version__ attribute instead of get_versions()
     tools_version = getattr(vr, "__version__", "unknown")
-    tools_commit = getattr(vr, "__commit_id__", "").lstrip("g")
+    tools_commit = (getattr(vr, "__commit_id__", "") or "").lstrip("g")
     return {
         "tool_ver": tools_version,
         "tool_commit": tools_commit,

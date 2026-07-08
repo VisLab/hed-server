@@ -1,11 +1,39 @@
+# ---------------------------------------------------------------------------
+# Stage 1: build the hedweb wheel.
+#
+# The build context for this Dockerfile is the full hed-server repo checkout,
+# including .git (see deploy.sh and .dockerignore). Only this stage ever sees
+# .git: it's needed here so setuptools-scm can compute hedweb's real version
+# and commit hash from git history, the same way it would for a PyPI release.
+# The final runtime stage below only copies the finished wheel out of this
+# stage, so .git and the rest of the build context never reach the image
+# that actually gets deployed.
+#
+# Building a wheel here (instead of running "pip install ." in the runtime
+# stage) also means the build backend never runs in a git-less context, so
+# it can never silently fall back to a placeholder version and overwrite the
+# commit hash with None - which is what used to crash gunicorn on startup.
+# ---------------------------------------------------------------------------
+FROM python:3.10-slim-bullseye AS builder
+
+WORKDIR /build
+
+# setuptools-scm shells out to the `git` binary to read version/commit info,
+# so it must be present in this stage.
+RUN apt-get update && apt-get install -y git && \
+    pip3 install --upgrade pip wheel
+
+COPY . .
+
+RUN python3 -m pip wheel --no-deps -w /build/dist .
+
+# ---------------------------------------------------------------------------
+# Stage 2: the runtime image.
+# ---------------------------------------------------------------------------
 FROM python:3.10-slim-bullseye
 
 # Set the working directory inside the container
 WORKDIR /root
-
-# Copy project metadata files needed for pip install
-COPY pyproject.toml README.md ./
-COPY setup.py* ./
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -17,15 +45,12 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev && \
     pip3 install --upgrade pip
 
-# Copy the hedweb package to match pyproject.toml structure
-# This includes the committed _version.py file for version detection
-COPY ./hedtools/hedweb ./hedweb/
+# Install the hedweb wheel built in the previous stage.
+COPY --from=builder /build/dist/hedweb-*.whl ./
+RUN WHEEL_FILE=$(ls hedweb-*.whl) && pip3 install "${WHEEL_FILE}[prod]"
 
-# Copy configuration file for the application (created by deploy.sh)
-COPY ./hedtools/config.py ./config.py
-
-# Install the package with production dependencies (gunicorn)
-RUN pip3 install .[prod]
+# Copy configuration file for the application
+COPY deploy/base_config.py ./config.py
 
 # Install HEDTools based on the environment
 ARG HED_INSTALL_SOURCE=pypi
@@ -44,20 +69,23 @@ RUN mkdir -p /var/log/hedtools && \
     mkdir -p /var/cache/schema_cache && \
     chown -R www-data:www-data /var/cache/schema_cache
 
-# Ensure Python can import the application package
+# hedweb is installed into site-packages via the wheel. PYTHONPATH=/root is
+# only needed so Python can find the top-level config.py module copied in
+# above (it isn't part of the hedweb package - it's environment-specific and
+# gitignored).
 ENV PYTHONPATH="/root"
 
 # Set environment variables for the application
 ENV HEDTOOLS_CONFIG_CLASS=config.ProductionConfig
 
 # Copy the logrotate configuration for Gunicorn
-COPY gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
+COPY deploy/gunicorn-logrotate.conf /etc/logrotate.d/gunicorn
 
 # Expose the Gunicorn port (80 by default)
 EXPOSE 80
 
-# Run the Flask application with Gunicorn, binding to port 80
-# Import path matches PYTHONPATH layout (/root contains the 'hedweb' package)
+# Run the Flask application with Gunicorn, binding to port 80.
+# hedweb is imported from site-packages (installed from the wheel above).
 # Error log goes to stderr ("-") so "docker logs" always captures startup
 # failures; access log goes to the persistent file.
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "--forwarded-allow-ips=127.0.0.1", \

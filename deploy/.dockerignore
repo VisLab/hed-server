@@ -1,3 +1,6 @@
-# Ignore the cloned git repository to reduce build context
-hed-server/
-# Keep only what we explicitly copy
+# NOTE: this file is not used by Docker.
+#
+# deploy/Dockerfile's build context is the repo root (see deploy.sh), and
+# Docker always reads .dockerignore from the root of the build context, not
+# from next to the Dockerfile. The real ignore file for this build lives at
+# the repo root: ../.dockerignore
