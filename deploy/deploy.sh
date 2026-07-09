@@ -108,6 +108,20 @@ stop_existing_container() {
     echo "Stopping and removing existing container ${CONTAINER_NAME}..."
     docker stop "${CONTAINER_NAME}" 2>/dev/null || echo "Container ${CONTAINER_NAME} was not running"
     docker rm "${CONTAINER_NAME}" 2>/dev/null || echo "Container ${CONTAINER_NAME} did not exist"
+
+    # Also free the host port regardless of container name. This matters
+    # because "docker run -p" fails outright with "address already in use"
+    # if *anything* is bound to HOST_PORT - not just a container named
+    # ${CONTAINER_NAME}. That can happen if a previous run left a
+    # differently-named or orphaned container behind (e.g. a cancelled CI
+    # run that didn't get torn down in time), independent of whatever
+    # caused the leftover container in the first place.
+    local port_holders
+    port_holders=$(docker ps -aq --filter "publish=${HOST_PORT}")
+    if [ -n "${port_holders}" ]; then
+        echo "Found other container(s) using host port ${HOST_PORT}, removing: ${port_holders}"
+        docker rm -f ${port_holders} 2>/dev/null || true
+    fi
 }
 
 # Resolve a GitHub token to forward into the container, without relying on
