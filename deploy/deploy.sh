@@ -113,11 +113,33 @@ stop_existing_container() {
 # Run the Docker container
 run_docker_container() {
     echo "Running Docker container ${CONTAINER_NAME} on ${BIND_ADDRESS}:${HOST_PORT}..."
+
+    # hedtools fetches HED schema versions from the GitHub API
+    # (api.github.com) to populate the schema-version dropdown. Unauthenticated
+    # requests are capped at 60/hour per source IP, which is easy to exhaust on
+    # a shared/cloud host and causes that dropdown to silently fail to
+    # populate (hedtools swallows the error and just returns what's already
+    # cached). Passing a token raises the limit to 5000/hour. If the deploying
+    # user has HED_GITHUB_TOKEN or GITHUB_TOKEN set in their own shell
+    # environment, forward it into the container so hedtools' schema_util.
+    # get_api_key() picks it up automatically - no code change needed on the
+    # hedtools side. A fine-grained GitHub PAT with no special scopes is
+    # enough; this is only used for read-only API calls.
+    local github_token_args=()
+    local github_token="${HED_GITHUB_TOKEN:-${GITHUB_TOKEN}}"
+    if [ -n "${github_token}" ]; then
+        echo "Forwarding a GitHub token into the container for HED schema cache API calls..."
+        github_token_args=(-e "HED_GITHUB_TOKEN=${github_token}")
+    else
+        echo "No HED_GITHUB_TOKEN/GITHUB_TOKEN set in this shell - schema cache API calls will be unauthenticated (60 requests/hour limit)."
+    fi
+
     docker run -d \
         --name "${CONTAINER_NAME}" \
         -p "${BIND_ADDRESS}:${HOST_PORT}:${CONTAINER_PORT}" \
         -e HED_URL_PREFIX="${URL_PREFIX}" \
         -e HED_STATIC_URL_PATH="${STATIC_URL_PATH}" \
+        "${github_token_args[@]}" \
         "${IMAGE_NAME}" || error_exit "Failed to run Docker container"
 }
 

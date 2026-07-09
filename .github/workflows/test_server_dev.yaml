@@ -11,10 +11,19 @@ on:
     branches: [ "*" ]
 
 env:
-  # For PRs from forks (the normal workflow), github.base_ref resolves to 'main',
-  # so the Docker container is built and tested against the main branch code,
-  # not the PR branch. For direct pushes, github.ref_name is used instead.
-  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
+  # Which hed-server branch deploy.sh clones and builds the Docker image from.
+  #
+  # - Pull request from a fork: use github.base_ref (the target branch, i.e.
+  #   'main'). Forks are untrusted, so we deliberately do NOT build whatever
+  #   Dockerfile/deploy.sh a fork PR supplies with this repo's CI credentials.
+  # - Pull request from a branch on this repo (not a fork): use
+  #   github.head_ref (the PR's own branch). These are trusted, and this is
+  #   the only way to actually validate a PR that changes deploy.sh and/or
+  #   the Dockerfile together - building 'main' instead would silently test
+  #   the OLD deploy scripts against the PR's checked-out code, which breaks
+  #   whenever the two change in incompatible ways.
+  # - Direct push (no PR): use github.ref_name, the branch that was pushed.
+  BRANCH_NAME: ${{ (github.event_name == 'pull_request' && (github.event.pull_request.head.repo.fork && github.base_ref || github.head_ref)) || github.ref_name }}
 
 
 jobs:
