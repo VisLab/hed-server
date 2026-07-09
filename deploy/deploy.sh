@@ -110,6 +110,38 @@ stop_existing_container() {
     docker rm "${CONTAINER_NAME}" 2>/dev/null || echo "Container ${CONTAINER_NAME} did not exist"
 }
 
+# Resolve a GitHub token to forward into the container, without relying on
+# shell environment inheritance (this repo's own docs tell people to run
+# `sudo bash deploy.sh ...`, and `sudo` resets the environment by default -
+# `export HED_GITHUB_TOKEN=...` in the caller's shell will NOT reach the
+# script unless they specifically use `sudo -E` and their sudoers config
+# allows it). Checked in order, first match wins:
+#   1. HED_GITHUB_TOKEN / GITHUB_TOKEN env vars - works for a plain
+#      (non-sudo) run, `sudo -E`, or CI, where env really is inherited.
+#   2. deploy/.github_token next to this script, in the repo checkout that's
+#      actually being deployed - a plain file read, unaffected by sudo. This
+#      is the recommended option for a `sudo bash deploy.sh` setup: create it
+#      once and every future deploy on that host picks it up automatically.
+#   3. /etc/hed-server/github_token - a host-wide fallback for setups that
+#      re-clone the repo on every deploy (so deploy/.github_token wouldn't
+#      persist) but still want one token shared across environments on that
+#      machine.
+# Both files are read as-is and stripped of whitespace; neither is ever
+# committed (see .gitignore for deploy/.github_token).
+resolve_github_token() {
+    local token="${HED_GITHUB_TOKEN:-${GITHUB_TOKEN}}"
+
+    if [ -z "${token}" ] && [ -f "${GIT_HED_SERVER_DIR}/deploy/.github_token" ]; then
+        token=$(tr -d '[:space:]' < "${GIT_HED_SERVER_DIR}/deploy/.github_token")
+    fi
+
+    if [ -z "${token}" ] && [ -f "/etc/hed-server/github_token" ]; then
+        token=$(tr -d '[:space:]' < "/etc/hed-server/github_token")
+    fi
+
+    printf '%s' "${token}"
+}
+
 # Run the Docker container
 run_docker_container() {
     echo "Running Docker container ${CONTAINER_NAME} on ${BIND_ADDRESS}:${HOST_PORT}..."
@@ -119,19 +151,18 @@ run_docker_container() {
     # requests are capped at 60/hour per source IP, which is easy to exhaust on
     # a shared/cloud host and causes that dropdown to silently fail to
     # populate (hedtools swallows the error and just returns what's already
-    # cached). Passing a token raises the limit to 5000/hour. If the deploying
-    # user has HED_GITHUB_TOKEN or GITHUB_TOKEN set in their own shell
-    # environment, forward it into the container so hedtools' schema_util.
-    # get_api_key() picks it up automatically - no code change needed on the
-    # hedtools side. A fine-grained GitHub PAT with no special scopes is
-    # enough; this is only used for read-only API calls.
+    # cached). Passing a token raises the limit to 5000/hour - see
+    # resolve_github_token() above for where it can come from. A fine-grained
+    # GitHub PAT with no special scopes is enough; it's only used for
+    # read-only API calls.
     local github_token_args=()
-    local github_token="${HED_GITHUB_TOKEN:-${GITHUB_TOKEN}}"
+    local github_token
+    github_token="$(resolve_github_token)"
     if [ -n "${github_token}" ]; then
         echo "Forwarding a GitHub token into the container for HED schema cache API calls..."
         github_token_args=(-e "HED_GITHUB_TOKEN=${github_token}")
     else
-        echo "No HED_GITHUB_TOKEN/GITHUB_TOKEN set in this shell - schema cache API calls will be unauthenticated (60 requests/hour limit)."
+        echo "No GitHub token found (checked env vars, deploy/.github_token, /etc/hed-server/github_token) - schema cache API calls will be unauthenticated (60 requests/hour limit)."
     fi
 
     docker run -d \

@@ -335,13 +335,13 @@ class DevelopmentConfig(Config):
 
 The application recognizes these environment variables:
 
-| Variable                | Description                    | Default                   |
-| ----------------------- | ------------------------------ | ------------------------- |
-| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use     | `config.ProductionConfig` |
-| `HED_URL_PREFIX`        | URL prefix for the application | `/hed`                    |
-| `HED_STATIC_URL_PATH`   | Path to static files           | `/hed/hedweb/static`      |
-| `SECRET_KEY`            | Flask secret key for sessions  | Generated                 |
-| `HED_GITHUB_TOKEN`      | GitHub token used by hedtools when fetching HED schema versions from the GitHub API (raises the rate limit from 60 to 5000 requests/hour) | Unset (unauthenticated) |
+| Variable                | Description                                                                                                                               | Default                   |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use                                                                                                                | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix for the application                                                                                                            | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Path to static files                                                                                                                      | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key for sessions                                                                                                             | Generated                 |
+| `HED_GITHUB_TOKEN`      | GitHub token used by hedtools when fetching HED schema versions from the GitHub API (raises the rate limit from 60 to 5000 requests/hour) | Unset (unauthenticated)   |
 
 ### Docker environment variables
 
@@ -571,42 +571,32 @@ lsof -ti:5000 | xargs kill -9
 
 #### Schema version dropdown doesn't populate (works locally, fails on some remote hosts)
 
-**Symptoms:** The schema-version dropdown works when the server runs on a
-local network but comes up empty (or only shows one or two versions, such as
-a single prerelease) when the same image is deployed on a remote/cloud host.
+**Symptoms:** The schema-version dropdown works when the server runs on a local network but comes up empty (or only shows one or two versions, such as a single prerelease) when the same image is deployed on a remote/cloud host.
 
-**Cause:** hedtools populates this list by calling the GitHub REST API
-(`api.github.com/repos/hed-standard/hed-schemas/...`). Unauthenticated calls
-to that API are capped at 60 requests/hour **per source IP**. A shared cloud
-or data-center IP is much more likely to already be near that limit than a
-home/office IP, and once it's hit, hedtools' schema cache silently falls back
-to whatever's already cached (including any schema versions bundled inside
-the installed `hedtools` package itself, which can explain a single version
-showing up even when nothing new could be fetched). This is a GitHub API
-rate limit, not a bug in hed-server's Docker image.
+**Cause:** hedtools populates this list by calling the GitHub REST API (`api.github.com/repos/hed-standard/hed-schemas/...`). Unauthenticated calls to that API are capped at 60 requests/hour **per source IP**. A shared cloud or data-center IP is much more likely to already be near that limit than a home/office IP, and once it's hit, hedtools' schema cache silently falls back to whatever's already cached (including any schema versions bundled inside the installed `hedtools` package itself, which can explain a single version showing up even when nothing new could be fetched). This is a GitHub API rate limit, not a bug in hed-server's Docker image.
 
 **Solutions:**
 
-1. From inside the running container, check whether the GitHub API is even
-   reachable and what quota remains:
+1. From inside the running container, check whether the GitHub API is even reachable and what quota remains:
+
    ```bash
    docker exec -it <container_name> curl -s https://api.github.com/rate_limit
    ```
-   A `403`/near-zero `remaining` count confirms rate limiting; a connection
-   error/timeout instead points to a network/firewall restriction on the host
-   rather than a quota issue.
-2. Set `HED_GITHUB_TOKEN` (a plain GitHub personal access token, no special
-   scopes needed - it's only used for read-only API calls) in the shell
-   environment where you run `deploy.sh`. The script forwards it into the
-   container automatically, raising the limit from 60 to 5000 requests/hour:
-   ```bash
-   export HED_GITHUB_TOKEN=ghp_yourtokenhere
-   ./deploy.sh main prod
-   ```
-3. If step 1 shows the API is unreachable rather than rate-limited, the fix
-   is on the host/network side - outbound HTTPS to `api.github.com` and
-   `raw.githubusercontent.com` needs to be allowed from wherever the
-   container runs.
+
+   A `403`/near-zero `remaining` count confirms rate limiting; a connection error/timeout instead points to a network/firewall restriction on the host rather than a quota issue.
+
+2. Supply a GitHub token (a plain personal access token, no special scopes needed - it's only used for read-only API calls). `deploy.sh` looks for one in this order and forwards whichever it finds into the container, raising the limit from 60 to 5000 requests/hour:
+
+   1. `HED_GITHUB_TOKEN` or `GITHUB_TOKEN` in the environment of the shell that runs `deploy.sh`. **Note:** deployments here are typically run as `sudo bash deploy.sh ...`, and `sudo` resets the environment by default - `export HED_GITHUB_TOKEN=...` beforehand will *not* reach the script unless you specifically run `sudo -E bash deploy.sh ...` and your sudoers config permits `-E` to preserve that variable. Don't rely on this option unless you've confirmed it actually reaches the container (check the "Forwarding a GitHub token..." log line `deploy.sh` prints).
+   2. A file at `deploy/.github_token`, inside whichever hed-server checkout is actually being deployed (gitignored - never commit it). This is the recommended option for `sudo bash deploy.sh` setups, since a plain file read is unaffected by sudo's environment reset:
+      ```bash
+      echo "ghp_yourtokenhere" | sudo tee /path/to/hed-server/deploy/.github_token
+      sudo chmod 600 /path/to/hed-server/deploy/.github_token
+      ```
+      Create it once and every future deploy on that host picks it up automatically.
+   3. A file at `/etc/hed-server/github_token`, for setups that re-clone the repo on every deploy (so a repo-relative file wouldn't persist) but still want one token shared across environments on that host.
+
+3. If step 1 shows the API is unreachable rather than rate-limited, the fix is on the host/network side - outbound HTTPS to `api.github.com` and `raw.githubusercontent.com` needs to be allowed from wherever the container runs.
 
 #### File upload fails
 
@@ -817,11 +807,11 @@ python -m sphinx_autobuild . _build/html
 
 ### Environment variables reference
 
-| Variable                | Purpose           | Default                   |
-| ----------------------- | ----------------- | ------------------------- |
-| `HEDTOOLS_CONFIG_CLASS` | Config class      | `config.ProductionConfig` |
-| `HED_URL_PREFIX`        | URL prefix        | `/hed`                    |
-| `HED_STATIC_URL_PATH`   | Static files path | `/hed/hedweb/static`      |
-| `SECRET_KEY`            | Flask secret key  | Auto-generated            |
-| `HED_INSTALL_SOURCE`    | Docker HED source | `pypi` or `main`          |
-| `HED_GITHUB_TOKEN`      | GitHub token forwarded into the container for schema-version API calls | Unset |
+| Variable                | Purpose                                                                | Default                   |
+| ----------------------- | ---------------------------------------------------------------------- | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Config class                                                           | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix                                                             | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Static files path                                                      | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key                                                       | Auto-generated            |
+| `HED_INSTALL_SOURCE`    | Docker HED source                                                      | `pypi` or `main`          |
+| `HED_GITHUB_TOKEN`      | GitHub token forwarded into the container for schema-version API calls | Unset                     |
