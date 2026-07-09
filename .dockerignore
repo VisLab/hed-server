@@ -43,3 +43,18 @@ coverage.xml
 # Scratch files from previous script runs, if any are lying around
 wheelhouse/
 *.whl
+
+# GitHub token file for deploy.sh's schema-cache rate-limit workaround (see
+# resolve_github_token() in deploy/deploy.sh). This must never reach the
+# Docker build context: deploy.sh builds directly against the repo checkout,
+# so without this exclusion the token would be sent to the Docker daemon and
+# land in the builder stage's image layers via `COPY . .`. It's only ever
+# forwarded into the running container at `docker run` time, as a plain -e
+# flag - never at build time.
+deploy/.github_token
+
+# Local dev config (gitignored, may contain a real SECRET_KEY or other
+# environment-specific values). The runtime stage always gets its config.py
+# from deploy/base_config.py instead, but a local one sitting in the checkout
+# would otherwise still be copied into the builder stage via `COPY . .`.
+config.py

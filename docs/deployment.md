@@ -577,13 +577,21 @@ lsof -ti:5000 | xargs kill -9
 
 **Solutions:**
 
-1. From inside the running container, check whether the GitHub API is even reachable and what quota remains:
+1. From inside the running container, check whether the GitHub API is even reachable and what quota remains. Run this **unauthenticated** check first:
 
    ```bash
    docker exec -it <container_name> curl -s https://api.github.com/rate_limit
    ```
 
-   A `403`/near-zero `remaining` count confirms rate limiting; a connection error/timeout instead points to a network/firewall restriction on the host rather than a quota issue.
+   A `403`/near-zero `remaining` count (under a `"rate"` object showing `"limit": 60`) confirms the unauthenticated quota is exhausted; a connection error/timeout instead points to a network/firewall restriction on the host rather than a quota issue.
+
+   This command alone can't tell you whether a token is actually helping, though - it never sends one, so it always reports the unauthenticated 60/hour pool regardless of what's configured. If `HED_GITHUB_TOKEN` is already set in the container, check that pool specifically:
+
+   ```bash
+   docker exec -it <container_name> sh -c 'curl -s -H "Authorization: token $HED_GITHUB_TOKEN" https://api.github.com/rate_limit'
+   ```
+
+   This should show `"limit": 5000`. If it does but the dropdown still doesn't populate, the token itself isn't the problem - look elsewhere (e.g. confirm `HED_GITHUB_TOKEN` is actually set inside the container with `docker exec <container_name> env | grep HED_GITHUB_TOKEN`, or revisit the network/firewall angle in step 3). If the authenticated check still shows `"limit": 60`, the token isn't being sent at all - the header may be malformed, the variable may be empty, or an invalid/expired token causes GitHub to silently fall back to unauthenticated treatment.
 
 2. Supply a GitHub token (a plain personal access token, no special scopes needed - it's only used for read-only API calls). `deploy.sh` looks for one in this order and forwards whichever it finds into the container, raising the limit from 60 to 5000 requests/hour:
 
