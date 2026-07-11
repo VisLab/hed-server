@@ -22,6 +22,7 @@ from hedweb.web_util import (
     get_exception_message,
     handle_error,
     handle_http_error,
+    merge_hed_version_dicts,
     package_results,
 )
 
@@ -98,14 +99,40 @@ def schema_versions_results() -> Response:
     Returns:
         Response: A JSON response containing a list of the HED versions.
 
+    Notes:
+        This route only lists what versions exist - it never downloads any schema content.
+        A specific schema's actual content is fetched later, lazily, only when a user submits
+        something that needs it (handled internally by load_schema_version()).
+
+        Two sources are combined for the list:
+          - hedschema.get_available_hed_versions(): a live GitHub listing (cheap - directory
+            listings only, no downloads). This is what makes brand-new releases show up here
+            right away. As of hedtools' get_available_hed_versions() caching support, this
+            call is throttled inside hedtools itself (60-second on-disk cache by default) -
+            this route doesn't do any extra caching/rate-limit handling of its own, and the
+            two calls below (prerelease and non-prerelease) typically share one cached result
+            rather than hitting GitHub twice per request.
+          - hedschema.get_hed_versions(): whatever's already known locally (bundled with
+            hedtools, or cached from a previous validation). This is what keeps the dropdown
+            non-empty even if GitHub is down or rate-limited.
+
+        Example: if GitHub is unreachable, get_available_hed_versions() returns {} and this
+        route falls back to whatever get_hed_versions() already has (e.g. ["8.4.0", "8.3.0",
+        "8.2.0", ...] from the bundled copies) instead of returning an empty list.
+
     """
 
     try:
-        hedschema.cache_xml_versions()
-        hed_base = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=False))
         include_prereleases = request.args.get("include_prereleases", "false").lower() == "true"
+
+        online_versions = hedschema.get_available_hed_versions(library_name="all", check_prerelease=False)
+        local_versions = hedschema.get_hed_versions(library_name="all", check_prerelease=False)
+        hed_base = convert_hed_versions(merge_hed_version_dicts(online_versions, local_versions))
+
         if include_prereleases:
-            hed_pre = convert_hed_versions(hedschema.get_hed_versions(library_name="all", check_prerelease=True))
+            online_pre = hedschema.get_available_hed_versions(library_name="all", check_prerelease=True)
+            local_pre = hedschema.get_hed_versions(library_name="all", check_prerelease=True)
+            hed_pre = convert_hed_versions(merge_hed_version_dicts(online_pre, local_pre))
             prereleases = [version + " (prerelease)" for version in hed_pre if version not in hed_base]
             hed_base.extend(prereleases)
         return jsonify({bc.SCHEMA_VERSION_LIST: hed_base})
