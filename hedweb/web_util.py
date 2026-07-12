@@ -47,6 +47,43 @@ def convert_hed_versions(hed_info) -> list:
     return standard_list + hed_list
 
 
+def merge_hed_version_dicts(*hed_info_dicts) -> dict:
+    """Merge multiple {library_name: [versions]} dictionaries into one deduplicated union.
+
+    Used to combine a live GitHub listing (hed.schema.get_available_hed_versions(), which can
+    come back empty or partial if GitHub is unreachable/rate-limited) with what's already known
+    locally (hed.schema.get_hed_versions(), bundled with hedtools or previously cached) so a
+    network hiccup only ever shortens the list shown to the user, never empties it.
+
+    Parameters:
+        *hed_info_dicts (dict): Any number of {library_name: [versions]} dictionaries.
+                                library_name is None for the standard schema.
+
+    Returns:
+        dict: {library_name: [versions]} with versions deduplicated, per library.
+
+    Examples:
+        >>> online = {None: ["8.4.0"], "score": ["2.1.0"]}       # from get_available_hed_versions()
+        >>> local = {None: ["8.4.0", "8.3.0"], "lang": ["1.1.0"]}  # from get_hed_versions()
+        >>> merge_hed_version_dicts(online, local)
+        {None: ['8.4.0', '8.3.0'], 'score': ['2.1.0'], 'lang': ['1.1.0']}
+
+        If the live listing is empty (e.g. GitHub unreachable), the local one alone still
+        comes through unchanged::
+
+            >>> merge_hed_version_dicts({}, local)
+            {None: ['8.4.0', '8.3.0'], 'lang': ['1.1.0']}
+    """
+    merged: dict = {}
+    for hed_info in hed_info_dicts:
+        for library_name, versions in hed_info.items():
+            existing = merged.setdefault(library_name, [])
+            for version in versions:
+                if version not in existing:
+                    existing.append(version)
+    return merged
+
+
 def file_extension_is_valid(filename, accepted_extensions=None) -> bool:
     """Return True if the file extension is an accepted one.
 

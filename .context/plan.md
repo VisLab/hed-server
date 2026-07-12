@@ -12,7 +12,10 @@
 
 ## Active tasks
 
-<!-- Add current tasks and phases here -->
+- Test the new hed-python schema-version caching (PR #1351, merged) locally: editable-install
+  hed-python's `main` (pin still says `hedtools>=1.1.1`, no PyPI release cut yet), run the server,
+  and check performance of `get_available_hed_versions()` — see the full plan in
+  `../hed-python/.status/plans/session_continuation_plan.md`.
 
 ## Completed
 

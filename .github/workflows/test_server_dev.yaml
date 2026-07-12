@@ -10,11 +10,37 @@ on:
   pull_request:
     branches: [ "*" ]
 
+# Pushing a commit to a branch that has an open PR fires BOTH the push event
+# above and the pull_request "synchronize" event for that same commit - the
+# pull_request "branches" filter matches the PR's target branch, not its
+# source branch, so it always matches here regardless of which branch was
+# pushed to. That means every such push starts two full runs of this
+# workflow building and deploying the exact same commit to the same fixed
+# host port (33004), which can race and fail with "address already in use".
+#
+# Group on the actual commit (github.event.pull_request.head.sha for the
+# pull_request event, github.sha for the push event - both equal the SHA
+# that was actually pushed) so the two duplicate runs land in the same
+# concurrency group; the one that starts second cancels the first instead
+# of racing it for the port.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
 env:
-  # For PRs from forks (the normal workflow), github.base_ref resolves to 'main',
-  # so the Docker container is built and tested against the main branch code,
-  # not the PR branch. For direct pushes, github.ref_name is used instead.
-  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
+  # Which hed-server branch deploy.sh clones and builds the Docker image from.
+  #
+  # - Pull request from a fork: use github.base_ref (the target branch, i.e.
+  #   'main'). Forks are untrusted, so we deliberately do NOT build whatever
+  #   Dockerfile/deploy.sh a fork PR supplies with this repo's CI credentials.
+  # - Pull request from a branch on this repo (not a fork): use
+  #   github.head_ref (the PR's own branch). These are trusted, and this is
+  #   the only way to actually validate a PR that changes deploy.sh and/or
+  #   the Dockerfile together - building 'main' instead would silently test
+  #   the OLD deploy scripts against the PR's checked-out code, which breaks
+  #   whenever the two change in incompatible ways.
+  # - Direct push (no PR): use github.ref_name, the branch that was pushed.
+  BRANCH_NAME: ${{ (github.event_name == 'pull_request' && (github.event.pull_request.head.repo.fork && github.base_ref || github.head_ref)) || github.ref_name }}
 
 
 jobs:
@@ -35,7 +61,22 @@ jobs:
         run: chmod +x deploy/deploy.sh
 
       - name: Run deploy script (develop)
-        run: | 
+        env:
+          # GitHub Actions provides this automatically for every run. It's
+          # scoped to this repo, but that's irrelevant here: it's only being
+          # used to authenticate read-only GitHub REST API calls that
+          # hedtools makes against the public hed-standard/hed-schemas repo
+          # when fetching schema versions (including library schemas like
+          # sc:/test: below, which aren't bundled offline the way recent
+          # standard versions are). Any authenticated token gets GitHub's
+          # 5000/hour API limit instead of the unauthenticated 60/hour one -
+          # deploy.sh forwards this into the container as HED_GITHUB_TOKEN
+          # via resolve_github_token(), see deploy.sh for details. Without
+          # this, service tests that need a library schema can intermittently
+          # fail with a HedFileError when the runner's shared IP is already
+          # near the unauthenticated limit.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           cd deploy
           bash ./deploy.sh "$BRANCH_NAME" dev
           echo "\nVerifying container is running..."
