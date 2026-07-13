@@ -3,6 +3,7 @@ Handles the routes for the HED web application.
 """
 
 import json
+import logging
 
 from flask import Blueprint, Response, current_app, jsonify, render_template, request
 from hed import schema as hedschema
@@ -28,6 +29,7 @@ from hedweb.web_util import (
 
 app_config = current_app.config
 route_blueprint = Blueprint(route_constants.ROUTE_BLUEPRINT, __name__)
+_logger = logging.getLogger(__name__)
 
 
 @route_blueprint.route("/columns_info_results", strict_slashes=False, methods=["POST"])
@@ -128,6 +130,33 @@ def schema_versions_results() -> Response:
         online_versions = hedschema.get_available_hed_versions(library_name="all", check_prerelease=False)
         local_versions = hedschema.get_hed_versions(library_name="all", check_prerelease=False)
         hed_base = convert_hed_versions(merge_hed_version_dicts(online_versions, local_versions))
+
+        # If both sources returned empty (GitHub unreachable AND cache copy failed), fall back
+        # directly to the schemas bundled with the installed hedtools package.  This bypasses
+        # set_cache_directory() and the CacheLock machinery entirely, so it works even when
+        # the configured cache directory is inaccessible or portalocker.Lock.release() raises
+        # on Linux before the second os.listdir() scan in get_hed_versions().
+        if not hed_base:
+            try:
+                import hed.schema.hed_cache as _hed_cache
+
+                _logger.warning(
+                    "schema_versions_results: merged list empty "
+                    "(online=%r local=%r cache_dir=%r). "
+                    "Falling back to INSTALLED_CACHE_LOCATION=%r.",
+                    online_versions,
+                    local_versions,
+                    hedschema.get_cache_directory(),
+                    _hed_cache.INSTALLED_CACHE_LOCATION,
+                )
+                installed_versions = hedschema.get_hed_versions(
+                    local_hed_directory=_hed_cache.INSTALLED_CACHE_LOCATION,
+                    library_name="all",
+                    check_prerelease=False,
+                )
+                hed_base = convert_hed_versions(installed_versions)
+            except Exception as fallback_ex:
+                _logger.error("schema_versions_results: installed-package fallback failed: %s", fallback_ex)
 
         if include_prereleases:
             online_pre = hedschema.get_available_hed_versions(library_name="all", check_prerelease=True)
