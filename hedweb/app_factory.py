@@ -74,6 +74,7 @@ class AppFactory:
 
             if hasattr(hedschema, "set_cache_directory"):
                 hedschema.set_cache_directory(app.config["HED_CACHE_FOLDER"])
+                app.logger.info("HED cache directory set to %r", app.config["HED_CACHE_FOLDER"])
             else:
                 app.logger.warning(
                     "HED_CACHE_FOLDER configured but hedtools version does not support set_cache_directory()"
