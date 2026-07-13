@@ -91,6 +91,14 @@ GitHub Actions workflows in `.github/workflows/`:
 - PRs target `main` branch
 - Subject lines are imperative mood, sentence case
 
+## Review response conventions
+
+When responding to code review comments:
+- **Always indicate agreement or disagreement** with the suggestion
+- Provide a **one or two clear sentences** explaining why you agree or disagree
+- If you made changes, provide a **detailed and clear explanation** of how you fixed the issue
+- If you disagree, explain your reasoning clearly so reviewers understand your perspective
+
 ## Key conventions
 
 - Routes defined in `hedweb/routes.py`; all business logic goes in `*_operations.py` modules

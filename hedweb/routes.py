@@ -140,13 +140,20 @@ def schema_versions_results() -> Response:
             try:
                 import hed.schema.hed_cache as _hed_cache
 
+                # Guard get_cache_directory() call outside logging to prevent older hedtools
+                # versions (missing this method) from breaking the fallback recovery path.
+                try:
+                    cache_dir = hedschema.get_cache_directory()
+                except AttributeError:
+                    cache_dir = "unknown"
+
                 _logger.warning(
                     "schema_versions_results: merged list empty "
                     "(online=%r local=%r cache_dir=%r). "
                     "Falling back to INSTALLED_CACHE_LOCATION=%r.",
                     online_versions,
                     local_versions,
-                    hedschema.get_cache_directory(),
+                    cache_dir,
                     _hed_cache.INSTALLED_CACHE_LOCATION,
                 )
                 installed_versions = hedschema.get_hed_versions(
@@ -156,7 +163,7 @@ def schema_versions_results() -> Response:
                 )
                 hed_base = convert_hed_versions(installed_versions)
             except Exception as fallback_ex:
-                _logger.error("schema_versions_results: installed-package fallback failed: %s", fallback_ex)
+                _logger.exception("schema_versions_results: installed-package fallback failed: %s", fallback_ex)
 
         if include_prereleases:
             online_pre = hedschema.get_available_hed_versions(library_name="all", check_prerelease=True)
