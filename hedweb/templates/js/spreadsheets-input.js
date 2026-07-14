@@ -31,11 +31,36 @@ document.getElementById('worksheet_name')?.addEventListener('change', function (
 });
 
 function clearSpreadsheet() {
-    document.getElementById('spreadsheet_file').value = '';
-    document.getElementById('worksheet_name').replaceChildren();
-    document.getElementById('worksheet_select').style.display = 'none';
-    hideColumnInfo("show_indices");
-    removeColumnInfo("show_indices")
+    // Clear regular spreadsheet file (spreadsheets page)
+    const spreadsheetFile = document.getElementById('spreadsheet_file');
+    if (spreadsheetFile) {
+        spreadsheetFile.value = '';
+    }
+    
+    // Clear 4-column spreadsheet file (sidecars page)
+    const spreadsheet4col = document.getElementById('spreadsheet_4col');
+    if (spreadsheet4col) {
+        spreadsheet4col.value = '';
+    }
+    
+    // Clear worksheet-related elements (shared)
+    const worksheetName = document.getElementById('worksheet_name');
+    if (worksheetName) {
+        worksheetName.replaceChildren();
+    }
+    
+    const worksheetSelect = document.getElementById('worksheet_select');
+    if (worksheetSelect) {
+        worksheetSelect.style.display = 'none';
+    }
+    
+    // Column info handling (spreadsheets page)
+    if (typeof hideColumnInfo === 'function') {
+        hideColumnInfo("show_indices");
+    }
+    if (typeof removeColumnInfo === 'function') {
+        removeColumnInfo("show_indices");
+    }
 }
 
 function clearWorksheetFlashMessages() {

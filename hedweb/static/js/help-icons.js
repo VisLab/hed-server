@@ -124,7 +124,7 @@
         if (info.action_details) {
             let html = '<p>' + (info.html ? info.text : escapeHtml(info.text || '')) + '</p>';
             if (actionDetail) {
-                html += '<hr class="my-1"><p class="mb-0"><strong>This action:</strong> '
+                html += '<hr class="my-1"><p class="mb-0">'
                     + (info.html ? actionDetail : escapeHtml(actionDetail)) + '</p>';
             }
             return html;

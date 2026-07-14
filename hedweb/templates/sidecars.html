@@ -23,9 +23,9 @@
             </div>
             <div id="spreadsheet_input_section" class="mt-2">
                 <div class="row g-2 mb-2">
-                    <label for="spreadsheet_file" class="col-sm-auto col-12 col-form-label form-label-col">Spreadsheet:</label>
+                    <label for="spreadsheet_4col" class="col-sm-auto col-12 col-form-label form-label-col">Spreadsheet (4 cols):</label>
                     <div class="col-sm col-12">
-                        <input class="form-control" type="file" id="spreadsheet_file" name="spreadsheet_file">
+                        <input class="form-control" type="file" id="spreadsheet_4col" name="spreadsheet_4col">
                     </div>
                 </div>
                 <div id="worksheet_select" class="mt-2">
@@ -47,6 +47,7 @@
         {%  include 'js/options.js' %}
         {%  include 'js/spreadsheets-input.js' %}
         {%  include 'js/schemas-pulldown.js' %}
+        {%  include 'js/sidecars-input.js' %}
         {%  include 'js/sidecars-form.js' %}
     </script>
 {% endblock %}
