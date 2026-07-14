@@ -456,7 +456,12 @@ def get_exception_message(ex) -> dict:
         dict: A dict indicating the field_type of error.
 
     """
-    logger.exception("get_exception_message: %s", ex)
+    # Use logger.error for expected HedFileError to avoid traceback noise in tests
+    # Use logger.exception for unexpected errors to preserve traceback for debugging
+    if isinstance(ex, HedFileError):
+        logger.error("get_exception_message: %s", ex)
+    else:
+        logger.exception("get_exception_message: %s", ex)
     if hasattr(ex, "error_type"):
         error_code = ex.error_type
     elif hasattr(ex, "code"):

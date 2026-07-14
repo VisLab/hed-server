@@ -18,6 +18,9 @@ document.getElementById('definition_file').addEventListener('change', function()
     clearFlashMessages();
 })
 
+document.getElementById('spreadsheet_4col')?.addEventListener('change', function() {
+    clearFlashMessages();
+})
 
 /**
  * Submit the form if schema and json file specified.

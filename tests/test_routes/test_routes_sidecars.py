@@ -247,6 +247,39 @@ class Test(TestRouteBase):
             headers_dict = dict(response.headers)
             self.assertEqual("error", headers_dict["Category"], "Merge without spreadsheet should return error")
 
+    def test_sidecars_results_merge_spreadsheet_with_4col(self):
+        """Merge with a 4-column spreadsheet file should succeed."""
+        with self.app.app_context():
+            input_data = {
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.COMMAND_OPTION: bc.COMMAND_MERGE_SPREADSHEET,
+                bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                "spreadsheet_4col": self._get_file_buffer("task-dualWalking_4col.tsv"),
+            }
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
+            self.assertIsInstance(response, Response)
+            self.assertEqual(200, response.status_code)
+            headers_dict = dict(response.headers)
+            self.assertEqual("success", headers_dict["Category"], "Merge with 4-column spreadsheet should succeed")
+            self.assertTrue(response.data, "Merged sidecar data should not be empty")
+
+    def test_sidecars_results_merge_spreadsheet_invalid_format(self):
+        """Merge with a spreadsheet missing required columns should return an error."""
+        with self.app.app_context():
+            input_data = {
+                bc.SCHEMA_VERSION: "8.2.0",
+                bc.COMMAND_OPTION: bc.COMMAND_MERGE_SPREADSHEET,
+                bc.SIDECAR_FILE: self._get_file_buffer("bids_events.json"),
+                "spreadsheet_4col": self._get_file_buffer("sternberg_map.tsv"),
+            }
+            response = self.app.test.post("/sidecars_submit", content_type="multipart/form-data", data=input_data)
+            self.assertIsInstance(response, Response)
+            self.assertEqual(200, response.status_code)
+            headers_dict = dict(response.headers)
+            self.assertEqual(
+                "error", headers_dict["Category"], "Merge with invalid spreadsheet format should return error"
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

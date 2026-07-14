@@ -8,35 +8,35 @@
         "text": "Selects the operation to perform on the uploaded file(s). Different actions may show or hide inputs and options below.",
         "html": true,
         "action_details": {
-          "assemble": "Creates a file containing the assembled HED string for each row in the tabular input file. The <em>Append assembled</em> option controls whether strings are added as a new column or returned separately. Other options control what is included in each string.",
-          "check_quality": "Evaluates the quality and completeness of HED annotations beyond basic validity.",
-          "compare_schemas": "Compares two HED schemas and reports differences between them.",
-          "convert_schema": "Converts a HED schema file between supported formats (e.g., XML to MediaWiki or vice versa).",
-          "extract_spreadsheet": "Extracts the HED portion of a JSON sidecar into a 4-column TSV spreadsheet for easier editing.",
-          "generate_sidecar": "Extracts a JSON sidecar template from the column structure of the events file. Use the column info table to select which columns are categorical (finite set of values) and which are value columns (numeric or free-text).",
-          "merge_spreadsheet": "Merges a 4-column HED spreadsheet back into a JSON sidecar.",
-          "remodel": "Restructures the events file using a list of operations defined in a JSON remodel file. Operations include renaming columns, factoring columns, and creating summary files.",
-          "search": "Filters rows using a HED query expression and returns a column of 0/1 match indicators showing which rows satisfy the query.",
-          "to_long": "Converts all HED tags in the file to long form — the full path from the root of the HED schema hierarchy (e.g., <em>Sensory-event/Visual/Color/Red</em>).",
-          "to_short": "Converts all HED tags in the file to short form — the leaf node only (e.g., <em>Red</em>).",
-          "validate": "Checks the uploaded files for HED annotation errors. Enable <em>Check warnings</em> to also report non-critical issues such as deprecated tags. Enable <em>Limit errors</em> to truncate the error report for large files with many repeated errors."
+          "assemble": "<strong>Assemble HED annotations:</strong> creates a file containing the assembled HED string for each row in the tabular input file. The <em>Append assembled</em> option controls whether strings are added as a new column or returned separately. Other options control what is included in each string.",
+          "check_quality": "<strong>Check HED quality:</strong> evaluates the quality and completeness of HED annotations beyond basic validity.",
+          "compare_schemas": "<strong>Compare HED schemas:</strong> compares two HED schemas and reports differences between them.",
+          "convert_schema": "<strong>Convert HED schema:</strong> converts a HED schema file between supported formats (e.g., XML to MediaWiki or vice versa).",
+          "extract_spreadsheet": "<strong>Extract HED spreadsheet:</strong> extracts the HED portion of a JSON sidecar into a 4-column TSV spreadsheet with columns <code>column_name</code>, <code>column_value</code>, <code>description</code>, and <code>HED</code> for easier editing.",
+          "generate_sidecar": "<strong>Generate JSON sidecar template:</strong> extracts a JSON sidecar template from the column structure of the events file. Use the column info table to select which columns are categorical (finite set of values) and which are value columns (numeric or free-text).",
+          "merge_spreadsheet": "<strong>Merge HED spreadsheet:</strong> merges a 4-column HED spreadsheet back into a JSON sidecar.",
+          "remodel": "<strong>Execute remodel script:</strong> restructures the events file using a list of operations defined in a JSON remodel file. Operations include renaming columns, factoring columns, and creating summary files.",
+          "search": "<strong>Search HED annotations:</strong> filters rows using a HED query expression and returns a column of 0/1 match indicators showing which rows satisfy the query.",
+          "to_long": "<strong>Convert to long:</strong> converts all HED tags in the file to long form — the full path from the root of the HED schema hierarchy (e.g., <em>Sensory-event/Visual/Color/Red</em>).",
+          "to_short": "<strong>Convert to short:</strong> converts all HED tags in the file to short form — the leaf node only (e.g., <em>Red</em>).",
+          "validate": "<strong>Validate:</strong> checks the uploaded files or strings for HED annotation errors. Enable <em>Check warnings</em> to also report non-critical issues such as deprecated tags. Enable <em>Limit errors</em> to truncate the error report for large files with many repeated errors."
         }
       }
     },
     "inputs": {
       "definition_file": {
         "title": "Definitions (.json)",
-        "text": "A JSON file containing HED definitions to augment those in a sidecar file. The format is a JSON dictionary with a single key <code>definitions</code> whose value is a list of HED definition strings. Each definition is of the form <code>(Definition/Name, (HED tags))</code>. The definition name must be unique across all definitions in the sidecar and definition files.",
+        "text": "A JSON file containing external HED definitions to augment those of the other files. The format is a JSON dictionary with a single key <code>definitions</code> whose value is a list of HED definition strings. Each definition is of the form <code>(Definition/Name, (HED tags))</code>. The definition name must be unique across all definitions in the sidecar and definition files.",
         "html": true
       },
       "events_file": {
         "title": "Tabular (.tsv) file",
-        "text": "A BIDS-style tabular file with a header line containing the column names. <ul><li>Tabular files with an <code>onset</code> column are treated as timeline files.</li><li>Tabular files without an <code>onset</code> column are treated as descriptor files.</li><li>Values in the HED column must contain valid HED annotations</li><li>Accompanying sidecar and definition files contain HED information that applies across rows.</li><li>The value <code>n/a</code> is used for missing values.</li></ul>",
+        "text": "A BIDS-style tabular file with a header line containing the column names. <ul><li>Tabular files with an <code>onset</code> column are treated as timeline files.</li><li>Tabular files with no <code>onset</code> column are treated as descriptor files.</li><li>Values in the HED column must contain valid HED annotations</li><li>Accompanying sidecar and definition files contain HED information that applies across rows.</li><li>The value <code>n/a</code> is used for missing values.</li></ul>",
         "html": true
       },
       "query_input": {
         "title": "HED query",
-        "text": "A HED search expression used to filter rows. Rows where the assembled HED string satisfies the query receive a value of 1; others receive 0. Use logical operators (<em>and</em>, <em>or</em>, <em>not</em>) and wildcards. Example: <code>Sensory-event and Visual</code>",
+        "text": "A HED search expression used to filter rows. Rows where the assembled HED string satisfies the query receive a value of 1; others receive 0. Use logical operators (<em>and</em>, <em>or</em>, <em>not</em>) and wildcards. Example: <code>Sensory-event and Visual-presentation</code>",
         "html": true
       },
       "remodel_file": {
@@ -45,40 +45,45 @@
       },
       "schema_file_option": {
         "title": "Schema file",
-        "text": "Select this option to upload a local HED schema file in XML or MediaWiki format."
+        "text": "Select this option to upload a local HED schema file in XML, MediaWiki, or JSON format."
       },
       "schema_folder_option": {
         "title": "Schema folder",
-        "text": "Select this option to upload a folder containing HED library schema files. Used when working with multi-library schema sets."
+        "text": "Select this option to upload a schema in TSV format. TSV format consists of multiple TSV files in a folder named for the version."
       },
       "schema_url_option": {
         "title": "Schema URL",
-        "text": "Select this option to load a HED schema directly from a URL. The URL must point to a valid HED schema file in XML or MediaWiki format."
+        "text": "Select this option to load a HED schema directly from a URL. The URL must point to a valid HED schema file in XML, MediaWiki, or JSON format."
       },
       "second_schema_file_option": {
         "title": "Second schema file",
-        "text": "Select this option to upload a second local HED schema file for comparison."
+        "text": "Select this option to upload a second local HED schema file in XML, MediaWiki, or JSON format for comparison with the Source schema."
       },
       "second_schema_folder_option": {
         "title": "Second schema folder",
-        "text": "Select this option to upload a folder containing a second set of HED library schema files for comparison."
+        "text": "Select this option to upload a folder containing a HED schema in TSV format for comparison with the Source schema. TSV format consists of multiple TSV files in a folder named for the version."
       },
       "second_schema_url_option": {
         "title": "Second schema URL",
-        "text": "Select this option to load the second HED schema from a URL for comparison."
+        "text": "Select this option to load the second HED schema from a URL for comparison with the Source schema."
       },
       "sidecar_file": {
         "title": "Sidecar (.json)",
-        "text": "A BIDS-style JSON sidecar that maps event column values to HED annotation strings. HED definitions can be included in the sidecar to provide named, reusable tag groups."
+        "text": "A BIDS-style JSON sidecar that maps column values in the tabular file to HED annotation strings. HED definitions can be included in the sidecar to provide named, reusable tag groups."
       },
       "spreadsheet_file": {
         "title": "Spreadsheet",
-        "text": "A TSV or Excel spreadsheet file containing HED tags. For Excel files, use the <em>Worksheet name</em> selector to choose the sheet to process.",
+        "text": "A TSV or Excel spreadsheet file with columns containing HED to be validated. For Excel files, use the <em>Worksheet name</em> selector to choose the sheet to process. Once a spreadsheet is selected, you will be asked to select the columns that contain HED tags.",
+        "html": true
+      },
+      "spreadsheet_4col": {
+        "title": "Spreadsheet (4 cols)",
+        "text": "A TSV or Excel spreadsheet file with columns <code>column_name</code>, <code>column_value</code>, <code>description</code>, and <code>HED</code>. The spreadsheet represents the HED portion of a JSON sidecar and can be merged back into a sidecar using the <em>Merge HED spreadsheet</em> action. For Excel files, use the <em>Worksheet name</em> selector to choose the sheet to process.",
         "html": true
       },
       "string_input": {
         "title": "HED string",
-        "text": "Enter one or more HED annotation strings to validate, convert, or search. Each line is treated as a separate string."
+        "text": "Enter one or more HED strings to validate, convert, or search. Each line is treated as a separate string."
       },
       "worksheet_name": {
         "title": "Worksheet name",
@@ -92,7 +97,7 @@
       },
       "schema_path": {
         "title": "Schema file to upload",
-        "text": "Upload a local HED schema file in XML or MediaWiki format. Only needed when <em>Other</em> is selected in the schema version dropdown.",
+        "text": "Upload a local HED schema file in XML, MediaWiki, or JSON format. Only needed when <em>Other</em> is selected in the schema version dropdown.",
         "html": true
       },
       "schema_version": {
@@ -118,12 +123,12 @@
       },
       "include_context": {
         "title": "Include context",
-        "text": "When on, each assembled HED string includes context tags derived from temporally overlapping events. These ongoing events are included in <code>Event-context</code> groups, which tools use to determine everything happening at a given point in time.",
+        "text": "When on, each assembled HED string includes an <code>Event-context</code> tag group derived from temporally overlapping events. Tools use this information to determine everything happening at a given point in time.",
         "html": true
       },
       "include_description_tags": {
         "title": "Include description",
-        "text": "When on, <code>Description/XXX</code> tags from the sidecar are included in the assembled output.",
+        "text": "When on, the contents <code>XXXX</code> of each <code>description</code> column are included as a <code>Description/XXXX</code> tag in the HED annotation generated for that row.",
         "html": true
       },
       "include_summaries": {
@@ -141,12 +146,12 @@
       },
       "remove_types": {
         "title": "No condition or task",
-        "text": "When on, <code>Condition-variable</code> and <code>Task</code> structural tags are stripped from the assembled HED strings. Useful for downstream analysis that does not need study-design tags.",
+        "text": "When on, tag groups containing<code>Condition-variable</code> and <code>Task</code> at the top level as well as these tags at the top level are stripped from the assembled HED strings. Useful for downstream analysis that does not need study-design tags.",
         "html": true
       },
       "save_merged": {
         "title": "Save merged",
-        "text": "When on, the merged sidecar (original plus any updates from the spreadsheet) is saved as part of the output."
+        "text": "When on, partnered library schemas are saved with their full standard partner included in the output. When off, only the library schema and its direct parents in the standard partner are shown."
       },
       "show_details": {
         "title": "Show error details",
