@@ -146,9 +146,21 @@ async function setColumnTable(spreadsheetElementId = 'spreadsheet_file', flashMe
     }
     
     let spreadsheetPath = spreadsheet.value;
+    
+    // Guard: check if file was selected
+    if (spreadsheet.files.length === 0) {
+        return;
+    }
+    
     let spreadsheetFile = spreadsheet.files[0];
 
     let info = await getColumnsInfo(spreadsheetFile, flashMessageId, undefined, true);
+    
+    // Guard: check if getColumnsInfo returned valid data
+    if (!info) {
+        return;
+    }
+    
     if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
         await populateWorksheetDropdown(info["worksheet_names"]);
     } else if (fileHasValidExtension(spreadsheetPath, TEXT_FILE_EXTENSIONS)) {
