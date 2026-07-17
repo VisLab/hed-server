@@ -133,6 +133,7 @@ SIDECAR_PATH = "sidecar_path"
 SIDECAR_STRING = "sidecar_string"
 
 SPREADSHEET = "spreadsheet"
+SPREADSHEET_4COL = "spreadsheet_4col"
 SPREADSHEET_DISPLAY_NAME = "spreadsheet_display_name"
 SPREADSHEET_FILE = "spreadsheet_file"
 SPREADSHEET_FLASH = "spreadsheet_flash"

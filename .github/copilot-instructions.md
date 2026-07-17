@@ -98,6 +98,7 @@ When responding to code review comments:
 - Provide a **one or two clear sentences** explaining why you agree or disagree
 - If you made changes, provide a **detailed and clear explanation** of how you fixed the issue
 - If you disagree, explain your reasoning clearly so reviewers understand your perspective
+- At the end give a short summary of the changes made and why in plain text so that the comments can be pasted into the PR conversation
 
 ## Key conventions
 

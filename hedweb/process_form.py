@@ -119,14 +119,14 @@ class ProcessForm:
                     name=filename,
                 )
         # Handle 4-column spreadsheet for sidecar merging
-        if "spreadsheet_4col" in request.files and request.files["spreadsheet_4col"].filename:
+        if bc.SPREADSHEET_4COL in request.files and request.files[bc.SPREADSHEET_4COL].filename:
             arguments[bc.WORKSHEET] = request.form.get(bc.WORKSHEET_NAME, None)
-            filename = request.files["spreadsheet_4col"].filename
+            filename = request.files[bc.SPREADSHEET_4COL].filename
             file_ext = os.path.splitext(filename)[1]
             if file_ext.lower() in fc.EXCEL_FILE_EXTENSIONS:
                 arguments[bc.SPREADSHEET_TYPE] = fc.EXCEL_EXTENSION
                 arguments[bc.SPREADSHEET] = SpreadsheetInput(
-                    file=request.files["spreadsheet_4col"],
+                    file=request.files[bc.SPREADSHEET_4COL],
                     file_type=fc.EXCEL_EXTENSION,
                     worksheet_name=arguments[bc.WORKSHEET],
                     tag_columns=arguments[bc.TAG_COLUMNS],
@@ -136,7 +136,7 @@ class ProcessForm:
             elif file_ext.lower() in fc.TEXT_FILE_EXTENSIONS:
                 arguments[bc.SPREADSHEET_TYPE] = fc.TSV_EXTENSION
                 arguments[bc.SPREADSHEET] = SpreadsheetInput(
-                    file=request.files["spreadsheet_4col"],
+                    file=request.files[bc.SPREADSHEET_4COL],
                     file_type=fc.TSV_EXTENSION,
                     worksheet_name=arguments[bc.WORKSHEET],
                     tag_columns=arguments[bc.TAG_COLUMNS],

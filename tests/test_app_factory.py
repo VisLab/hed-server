@@ -14,22 +14,40 @@ class _BaseConfig:
 class NonTestingConfig(_BaseConfig):
     TESTING = False
     DEBUG = False
+    # The warmer is bypassed by default now (manifest fast path upstream); it only starts when
+    # explicitly enabled. These configs opt in so the "starts" guards can still be exercised.
+    SCHEMA_VERSION_WARM_ENABLED = True
 
 
 class NonTestingDebugConfig(_BaseConfig):
     TESTING = False
     DEBUG = True
+    SCHEMA_VERSION_WARM_ENABLED = True
 
 
 class TestingConfig(_BaseConfig):
     TESTING = True
     DEBUG = False
+    SCHEMA_VERSION_WARM_ENABLED = True
 
 
 class CustomIntervalConfig(_BaseConfig):
     TESTING = False
     DEBUG = False
+    SCHEMA_VERSION_WARM_ENABLED = True
     SCHEMA_VERSION_WARM_INTERVAL = 10
+
+
+class WarmDisabledByDefaultConfig(_BaseConfig):
+    # No SCHEMA_VERSION_WARM_ENABLED key at all - the warmer must stay off.
+    TESTING = False
+    DEBUG = False
+
+
+class WarmExplicitlyDisabledConfig(_BaseConfig):
+    TESTING = False
+    DEBUG = False
+    SCHEMA_VERSION_WARM_ENABLED = False
 
 
 class TestRunningUnderUnittest(unittest.TestCase):
@@ -89,6 +107,15 @@ class TestWarmerStartupGuards(unittest.TestCase):
     def test_starts_when_not_testing_and_not_debug(self):
         AppFactory.create_app(NonTestingConfig)
         self.mock_start_warmer.assert_called_once()
+
+    def test_skipped_when_warm_disabled_by_default(self):
+        # No SCHEMA_VERSION_WARM_ENABLED key -> warmer stays bypassed even outside testing.
+        AppFactory.create_app(WarmDisabledByDefaultConfig)
+        self.mock_start_warmer.assert_not_called()
+
+    def test_skipped_when_warm_explicitly_disabled(self):
+        AppFactory.create_app(WarmExplicitlyDisabledConfig)
+        self.mock_start_warmer.assert_not_called()
 
     def test_skipped_when_testing(self):
         AppFactory.create_app(TestingConfig)
