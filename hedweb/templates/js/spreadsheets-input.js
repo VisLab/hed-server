@@ -14,9 +14,16 @@ document.getElementById('has_column_names')?.addEventListener('change', function
  */
 document.getElementById('spreadsheet_file')?.addEventListener('change', function () {
     clearFlashMessages();
-    setColumnTable();
+    setColumnTable('spreadsheet_file', 'spreadsheet_input_flash');
 })
 
+/**
+ * 4-column spreadsheet event handler (sidecar merge). Handles file upload and worksheet population.
+ */
+document.getElementById('spreadsheet_4col')?.addEventListener('change', function () {
+    clearFlashMessages();
+    setColumnTable('spreadsheet_4col', 'spreadsheet_input_flash');
+})
 
 /**
  * Gets the information associated with the Excel sheet_name that was newly selected. This information contains
@@ -68,7 +75,19 @@ function clearWorksheetFlashMessages() {
 }
 
 function getSpreadsheetFileName() {
-    return document.getElementById('spreadsheet_file').files[0].name;
+    // Try to get from spreadsheet_file first (spreadsheets page)
+    const spreadsheetFile = document.getElementById('spreadsheet_file');
+    if (spreadsheetFile && spreadsheetFile.files.length > 0) {
+        return spreadsheetFile.files[0].name;
+    }
+    
+    // Fall back to spreadsheet_4col (sidecars page)
+    const spreadsheet4col = document.getElementById('spreadsheet_4col');
+    if (spreadsheet4col && spreadsheet4col.files.length > 0) {
+        return spreadsheet4col.files[0].name;
+    }
+    
+    return undefined;
 }
 
 function getWorksheetName() {
@@ -96,7 +115,16 @@ function populateWorksheetDropdown(worksheetNames) {
 async function setIndicesTable() {
     clearColumnInfoFlashMessages();
     removeColumnInfo("show_indices_table")
+    
+    // Try to get from spreadsheet_file first, then fall back to spreadsheet_4col
     let spreadsheet = document.getElementById('spreadsheet_file');
+    if (!spreadsheet || spreadsheet.files.length === 0) {
+        spreadsheet = document.getElementById('spreadsheet_4col');
+    }
+    if (!spreadsheet || spreadsheet.files.length === 0) {
+        return;
+    }
+    
     let worksheet = undefined
     if (document.getElementById('worksheet_name') !== null) {
         const wn = document.getElementById('worksheet_name');
@@ -111,12 +139,16 @@ async function setIndicesTable() {
     }
 }
 
-async function setColumnTable() {
-    let spreadsheet = document.getElementById('spreadsheet_file');
+async function setColumnTable(spreadsheetElementId = 'spreadsheet_file', flashMessageId = 'spreadsheet_input_flash') {
+    let spreadsheet = document.getElementById(spreadsheetElementId);
+    if (!spreadsheet) {
+        return;
+    }
+    
     let spreadsheetPath = spreadsheet.value;
     let spreadsheetFile = spreadsheet.files[0];
 
-    let info = await getColumnsInfo(spreadsheetFile, 'spreadsheet_input_flash', undefined, true);
+    let info = await getColumnsInfo(spreadsheetFile, flashMessageId, undefined, true);
     if (fileHasValidExtension(spreadsheetPath, EXCEL_FILE_EXTENSIONS)) {
         await populateWorksheetDropdown(info["worksheet_names"]);
     } else if (fileHasValidExtension(spreadsheetPath, TEXT_FILE_EXTENSIONS)) {

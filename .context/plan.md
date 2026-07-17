@@ -12,10 +12,20 @@
 
 ## Active tasks
 
-- Test the new hed-python schema-version caching (PR #1351, merged) locally: editable-install
-  hed-python's `main` (pin still says `hedtools>=1.1.1`, no PyPI release cut yet), run the server,
-  and check performance of `get_available_hed_versions()` — see the full plan in
-  `../hed-python/.status/plans/session_continuation_plan.md`.
+- **Warmer removal (blocked on hedtools release).** The schema-version manifest fast path is
+  merged to hed-python `main`, so `get_available_hed_versions()` no longer does the metered
+  GitHub crawl the background warmer was built to hide. The warmer is now *bypassed* (gated
+  behind `SCHEMA_VERSION_WARM_ENABLED`, default off in `app_factory.py`) but the code/tests are
+  left in place. Once a manifest-capable hedtools PyPI release is cut: delete
+  `hedweb/schema_version_warmer.py`, its start block in `app_factory.py`, the
+  `SCHEMA_VERSION_WARM_ENABLED`/`SCHEMA_VERSION_WARM_INTERVAL` config keys,
+  `tests/test_schema_version_warmer.py`, the warmer assertions in `tests/test_app_factory.py`,
+  and `.status/schema-version-cache-warming.md`.
+- **Repin hedtools.** `pyproject.toml` currently installs hedtools from
+  `git+https://github.com/hed-standard/hed-python.git@main` (the manifest isn't on PyPI yet).
+  Pin back to a released `hedtools>=X.Y.Z` once that release exists.
+- **GitHub token:** leaving `HED_GITHUB_TOKEN` handling untouched pending more testing (only
+  affects the rare REST-API fallback now that the manifest is primary).
 
 ## Completed
 

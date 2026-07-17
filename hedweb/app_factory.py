@@ -82,13 +82,19 @@ class AppFactory:
 
         CSRFProtect(app)
 
-        # Keep hedtools' own available-versions cache warm in the background so the
-        # schema-version dropdown (hedweb.routes.schema_versions_results) never blocks a
-        # request on a live GitHub check. This only ever calls
-        # hed.schema.get_available_hed_versions() - the same call the route itself makes -
-        # on a timer; see hedweb.schema_version_warmer for details.
+        # Background schema-version cache warmer (hedweb.schema_version_warmer).
         #
-        # Guarded against three cases where we don't want a live background thread:
+        # TEMPORARILY BYPASSED. The warmer existed to keep hedtools'
+        # get_available_hed_versions() cache warm so the schema-version dropdown never blocked
+        # a user request on the old, metered GitHub REST API directory crawl. hedtools `main`
+        # now resolves versions from a single cheap manifest fetch off the raw/CDN host
+        # (schema_versions.json), which is not rate-limited and is cached on disk - so a cold
+        # request is one fast fetch and the warmer no longer earns its keep. The warmer code
+        # and tests are intentionally left in place until a manifest-capable hedtools release
+        # is cut, at which point they can be removed outright (see .context/plan.md).
+        #
+        # The warmer therefore only starts when SCHEMA_VERSION_WARM_ENABLED is explicitly
+        # truthy in config (default off). The remaining guards still apply when it is enabled:
         #   - app.config["TESTING"] (TestConfig) - the normal case for test-created apps.
         #   - _running_under_unittest() - hedweb/runserver.py builds its module-level `app`
         #     under DevelopmentConfig (TESTING is False there) purely as a side effect of
@@ -98,7 +104,8 @@ class AppFactory:
         #   - Flask's debug reloader re-importing this module in a parent "watcher" process
         #     before spawning the real one (WERKZEUG_RUN_MAIN check).
         if (
-            not app.config.get("TESTING")
+            app.config.get("SCHEMA_VERSION_WARM_ENABLED", False)
+            and not app.config.get("TESTING")
             and not _running_under_unittest()
             and (not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true")
         ):

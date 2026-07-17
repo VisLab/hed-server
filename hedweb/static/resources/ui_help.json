@@ -146,7 +146,7 @@
       },
       "remove_types": {
         "title": "No condition or task",
-        "text": "When on, tag groups containing<code>Condition-variable</code> and <code>Task</code> at the top level as well as these tags at the top level are stripped from the assembled HED strings. Useful for downstream analysis that does not need study-design tags.",
+        "text": "When on, <code>Condition-variable</code> or <code>Task</code> HED tags appearing at the top level of a HED annotation are stripped from the assembled HED strings. Internal tag groups containing these tags at their top level are also removed. This is useful for downstream analysis that does not need study-design tags.",
         "html": true
       },
       "save_merged": {
