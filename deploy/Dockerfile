@@ -57,7 +57,12 @@ COPY deploy/base_config.py ./config.py
 #   pypi     -> released package (prod; default)
 ARG HED_INSTALL_SOURCE=pypi
 ARG CACHE_BUST
-RUN if [ "$HED_INSTALL_SOURCE" = "git-main" ]; then \
+# Referencing CACHE_BUST inside the RUN is what actually invalidates this layer: a changing
+# value (deploy.sh passes $(date +%s)) forces a fresh hedtools install instead of reusing a
+# cached layer - important for HED_INSTALL_SOURCE=git-main, where each build should pull the
+# latest hed-python main.
+RUN echo "Cache bust: ${CACHE_BUST}" && \
+    if [ "$HED_INSTALL_SOURCE" = "git-main" ]; then \
         echo "Installing hedtools from hed-python's GitHub main branch..."; \
         pip3 install --no-cache-dir git+https://github.com/hed-standard/hed-python.git@main || exit 1; \
     else \

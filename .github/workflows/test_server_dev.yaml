@@ -135,8 +135,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Dev tests track hed-python's main branch to match the dev container
-          # (deploy.sh dev builds with HED_INSTALL_SOURCE=git-main).
-          pip install --upgrade git+https://github.com/hed-standard/hed-python.git
+          # (deploy.sh dev builds with HED_INSTALL_SOURCE=git-main). Pin @main
+          # explicitly so this never silently follows a changed default branch.
+          pip install --upgrade git+https://github.com/hed-standard/hed-python.git@main
           pip install -e .
 
       - name: Run service tests

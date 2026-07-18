@@ -74,6 +74,10 @@ hedweb/_version.py
 *.whl
 wheelhouse/
 
+# Legacy GitHub token file - no longer used, but never commit one if a stray
+# copy is left in a checkout (see also .dockerignore).
+deploy/.github_token
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

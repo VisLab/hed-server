@@ -49,3 +49,9 @@ wheelhouse/
 # from deploy/base_config.py instead, but a local one sitting in the checkout
 # would otherwise still be copied into the builder stage via `COPY . .`.
 config.py
+
+# Legacy GitHub token file. No longer used (hedtools resolves schema versions
+# from the CDN manifest, no token needed), but keep it out of the build context
+# so a stray copy left in an old checkout can never be baked into an image layer
+# via the builder stage's `COPY . .`.
+deploy/.github_token
