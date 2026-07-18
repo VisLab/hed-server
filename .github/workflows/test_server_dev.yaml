@@ -61,21 +61,6 @@ jobs:
         run: chmod +x deploy/deploy.sh
 
       - name: Run deploy script (develop)
-        env:
-          # GitHub Actions provides this automatically for every run. It's
-          # scoped to this repo, but that's irrelevant here: it's only being
-          # used to authenticate read-only GitHub REST API calls that
-          # hedtools makes against the public hed-standard/hed-schemas repo
-          # when fetching schema versions (including library schemas like
-          # sc:/test: below, which aren't bundled offline the way recent
-          # standard versions are). Any authenticated token gets GitHub's
-          # 5000/hour API limit instead of the unauthenticated 60/hour one -
-          # deploy.sh forwards this into the container as HED_GITHUB_TOKEN
-          # via resolve_github_token(), see deploy.sh for details. Without
-          # this, service tests that need a library schema can intermittently
-          # fail with a HedFileError when the runner's shared IP is already
-          # near the unauthenticated limit.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd deploy
           bash ./deploy.sh "$BRANCH_NAME" dev
@@ -149,7 +134,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade git+https://github.com/hed-standard/hed-python.git
+          # Dev tests track hed-python's main branch to match the dev container
+          # (deploy.sh dev builds with HED_INSTALL_SOURCE=git-main). Pin @main
+          # explicitly so this never silently follows a changed default branch.
+          pip install --upgrade git+https://github.com/hed-standard/hed-python.git@main
           pip install -e .
 
       - name: Run service tests

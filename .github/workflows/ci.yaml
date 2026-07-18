@@ -30,10 +30,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-scm
-        # Track hed-python's main branch rather than the last PyPI release: hedtools hasn't
-        # cut a release yet for work currently in progress there, and this keeps CI honest
-        # about what hed-server actually runs against until that release ships.
-        pip install --upgrade git+https://github.com/hed-standard/hed-python.git
+        # hedtools is installed from PyPI via the pyproject pin (hedtools>=1.2.0).
         pip install -e .[dev]
 
     - name: Run unit tests (with coverage)
@@ -72,10 +69,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-scm
-        # Track hed-python's main branch rather than the last PyPI release: hedtools hasn't
-        # cut a release yet for work currently in progress there, and this keeps CI honest
-        # about what hed-server actually runs against until that release ships.
-        pip install --upgrade git+https://github.com/hed-standard/hed-python.git
+        # hedtools is installed from PyPI via the pyproject pin (hedtools>=1.2.0).
         pip install ".[dev]"
 
     - name: Start server with coverage

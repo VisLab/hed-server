@@ -12,23 +12,17 @@
 
 ## Active tasks
 
-- **Warmer removal (blocked on hedtools release).** The schema-version manifest fast path is
-  merged to hed-python `main`, so `get_available_hed_versions()` no longer does the metered
-  GitHub crawl the background warmer was built to hide. The warmer is now *bypassed* (gated
-  behind `SCHEMA_VERSION_WARM_ENABLED`, default off in `app_factory.py`) but the code/tests are
-  left in place. Once a manifest-capable hedtools PyPI release is cut: delete
-  `hedweb/schema_version_warmer.py`, its start block in `app_factory.py`, the
-  `SCHEMA_VERSION_WARM_ENABLED`/`SCHEMA_VERSION_WARM_INTERVAL` config keys,
-  `tests/test_schema_version_warmer.py`, the warmer assertions in `tests/test_app_factory.py`,
-  and `.status/schema-version-cache-warming.md`.
-- **Repin hedtools.** `pyproject.toml` currently installs hedtools from
-  `git+https://github.com/hed-standard/hed-python.git@main` (the manifest isn't on PyPI yet).
-  Pin back to a released `hedtools>=X.Y.Z` once that release exists.
-- **GitHub token:** leaving `HED_GITHUB_TOKEN` handling untouched pending more testing (only
-  affects the rare REST-API fallback now that the manifest is primary).
+<!-- none -->
 
 ## Completed
 
 <!-- One-line summaries of finished plans, newest first -->
+
+- 2026-07-18 - Adopted released hedtools 1.2.0 (CDN manifest): removed the obsolete
+  schema-version warmer (`schema_version_warmer.py`, its `app_factory.py` block, and
+  `tests/test_schema_version_warmer.py`/`tests/test_app_factory.py`); removed all GitHub-token
+  wiring (`deploy.sh`, CI, docs, `.github_token` ignores); pinned `ci.yaml` to `hedtools>=1.2.0`
+  from PyPI. Dev deploy (`deploy.sh dev` / `test_server_dev.yaml`) still tracks hed-python `main`.
+  hed-server now uses the CDN manifest with no GitHub token.
 
 <!-- Example: 2026-02-20 - Added CLI unified entry point (hedpy) - PR #1200 -->

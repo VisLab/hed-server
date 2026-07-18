@@ -20,6 +20,11 @@
 # `docker build` at the repo directory.
 
 ##### Constants
+# Two independent things are selected here; do not conflate them:
+#   BRANCH             - which hed-server (this repo) GitHub branch to clone and build. Default 'main'.
+#   HED_INSTALL_SOURCE - where hedtools (hed-python) is installed from inside the image. Set from
+#                        ENVIRONMENT below: dev -> 'git-main' (hed-python's main branch via git),
+#                        prod -> 'pypi' (released package). See deploy/Dockerfile.
 BRANCH="${1:-main}"
 ENVIRONMENT="${2:-prod}"
 BIND_ADDRESS="${3:-0.0.0.0}"
@@ -38,7 +43,10 @@ if [ "$ENVIRONMENT" = "dev" ]; then
     HOST_PORT=33004
     URL_PREFIX="/hed_dev"
     STATIC_URL_PATH="/hed_dev/hedweb/static"
-    HED_INSTALL_SOURCE="main"
+    # Dev intentionally installs hedtools from hed-python's main branch (bleeding edge); prod
+    # uses the released PyPI hedtools. This is the hedtools install source, independent of the
+    # BRANCH argument above (which selects the hed-server repo branch).
+    HED_INSTALL_SOURCE="git-main"
 else
     IMAGE_NAME="hedtools:latest"
     CONTAINER_NAME="hedtools"
@@ -124,67 +132,19 @@ stop_existing_container() {
     fi
 }
 
-# Resolve a GitHub token to forward into the container, without relying on
-# shell environment inheritance (this repo's own docs tell people to run
-# `sudo bash deploy.sh ...`, and `sudo` resets the environment by default -
-# `export HED_GITHUB_TOKEN=...` in the caller's shell will NOT reach the
-# script unless they specifically use `sudo -E` and their sudoers config
-# allows it). Checked in order, first match wins:
-#   1. HED_GITHUB_TOKEN / GITHUB_TOKEN env vars - works for a plain
-#      (non-sudo) run, `sudo -E`, or CI, where env really is inherited.
-#   2. deploy/.github_token next to this script, in the repo checkout that's
-#      actually being deployed - a plain file read, unaffected by sudo. This
-#      is the recommended option for a `sudo bash deploy.sh` setup: create it
-#      once and every future deploy on that host picks it up automatically.
-#   3. /etc/hed-server/github_token - a host-wide fallback for setups that
-#      re-clone the repo on every deploy (so deploy/.github_token wouldn't
-#      persist) but still want one token shared across environments on that
-#      machine.
-# Both files are read as-is and stripped of whitespace; neither is ever
-# committed (see .gitignore for deploy/.github_token).
-resolve_github_token() {
-    local token="${HED_GITHUB_TOKEN:-${GITHUB_TOKEN}}"
-
-    if [ -z "${token}" ] && [ -f "${GIT_HED_SERVER_DIR}/deploy/.github_token" ]; then
-        token=$(tr -d '[:space:]' < "${GIT_HED_SERVER_DIR}/deploy/.github_token")
-    fi
-
-    if [ -z "${token}" ] && [ -f "/etc/hed-server/github_token" ]; then
-        token=$(tr -d '[:space:]' < "/etc/hed-server/github_token")
-    fi
-
-    printf '%s' "${token}"
-}
-
 # Run the Docker container
 run_docker_container() {
     echo "Running Docker container ${CONTAINER_NAME} on ${BIND_ADDRESS}:${HOST_PORT}..."
 
-    # hedtools fetches HED schema versions from the GitHub API
-    # (api.github.com) to populate the schema-version dropdown. Unauthenticated
-    # requests are capped at 60/hour per source IP, which is easy to exhaust on
-    # a shared/cloud host and causes that dropdown to silently fail to
-    # populate (hedtools swallows the error and just returns what's already
-    # cached). Passing a token raises the limit to 5000/hour - see
-    # resolve_github_token() above for where it can come from. A fine-grained
-    # GitHub PAT with no special scopes is enough; it's only used for
-    # read-only API calls.
-    local github_token_args=()
-    local github_token
-    github_token="$(resolve_github_token)"
-    if [ -n "${github_token}" ]; then
-        echo "Forwarding a GitHub token into the container for HED schema cache API calls..."
-        github_token_args=(-e "HED_GITHUB_TOKEN=${github_token}")
-    else
-        echo "No GitHub token found (checked env vars, deploy/.github_token, /etc/hed-server/github_token) - schema cache API calls will be unauthenticated (60 requests/hour limit)."
-    fi
+    # No GitHub token is needed. hedtools (>=1.2.0) resolves HED schema versions from a single
+    # manifest (schema_versions.json) served off the raw/CDN host, which is not subject to the
+    # GitHub REST API rate limit, so the schema-version dropdown populates without authentication.
 
     docker run -d \
         --name "${CONTAINER_NAME}" \
         -p "${BIND_ADDRESS}:${HOST_PORT}:${CONTAINER_PORT}" \
         -e HED_URL_PREFIX="${URL_PREFIX}" \
         -e HED_STATIC_URL_PATH="${STATIC_URL_PATH}" \
-        "${github_token_args[@]}" \
         "${IMAGE_NAME}" || error_exit "Failed to run Docker container"
 }
 

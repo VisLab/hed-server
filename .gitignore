@@ -74,8 +74,8 @@ hedweb/_version.py
 *.whl
 wheelhouse/
 
-# Local GitHub token for deploy.sh's schema-cache rate-limit workaround -
-# never commit this (see resolve_github_token() in deploy/deploy.sh)
+# Legacy GitHub token file - no longer used, but never commit one if a stray
+# copy is left in a checkout (see also .dockerignore).
 deploy/.github_token
 
 # Installer logs

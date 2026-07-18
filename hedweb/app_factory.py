@@ -3,29 +3,9 @@ This module contains the factory for creating the HEDTools application.
 """
 
 import importlib
-import sys
 
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
-
-
-def _running_under_unittest() -> bool:
-    """Best-effort detection of ``python -m unittest`` (including under coverage.py).
-
-    Checking ``"unittest" in sys.modules`` is not enough - Flask/Werkzeug and other
-    dependencies import ``unittest.mock`` for their own purposes, which pulls in the
-    ``unittest`` package during perfectly normal runs too. Instead, check whether the
-    ``__main__`` module actually *is* unittest's own entry point, which is only true when
-    something ran ``python -m unittest ...`` - directly, via ``discover``, or wrapped by
-    ``coverage run -m unittest ...`` (coverage.py traces execution without changing
-    ``__main__``, so this still works under the coverage-wrapped invocation CI uses).
-
-    Returns:
-        bool: True if the current process's ``__main__`` module is unittest's own.
-    """
-    main_module = sys.modules.get("__main__")
-    main_file = (getattr(main_module, "__file__", "") or "").replace("\\", "/")
-    return main_file.endswith("unittest/__main__.py")
 
 
 class AppFactory:
@@ -81,37 +61,6 @@ class AppFactory:
                 )
 
         CSRFProtect(app)
-
-        # Background schema-version cache warmer (hedweb.schema_version_warmer).
-        #
-        # TEMPORARILY BYPASSED. The warmer existed to keep hedtools'
-        # get_available_hed_versions() cache warm so the schema-version dropdown never blocked
-        # a user request on the old, metered GitHub REST API directory crawl. hedtools `main`
-        # now resolves versions from a single cheap manifest fetch off the raw/CDN host
-        # (schema_versions.json), which is not rate-limited and is cached on disk - so a cold
-        # request is one fast fetch and the warmer no longer earns its keep. The warmer code
-        # and tests are intentionally left in place until a manifest-capable hedtools release
-        # is cut, at which point they can be removed outright (see .context/plan.md).
-        #
-        # The warmer therefore only starts when SCHEMA_VERSION_WARM_ENABLED is explicitly
-        # truthy in config (default off). The remaining guards still apply when it is enabled:
-        #   - app.config["TESTING"] (TestConfig) - the normal case for test-created apps.
-        #   - _running_under_unittest() - hedweb/runserver.py builds its module-level `app`
-        #     under DevelopmentConfig (TESTING is False there) purely as a side effect of
-        #     being imported, and test files import it directly (e.g. to get
-        #     get_version_dict()) without ever building a TestConfig app of their own. This
-        #     catches that case regardless of which config the app ends up with.
-        #   - Flask's debug reloader re-importing this module in a parent "watcher" process
-        #     before spawning the real one (WERKZEUG_RUN_MAIN check).
-        if (
-            app.config.get("SCHEMA_VERSION_WARM_ENABLED", False)
-            and not app.config.get("TESTING")
-            and not _running_under_unittest()
-            and (not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true")
-        ):
-            from hedweb.schema_version_warmer import DEFAULT_REFRESH_INTERVAL, start_warmer
-
-            start_warmer(app.config.get("SCHEMA_VERSION_WARM_INTERVAL", DEFAULT_REFRESH_INTERVAL))
 
         return app
 
