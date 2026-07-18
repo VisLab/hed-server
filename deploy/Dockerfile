@@ -52,15 +52,17 @@ RUN WHEEL_FILE=$(ls hedweb-*.whl) && pip3 install "${WHEEL_FILE}[prod]"
 # Copy configuration file for the application
 COPY deploy/base_config.py ./config.py
 
-# Install HEDTools based on the environment
+# Install HEDTools (hed-python). HED_INSTALL_SOURCE selects where from:
+#   git-main -> hed-python's main branch via git (dev; bleeding edge)
+#   pypi     -> released package (prod; default)
 ARG HED_INSTALL_SOURCE=pypi
 ARG CACHE_BUST
-RUN if [ "$HED_INSTALL_SOURCE" = "main" ]; then \
-        echo "Installing hedtools from GitHub main branch..."; \
+RUN if [ "$HED_INSTALL_SOURCE" = "git-main" ]; then \
+        echo "Installing hedtools from hed-python's GitHub main branch..."; \
         pip3 install --no-cache-dir git+https://github.com/hed-standard/hed-python.git@main || exit 1; \
     else \
         echo "Installing hedtools from PyPI..."; \
-        pip3 install --no-cache-dir hedtools || exit 1; \
+        pip3 install --no-cache-dir "hedtools>=1.2.0" || exit 1; \
     fi
 
 # Create necessary directories and set permissions

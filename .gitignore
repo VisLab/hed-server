@@ -74,10 +74,6 @@ hedweb/_version.py
 *.whl
 wheelhouse/
 
-# Local GitHub token for deploy.sh's schema-cache rate-limit workaround -
-# never commit this (see resolve_github_token() in deploy/deploy.sh)
-deploy/.github_token
-
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
