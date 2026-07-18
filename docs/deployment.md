@@ -335,12 +335,12 @@ class DevelopmentConfig(Config):
 
 The application recognizes these environment variables:
 
-| Variable                | Description                                                                                                                               | Default                   |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use                                                                                                                | `config.ProductionConfig` |
-| `HED_URL_PREFIX`        | URL prefix for the application                                                                                                            | `/hed`                    |
-| `HED_STATIC_URL_PATH`   | Path to static files                                                                                                                      | `/hed/hedweb/static`      |
-| `SECRET_KEY`            | Flask secret key for sessions                                                                                                             | Generated                 |
+| Variable                | Description                    | Default                   |
+| ----------------------- | ------------------------------ | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Configuration class to use     | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix for the application | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Path to static files           | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key for sessions  | Generated                 |
 
 ### Docker environment variables
 
@@ -799,10 +799,10 @@ python -m sphinx_autobuild . _build/html
 
 ### Environment variables reference
 
-| Variable                | Purpose                                                                | Default                   |
-| ----------------------- | ---------------------------------------------------------------------- | ------------------------- |
-| `HEDTOOLS_CONFIG_CLASS` | Config class                                                           | `config.ProductionConfig` |
-| `HED_URL_PREFIX`        | URL prefix                                                             | `/hed`                    |
-| `HED_STATIC_URL_PATH`   | Static files path                                                      | `/hed/hedweb/static`      |
-| `SECRET_KEY`            | Flask secret key                                                       | Auto-generated            |
-| `HED_INSTALL_SOURCE`    | Docker hedtools source: `pypi` (released) or `git-main` (hed-python main branch) | `pypi`          |
+| Variable                | Purpose                                                                          | Default                   |
+| ----------------------- | -------------------------------------------------------------------------------- | ------------------------- |
+| `HEDTOOLS_CONFIG_CLASS` | Config class                                                                     | `config.ProductionConfig` |
+| `HED_URL_PREFIX`        | URL prefix                                                                       | `/hed`                    |
+| `HED_STATIC_URL_PATH`   | Static files path                                                                | `/hed/hedweb/static`      |
+| `SECRET_KEY`            | Flask secret key                                                                 | Auto-generated            |
+| `HED_INSTALL_SOURCE`    | Docker hedtools source: `pypi` (released) or `git-main` (hed-python main branch) | `pypi`                    |
