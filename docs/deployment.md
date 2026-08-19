@@ -1,4 +1,4 @@
-# HEDTools online deployment
+# HED server release and deployment
 
 This guide provides step-by-step instructions for deploying and using HED online tools in various environments, from local development to production Docker deployments.
 
@@ -295,6 +295,43 @@ server {
     }
 }
 ```
+
+## Release process
+
+Releasing a new version publishes the `hedweb` package to PyPI and creates the git tag that the package version is derived from. `setuptools-scm` generates `hedweb/_version.py` from the tag; no version number is ever edited by hand.
+
+1. Update `CHANGELOG.md` for the release and merge that PR to `main`.
+
+2. Run the quality checks: `ruff check .`, `ruff format --check .`, and `typos`.
+
+3. Run all tests:
+
+   ```bash
+   python -m unittest discover -s tests -p "test*.py"
+   python service_tests/run_service_tests.py
+   ```
+
+4. Tag `main` with the semantic version (`MAJOR.MINOR.PATCH`, no `v` prefix) and push the tag:
+
+   ```bash
+   git tag -a X.Y.Z -m "Release X.Y.Z"
+   git push origin X.Y.Z
+   ```
+
+5. Build and check the distribution:
+
+   ```bash
+   python -m build
+   twine check dist/*
+   ```
+
+6. Upload to PyPI:
+
+   ```bash
+   twine upload dist/*
+   ```
+
+7. Verify that the Zenodo DOI was generated for the release.
 
 ## Configuration
 
