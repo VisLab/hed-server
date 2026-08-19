@@ -1,0 +1,10 @@
+# mdformat settings. They live here because mdformat reads only this file -
+# a [tool.mdformat] section in pyproject.toml is silently ignored. Keep these
+# in agreement with the flags in .github/workflows/mdformat.yaml.
+#
+#   python -m mdformat --check docs/ *.md      to check
+#   python -m mdformat docs/ *.md              to fix
+
+wrap = "no"
+number = true
+end_of_line = "lf"

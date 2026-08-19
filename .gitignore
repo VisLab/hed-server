@@ -133,9 +133,22 @@ Thumbs.db
 # Folder config file
 Desktop.ini
 
-# Status directory for development notes and summaries
+# Working notes, plans, prompts, and decision records. Deliberately NOT
+# committed: this repo is public and .status/ holds half-formed thinking.
+# The consequence is that it lives on one machine only and is absent from
+# fresh clones and worktrees.
 status/
 .status/
 
-# VS Code settings (user-specific)
-.vscode/
+# VS Code: only settings.json is shared; launch/tasks are personal
+.vscode/*
+!.vscode/settings.json
+
+# Personal per-repo Claude Code notes (imports .status/local-environment.md)
+CLAUDE.local.md
+
+# Personal per-repo settings (absolute paths, personal grants)
+.claude/settings.local.json
+
+# Real tokens and machine values; .env.example is the committed documentation
+.env

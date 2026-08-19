@@ -55,7 +55,7 @@ def wait_for_server(url, timeout=30):
 
 
 @contextmanager
-def hed_server(port, verbose=False):
+def hed_server(port, verbose=False, timeout=30):
     """Context manager to start and stop the HED server."""
     # Start server process
     server_process = multiprocessing.Process(target=run_server, args=(port, verbose), daemon=True)
@@ -65,10 +65,10 @@ def hed_server(port, verbose=False):
     server_url = f"http://127.0.0.1:{port}"
     print(f"Starting HED web server on {server_url}...")
 
-    if not wait_for_server(server_url, timeout=30):
+    if not wait_for_server(server_url, timeout=timeout):
         server_process.terminate()
         server_process.join(timeout=5)
-        raise RuntimeError(f"Server failed to start within 30 seconds on {server_url}")
+        raise RuntimeError(f"Server failed to start within {timeout} seconds on {server_url}")
 
     print(f"Server is ready at {server_url}")
 
@@ -117,7 +117,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        with hed_server(args.port, args.verbose) as server_url:
+        with hed_server(args.port, args.verbose, args.timeout) as server_url:
             success = run_tests(server_url)
             sys.exit(0 if success else 1)
     except KeyboardInterrupt:
