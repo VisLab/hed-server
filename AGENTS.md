@@ -25,7 +25,7 @@ Activate the virtual environment (`.venv`) before any command.
 
 - `hedweb/` - the package: `routes.py` (all URL routes), `process_form.py` / `process_service.py` (form and REST request handling), `*_operations.py` (business logic per domain), `constants/`, `templates/`, `static/`
 - `tests/` - unit tests; `tests/data/` holds real test data files
-- `service_tests/` - REST integration tests; require a running server
+- `service_tests/` - REST integration tests; they need a live server, which `run_service_tests.py` starts and stops for you
 - `deploy/` - Dockerfile, gunicorn config, `deploy.sh`
 - `docs/` - Sphinx documentation; `docs/deployment.md` covers deployment and the release process
 - `.status/` - working notes. Gitignored; local to each machine.
