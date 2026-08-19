@@ -183,4 +183,4 @@ Terminal 2 - Run tests:
 python -m unittest discover service_tests
 ```
 
-For more details, see [.status/running-service-tests-locally.md](.status/running-service-tests-locally.md).
+The automatic script accepts `--port PORT` (default 5000), `--verbose` (show server output), and `--timeout SECONDS` (server startup wait, default 30). Tests read the server URL from the `HED_SERVER_URL_KEY` environment variable, defaulting to `http://127.0.0.1:5000`.
