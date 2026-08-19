@@ -183,4 +183,10 @@ Terminal 2 - Run tests:
 python -m unittest discover service_tests
 ```
 
-The automatic script accepts `--port PORT` (default 5000), `--verbose` (show server output), and `--timeout SECONDS` (server startup wait, default 30). Tests read the server URL from the `HED_SERVER_URL_KEY` environment variable, defaulting to `http://127.0.0.1:5000`.
+Options for the automatic script:
+
+- `--port PORT` - port for the test server (default: 5000)
+- `--timeout SECONDS` - how long to wait for server startup (default: 30)
+- `--verbose` - show server output
+
+Tests read the server URL from the `HED_SERVER_URL_KEY` environment variable, defaulting to `http://127.0.0.1:5000`.
