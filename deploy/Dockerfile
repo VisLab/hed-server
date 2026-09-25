@@ -14,7 +14,7 @@
 # it can never silently fall back to a placeholder version and overwrite the
 # commit hash with None - which is what used to crash gunicorn on startup.
 # ---------------------------------------------------------------------------
-FROM python:3.10-slim-bookworm AS builder
+FROM python:3.12-slim-bookworm AS builder
 
 WORKDIR /build
 
@@ -30,7 +30,7 @@ RUN python3 -m pip wheel --no-deps -w /build/dist .
 # ---------------------------------------------------------------------------
 # Stage 2: the runtime image.
 # ---------------------------------------------------------------------------
-FROM python:3.10-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Set the working directory inside the container
 WORKDIR /root
