@@ -6,7 +6,7 @@ This guide provides step-by-step instructions for deploying and using HED online
 
 ### Prerequisites
 
-- **Python 3.10 or higher** — [Download Python](https://www.python.org/downloads/)
+- **Python 3.12 or higher** — [Download Python](https://www.python.org/downloads/)
 - **Git** — [Download Git](https://git-scm.com/downloads/)
 
 For Docker deployment:
@@ -555,7 +555,7 @@ For complete API documentation including all available endpoints, parameters, an
 
 **Solutions:**
 
-1. Verify Python version: `python --version` (must be 3.10+)
+1. Verify Python version: `python --version` (must be 3.12+)
 2. Ensure virtual environment is activated
 3. Reinstall dependencies: `pip install -e .[dev]`
 4. Check for conflicting packages: `pip list`

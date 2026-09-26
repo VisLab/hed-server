@@ -14,7 +14,7 @@ authors = [
     { name = "Kay Robbins", email = "Kay.Robbins@utsa.edu" }
 ]
 license = { text = "MIT License" }
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -27,7 +27,7 @@ dependencies = [
     # 1.2.0 is the first release with the schema-version manifest fast path:
     # get_available_hed_versions() and single-version downloads resolve from schema_versions.json
     # on the raw/CDN host instead of the metered GitHub REST API, so hed-server needs no GitHub token.
-    "hedtools @ git+https://github.com/hed-standard/hed-python.git@main",
+    "hedtools>=1.2.0",
     "openpyxl>=3.1.5",
     "pandas>=2.2.3,<4.0.0",
     "Werkzeug>=3.1.3",
@@ -78,7 +78,7 @@ local_scheme = "no-local-version"
 fallback_version = "0.0.0"
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 line-length = 120
 exclude = [
     ".git",
