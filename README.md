@@ -1,6 +1,6 @@
 # HED online tools
 
-![Python3](https://img.shields.io/badge/python-%3E=3.10-blue.svg) [![Documentation](https://img.shields.io/badge/docs-hedtags.org-blue.svg)](https://www.hedtags.org/hed-server) [![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-server/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-server) [![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-server/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-server)
+![Python3](https://img.shields.io/badge/python-%3E=3.12-blue.svg) [![Documentation](https://img.shields.io/badge/docs-hedtags.org-blue.svg)](https://www.hedtags.org/hed-server) [![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-server/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-server) [![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-server/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-server)
 
 ## Repository rename (May 2026)
 
