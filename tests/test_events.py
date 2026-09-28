@@ -36,7 +36,7 @@ from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
 from hedweb.constants import base_constants as bc
-from hedweb.event_operations import EventOperations
+from hedweb.event_operations import TABULAR_VALIDATES_SIDECAR, EventOperations
 from hedweb.process_form import ProcessForm
 from hedweb.process_service import ProcessServices
 from tests.test_web_base import TestWebBase
@@ -510,6 +510,47 @@ class TestEventOperations(TestWebBase):
             events_proc.command = bc.COMMAND_VALIDATE
             results = events_proc.process()
             self.assertIn("msg_category", results, "should have msg_category")
+
+    def get_inline_event_proc(self, sidecar_dict, trial_types=("go", "stop")):
+        """Return an EventOperations for an events file with one row per trial type, annotated by the sidecar."""
+        events_proc = self.get_event_proc(None, None, "data/HED8.2.0.xml")
+        events_proc.sidecar = Sidecar(files=StringIO(json.dumps(sidecar_dict)), name="inline_sidecar.json")
+        rows = "".join(f"{onset}.0\t0\t{trial_type}\n" for onset, trial_type in enumerate(trial_types, 1))
+        events_proc.events = TabularInput(
+            file=StringIO("onset\tduration\ttrial_type\n" + rows),
+            sidecar=events_proc.sidecar,
+            name="inline_events.tsv",
+        )
+        events_proc.command = bc.COMMAND_VALIDATE
+        return events_proc
+
+    def test_validate_uses_external_definitions_for_events(self):
+        """A Def that only the external definitions define is valid in the events file too."""
+        with self.app.app_context():
+            events_proc = self.get_inline_event_proc({"trial_type": {"HED": {"go": "Def/MyColor", "stop": "Blue"}}})
+            def_string = '{"definitions": "(Definition/MyColor, (Item, (Label/Pie)))"}'
+            events_proc.definitions = ProcessServices.get_definitions(def_string, events_proc.schema)
+            results = events_proc.process()
+            self.assertEqual("success", results["msg_category"], results["data"])
+            self.assertNotIn("DEF_INVALID", results["data"])
+
+    @unittest.skipUnless(TABULAR_VALIDATES_SIDECAR, "hedtools 1.2.0 also reports a sidecar warning at each row")
+    def test_validate_reports_sidecar_warning_once(self):
+        """A sidecar warning is reported once, not once by the sidecar and again by the events file."""
+        with self.app.app_context():
+            events_proc = self.get_inline_event_proc({"trial_type": {"HED": {"go": "Item/Blechy", "stop": "Blue"}}})
+            results = events_proc.process()
+            self.assertEqual("warning", results["msg_category"])
+            self.assertEqual(1, results["data"].count("TAG_EXTENDED"), results["data"])
+
+    def test_validate_reports_sidecar_error_on_unused_key(self):
+        """A sidecar error is reported even when no row of the events file uses the key that has it."""
+        with self.app.app_context():
+            sidecar_dict = {"trial_type": {"HED": {"go": "Blue", "unused": "Blech-bad-tag"}}}
+            events_proc = self.get_inline_event_proc(sidecar_dict, trial_types=("go",))
+            results = events_proc.process()
+            self.assertEqual("warning", results["msg_category"])
+            self.assertIn("TAG_INVALID", results["data"])
 
     def test_validate_with_sidecar_and_no_events_file_schema(self):
         """Test validate with sidecar but no schema."""
