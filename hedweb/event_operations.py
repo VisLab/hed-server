@@ -2,6 +2,7 @@
 Performs operations on tabular data files using metadata from relevant sidecars if available.
 """
 
+import inspect
 import json
 from io import StringIO
 
@@ -22,6 +23,11 @@ from remodeler.remodeler_validator import RemodelerValidator
 from hedweb.base_operations import BaseOperations
 from hedweb.constants import base_constants as bc
 from hedweb.web_util import filter_issues, generate_filename, get_schema_versions
+
+# hedtools after 1.2.0 validates the sidecar inside TabularInput.validate (which gained validate_sidecar);
+# 1.2.0 does not, so the sidecar must be validated separately. Remove this check once the hedtools pin in
+# pyproject.toml is raised past 1.2.0.
+TABULAR_VALIDATES_SIDECAR = "validate_sidecar" in inspect.signature(TabularInput.validate).parameters
 
 
 class EventOperations(BaseOperations):
@@ -425,12 +431,14 @@ class EventOperations(BaseOperations):
         if self.definitions and self.definitions.issues:
             def_issues = filter_issues(list(self.definitions.issues), self.check_for_warnings)
             issues.extend(def_issues)
-        if not check_for_any_errors(issues) and self.sidecar:
+        if not TABULAR_VALIDATES_SIDECAR and not check_for_any_errors(issues) and self.sidecar:
             issues += self.sidecar.validate(
                 self.schema, extra_def_dicts=self.definitions, name=self.sidecar.name, error_handler=error_handler
             )
         if not check_for_any_errors(issues):
-            issues += self.events.validate(self.schema, name=self.events.name, error_handler=error_handler)
+            issues += self.events.validate(
+                self.schema, extra_def_dicts=self.definitions, name=self.events.name, error_handler=error_handler
+            )
         if issues:
             num_errors = len(issues)
             title = f"File errors for {display_name}: {num_errors} Total errors"
