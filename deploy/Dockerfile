@@ -55,6 +55,10 @@ COPY deploy/base_config.py ./config.py
 # Install HEDTools (hed-python). HED_INSTALL_SOURCE selects where from:
 #   git-main -> hed-python's main branch via git (dev; bleeding edge)
 #   pypi     -> released package (prod; default)
+# While pyproject.toml depends on hedtools by git URL (until the next hedtools release), the wheel
+# install above has already brought in hed-python main, and the pypi branch below finds
+# hedtools>=1.2.0 satisfied and changes nothing: both images run hed-python main. Once pyproject
+# returns to a version floor, the pypi branch installs the released package again.
 ARG HED_INSTALL_SOURCE=pypi
 ARG CACHE_BUST
 # Referencing CACHE_BUST inside the RUN is what actually invalidates this layer: a changing
