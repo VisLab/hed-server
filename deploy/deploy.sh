@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # deploy.sh - Script to build and deploy a Docker container for the HEDTools online validator
-# Usage: ./deploy.sh [branch] [environment] [bind_address]
-# Environment can be 'prod' or 'dev' (defaults to 'prod')
+# Usage: sudo bash deploy.sh [branch] [environment] [bind_address]   (e.g. sudo bash deploy.sh main prod)
+# branch is the hed-server branch to clone and build (defaults to 'main')
+# Environment can be 'prod' or 'dev' (defaults to 'prod'); it selects the hedtools source and the container
 # bind_address can be an IP like 0.0.0.0 (default) or 127.0.0.1 to restrict to localhost
 #
 # The script can be run from:

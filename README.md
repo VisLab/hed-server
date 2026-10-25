@@ -25,7 +25,7 @@ The HED online tools are a set of web-based applications for validating and anal
 ### User Guide
 
 - Quick start, local run, Docker deployment, and reverse proxy setup: see [docs/user_guide.md](docs/user_guide.md).
-- Deployment script now supports an optional third parameter to bind host ports (e.g., `127.0.0.1` for localhost-only): `./deploy.sh [branch] [environment] [bind_address]`.
+- Docker deployment script: `sudo bash deploy.sh [branch] [environment] [bind_address]`, e.g. `sudo bash deploy.sh main prod`. The first argument is the hed-server branch and the second selects the hedtools source and container (`prod` or `dev`); see [deploy/README.md](deploy/README.md).
 
 ### HED Assistant Widget
 
