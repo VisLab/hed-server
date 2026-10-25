@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Web Utilities:** Extensive updates to `web_util.py`, `routes.py`, and `columns.py` to support the new operation handlers.
 - **Constants Reorganization:** Updated constants across `base_constants.py`, `file_constants.py`, `page_constants.py`, and `route_constants.py`.
 - **Dataset Examples:** Updated `service_tests/data` and `tests/data` with new BIDS/HED sample datasets and event files.
+- **hedtools 1.3.0:** hedweb now requires the released `hedtools>=1.3.0` (with the HED 8.5.0 schemas) instead of hed-python main by git URL; the production Docker image installs `hedtools>=1.3.0` from PyPI.
 
 ### Removed
 
@@ -44,6 +45,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Legacy Deployment Scripts:** Removed old specific deployment directories (`deploy_hed/`, `deploy_hed_dev/`).
 - **Old Configuration Files:** Removed `setup.cfg`, `readthedocs.yml`, `versioneer.py`, and `.codeclimate.yml`.
 - **Outdated Static Assets:** Removed obsolete CSS files (`schema-form.css`, `dictionary-form.css`) and various legacy tutorial/error screenshot images from `static/img/`.
+- **hedtools 1.2.0 Compatibility Shim:** Removed the separate sidecar validation in `event_operations.py`; hedtools 1.3.0 validates the sidecar inside `TabularInput.validate`.
+
+### Fixed
+
+- **Schema Group Validation:** Validating a standard+library schema group no longer raises `AttributeError`; each schema in the group is validated and round-tripped separately.
 
 ## [0.2.0] - 2024-06-25
 
