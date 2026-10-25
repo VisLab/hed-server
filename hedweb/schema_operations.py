@@ -3,6 +3,7 @@ Performs operations on HED schemas, such as validation, comparison, and conversi
 """
 
 import base64
+import copy
 import io
 import os
 import tempfile
@@ -154,8 +155,16 @@ class SchemaOperations(BaseOperations):
         """
 
         # validate_schema_object round-trips a single HedSchema, so validate each member of a group separately.
+        # A reloaded schema has no namespace and schema equality compares namespaces, so a prefixed member
+        # (e.g. sc:score_1.0.0) is validated as a copy with its namespace cleared to avoid false reload failures.
         if isinstance(self.schema, hedschema.HedSchemaGroup):
-            schemas = [self.schema.schema_for_namespace(prefix) for prefix in self.schema.valid_prefixes]
+            schemas = []
+            for prefix in self.schema.valid_prefixes:
+                schema = self.schema.schema_for_namespace(prefix)
+                if prefix:
+                    schema = copy.deepcopy(schema)
+                    schema.set_schema_prefix("")
+                schemas.append(schema)
         else:
             schemas = [self.schema]
         issue_strings = []
