@@ -30,7 +30,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-scm
-        # hedtools comes from hed-python main via the git dependency in pyproject.toml.
         pip install -e .[dev]
 
     - name: Run unit tests (with coverage)
@@ -69,7 +68,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-scm
-        # hedtools comes from hed-python main via the git dependency in pyproject.toml.
         pip install ".[dev]"
 
     - name: Start server with coverage

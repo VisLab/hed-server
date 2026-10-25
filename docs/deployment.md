@@ -146,7 +146,7 @@ The `deploy.sh` script accepts three optional parameters:
 - Container name: `hedtools`
 - Host port: `33000`
 - URL prefix: `/hed`
-- HED source: PyPI release (`hedtools` package). During the HED 8.5.0 transition this is hed-python main instead; see `deploy/README.md`.
+- HED source: PyPI release (`hedtools` package)
 
 **Development environment (`dev`):**
 
@@ -627,7 +627,7 @@ lsof -ti:5000 | xargs kill -9
 
    A `200` means the manifest is reachable and the dropdown should populate; a connection error/timeout points to a network/firewall restriction on the host. Outbound HTTPS to `raw.githubusercontent.com` must be allowed from wherever the container runs.
 
-2. Confirm the container is running `hedtools>=1.2.0` (older versions predate the manifest and use the metered GitHub REST API):
+2. Confirm the container is running `hedtools>=1.3.0`, the version hedweb requires (versions before 1.2.0 predate the manifest and use the metered GitHub REST API):
 
    ```bash
    docker exec -it <container_name> python -c "from importlib.metadata import version; print(version('hedtools'))"
