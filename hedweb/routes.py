@@ -119,8 +119,8 @@ def schema_versions_results() -> Response:
             non-empty even if GitHub is down or rate-limited.
 
         Example: if GitHub is unreachable, get_available_hed_versions() returns {} and this
-        route falls back to whatever get_hed_versions() already has (e.g. ["8.4.0", "8.3.0",
-        "8.2.0", ...] from the bundled copies) instead of returning an empty list.
+        route falls back to whatever get_hed_versions() already has (e.g. ["8.5.0", "8.4.0",
+        "8.3.0", ...] from the bundled copies) instead of returning an empty list.
 
     """
 

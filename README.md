@@ -25,7 +25,7 @@ The HED online tools are a set of web-based applications for validating and anal
 ### User Guide
 
 - Quick start, local run, Docker deployment, and reverse proxy setup: see [docs/user_guide.md](docs/user_guide.md).
-- Deployment script now supports an optional third parameter to bind host ports (e.g., `127.0.0.1` for localhost-only): `./deploy.sh [branch] [environment] [bind_address]`.
+- Docker deployment script: `sudo bash deploy.sh [branch] [environment] [bind_address]`, e.g. `sudo bash deploy.sh main prod`. The first argument is the hed-server branch and the second selects the hedtools source and container (`prod` or `dev`); see [deploy/README.md](deploy/README.md).
 
 ### HED Assistant Widget
 
@@ -139,16 +139,6 @@ pip install -e .[dev,docs]
 - **`[docs]`**: sphinx, furo, myst-parser (for building documentation)
 
 **Note**: For local development, you only need `[dev]`. The Flask development server (`python hedweb/runserver.py`) is used instead of gunicorn.
-
-### Where hedtools comes from during the HED 8.5.0 transition
-
-Until the next hedtools release, `pyproject.toml` depends on hedtools by git URL (`hed-python` main), because hedweb needs the staged tabular validation and the `value-text` character set of HED 8.5.0, which are not on PyPI yet. Consequences:
-
-- `pip install -e .` clones hed-python, so `git` must be on the PATH, and reinstalling is how you pick up newer hed-python commits.
-- Both Docker images, production and development, run hed-python main for now (see `deploy/README.md`).
-- hedweb cannot be uploaded to PyPI while the git URL is in `dependencies`.
-
-When hedtools releases with those features, the dependency goes back to a version floor (`hedtools>=<that release>`) and the production image returns to the PyPI package with no other change.
 
 ## Testing
 

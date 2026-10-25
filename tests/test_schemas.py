@@ -244,8 +244,6 @@ class Test(TestWebBase):
     def test_schemas_validate_library_schema(self):
         """Test validation of a library schema (score_1.0.0).
 
-        Note: hedtools 0.9.0 reports SCHEMA_ATTRIBUTE_INVALID for the 'inLibrary'
-        attribute on library schemas, so msg_category is 'warning' rather than 'success'.
         This test verifies the operation completes and returns a structured result.
         """
         with self.app.app_context():
@@ -262,18 +260,21 @@ class Test(TestWebBase):
     def test_schemas_validate_library_schema_group(self):
         """Test validation of a schema group combining standard and library schemas.
 
-        Note: hedtools 0.9.0 reports SCHEMA_ATTRIBUTE_INVALID for the 'inLibrary'
-        attribute, so msg_category is 'warning' rather than 'success'.
-        This test verifies the group loads and validates without raising an exception.
+        Each member schema of the group is validated and round-tripped separately, since
+        the round-trip conversion only works on a single HedSchema. The prefixed member must
+        not produce spurious reload failures, and the group must keep its namespaces.
         """
         with self.app.app_context():
             proc_schemas = SchemaOperations()
             proc_schemas.command = bc.COMMAND_VALIDATE
             proc_schemas.schema = load_schema_version(["8.2.0", "sc:score_1.0.0"])
             results = proc_schemas.process()
-            self.assertIn(
+            self.assertNotIn("Failed to reload", results["data"])
+            self.assertEqual(["", "sc:"], proc_schemas.schema.valid_prefixes)
+            self.assertEqual("sc:", proc_schemas.schema.schema_for_namespace("sc:")._namespace)
+            self.assertEqual(
                 results["msg_category"],
-                ["success", "warning"],
+                "success",
                 "Standard+score schema group validation should complete without error",
             )
 

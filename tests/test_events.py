@@ -36,7 +36,7 @@ from werkzeug.test import create_environ
 from werkzeug.wrappers import Request
 
 from hedweb.constants import base_constants as bc
-from hedweb.event_operations import TABULAR_VALIDATES_SIDECAR, EventOperations
+from hedweb.event_operations import EventOperations
 from hedweb.process_form import ProcessForm
 from hedweb.process_service import ProcessServices
 from tests.test_web_base import TestWebBase
@@ -534,7 +534,6 @@ class TestEventOperations(TestWebBase):
             self.assertEqual("success", results["msg_category"], results["data"])
             self.assertNotIn("DEF_INVALID", results["data"])
 
-    @unittest.skipUnless(TABULAR_VALIDATES_SIDECAR, "hedtools 1.2.0 also reports a sidecar warning at each row")
     def test_validate_reports_sidecar_warning_once(self):
         """A sidecar warning is reported once, not once by the sidecar and again by the events file."""
         with self.app.app_context():

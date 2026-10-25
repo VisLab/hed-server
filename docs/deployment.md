@@ -107,36 +107,35 @@ cd ~/deploy_hed
 # Download deployment script
 curl -fsSL -o deploy.sh https://raw.githubusercontent.com/hed-standard/hed-server/main/deploy/deploy.sh
 
-# Make script executable
-chmod +x deploy.sh
-
-# Run deployment
-./deploy.sh main prod
+# Run deployment: hed-server branch main, production environment
+sudo bash deploy.sh main prod
 ```
 
 ### Deployment script options
 
-The `deploy.sh` script accepts three optional parameters:
+The `deploy.sh` script accepts three positional parameters, all optional:
 
 ```bash
-./deploy.sh [branch] [environment] [bind_address]
+sudo bash deploy.sh [branch] [environment] [bind_address]
 ```
 
-- **branch**: Git branch to deploy (default: `main`)
-- **environment**: `prod` or `dev` (default: `prod`)
-- **bind_address**: IP address to bind (default: `0.0.0.0`, use `127.0.0.1` for localhost-only)
+- **branch** (default `main`): the **hed-server** branch to clone and build. It is used only when the script clones from GitHub; when the script runs from inside a hed-server checkout, finds an existing `hed-server/` directory, or is given `LOCAL_REPO`, that code is built as is.
+- **environment** (default `prod`): `prod` or `dev`. It selects where **hedtools** comes from (`prod`: the PyPI release; `dev`: hed-python's main branch, reinstalled every build) and the container's name, host port, and URL prefix (see below).
+- **bind_address** (default `0.0.0.0`): the host address the container port is published on; `127.0.0.1` restricts it to localhost.
+
+The branch and the environment are independent: the branch never affects which hedtools is installed, and the environment never affects which hed-server branch is built. See [deploy/README.md](https://github.com/hed-standard/hed-server/blob/main/deploy/README.md) for how the Docker image installs hedtools.
 
 **Examples:**
 
 ```bash
-# Production deployment from main branch
-./deploy.sh main prod
+# Production: hed-server main branch, hedtools from PyPI
+sudo bash deploy.sh main prod
 
-# Development deployment from develop branch
-./deploy.sh develop dev
+# Development: hed-server develop branch, hedtools from hed-python main
+sudo bash deploy.sh develop dev
 
-# Localhost-only deployment
-./deploy.sh main prod 127.0.0.1
+# Production, published on localhost only
+sudo bash deploy.sh main prod 127.0.0.1
 ```
 
 ### Environment-specific configurations
@@ -146,14 +145,14 @@ The `deploy.sh` script accepts three optional parameters:
 - Container name: `hedtools`
 - Host port: `33000`
 - URL prefix: `/hed`
-- HED source: PyPI release (`hedtools` package). During the HED 8.5.0 transition this is hed-python main instead; see `deploy/README.md`.
+- HED source: PyPI release (`hedtools` package)
 
 **Development environment (`dev`):**
 
 - Container name: `hedtools_dev`
 - Host port: `33004`
 - URL prefix: `/hed_dev`
-- HED source: GitHub main branch
+- HED source: hed-python main branch from GitHub (`hedtools` reinstalled every build)
 
 ### Manual Docker build
 
@@ -269,10 +268,10 @@ To run both production and development versions simultaneously:
 
 ```bash
 # Deploy production version
-./deploy.sh main prod
+sudo bash deploy.sh main prod
 
 # Deploy development version
-./deploy.sh develop dev
+sudo bash deploy.sh develop dev
 ```
 
 Update your Nginx configuration to handle both:
@@ -627,7 +626,7 @@ lsof -ti:5000 | xargs kill -9
 
    A `200` means the manifest is reachable and the dropdown should populate; a connection error/timeout points to a network/firewall restriction on the host. Outbound HTTPS to `raw.githubusercontent.com` must be allowed from wherever the container runs.
 
-2. Confirm the container is running `hedtools>=1.2.0` (older versions predate the manifest and use the metered GitHub REST API):
+2. Confirm the container is running `hedtools>=1.3.0`, the version hedweb requires (versions before 1.2.0 predate the manifest and use the metered GitHub REST API):
 
    ```bash
    docker exec -it <container_name> python -c "from importlib.metadata import version; print(version('hedtools'))"
@@ -766,7 +765,7 @@ python -m hedweb.runserver --port 5000 --debug
 
 ```bash
 # Quick deployment
-./deploy.sh main prod
+sudo bash deploy.sh main prod
 
 # Build image manually
 docker build -t hedtools:latest -f deploy/Dockerfile .
