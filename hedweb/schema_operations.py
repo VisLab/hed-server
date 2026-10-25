@@ -153,9 +153,14 @@ class SchemaOperations(BaseOperations):
 
         """
 
-        issue_strings = validate_schema_object(
-            self.schema, self.schema.name, check_for_warnings=self.check_for_warnings
-        )
+        # validate_schema_object round-trips a single HedSchema, so validate each member of a group separately.
+        if isinstance(self.schema, hedschema.HedSchemaGroup):
+            schemas = [self.schema.schema_for_namespace(prefix) for prefix in self.schema.valid_prefixes]
+        else:
+            schemas = [self.schema]
+        issue_strings = []
+        for schema in schemas:
+            issue_strings += validate_schema_object(schema, schema.name, check_for_warnings=self.check_for_warnings)
         if issue_strings:
             return {
                 "command": bc.COMMAND_VALIDATE,

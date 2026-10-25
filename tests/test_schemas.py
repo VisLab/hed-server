@@ -244,8 +244,6 @@ class Test(TestWebBase):
     def test_schemas_validate_library_schema(self):
         """Test validation of a library schema (score_1.0.0).
 
-        Note: hedtools 0.9.0 reports SCHEMA_ATTRIBUTE_INVALID for the 'inLibrary'
-        attribute on library schemas, so msg_category is 'warning' rather than 'success'.
         This test verifies the operation completes and returns a structured result.
         """
         with self.app.app_context():
@@ -262,9 +260,9 @@ class Test(TestWebBase):
     def test_schemas_validate_library_schema_group(self):
         """Test validation of a schema group combining standard and library schemas.
 
-        Note: hedtools 0.9.0 reports SCHEMA_ATTRIBUTE_INVALID for the 'inLibrary'
-        attribute, so msg_category is 'warning' rather than 'success'.
-        This test verifies the group loads and validates without raising an exception.
+        Each member schema of the group is validated and round-tripped separately, since
+        the round-trip conversion only works on a single HedSchema. This test verifies the
+        group validates without raising an exception.
         """
         with self.app.app_context():
             proc_schemas = SchemaOperations()
